@@ -5,6 +5,7 @@ import { playerMove } from "./use-cases/playerMove";
 import { GameMessage } from "./events/messages";
 import { GameEventType } from "./events/events";
 import { MessageResponse } from "./utils/types";
+import { Coordinate } from "./utils/coordinate";
 
 export class Game {
     tilemap: TileMap;
@@ -35,5 +36,14 @@ export class Game {
 
     checkNextTurn(timeSpent: number) {
         this.currentTurn += timeSpent;
+        if (this.currentTurn >= 100) {
+            this.currentTurn = 0;
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    getAttackable(pos: Coordinate) {
+        return this.monsters.getAt(pos);
     }
 }

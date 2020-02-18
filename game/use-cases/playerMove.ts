@@ -1,16 +1,7 @@
 import { Game } from "../game";
 import { checkMoveAllowed } from "./preconditions/moveAllowed";
-import {GameEventType} from '../events/events';
-import {GameMessage} from '../events/messages';
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
-import { Coordinate } from "shared";
-
-export interface PlayerMoveMessage extends GameMessage {
-    type: GameEventType.PlayerMove;
-    data: {
-        to: Coordinate
-    }
-}
+import { PlayerMoveMessage } from "../events/messages";
 
 export function playerMove(game: Game, message: PlayerMoveMessage): MessageResponse {
     try {

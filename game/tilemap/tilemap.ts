@@ -9,7 +9,7 @@ export class TileMap {
         let lines = [];
         for (let lineNb = 0; lineNb < this.height; lineNb++) {
             for (let colNb = 0; colNb < this.width; colNb++) {
-                lines.push(new Tile(colNb, lineNb));
+                lines.push(new Tile({x:colNb, y:lineNb}));
             }
             tiles.push(lines);
             lines = [];

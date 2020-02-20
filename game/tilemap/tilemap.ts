@@ -1,12 +1,15 @@
-import { Tile } from "./tile";
+import { Tile, TileVisibility } from "./tile";
 import { Rect } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { TileType } from "./tileType";
+import { line } from "./sight";
 
 export class TileMap {
     tiles: Tile[][];
-    width = 3;
+    width = 8;
     height = 3;
+    heightM1: number;
+    widthM1: number;
     constructor() {
         let tiles = [];
         let lines = [];
@@ -19,6 +22,8 @@ export class TileMap {
         }
         this.tiles = tiles;
         this.getAt({x:1, y:1}).type = TileType.WallGrey;
+        this.heightM1 = this.height - 1;
+        this.widthM1 = this.width - 1;
     }
     getBorders(): Rect {
         return {
@@ -30,5 +35,39 @@ export class TileMap {
     }
     getAt(pos: Coordinate): Tile {
         return this.tiles[pos.x][pos.y];
+    }
+
+    computeSight(arg: {from: Coordinate, range: number}) {
+        const {from, range} = arg;
+        const right = Math.min(from.x + range, this.widthM1);
+        const left = Math.max(from.x - range, 0);
+
+        const top = Math.max(from.y - range, 0);
+        const bottom = Math.min(from.y + range, this.heightM1);
+
+        const arr = [];
+        for (let w = left; w <= right; w++) {
+            for (let h = top; h <= bottom; h++) {
+                arr.push({x: w, y:h});
+                console.log(w,h)
+                this.getAt({x: w, y:h}).visibility = TileVisibility.Unknown;
+            }
+        }
+
+        for (const to of arr) {
+            const positions = line({from, to});
+            let currVisibility = 'visible';
+            for (const pos of positions) {
+                const currTile = this.getAt(pos);
+                if (currTile.isSolid() && currVisibility === 'visible') {
+                    currTile.setOnSight();
+                    currVisibility = 'hidden';
+                } else if (currVisibility === 'hidden') {
+                    currTile.setObscurity();
+                } else {
+                    currTile.setOnSight();
+                }
+            }
+        }
     }
 }

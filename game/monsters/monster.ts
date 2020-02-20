@@ -1,9 +1,10 @@
-import { Entity } from "../entitybase/entity";
 import { Killable } from "../entitybase/killable";
 import { Health } from "../entitybase/health";
 import { Weapon } from "../entitybase/weapon";
 import { Armour } from "../entitybase/armour";
 import { Fighter } from "../entitybase/fighter";
+import { Movable } from "../entitybase/movable";
+import { Coordinate } from "../utils/coordinate";
 
 export class Monster implements Movable, Killable, Fighter {
     health: Health;

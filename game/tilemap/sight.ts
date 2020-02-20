@@ -1,4 +1,7 @@
+import { Coordinate } from "../utils/coordinate";
 const bresenham = require('bresenham');
 
-
-console.log(bresenham(0, 0, 5, 3));
+export function line(arg:{from: Coordinate, to: Coordinate}) {
+    const {from, to} = arg;
+    return bresenham(from.x, from.y, to.x, to.y);
+}

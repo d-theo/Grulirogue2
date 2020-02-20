@@ -24,10 +24,13 @@ const atk: GameMessage = {
 }
 let res = game.compact();
 console.log(res.join('\n'));
-let res = game.handleMessage(move);
+res = game.handleMessage(move);
 console.log(res.join('\n'));
 res = game.handleMessage(atk);
 console.log(res.join('\n'));
+
+game.tilemap.computeSight({from: {x: 5, y: 2}, range: 2});
+
 /*res = game.handleMessage(atk);
 res = game.handleMessage(atk);
 console.log(JSON.stringify(res));

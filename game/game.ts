@@ -9,6 +9,8 @@ import { Coordinate } from "./utils/coordinate";
 import { playerAttack } from "./use-cases/playerAttack";
 import { Log } from "./log/log";
 import { throws } from "assert";
+import { cpus } from "os";
+import { TileVisibility } from "./tilemap/tile";
 
 export class Game {
     tilemap: TileMap;
@@ -50,15 +52,24 @@ export class Game {
 
         this.checkNextTurn(result.timeSpent);
 
+        this.tilemap.computeSight({from: this.hero.pos, range:8});
         this.loopNb ++;
         return this.compact();
     }
 
     compact() {
-        const a = Array(this.tilemap.width).fill('-').map(()=>Array(this.tilemap.height).fill('-'));
+        const a = Array(this.tilemap.height).fill('-').map(()=>Array(this.tilemap.width).fill('-'));
         for (let row of this.tilemap.tiles) {
             for (let t of row) {
-                if (t.isSolid()) a[t.pos.y][t.pos.x] = 'x';
+                switch(t.visibility) {
+                    case TileVisibility.Hidden: 
+                        a[t.pos.y][t.pos.x] = '8';
+                        break;
+                    case TileVisibility.OnSight:
+                        a[t.pos.y][t.pos.x] = '-';
+                    case TileVisibility.Far:
+                        a[t.pos.y][t.pos.x] = '@';
+                }
             }
         }
         for (let m of this.monsters.monstersArray()) {

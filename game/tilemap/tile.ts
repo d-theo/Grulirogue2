@@ -14,6 +14,15 @@ export class Tile {
     constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: TileType}) {
         this.pos = {x: arg.x, y: arg.y}
         this.visibility = arg.visibility || TileVisibility.Hidden;
-        this.type = arg.type || TileType.Void;
+        this.type = arg.type || TileType.BlockGrey;
+    }
+    isSolid() {
+        switch(this.type) {
+            case TileType.BlockGrey:
+                return false;
+            case TileType.DoorWood:
+            case TileType.WallGrey:
+                return true;
+        }
     }
 }

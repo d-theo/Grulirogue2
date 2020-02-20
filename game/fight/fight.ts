@@ -6,6 +6,6 @@ export class Attack {
     do() {
         const weapon = this.attacker.weapon;
         const armour = this.target.armour;
-        this.target.health.take(weapon.baseDamage.pick() - armour.absorbBase);
+        return weapon.baseDamage.pick() - armour.absorbBase;
     }
 }

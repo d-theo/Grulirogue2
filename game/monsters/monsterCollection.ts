@@ -5,7 +5,11 @@ export class MonsterCollection {
     monsters: Monster[];
 
     constructor() {
-        this.monsters = [new Monster()];
+        this.monsters = [new Monster({})];
+    }
+
+    monstersArray() {
+        return this.monsters;
     }
 
     getAt(pos: Coordinate) {

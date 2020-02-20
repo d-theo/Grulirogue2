@@ -6,5 +6,6 @@ export enum MessageResponseStatus {
 export interface MessageResponse {
     timeSpent: number;
     status: MessageResponseStatus;
-    msg?: string;
+    data?: any;
+    events?: any[];
 }

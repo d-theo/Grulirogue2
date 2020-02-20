@@ -3,9 +3,12 @@ import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
 import { playerMove } from "./use-cases/playerMove";
 import { GameMessage } from "./events/messages";
-import { GameEventType } from "./events/events";
-import { MessageResponse } from "./utils/types";
+import { GameEventType, InternalEventType, GameEvent } from "./events/events";
+import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
+import { playerAttack } from "./use-cases/playerAttack";
+import { Log } from "./log/log";
+import { throws } from "assert";
 
 export class Game {
     tilemap: TileMap;
@@ -13,36 +16,81 @@ export class Game {
     monsters: MonsterCollection;
     loopNb: number;
     currentTurn: number;
+    log: Log;
     constructor() {
         this.tilemap = new TileMap();
         this.hero = new Hero();
         this.monsters = new MonsterCollection();
         this.loopNb = 0;
         this.currentTurn = 0;
+        this.log = new Log();
     }
     handleMessage(msg: GameMessage) {
+        this.log.archive();
         let result: MessageResponse;
+        this.log.add(msg.type);
         switch(msg.type) {
-            case GameEventType.PlayerMove: 
+            case GameEventType.PlayerMove:
                 result = playerMove(this, msg);
+                break;
+            case GameEventType.PlayerAttack: 
+                result = playerAttack(this, msg);
                 break;
             default: throw new Error('not implemented code: '+JSON.stringify(msg));
         }
+
+        if (result.status === MessageResponseStatus.NotAllowed || result.status === MessageResponseStatus.Error) {
+            this.log.add('nothing');
+            return this.compact();
+        }
+
+        if (result.events && result.events.length > 0) {
+            this.resolveEvents(result.events);
+        }
+
         this.checkNextTurn(result.timeSpent);
 
         this.loopNb ++;
-        return this;
+        return this.compact();
+    }
+
+    compact() {
+        const a = Array(this.tilemap.width).fill('-').map(()=>Array(this.tilemap.height).fill('-'));
+        for (let row of this.tilemap.tiles) {
+            for (let t of row) {
+                if (t.isSolid()) a[t.pos.y][t.pos.x] = 'x';
+            }
+        }
+        for (let m of this.monsters.monstersArray()) {
+            a[m.pos.y][m.pos.x] = 'm';
+        }
+        a[this.hero.pos.y][this.hero.pos.x] = "h";
+        console.log(this.log.currentLog);
+        return a;
     }
 
     checkNextTurn(timeSpent: number) {
         this.currentTurn += timeSpent;
-        if (this.currentTurn >= 100) {
+        if (this.currentTurn >= 1) {
             this.currentTurn = 0;
             return 1;
         } else {
             return 0;
         }
     }
+
+    resolveEvents(events: GameEvent[]) {
+        if (events.length === 0) return;
+        const nextEvent = events.shift() as GameEvent;
+        this.log.add(nextEvent.type);
+        switch(nextEvent.type) {
+            case InternalEventType.MonsterDead:
+                break;
+            default: throw new Error('not implemented code: '+JSON.stringify(nextEvent));
+        }
+    }
+
+
     getAttackable(pos: Coordinate) {
         return this.monsters.getAt(pos);
     }

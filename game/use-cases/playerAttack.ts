@@ -7,6 +7,14 @@ import { InternalEventType } from "../events/events";
 
 export function playerAttack(game: Game, message: PlayerAttackMessage): MessageResponse {
     const attacked = game.getAttackable(message.data.to);
+
+    if (!game.tilemap.hasVisibility({from: game.hero.pos, to: attacked.pos})) {
+        return {
+            timeSpent: 0,
+            status: MessageResponseStatus.NotAllowed,
+        };
+    }
+
     const damages = new Attack(game.hero, attacked).do();
     const healthReport = attacked.health.take(damages);
     const evts = [];

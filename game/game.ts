@@ -67,9 +67,12 @@ export class Game {
                         break;
                     case TileVisibility.OnSight:
                         a[t.pos.y][t.pos.x] = '-';
+                        break;
                     case TileVisibility.Far:
                         a[t.pos.y][t.pos.x] = '@';
+                        break;
                 }
+                if (t.isSolid()) a[t.pos.y][t.pos.x] = 'x'; 
             }
         }
         for (let m of this.monsters.monstersArray()) {

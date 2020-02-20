@@ -22,6 +22,8 @@ export class TileMap {
         }
         this.tiles = tiles;
         this.getAt({x:1, y:1}).type = TileType.WallGrey;
+        this.getAt({x:2, y:1}).type = TileType.WallGrey;
+        this.getAt({x:3, y:1}).type = TileType.WallGrey;
         this.heightM1 = this.height - 1;
         this.widthM1 = this.width - 1;
     }
@@ -34,7 +36,19 @@ export class TileMap {
         }
     }
     getAt(pos: Coordinate): Tile {
-        return this.tiles[pos.x][pos.y];
+        return this.tiles[pos.y][pos.x];
+    }
+
+    hasVisibility(arg:{from: Coordinate, to:Coordinate}) {
+        const {from, to} = arg;
+        const positions = line({from, to});
+        for (const pos of positions) {
+            const currTile = this.getAt(pos);
+            if (currTile.isSolid()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     computeSight(arg: {from: Coordinate, range: number}) {
@@ -44,12 +58,10 @@ export class TileMap {
 
         const top = Math.max(from.y - range, 0);
         const bottom = Math.min(from.y + range, this.heightM1);
-
         const arr = [];
-        for (let w = left; w <= right; w++) {
-            for (let h = top; h <= bottom; h++) {
+        for (let h = top; h <= bottom; h++) {
+            for (let w = left; w <= right; w++) {
                 arr.push({x: w, y:h});
-                console.log(w,h)
                 this.getAt({x: w, y:h}).visibility = TileVisibility.Unknown;
             }
         }

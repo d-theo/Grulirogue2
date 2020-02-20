@@ -4,12 +4,21 @@ import { GameMessage } from "./events/messages";
 
 
 const game = new Game();
-const move: GameMessage = {
+const move1: GameMessage = {
     type: GameEventType.PlayerMove,
     data: {
         to: {
-            x: 0,
+            x: 4,
             y: 1
+        }
+    }
+};
+const move2: GameMessage = {
+    type: GameEventType.PlayerMove,
+    data: {
+        to: {
+            x: 4,
+            y: 2
         }
     }
 };
@@ -17,22 +26,19 @@ const atk: GameMessage = {
     type: GameEventType.PlayerAttack,
     data: {
         to: {
-            x: 0,
-            y: 0
+            x: 2,
+            y: 2
         }
     }
 }
+
+const moves = [
+    move1,move2,atk
+]
+
 let res = game.compact();
 console.log(res.join('\n'));
-res = game.handleMessage(move);
-console.log(res.join('\n'));
-res = game.handleMessage(atk);
-console.log(res.join('\n'));
-
-game.tilemap.computeSight({from: {x: 5, y: 2}, range: 2});
-
-/*res = game.handleMessage(atk);
-res = game.handleMessage(atk);
-console.log(JSON.stringify(res));
-res = game.handleMessage(atk);
-console.log(JSON.stringify(res));*/
+for (let m of moves) {
+    res = game.handleMessage(m);
+    console.log(res.join('\n'));
+}

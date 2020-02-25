@@ -1,3 +1,11 @@
+const Params = {
+    Area: 50000,
+    Fuzz: 0.25,
+    MinClusterSize: 2,
+    Width: 800,
+    Height: 600,
+    MinSubSize: 6
+}
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 ctx.canvas.width  = 1000;
@@ -18,8 +26,12 @@ function insideRect(rect) {
     };
 }
 
-function fillRect(rect) {
-    ctx.fillStyle = '#'+Math.random().toString(16).substr(2,6);
+function fillRect(rect, color) {
+    if (color) {
+        ctx.fillStyle = color;
+    } else {
+        ctx.fillStyle = '#'+Math.random().toString(16).substr(2,6);
+    }
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 }
 
@@ -34,18 +46,19 @@ function createNode(depth, rect) {
         item: 'none',
         doorsIds: [],
         buttonIds: [],
-        rect: null
+        rect: null,
+        adjacentRooms: []
     };
-    if (area > 90000) {
+    if (area > Params.Area) {
         if (depth % 2 === 0) {
             var w = rect.width;
-            var fuzz = Math.floor(0.25 * w);
+            var fuzz = Math.floor(Params.Fuzz * w);
             var cut = w/2 + rand(-fuzz,fuzz);
             left = createNode(depth+1, {x:rect.x, y:rect.y, width: cut, height: rect.height});
             right = createNode(depth+1, {x:cut+rect.x, y:rect.y, width: w-cut, height: rect.height});
         } else {
             var h = rect.height;
-            var fuzz = Math.floor(0.25 * h);
+            var fuzz = Math.floor(Params.Fuzz * h);
             var cut = h/2 + rand(-fuzz,fuzz);
             left = createNode(depth+1, {x:rect.x, y:rect.y, width: rect.width, height: cut});
             right = createNode(depth+1, {x:rect.x, y:cut+rect.y, width:rect.width, height: h-cut});
@@ -55,28 +68,6 @@ function createNode(depth, rect) {
         fillRect(gameMetadata.rect);
     }
 
-    function joinChidren() {
-        if (left && right) {
-            var rcx = Math.floor(right.rect.width / 2 + right.rect.x);
-            var rcy = Math.floor(right.rect.height / 2 + right.rect.y);
-            var lcx = Math.floor(left.rect.width / 2 + left.rect.x);
-            var lcy = Math.floor(left.rect.height / 2 + left.rect.y);
-            fillRect({
-                x:rcx,
-                y:rcy,
-                width: rcx-lcx,
-                height: rcy-lcy,
-            });
-            ctx.beginPath();
-            ctx.moveTo(rcx, rcy);
-            ctx.lineTo(lcx, lcy);
-            ctx.closePath();
-            ctx.stroke();
-            left.joinChidren();
-            right.joinChidren();
-        }
-    }
-
     return {
         left,
         right,
@@ -84,7 +75,6 @@ function createNode(depth, rect) {
         depth,
         rect,
         gameMetadata,
-        joinChidren
     };
 }
 
@@ -108,7 +98,10 @@ function getChildrenOfBinaryGraph(root) {
 function sliceIntoSubArray(array, minSize) {
     var s = rand(minSize, array.length - minSize - 1);
     var first = array.slice(0, s);
-    var last = array.slice(s, array.lenght);
+    var last = array.slice(s, array.length);
+    if(first.length === 1 || last.length === 1) {
+        console.log("error")
+    }
     return [first,last];
 }
 
@@ -116,10 +109,10 @@ function subMapping(rooms) {
     var left;
     var right;
     var isLeaf = false;
-    if (rooms.lenght <= 4) {
-        var sliced = sliceIntoSubArray(nodes, 2);
-        right = createMapNode(sliced[0]);
-        left = createMapNode(sliced[1]);
+    if (rooms.length > Params.MinSubSize) {
+        var sliced = sliceIntoSubArray(rooms, Params.MinClusterSize);
+        right = subMapping(sliced[0]);
+        left = subMapping(sliced[1]);
     } else {
         isLeaf = true;
     }
@@ -131,9 +124,68 @@ function subMapping(rooms) {
     }
 }
 
-var root = createNode(0, {x:10, y:10, width:800, height:600});
+function linkRooms(r1, r2) {
+    r1.gameMetadata.adjacentRooms.push(r2);
+    r2.gameMetadata.adjacentRooms.push(r1);
+}
+
+function createConnectedGraph(rooms) {
+    var c = ctx.fillStyle = '#'+Math.random().toString(16).substr(2,6);
+    for (var i = 0; i < rooms.length-1; i++) {
+        linkRooms(rooms[i], rooms[i+1])
+        
+        fillRect(rooms[i].gameMetadata.rect, c);
+        fillRect(rooms[i+1].gameMetadata.rect, c);
+    }
+}
+function createRoomGraph(rootSubMap) {
+    if (rootSubMap.isLeaf) {
+        createConnectedGraph(rootSubMap.rooms);
+    } else {
+        var roomsLeft = rootSubMap.left.rooms;
+        var roomsRight = rootSubMap.right.rooms;
+        var roomLeftIdx = rand(0, roomsLeft.length-1);
+        var roomRightIdx = rand(0, roomsRight.length-1);
+        linkRooms(roomsLeft[roomLeftIdx], roomsRight[roomRightIdx]);
+        
+        createRoomGraph(rootSubMap.left);
+        createRoomGraph(rootSubMap.right);
+    }
+}
+
+var root = createNode(0, {x:10, y:10, width:Params.Width, height:Params.Height});
 var rooms = getChildrenOfBinaryGraph(root);
 var roomsLength = rooms.length;
 rooms[0].gameMetadata.isEntry = true;
 rooms[roomsLength-1].gameMetadata.isExit = true;
-var gameStructure = subMapping(rooms);
+var rootSubMap = subMapping(rooms);
+createRoomGraph(rootSubMap);
+paintMap(rooms);
+
+function middleOfRect(rect) {
+    return {
+        x: Math.floor(rect.width/2 + rect.x),
+        y: Math.floor(rect.height/2 + rect.y)
+    };
+}
+
+function paintMap(rooms) {
+    for (var x = 0; x < rooms.length; x++) {
+        if (rooms[x].gameMetadata.isEntry) {
+            fillRect(insideRect(rooms[x].gameMetadata.rect), 'red');
+        } else if (rooms[x].gameMetadata.isExit) {
+            fillRect(insideRect(rooms[x].gameMetadata.rect),'blue');
+        }
+    }
+    for (var x = 0; x < rooms.length; x++) {
+        var adjRooms = rooms[x].gameMetadata.adjacentRooms;
+        var center = middleOfRect(rooms[x].gameMetadata.rect);
+        for (var y = 0; y < adjRooms.length; y++) {
+            var _center = middleOfRect(adjRooms[y].gameMetadata.rect);
+            ctx.beginPath();
+            ctx.moveTo(_center.x, _center.y);
+            ctx.lineTo(center.x, center.y);
+            ctx.stroke();
+        }
+    }
+}

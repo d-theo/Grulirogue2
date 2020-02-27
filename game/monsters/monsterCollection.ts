@@ -15,4 +15,10 @@ export class MonsterCollection {
     getAt(pos: Coordinate) {
         return this.monsters[0];
     }
+
+    play() {
+        for (const m of this.monsters) {
+            m.play();
+        }
+    }
 }

@@ -1,0 +1,38 @@
+lootTypeTable [
+    'armour_cloth',
+    'armour_leather',
+    'armour_iron',
+    'ring',
+    'belt',
+    'earing',
+    'bracelet',
+    'necklace',
+    'hemlet',
+    'knife',
+    'boots',
+    'pants',
+    'dynamite',
+]
+
+effects [
+    'blind',
+    'stun',
+    'constitution',
+    'precision',
+    'force',
+    'stupidity',
+    'weakness',
+    'hole',
+    'filling',
+    'invisibility',
+    'fire',
+    'ice',
+    'poison',
+    'teleportation',
+    'swap',
+    'summoning',
+    'haste',
+    'bleed',
+    'experience',
+    'explosive'
+]

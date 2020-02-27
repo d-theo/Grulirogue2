@@ -11,6 +11,9 @@ export class Monster implements Movable, Killable, Fighter {
     armour: Armour;
     weapon: Weapon;
     pos: Coordinate;
+    xp: number;
+    behaviors: Map<string, Function> = new Map();
+
     constructor(arg: {x?: number, y?: number}) {
         this.pos = {
             x: arg.x || 2,
@@ -19,5 +22,10 @@ export class Monster implements Movable, Killable, Fighter {
         this.health = new Health(10);
         this.armour = new Armour({absorbBase: 1});
         this.weapon = new Weapon({});
+        this.xp = 100;
+    }
+
+    play() {
+
     }
 }

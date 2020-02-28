@@ -7,6 +7,7 @@ export enum GameEventType {
 
 export enum InternalEventType {
     MonsterDead = 'monsterDead',
+    HeroDead = 'HeroDead'
 }
 
 export type GameEvent = MonterDeadEvent;

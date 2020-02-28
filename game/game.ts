@@ -33,10 +33,19 @@ export class Game {
         this.log.add(msg.type);
         switch(msg.type) {
             case GameEventType.PlayerMove:
-                result = playerMove(this, msg);
+                result = playerMove({
+                    monsters: this.monsters,
+                    pos: msg.data.to,
+                    hero: this.hero,
+                    tilemap: this.tilemap
+                });
                 break;
             case GameEventType.PlayerAttack: 
-                result = playerAttack(this, msg);
+                result = playerAttack({
+                    attacked: this.getAttackable(msg.data.to),
+                    hero: this.hero,
+                    tilemap: this.tilemap
+                });
                 break;
             default: throw new Error('not implemented code: '+JSON.stringify(msg));
         }

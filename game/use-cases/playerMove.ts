@@ -1,17 +1,20 @@
 import { Game } from "../game";
 import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder} from "./preconditions/moveAllowed";
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
-import { PlayerMoveMessage } from "../events/messages";
+import { MonsterCollection } from "../monsters/monsterCollection";
+import { Hero } from "../hero/hero";
+import { TileMap } from "../tilemap/tilemap";
+import { Coordinate } from "../utils/coordinate";
 
-export function playerMove(game: Game, message: PlayerMoveMessage): MessageResponse {
-    const pos = message.data.to;
+export function playerMove(args: {pos: Coordinate, monsters: MonsterCollection, hero: Hero, tilemap: TileMap}): MessageResponse {
+    const {hero, pos, tilemap, monsters} = args;
     if (
-        isTileEmpty(pos, [game.monsters.getAt(pos)])
-        && isSurroundingClear(pos, game.tilemap)
-        && isMovingOnlyOneCase(game.hero.pos, pos)
-        && isInsideMapBorder(pos, game.tilemap.getBorders())
+        isTileEmpty(pos, [monsters.getAt(pos)])
+        && isSurroundingClear(pos, tilemap)
+        && isMovingOnlyOneCase(hero.pos, pos)
+        && isInsideMapBorder(pos, tilemap.getBorders())
     ) {
-        game.hero.pos = message.data.to;
+        hero.pos = pos;
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,

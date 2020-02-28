@@ -34,5 +34,7 @@ effects [
     'haste',
     'bleed',
     'experience',
-    'explosive'
+    'explosive',
+    'weapon_enchant',
+    'armour_enchant'
 ]

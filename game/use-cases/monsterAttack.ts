@@ -4,28 +4,20 @@ import { HealthStatus } from "../entitybase/health";
 import { InternalEventType } from "../events/events";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
-import { Killable } from "../entitybase/killable";
-import { Movable } from "../entitybase/movable";
+import { Monster } from "../monsters/monster";
 
-export function playerAttack(args: {hero: Hero, attacked: Killable&Movable, tilemap: TileMap}): MessageResponse {
-    const {hero, attacked, tilemap} = args; 
+export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResponse {
+    const {hero, monster} = args; 
 
-    if (!tilemap.hasVisibility({from: hero.pos, to: attacked.pos})) {
-        return {
-            timeSpent: 0,
-            status: MessageResponseStatus.NotAllowed,
-        };
-    }
-
-    const damages = new Attack(hero, attacked).do();
-    const healthReport = attacked.health.take(damages);
+    const damages = new Attack(monster, hero).do();
+    const healthReport = hero.health.take(damages);
     const evts = [];
 
     if (healthReport.status === HealthStatus.Dead) {
         evts.push({
-            type: InternalEventType.MonsterDead,
+            type: InternalEventType.HeroDead,
             data: {
-                target: attacked
+                target: hero
             }
         });
     }
@@ -36,7 +28,7 @@ export function playerAttack(args: {hero: Hero, attacked: Killable&Movable, tile
         data: {
             report: {
                 healthReport: healthReport,
-                target: attacked
+                target: hero
             }
         },
         events: evts

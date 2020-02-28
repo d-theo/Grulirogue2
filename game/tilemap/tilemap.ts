@@ -51,6 +51,40 @@ export class TileMap {
         return true;
     }
 
+    subView(arg: {from: Coordinate, range: number}) {
+        const {from, range} = arg;
+        const right = Math.min(from.x + range, this.widthM1);
+        const left = Math.max(from.x - range, 0);
+
+        const top = Math.max(from.y - range, 0);
+        const bottom = Math.min(from.y + range, this.heightM1);
+        const arr = [];
+        for (let h = top; h <= bottom; h++) {
+            for (let w = left; w <= right; w++) {
+                arr.push({x: w, y:h});
+            }
+        }
+        return arr;
+    }
+
+    subTitles(arg: {from: Coordinate, range: number}) {
+        const {from, range} = arg;
+        const right = Math.min(from.x + range, this.widthM1);
+        const left = Math.max(from.x - range, 0);
+
+        const top = Math.max(from.y - range, 0);
+        const bottom = Math.min(from.y + range, this.heightM1);
+        const arr = [];
+        for (let h = top; h <= bottom; h++) {
+            const line = [];
+            for (let w = left; w <= right; w++) {
+                line.push(this.getAt({x: w, y:h}));
+            }
+            arr.push(line);
+        }
+        return arr;
+    }
+
     computeSight(arg: {from: Coordinate, range: number}) {
         const {from, range} = arg;
         const right = Math.min(from.x + range, this.widthM1);

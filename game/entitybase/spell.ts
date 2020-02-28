@@ -11,7 +11,16 @@ export class Spell {
     ) {}
 
     protected monsterAt(pos: Coordinate) {
-        return this.monsters.getAt(pos)
+        return this.monsters.getAt(pos);
+    }
+    protected getMapWidth() {
+        return this.tilemap.widthM1;
+    }
+    protected getMapHeight() {
+        return this.tilemap.heightM1;
+    }
+    protected tileIsEmpty(pos: Coordinate) {
+        return this.tilemap.getAt(pos).isEmpty();
     }
     protected getHero() {
         return this.hero;

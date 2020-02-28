@@ -1,11 +1,15 @@
 import {Monster} from './monster';
-import { Coordinate } from '../utils/coordinate';
+import { Coordinate, equalsCoordinate } from '../utils/coordinate';
+import { Behavior } from './ai';
 
 export class MonsterCollection {
     monsters: Monster[];
-
-    constructor() {
-        this.monsters = [new Monster({})];
+    behaviors: Map<string, Behavior>;
+    constructor(behaviors: Map<string, Behavior>) {
+        this.monsters = [
+            new Monster({behavior: behaviors.get('random') as Behavior})
+        ];
+        this.behaviors = behaviors;
     }
 
     monstersArray() {
@@ -13,7 +17,12 @@ export class MonsterCollection {
     }
 
     getAt(pos: Coordinate) {
-        return this.monsters[0];
+        const m = this.monsters.find(m => equalsCoordinate(m.pos, pos));
+        if  (!m) {
+            return null;
+        } else {
+            return m;
+        }
     }
 
     play() {

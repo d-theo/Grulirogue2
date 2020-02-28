@@ -11,6 +11,7 @@ import { Log } from "./log/log";
 import { throws } from "assert";
 import { cpus } from "os";
 import { TileVisibility } from "./tilemap/tile";
+import { AI } from "./monsters/ai";
 
 export class Game {
     tilemap: TileMap;
@@ -22,10 +23,11 @@ export class Game {
     constructor() {
         this.tilemap = new TileMap();
         this.hero = new Hero();
-        this.monsters = new MonsterCollection();
         this.loopNb = 0;
         this.currentTurn = 0;
         this.log = new Log();
+        const behaviors = AI(this);
+        this.monsters = new MonsterCollection(behaviors);
     }
     handleMessage(msg: GameMessage) {
         this.log.archive();
@@ -66,6 +68,34 @@ export class Game {
         return this.compact();
     }
 
+    checkNextTurn(timeSpent: number) {
+        this.currentTurn += timeSpent;
+        if (this.currentTurn >= 1) {
+            this.currentTurn = 0;
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    resolveEvents(events: GameEvent[]) {
+        if (events.length === 0) return;
+        const nextEvent = events.shift() as GameEvent;
+        this.log.add(nextEvent.type);
+        switch(nextEvent.type) {
+            case InternalEventType.MonsterDead:
+                break;
+            default: throw new Error('not implemented code: '+JSON.stringify(nextEvent));
+        }
+        this.resolveEvents(events);
+    }
+
+
+    getAttackable(pos: Coordinate) {
+        return this.monsters.getAt(pos);
+    }
+
+
     compact() {
         const a = Array(this.tilemap.height).fill('-').map(()=>Array(this.tilemap.width).fill('-'));
         for (let row of this.tilemap.tiles) {
@@ -90,31 +120,5 @@ export class Game {
         a[this.hero.pos.y][this.hero.pos.x] = "h";
         console.log(this.log.currentLog);
         return a;
-    }
-
-    checkNextTurn(timeSpent: number) {
-        this.currentTurn += timeSpent;
-        if (this.currentTurn >= 1) {
-            this.currentTurn = 0;
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    resolveEvents(events: GameEvent[]) {
-        if (events.length === 0) return;
-        const nextEvent = events.shift() as GameEvent;
-        this.log.add(nextEvent.type);
-        switch(nextEvent.type) {
-            case InternalEventType.MonsterDead:
-                break;
-            default: throw new Error('not implemented code: '+JSON.stringify(nextEvent));
-        }
-    }
-
-
-    getAttackable(pos: Coordinate) {
-        return this.monsters.getAt(pos);
     }
 }

@@ -5,7 +5,7 @@ export class Health {
     }
     take(hp: number): HealthReport {
         const oldHp = this.currentHp;
-        this.currentHp = Math.min(this.currentHp+hp, this.baseHp);
+        this.currentHp = Math.min(this.currentHp-hp, this.baseHp);
         if (this.currentHp <= 0) {
             return {
                 status: HealthStatus.Dead

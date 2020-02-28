@@ -7,10 +7,9 @@ import { TileMap } from "../tilemap/tilemap";
 import { Killable } from "../entitybase/killable";
 import { Movable } from "../entitybase/movable";
 
-export function playerAttack(args: {hero: Hero, attacked: Killable&Movable, tilemap: TileMap}): MessageResponse {
+export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 
-
-    if (!tilemap.hasVisibility({from: hero.pos, to: attacked.pos})) {
+    if (attacked === null || !tilemap.hasVisibility({from: hero.pos, to: attacked.pos})) {
         return {
             timeSpent: 0,
             status: MessageResponseStatus.NotAllowed,

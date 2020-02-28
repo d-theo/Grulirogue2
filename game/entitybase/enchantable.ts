@@ -4,4 +4,5 @@ export interface Enchantable {
 export class EnchantTable {
     stuned = false;
     bleeding = false;
+    invisibility = false;
 }

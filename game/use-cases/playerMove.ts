@@ -9,7 +9,7 @@ import { Coordinate } from "../utils/coordinate";
 export function playerMove(args: {pos: Coordinate, monsters: MonsterCollection, hero: Hero, tilemap: TileMap}): MessageResponse {
     const {hero, pos, tilemap, monsters} = args;
     if (
-        isTileEmpty(pos, [monsters.getAt(pos)])
+        isTileEmpty(pos, monsters.monstersArray())
         && isSurroundingClear(pos, tilemap)
         && isMovingOnlyOneCase(hero.pos, pos)
         && isInsideMapBorder(pos, tilemap.getBorders())

@@ -9,6 +9,7 @@ import { Monster } from "../monsters/monster";
 import { Buffs } from "../entitybase/buffable";
 import { BuffEffect } from "../entitybase/effect";
 import { EnchantTable, Enchantable } from "../entitybase/enchantable";
+import { Inventory } from "./inventory";
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     health: Health;
@@ -18,6 +19,8 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     enchants: EnchantTable = new EnchantTable();
     xp: number;
     buffs: Buffs = new Buffs();
+    level: number = 1;
+    inventory = new Inventory();
     constructor() {
         this.health = new Health(20);
         this.armour = new Armour({absord: 3});

@@ -8,6 +8,7 @@ import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
 import { BuffEffect } from "../entitybase/effect";
 import { Enchantable, EnchantTable } from "../entitybase/enchantable";
+import { Behavior } from "./ai";
 
 export class Monster implements Movable, Killable, Fighter, Enchantable {
     health: Health;
@@ -15,10 +16,11 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     weapon: Weapon;
     pos: Coordinate;
     xp: number;
-    behaviors: Map<string, Function> = new Map();
+    behavior: Behavior;
     buffs: Buffs;
     enchants = new EnchantTable();
-    constructor(arg: {x?: number, y?: number}) {
+    level: number = 1;
+    constructor(arg: {x?: number, y?: number, behavior: Behavior}) {
         this.pos = {
             x: arg.x || 2,
             y: arg.y || 2,
@@ -28,8 +30,12 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.armour = new Armour({absorbBase: 1});
         this.weapon = new Weapon({});
         this.xp = 100;
+        this.behavior = arg.behavior;
     }
     addBuff(buff: BuffEffect) {
         this.buffs.addBuff(buff);
+    }
+    play() {
+        this.behavior(this);
     }
 }

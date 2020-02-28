@@ -26,6 +26,9 @@ export class Tile {
                 return true;
         }
     }
+    isEmpty() {
+        return this.type === TileType.BlockGrey;
+    }
     setObscurity() {
         if (this.viewed) {
             this.visibility = TileVisibility.Far;

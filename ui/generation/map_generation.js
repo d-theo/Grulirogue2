@@ -182,10 +182,50 @@ function paintMap(rooms) {
         var center = middleOfRect(rooms[x].gameMetadata.rect);
         for (var y = 0; y < adjRooms.length; y++) {
             var _center = middleOfRect(adjRooms[y].gameMetadata.rect);
+            const d = getSide(rooms[x].gameMetadata.rect, adjRooms[y].gameMetadata.rect).side;
             ctx.beginPath();
             ctx.moveTo(_center.x, _center.y);
             ctx.lineTo(center.x, center.y);
+            if(d === 'up' || d==='down') {
+                ctx.strokeStyle = '#EB9401';
+            } else {
+                ctx.strokeStyle = '#000000';
+            }
             ctx.stroke();
         }
+    }
+}
+
+function getSide(rect1, rect2) {
+    const positions1 = getMiddlesOfRect(rect1);
+    const positions2 = middleOfRect(rect2);
+
+    return [
+        {side: 'up', value: distanceBetween(positions1.up, positions2)},
+        {side: 'down', value: distanceBetween(positions1.down, positions2)},
+        {side: 'left', value: distanceBetween(positions1.left, positions2)},
+        {side: 'right', value: distanceBetween(positions1.right, positions2)}
+    ].reduce(reduceMin, {value: Infinity});
+}
+
+function reduceMin(obj, obj2) {
+    if (obj.value > obj2.value) {
+        return obj2;
+    } else {
+        return obj;
+    }
+}
+
+function distanceBetween(p1,p2) {
+    const dist = Math.sqrt( ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y - p2.y)) );
+    return dist;
+}
+
+function getMiddlesOfRect(rect) {
+    return {
+        up: {x: (rect.x + rect.width) / 2, y: rect.y},
+        right: {x: (rect.x + rect.width), y: (rect.y + rect.height) / 2},
+        down: {x: (rect.x + rect.width) / 2, y: rect.y + rect.height},
+        left: {x: rect.x, y: (rect.y + rect.height) / 2}
     }
 }

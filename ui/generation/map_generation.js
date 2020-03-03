@@ -7,22 +7,65 @@ const Params = {
     MinSubSize: 6 // subdivise into subcluster if cluster is bigger than MinSubSize
 }
 
+function createMapPair() {
+    o = {};
+    function set(a,b) {
+        o[`${a}${b}`] = true;
+        o[`${b}${a}`] = true;
+    }
+    function has(a,b) {
+        return o[`${b}${a}`] === true;
+    }
+    return {
+        set,
+        has
+    }
+}
+
 function createGraph () {
     let rooms = [];
     let links = [];
     let vertices = [];
+    let doors = [];
     function setRooms(_rooms) {
-        rooms = _rooms;
-    }
-    function addLinkBetweenSections(room1, room2) {
-        links.push({from: room1, to:room2});
-    }
-    function finalize() {
-        links = links.map(link => {
+        const p = createMapPair();
+        for (let r of _rooms) {
+            for (let adj of r.gameMetadata.adjacentRooms) {
+                const g1 = r.gameMetadata.groupId;
+                const g2 = adj.gameMetadata.groupId;
+                if (g1 !== g2) {
+                    if (p.has(g1, g2)) continue;
+                    links.push({
+                        from: g1, 
+                        to: g2
+                    });
+                    p.set(g1, g2);
+                }
+            }
+        }
+        rooms = _rooms.map(m => {
             return {
-                from: link.from.gameMetadata.groupId,
-                to:   link.to.gameMetadata.groupId,
-            };
+                roomId:m.gameMetadata.roomId,
+                groupId:m.gameMetadata.groupId,
+                rect: m.gameMetadata.rect,
+                isEntry: m.gameMetadata.isEntry,
+                isExit: m.gameMetadata.isExit
+            }
+        });
+    }
+    function addVertex(roomId1, roomId2, segs) {
+        vertices.push({
+            from: roomId1,
+            to: roomId2,
+            segments: segs
+        });
+    }
+    function addDoor(roomId, zoneId, position, isOpen) {
+        doors.push({
+            roomId,
+            position,
+            isLocked: !isOpen,
+            zoneId
         });
     }
     function getLinks() {
@@ -31,17 +74,27 @@ function createGraph () {
     function getRooms() {
         return rooms;
     }
+    function getVertices() {
+        return vertices;
+    }
+    function getDoors() {
+        return doors;
+    }
     function reset() {
         rooms = [];
         links = [];
+        doors = [];
+        vertices = [];
     }
     return {
         getLinks,
         getRooms,
-        addLinkBetweenSections,
+        getDoors,
+        getVertices,
+        addDoor,
         setRooms,
+        addVertex,
         reset,
-        finalize
     }
 }
 
@@ -52,7 +105,18 @@ const ctx = canvas.getContext('2d');
 ctx.canvas.width  = 1000;
 ctx.canvas.height = 1000;
 generate();
-G.finalize();
+console.log(G.getRooms());
+console.log(G.getVertices());
+console.log(G.getDoors());
+console.log(G.getLinks());
+
+function createVertex(from, to, lines) {
+    return {
+        from: from,
+        to: to,
+        lines: lines
+    }
+}
 
 function createNode(depth, rect) {
     var left = null;
@@ -172,9 +236,6 @@ function createRoomGraph(rootSubMap) {
         //var roomRightIdx = rand(0, roomsRight.length-1);
         var roomRightIdx = 0;
         linkRooms(roomsLeft[roomLeftIdx], roomsRight[roomRightIdx]);
-
-        G.addLinkBetweenSections(roomsLeft[roomLeftIdx], roomsRight[roomRightIdx]);
-
         createRoomGraph(rootSubMap.left);
         createRoomGraph(rootSubMap.right);
     }
@@ -196,6 +257,7 @@ function generate() {
             rooms[roomsLength-1].gameMetadata.isExit = true;
             var rootSubMap = subMapping(rooms);
             createRoomGraph(rootSubMap);
+            G.setRooms(rooms);
             paintMap(rooms);
             ok = true;
         } catch(e) {
@@ -226,8 +288,9 @@ function paintMap(rooms) {
             if(pairs[`${roomData.roomId}${adjRooms[y].gameMetadata.roomId}`]) continue;
             pairs[`${roomData.roomId}${adjRooms[y].gameMetadata.roomId}`] = true;
             pairs[`${adjRooms[y].gameMetadata.roomId}${roomData.roomId}`] = true;
+
             var _center = middleOfRect(adjRooms[y].gameMetadata.rect);
-            var middles = getMiddlesOfRect(rooms[x].gameMetadata.rect);
+            var middles = getMiddlesOfRect(roomData.rect);
             const direction = getSide(middles, _center).side;
             var id1 = roomData.groupId;
             var id2 = adjRooms[y].gameMetadata.groupId;
@@ -238,74 +301,50 @@ function paintMap(rooms) {
             //traceLine({x: middles.up.x, y:middles.up.y},{x: _center.x, y: _center.y}, 'red')
             switch(direction) {
                 case 'up':
-                    point = middles.up; 
-                    line = {
-                        A: {x: point.x, y:point.y},
-                        B: {x: point.x, y: _center.y}
-                    };
-                    checkValidHall(line, rooms, id1, id2);
-                    traceLine({x: point.x, y:point.y},{x: point.x, y: _center.y});
-                    if (!pointInRect({x:point.x, y:_center.y}, adjRooms[y].gameMetadata.rect)) {
-                        line = {
-                            A: {x:_center.x, y:_center.y},
-                            B: {x: point.x, y: _center.y}
-                        };
-                        checkValidHall(line, rooms, id1, id2);
-                        traceLine({x: point.x, y: _center.y}, {x:_center.x, y:_center.y});
-                    }
-                    break;
                 case 'down':
-                    point = middles.down;
-
+                    point = middles[direction]; 
                     line = {
                         A: {x: point.x, y:point.y},
                         B: {x: point.x, y: _center.y}
                     };
-                    checkValidHall(line, rooms, id1, id2);
+                    checkValidHall(line, rooms, id1, id2, rid1);
                     traceLine({x: point.x, y:point.y},{x: point.x, y: _center.y});
-                    if (!pointInRect({x:point.x, y:_center.y}, adjRooms[y].gameMetadata.rect)) {
+                    if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
+                        const firstSegment = line;
                         line = {
                             A: {x:_center.x, y:_center.y},
                             B: {x: point.x, y: _center.y}
                         };
-                        checkValidHall(line, rooms, id1, id2);
+                        checkValidHall(line, rooms, id1, id2, rid1);
+                        G.addVertex(rid1, rid2, [firstSegment, line]);
                         traceLine({x: point.x, y: _center.y}, {x:_center.x, y:_center.y});
+                    } else {
+                        G.addVertex(rid1, rid2, [line]);
                     }
                     break;
                 case 'right':
-                    point = middles.right;
-                    line = {
-                        A: {x:point.x, y:point.y},
-                        B: {x:_center.x, y:point.y}
-                    }
-                    checkValidHall(line, rooms, id1, id2);
-                    traceLine(line.A,line.B);
-                    if (!pointInRect({x:_center.x, y:point.y}, adjRooms[y].gameMetadata.rect)) {
-                        line = {
-                            A:{x:_center.x, y:point.y},
-                            B:{x:_center.x,y:_center.y}
-                        }
-                        checkValidHall(line, rooms, id1, id2);
-                        traceLine(line.A,line.B);
-                    }
-                    break;
                 case 'left':
-                    point = middles.left;
+                    point = middles[direction];
                     line = {
                         A: {x:point.x, y:point.y},
                         B: {x:_center.x, y:point.y}
                     }
-                    checkValidHall(line, rooms, id1, id2);
+                    checkValidHall(line, rooms, id1, id2, rid1);
                     traceLine(line.A,line.B);
-                    if (!pointInRect({x:_center.x, y:point.y}, adjRooms[y].gameMetadata.rect)) {
+                    if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
+                        const firstSegment = line;
                         line = {
                             A:{x:_center.x, y:point.y},
                             B:{x:_center.x,y:_center.y}
                         }
-                        checkValidHall(line, rooms, id1, id2);
+                        checkValidHall(line, rooms, id1, id2, rid1);
+                        G.addVertex(rid1, rid2, [firstSegment, line]);
                         traceLine(line.A,line.B);
+                    } else {
+                        G.addVertex(rid1, rid2, [line]);
                     }
                     break;
+                
             }
         }
     }
@@ -323,10 +362,11 @@ function checkValidHall(line, rooms, id1, id2) {
                 if (x > 2) throw new Error('nop')
             }
             if (id !== id1 && id !== id2) {
-                traceLine(line.A, line.B, 'red');
+                //traceLine(line.A, line.B, 'red');
                 throw new Error('nop')
             }
             drawCircle(intersec);
+            G.addDoor(r.gameMetadata.roomId, id2, intersec, eqId);
         }
     }
 }

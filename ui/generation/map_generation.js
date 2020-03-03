@@ -1,16 +1,58 @@
 const Params = {
-    Area: 50000,
-    Fuzz: 0.25,
-    MinClusterSize: 2,
+    Area: 50000, // min area of a room
+    Fuzz: 0.25, // room size variation +-
+    MinClusterSize: 2, // minimal cluster of room
     Width: 800,
     Height: 600,
-    MinSubSize: 6
+    MinSubSize: 6 // subdivise into subcluster if cluster is bigger than MinSubSize
 }
+
+function createGraph () {
+    let rooms = [];
+    let links = [];
+    let vertices = [];
+    function setRooms(_rooms) {
+        rooms = _rooms;
+    }
+    function addLinkBetweenSections(room1, room2) {
+        links.push({from: room1, to:room2});
+    }
+    function finalize() {
+        links = links.map(link => {
+            return {
+                from: link.from.gameMetadata.groupId,
+                to:   link.to.gameMetadata.groupId,
+            };
+        });
+    }
+    function getLinks() {
+        return links;
+    }
+    function getRooms() {
+        return rooms;
+    }
+    function reset() {
+        rooms = [];
+        links = [];
+    }
+    return {
+        getLinks,
+        getRooms,
+        addLinkBetweenSections,
+        setRooms,
+        reset,
+        finalize
+    }
+}
+
+let G = createGraph();
 let ROOM_IDX = 0;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 ctx.canvas.width  = 1000;
 ctx.canvas.height = 1000;
+generate();
+G.finalize();
 
 function createNode(depth, rect) {
     var left = null;
@@ -130,12 +172,14 @@ function createRoomGraph(rootSubMap) {
         //var roomRightIdx = rand(0, roomsRight.length-1);
         var roomRightIdx = 0;
         linkRooms(roomsLeft[roomLeftIdx], roomsRight[roomRightIdx]);
-        
+
+        G.addLinkBetweenSections(roomsLeft[roomLeftIdx], roomsRight[roomRightIdx]);
+
         createRoomGraph(rootSubMap.left);
         createRoomGraph(rootSubMap.right);
     }
 }
-generate();
+
 function generate() {
     var ok = false;
     var cpt = 0;
@@ -154,11 +198,11 @@ function generate() {
             createRoomGraph(rootSubMap);
             paintMap(rooms);
             ok = true;
-            console.log(cpt);
         } catch(e) {
             console.log(e)
             cpt ++;
             ctx.clearRect(0, 0, Params.Width*2, Params.Height*2);
+            G.reset();
         }
     }
 }
@@ -187,6 +231,8 @@ function paintMap(rooms) {
             const direction = getSide(middles, _center).side;
             var id1 = roomData.groupId;
             var id2 = adjRooms[y].gameMetadata.groupId;
+            var rid1 = roomData.roomId;
+            var rid2 = adjRooms[y].gameMetadata.roomId;
             var point;
             var line;
             //traceLine({x: middles.up.x, y:middles.up.y},{x: _center.x, y: _center.y}, 'red')
@@ -270,7 +316,8 @@ function checkValidHall(line, rooms, id1, id2) {
     let x = 0;
     for (let r of rooms) {
         var id = r.gameMetadata.groupId;
-        if (lineIntersectRect(line, r.rect)) {
+        var intersec = lineIntersectRect(line, r.gameMetadata.rect);
+        if (intersec) {
             if (!eqId) {
                 x++;
                 if (x > 2) throw new Error('nop')
@@ -279,6 +326,7 @@ function checkValidHall(line, rooms, id1, id2) {
                 traceLine(line.A, line.B, 'red');
                 throw new Error('nop')
             }
+            drawCircle(intersec);
         }
     }
 }
@@ -292,7 +340,11 @@ function getSide(positions1, positions2) {
     ].reduce(reduceMin, {value: Infinity});
 }
 // PAint utils
-
+function drawCircle(pos, color) {
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2, 1);
+    ctx.fill();
+}
 function traceLine(pos1, pos2, color) {
     ctx.beginPath();
     if (color) {
@@ -374,39 +426,8 @@ function lineIntersectRect(line, rect) {
 }
 
 function intersec(pos1, pos2, pos3, pos4) {
-    return intersect(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, pos4.x, pos4.y);
+    return get_line_intersection(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, pos4.x, pos4.y);
 }
-
-// line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
-// Determine the intersection point of two line segments
-// Return FALSE if the lines don't intersect
-function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-    // Check if none of the lines are of length 0
-      if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
-          return false
-      }
-  
-      denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
-  
-    // Lines are parallel
-      if (denominator === 0) {
-          return false
-      }
-  
-      let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
-      let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
-  
-    // is the intersection along the segments
-      if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
-          return false
-      }
-  
-    // Return a object with the x and y coordinates of the intersection
-      let x = x1 + ua * (x2 - x1)
-      let y = y1 + ua * (y2 - y1)
-      
-      return {x, y};
-  }
 
 // utils
 function reduceMin(obj, obj2) {
@@ -418,4 +439,25 @@ function reduceMin(obj, obj2) {
 }
 function rand(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+
+function get_line_intersection(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p3_x, p3_y)
+{
+    var s1_x, s1_y, s2_x, s2_y;
+    s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+    s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
+
+    var s, t;
+    s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+    t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+    {
+        return {
+            x: p0_x + (t * s1_x),
+            y: p0_y + (t * s1_y)
+        };
+    }
+
+    return 0; // No collision
 }

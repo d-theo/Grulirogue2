@@ -1,11 +1,9 @@
+//const d1 = new Date().getTime();
+//const map = generateRLMap();
+//console.log(`generation time ${new Date().getTime() -d1} ms`)
+//paint(map);
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-ctx.canvas.width  = 1000;
-ctx.canvas.height = 1000;
-const d1 = new Date().getTime();
-const map = generateRLMap();
-console.log(`generation time ${new Date().getTime() -d1} ms`)
-paint(map);
 
 function paint(map) {
     const rooms = map.rooms;
@@ -42,8 +40,12 @@ function generateRLMap(Params) {
         MinClusterSize: 2, // minimal cluster of room
         Width: 800,
         Height: 600,
-        MinSubSize: 6 // subdivise into subcluster if cluster is bigger than MinSubSize
+        MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
+        canvasWidth: 1000,
+        canvasHeight: 1000,
     }
+    ctx.canvas.width  = Params.canvasWidth;
+    ctx.canvas.height = Params.canvasHeight;
 
     let G = createGraph();
     let ROOM_IDX = 0;
@@ -130,7 +132,7 @@ function generateRLMap(Params) {
             return doors;
         }
         function reset() {
-            rooms = [];
+            rooms = [];
             links = [];
             doors = [];
             vertices = [];
@@ -173,13 +175,13 @@ function generateRLMap(Params) {
             if (depth % 2 === 0) {
                 var w = rect.width;
                 var fuzz = Math.floor(Params.Fuzz * w);
-                var cut = w/2 + rand(-fuzz,fuzz);
+                var cut = Math.floor(w/2 + rand(-fuzz,fuzz));
                 left = createNode(depth+1, {x:rect.x, y:rect.y, width: cut, height: rect.height});
                 right = createNode(depth+1, {x:cut+rect.x, y:rect.y, width: w-cut, height: rect.height});
             } else {
                 var h = rect.height;
                 var fuzz = Math.floor(Params.Fuzz * h);
-                var cut = h/2 + rand(-fuzz,fuzz);
+                var cut = Math.floor(h/2 + rand(-fuzz,fuzz));
                 left = createNode(depth+1, {x:rect.x, y:rect.y, width: rect.width, height: cut});
                 right = createNode(depth+1, {x:rect.x, y:cut+rect.y, width:rect.width, height: h-cut});
             }
@@ -326,6 +328,8 @@ function generateRLMap(Params) {
                     case 'up':
                     case 'down':
                         point = middles[direction]; 
+                        var X = Math.floor(point.x - _center.x < 0 ? (adjRooms[y].gameMetadata.rect.width/2) : -(adjRooms[y].gameMetadata.rect.width/2))
+                        var Y = Math.floor(point.y - _center.y < 0 ? (adjRooms[y].gameMetadata.rect.height/2) : -(adjRooms[y].gameMetadata.rect.height/2))
                         line = {
                             A: {x: point.x, y:point.y},
                             B: {x: point.x, y: _center.y}
@@ -334,18 +338,22 @@ function generateRLMap(Params) {
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
                             const firstSegment = line;
                             line = {
-                                A: {x:_center.x, y:_center.y},
+                                A: {x:_center.x-X, y:_center.y},
                                 B: {x: point.x, y: _center.y}
                             };
+                            drawCircle(line.A, 'pink', 80)
                             checkValidHall(line, rooms, id1, id2, rid1);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
                         } else {
+                            line.B.y -= Y;
                             G.addVertex(rid1, rid2, [line]);
                         }
                         break;
                     case 'right':
                     case 'left':
                         point = middles[direction];
+                        var X = Math.floor(point.x - _center.x < 0 ? (adjRooms[y].gameMetadata.rect.width/2) : -(adjRooms[y].gameMetadata.rect.width/2))
+                        var Y = Math.floor(point.y - _center.y < 0 ? (adjRooms[y].gameMetadata.rect.height/2) : -(adjRooms[y].gameMetadata.rect.height/2))
                         line = {
                             A: {x:point.x, y:point.y},
                             B: {x:_center.x, y:point.y}
@@ -355,11 +363,12 @@ function generateRLMap(Params) {
                             const firstSegment = line;
                             line = {
                                 A:{x:_center.x, y:point.y},
-                                B:{x:_center.x,y:_center.y}
+                                B:{x:_center.x,y:_center.y-Y}
                             }
                             checkValidHall(line, rooms, id1, id2, rid1);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
                         } else {
+                            line.B.x -= X;
                             G.addVertex(rid1, rid2, [line]);
                         }
                         break;
@@ -398,10 +407,10 @@ function generateRLMap(Params) {
     }
 }
 // PAint utils
-function drawCircle(pos, color) {
+function drawCircle(pos, color, range) {
     ctx.beginPath();
     color && (ctx.fillStyle = color)
-    ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2, 1);
+    ctx.arc(pos.x, pos.y, (range || 4), 0, Math.PI * 2, 1);
     ctx.fill();
 }
 function traceLine(pos1, pos2, color) {
@@ -434,14 +443,19 @@ function pointsOfRect(rect) {
         D:{x: rect.x, y: rect.y+rect.height}
     }
 }
+
 function insideRect(rect) {
-    var width = rand(Math.floor(rect.width/3), rect.width);
-    var height = rand(Math.floor(rect.height/3), rect.height);
+    function toPair(n) {
+        if (n % 2 === 0) return n;
+        return n-1;
+    }
+    var width = toPair(rand(Math.floor(rect.width/3), rect.width));
+    var height = toPair(rand(Math.floor(rect.height/3), rect.height));
     return {
         width:width,
         height:height,
-        x:rand(rect.x, (rect.width + rect.x) - width),
-        y:rand(rect.y, (rect.height + rect.y) - height)
+        x:toPair(rand(rect.x, (rect.width + rect.x) - width)),
+        y:toPair(rand(rect.y, (rect.height + rect.y) - height))
     };
 }
 function middleOfRect(rect) {

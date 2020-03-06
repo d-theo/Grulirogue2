@@ -310,6 +310,7 @@ function generateRLMap(Params) {
             const roomData = rooms[x].gameMetadata;
             //var center = middleOfRect(rooms[x].gameMetadata.rect);
             for (var y = 0; y < adjRooms.length; y++) {
+                const currentRoomData = adjRooms[y].gameMetadata;
                 if(pairs[`${roomData.roomId}${adjRooms[y].gameMetadata.roomId}`]) continue;
                 pairs[`${roomData.roomId}${adjRooms[y].gameMetadata.roomId}`] = true;
                 pairs[`${adjRooms[y].gameMetadata.roomId}${roomData.roomId}`] = true;
@@ -323,11 +324,16 @@ function generateRLMap(Params) {
                 var rid2 = adjRooms[y].gameMetadata.roomId;
                 var point;
                 var line;
-                //traceLine({x: middles.up.x, y:middles.up.y},{x: _center.x, y: _center.y}, 'red')
+                
                 switch(direction) {
                     case 'up':
                     case 'down':
                         point = middles[direction]; 
+
+                        if (point.y === currentRoomData.rect.y || point.y === currentRoomData.rect.y+currentRoomData.rect.height) {
+                            throw new Error('nope');
+                        }
+
                         var X = Math.floor(point.x - _center.x < 0 ? (adjRooms[y].gameMetadata.rect.width/2) : -(adjRooms[y].gameMetadata.rect.width/2))
                         var Y = Math.floor(point.y - _center.y < 0 ? (adjRooms[y].gameMetadata.rect.height/2) : -(adjRooms[y].gameMetadata.rect.height/2))
                         line = {
@@ -335,23 +341,30 @@ function generateRLMap(Params) {
                             B: {x: point.x, y: _center.y}
                         };
                         checkValidHall(line, rooms, id1, id2, rid1);
+                        G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
                             const firstSegment = line;
                             line = {
                                 A: {x:_center.x-X, y:_center.y},
                                 B: {x: point.x, y: _center.y}
                             };
-                            drawCircle(line.A, 'pink', 80)
                             checkValidHall(line, rooms, id1, id2, rid1);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
+                            G.addDoor(rid1, id2, line.A, id1==id2);
                         } else {
                             line.B.y -= Y;
+                            G.addDoor(rid1, id2, line.B, id1==id2);
                             G.addVertex(rid1, rid2, [line]);
                         }
                         break;
                     case 'right':
                     case 'left':
                         point = middles[direction];
+
+                        if (point.x === currentRoomData.rect.x || point.x === currentRoomData.rect.x+currentRoomData.rect.width) {
+                            throw new Error('nope');
+                        }
+
                         var X = Math.floor(point.x - _center.x < 0 ? (adjRooms[y].gameMetadata.rect.width/2) : -(adjRooms[y].gameMetadata.rect.width/2))
                         var Y = Math.floor(point.y - _center.y < 0 ? (adjRooms[y].gameMetadata.rect.height/2) : -(adjRooms[y].gameMetadata.rect.height/2))
                         line = {
@@ -359,6 +372,7 @@ function generateRLMap(Params) {
                             B: {x:_center.x, y:point.y}
                         }
                         checkValidHall(line, rooms, id1, id2, rid1);
+                        G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
                             const firstSegment = line;
                             line = {
@@ -367,8 +381,10 @@ function generateRLMap(Params) {
                             }
                             checkValidHall(line, rooms, id1, id2, rid1);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
+                            G.addDoor(rid1, id2, line.B, id1==id2);
                         } else {
                             line.B.x -= X;
+                            G.addDoor(rid1, id2, line.B, id1==id2);
                             G.addVertex(rid1, rid2, [line]);
                         }
                         break;
@@ -392,7 +408,7 @@ function generateRLMap(Params) {
                 if (id !== id1 && id !== id2) {
                     throw new Error('nop')
                 }
-                G.addDoor(r.gameMetadata.roomId, id2, intersec, eqId);
+                //G.addDoor(r.gameMetadata.roomId, id2, intersec, eqId);
             }
         }
     }
@@ -407,6 +423,11 @@ function generateRLMap(Params) {
     }
 }
 // PAint utils
+function drawText(text, lineNb, color) {
+    ctx.font = "13px Arial";
+    ctx.fillText(text, 10, 16*lineNb); 
+}
+
 function drawCircle(pos, color, range) {
     ctx.beginPath();
     color && (ctx.fillStyle = color)
@@ -474,6 +495,7 @@ function getMiddlesOfRect(rect) {
     }
 }
 function distanceBetween(p1,p2) {
+    traceLine(p1,p2, 'red')
     const dist = Math.sqrt( ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y - p2.y)) );
     return dist;
 }

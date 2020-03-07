@@ -1,39 +1,6 @@
-//const d1 = new Date().getTime();
-//const map = generateRLMap();
-//console.log(`generation time ${new Date().getTime() -d1} ms`)
-//paint(map);
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+import { rand, insideRect, middleOfRect, getMiddlesOfRect, pointInRect, lineIntersectRect, distanceBetween, reduceMin } from "./map-geo";
 
-function paint(map) {
-    const rooms = map.rooms;
-    for (var x = 0; x < rooms.length; x++) {
-        fillRect(rooms[x].rect);
-        if (rooms[x].isEntry) {
-            fillRect(insideRect(rooms[x].rect), 'red');
-        } else if (rooms[x].isExit) {
-            fillRect(insideRect(rooms[x].rect),'blue');
-        }
-    }
-
-    const doors = map.doors;
-    for (let door of doors) {
-        if (door.isLocked) {
-            drawCircle(door.position, 'orange');
-        } else {
-            drawCircle(door.position, 'blue');
-        }
-    }
-
-    const vertices = map.vertices;
-    for (let vertex of vertices) {
-        for (let line of vertex.segments) {
-            traceLine(line.A, line.B);
-        }
-    }
-}
-
-function generateRLMap(Params) {
+export function generateRLMap(Params) {
     Params = Params || {
         Area: 50000, // min area of a room
         Fuzz: 0.25, // room size variation +-
@@ -44,8 +11,6 @@ function generateRLMap(Params) {
         canvasWidth: 1000,
         canvasHeight: 1000,
     }
-    ctx.canvas.width  = Params.canvasWidth;
-    ctx.canvas.height = Params.canvasHeight;
 
     let G = createGraph();
     let ROOM_IDX = 0;
@@ -59,7 +24,7 @@ function generateRLMap(Params) {
     }
 
     function createMapPair() {
-        o = {};
+        const o = {};
         function set(a,b) {
             o[`${a}${b}`] = true;
             o[`${b}${a}`] = true;
@@ -146,14 +111,6 @@ function generateRLMap(Params) {
             setRooms,
             addVertex,
             reset,
-        }
-    }
-
-    function createVertex(from, to, lines) {
-        return {
-            from: from,
-            to: to,
-            lines: lines
         }
     }
 
@@ -251,7 +208,6 @@ function generateRLMap(Params) {
     }
 
     function createConnectedGraph(rooms) {
-        var c = ctx.fillStyle = '#'+Math.random().toString(16).substr(2,6);
         var groupId = rand(0,10000);
         for (var i = 0; i < rooms.length-1; i++) {
             linkRooms(rooms[i], rooms[i+1]);
@@ -281,7 +237,6 @@ function generateRLMap(Params) {
         var cpt = 0;
         while(!ok) {
             if (cpt > 1000) {
-                console.log('nothing')
                 return;
             }
             try {
@@ -297,7 +252,6 @@ function generateRLMap(Params) {
                 ok = true;
             } catch(e) {
                 cpt ++;
-                ctx.clearRect(0, 0, Params.Width*2, Params.Height*2);
                 G.reset();
             }
         }
@@ -340,7 +294,7 @@ function generateRLMap(Params) {
                             A: {x: point.x, y:point.y},
                             B: {x: point.x, y: _center.y}
                         };
-                        checkValidHall(line, rooms, id1, id2, rid1);
+                        checkValidHall(line, rooms, id1, id2);
                         G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
                             const firstSegment = line;
@@ -348,7 +302,7 @@ function generateRLMap(Params) {
                                 A: {x:_center.x-X, y:_center.y},
                                 B: {x: point.x, y: _center.y}
                             };
-                            checkValidHall(line, rooms, id1, id2, rid1);
+                            checkValidHall(line, rooms, id1, id2);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
                             G.addDoor(rid1, id2, line.A, id1==id2);
                         } else {
@@ -371,7 +325,7 @@ function generateRLMap(Params) {
                             A: {x:point.x, y:point.y},
                             B: {x:_center.x, y:point.y}
                         }
-                        checkValidHall(line, rooms, id1, id2, rid1);
+                        checkValidHall(line, rooms, id1, id2);
                         G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
                             const firstSegment = line;
@@ -379,7 +333,7 @@ function generateRLMap(Params) {
                                 A:{x:_center.x, y:point.y},
                                 B:{x:_center.x,y:_center.y-Y}
                             }
-                            checkValidHall(line, rooms, id1, id2, rid1);
+                            checkValidHall(line, rooms, id1, id2);
                             G.addVertex(rid1, rid2, [firstSegment, line]);
                             G.addDoor(rid1, id2, line.B, id1==id2);
                         } else {
@@ -408,7 +362,6 @@ function generateRLMap(Params) {
                 if (id !== id1 && id !== id2) {
                     throw new Error('nop')
                 }
-                //G.addDoor(r.gameMetadata.roomId, id2, intersec, eqId);
             }
         }
     }
@@ -421,138 +374,4 @@ function generateRLMap(Params) {
             {side: 'right', value: distanceBetween(positions1.right, positions2)}
         ].reduce(reduceMin, {value: Infinity});
     }
-}
-// PAint utils
-function drawText(text, lineNb, color) {
-    ctx.font = "13px Arial";
-    ctx.fillText(text, 10, 16*lineNb); 
-}
-
-function drawCircle(pos, color, range) {
-    ctx.beginPath();
-    color && (ctx.fillStyle = color)
-    ctx.arc(pos.x, pos.y, (range || 4), 0, Math.PI * 2, 1);
-    ctx.fill();
-}
-function traceLine(pos1, pos2, color) {
-    ctx.beginPath();
-    if (color) {
-        ctx.strokeStyle = color;
-    } else {
-        ctx.strokeStyle = 'black';
-    }
-    ctx.moveTo(pos1.x, pos1.y);
-    ctx.lineTo(pos2.x, pos2.y);
-    ctx.stroke();
-}
-
-function fillRect(rect, color) {
-    if (color) {
-        ctx.fillStyle = color;
-    } else {
-        ctx.fillStyle = '#'+Math.random().toString(16).substr(2,6);
-    }
-    ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
-}
-
-// GEO utils
-function pointsOfRect(rect) {
-    return {
-        A:{x: rect.x, y:rect.y},
-        B:{x: rect.x+rect.width, y: rect.y},
-        C:{x: rect.x+rect.width, y: rect.y+rect.height},
-        D:{x: rect.x, y: rect.y+rect.height}
-    }
-}
-
-function insideRect(rect) {
-    function toPair(n) {
-        if (n % 2 === 0) return n;
-        return n-1;
-    }
-    var width = toPair(rand(Math.floor(rect.width/3), rect.width));
-    var height = toPair(rand(Math.floor(rect.height/3), rect.height));
-    return {
-        width:width,
-        height:height,
-        x:toPair(rand(rect.x, (rect.width + rect.x) - width)),
-        y:toPair(rand(rect.y, (rect.height + rect.y) - height))
-    };
-}
-function middleOfRect(rect) {
-    return {
-        x: Math.floor(rect.width/2 + rect.x),
-        y: Math.floor(rect.height/2 + rect.y)
-    };
-}
-
-function getMiddlesOfRect(rect) {
-    return {
-        up: {x: rect.x + (rect.width / 2), y: rect.y},
-        right: {x: rect.x + rect.width, y: rect.y + (rect.height / 2)},
-        down: {x: rect.x + (rect.width / 2), y: rect.y + rect.height},
-        left: {x: rect.x, y: rect.y + (rect.height / 2)}
-    }
-}
-function distanceBetween(p1,p2) {
-    traceLine(p1,p2, 'red')
-    const dist = Math.sqrt( ((p1.x - p2.x) * (p1.x - p2.x)) + ((p1.y - p2.y) * (p1.y - p2.y)) );
-    return dist;
-}
-
-function pointInRect(point, rect) {
-    const x1 = rect.x;
-    const y1 = rect.y;
-    const x2 = rect.x + rect.width; 
-    const y2 = rect.y + rect.height;
-    const x  = point.x;
-    const y  = point.y;
-    if (x > x1 && x < x2 && y > y1 && y < y2)
-        return true; 
-    return false;
-}
-
-function lineIntersectRect(line, rect) {
-    const points = pointsOfRect(rect);
-    return intersec(line.A, line.B, points.A, points.B)
-    || intersec(line.A, line.B, points.B, points.C)
-    || intersec(line.A, line.B, points.C, points.D)
-    || intersec(line.A, line.B, points.D, points.A);
-}
-
-function intersec(pos1, pos2, pos3, pos4) {
-    return get_line_intersection(pos1.x, pos1.y, pos2.x, pos2.y, pos3.x, pos3.y, pos4.x, pos4.y);
-}
-
-// utils
-function reduceMin(obj, obj2) {
-    if (obj.value > obj2.value) {
-        return obj2;
-    } else {
-        return obj;
-    }
-}
-function rand(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) ) + min;
-}
-
-function get_line_intersection(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p3_x, p3_y)
-{
-    var s1_x, s1_y, s2_x, s2_y;
-    s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
-    s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
-
-    var s, t;
-    s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
-    t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-    {
-        return {
-            x: p0_x + (t * s1_x),
-            y: p0_y + (t * s1_y)
-        };
-    }
-
-    return 0; // No collision
 }

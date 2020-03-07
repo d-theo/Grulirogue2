@@ -1,11 +1,6 @@
-const Terrain = {
-    Test:5,
-    DoorOpen: 2,
-    DoorLocked: 3,
-    BlockGrey: 1,
-    WallGrey: 0,
-    BlockWater: 6
-}
+import { generateRLMap } from "./map_generation";
+import { pointsOfRect } from "./map-geo";
+import { Terrain } from "../map/terrain.constants";
 
 const params = {
     Area: 500, // min area of a room
@@ -17,18 +12,10 @@ const params = {
     canvasWidth: 100,
     canvasHeight: 100,
 };
-function createTileMap() {
+export function createTileMap() {
     const map = generateRLMap(params);
     const tilemap = tile(map, params);
-    return tilemap;
-}
-
-function displayTileMap(tilemap) {
-    ctx.canvas.width  = 2000;
-    ctx.canvas.height = 2000;
-    for (let x = 0; x < params.canvasHeight; x++) {
-        drawText(tilemap[x].join(' '), x);
-    }
+    return {tilemap, mapObject: map};
 }
 
 function tile(map, params) {

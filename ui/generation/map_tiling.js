@@ -4,25 +4,33 @@ const Terrain = {
     DoorLocked: 3,
     BlockGrey: 1,
     WallGrey: 0,
+    BlockWater: 6
 }
 
 const params = {
     Area: 500, // min area of a room
     Fuzz: 0.25, // room size variation +-
-    MinClusterSize: 2, // minimal cluster of room
+    MinClusterSize: 5, // minimal cluster of room
     Width: 80,
     Height: 60,
     MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
     canvasWidth: 100,
     canvasHeight: 100,
 };
-const map = generateRLMap(params);
-const tilemap = tile(map, params);  
-ctx.canvas.width  = 5000;
-ctx.canvas.height = 5000;
-for (let x = 0; x < params.canvasHeight; x++) {
-    drawText(tilemap[x].join(' '), x);
+function createTileMap() {
+    const map = generateRLMap(params);
+    const tilemap = tile(map, params);
+    return tilemap;
 }
+
+function displayTileMap(tilemap) {
+    ctx.canvas.width  = 2000;
+    ctx.canvas.height = 2000;
+    for (let x = 0; x < params.canvasHeight; x++) {
+        drawText(tilemap[x].join(' '), x);
+    }
+}
+
 function tile(map, params) {
     const tilemap = Array(params.canvasHeight).fill(Terrain.WallGrey).map(()=>Array(params.canvasWidth).fill(Terrain.WallGrey));
     const rooms = map.rooms;

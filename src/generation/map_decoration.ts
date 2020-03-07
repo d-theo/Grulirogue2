@@ -1,7 +1,7 @@
 const perlin = require('perlin-noise');
 import {Terrain} from '../map/terrain.constants';
 
-export function addBiome(terrain) {
+export function addBiome(tilemap, terrain) {
     const terrainSpawnChance = 0.8;
     const propagation = 0.5;
     const propagationEntropy = 0.5;

@@ -10,13 +10,14 @@ const config:GameConfig = {
     height: 720,
     resolution: 1, 
     backgroundColor: "#EDEEC9",
+    pixelArt: true,
     scene: [
       GameScene
     ],
     physics: {
       default: 'arcade',
       arcade: {
-          gravity: { y: 0 }
+        gravity: false
       }
   }
 };

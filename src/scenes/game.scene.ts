@@ -1,5 +1,6 @@
 import {SceneName} from './scenes.constants';
 import {createMap} from '../map/map-generator';
+import {GreeceCreationParams} from '../map/terrain.greece';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
@@ -16,10 +17,11 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		const {tilemap, mapObject} = createMap();
+		const {tilemap, mapObject} = createMap(GreeceCreationParams);
 		this.tilemap = tilemap;
+		debugger;
 		this.mapObject = mapObject;
-		this.load.image('terrain', '/assets/tilemaps/terrain.png');
+		this.load.image('terrain', '/assets/tilemaps/greece.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
 	}
 

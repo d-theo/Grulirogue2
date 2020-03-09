@@ -236,7 +236,7 @@ export function generateRLMap(Params) {
         var ok = false;
         var cpt = 0;
         while(!ok) {
-            if (cpt > 1000) {
+            if (cpt > 10000) {
                 return;
             }
             try {
@@ -282,9 +282,9 @@ export function generateRLMap(Params) {
                 switch(direction) {
                     case 'up':
                     case 'down':
-                        point = middles[direction]; 
+                        point = middles[direction];
 
-                        if (point.y === currentRoomData.rect.y || point.y === currentRoomData.rect.y+currentRoomData.rect.height) {
+                        if (point.x === _center.x + (currentRoomData.rect.width/2) || point.x === _center.x - (currentRoomData.rect.width/2) ) {
                             throw new Error('nope');
                         }
 
@@ -294,18 +294,24 @@ export function generateRLMap(Params) {
                             A: {x: point.x, y:point.y},
                             B: {x: point.x, y: _center.y}
                         };
-                        checkValidHall(line, rooms, id1, id2);
                         G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
+                            checkValidHall(line, rooms, id1, id2, 1);
                             const firstSegment = line;
                             line = {
                                 A: {x:_center.x-X, y:_center.y},
                                 B: {x: point.x, y: _center.y}
                             };
-                            checkValidHall(line, rooms, id1, id2);
+                            checkValidHall(line, rooms, id1, id2, 2);
+                            if (isInside(firstSegment, roomData.rect)) {
+                                G.addVertex(rid1, rid2, [line]);
+                            } else {
+                                G.addVertex(rid1, rid2, [firstSegment, line]);
+                            }
                             G.addVertex(rid1, rid2, [firstSegment, line]);
                             G.addDoor(rid1, id2, line.A, id1==id2);
                         } else {
+                            checkValidHall(line, rooms, id1, id2, 2);
                             line.B.y -= Y;
                             G.addDoor(rid1, id2, line.B, id1==id2);
                             G.addVertex(rid1, rid2, [line]);
@@ -315,7 +321,7 @@ export function generateRLMap(Params) {
                     case 'left':
                         point = middles[direction];
 
-                        if (point.x === currentRoomData.rect.x || point.x === currentRoomData.rect.x+currentRoomData.rect.width) {
+                        if (point.y === _center.y + (currentRoomData.rect.height/2) || point.y === _center.y - (currentRoomData.rect.height/2) ) {
                             throw new Error('nope');
                         }
 
@@ -325,18 +331,26 @@ export function generateRLMap(Params) {
                             A: {x:point.x, y:point.y},
                             B: {x:_center.x, y:point.y}
                         }
-                        checkValidHall(line, rooms, id1, id2);
+                        
                         G.addDoor(rid1, id2, line.A, id1==id2);
                         if (!pointInRect(line.B, adjRooms[y].gameMetadata.rect)) {
+                            checkValidHall(line, rooms, id1, id2, 1);
                             const firstSegment = line;
                             line = {
                                 A:{x:_center.x, y:point.y},
                                 B:{x:_center.x,y:_center.y-Y}
                             }
-                            checkValidHall(line, rooms, id1, id2);
-                            G.addVertex(rid1, rid2, [firstSegment, line]);
+                            checkValidHall(line, rooms, id1, id2, 2);
+
+                            if (isInside(firstSegment, roomData.rect)) {
+                                G.addVertex(rid1, rid2, [line]);
+                            } else {
+                                G.addVertex(rid1, rid2, [firstSegment, line]);
+                            }
+
                             G.addDoor(rid1, id2, line.B, id1==id2);
                         } else {
+                            checkValidHall(line, rooms, id1, id2, 2);
                             line.B.x -= X;
                             G.addDoor(rid1, id2, line.B, id1==id2);
                             G.addVertex(rid1, rid2, [line]);
@@ -348,17 +362,26 @@ export function generateRLMap(Params) {
         }
     }
 
-    function checkValidHall(line, rooms, id1, id2) {
-        let eqId = id1 === id2;
+    function isInside(segment, rect) {
+        return segment.A.x >= rect.x 
+            && segment.A.x <= rect.x + rect.width 
+            && segment.A.y >= rect.y 
+            && segment.A.y <= rect.y + rect.height
+            && segment.B.x >= rect.x 
+            && segment.B.x <= rect.x + rect.width 
+            && segment.B.y >= rect.y 
+            && segment.B.y <= rect.y + rect.height
+    }
+    
+
+    function checkValidHall(line, rooms, id1, id2, max) {
         let x = 0;
         for (let r of rooms) {
             var id = r.gameMetadata.groupId;
             var intersec = lineIntersectRect(line, r.gameMetadata.rect);
             if (intersec) {
-                if (!eqId) {
-                    x++;
-                    if (x > 2) throw new Error('nop')
-                }
+                x++;
+                if (x > max) throw new Error('nop')
                 if (id !== id1 && id !== id2) {
                     throw new Error('nop')
                 }

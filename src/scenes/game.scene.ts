@@ -1,7 +1,8 @@
 import {SceneName} from './scenes.constants';
-import {createMap} from '../map/map-generator';
-import {GreeceCreationParams} from '../map/terrain.greece';
-import {Game} from '../game/game';
+import {Game as GameEngine} from '../game/game';
+import { toPix } from '../maths/maps-utils';
+import { Coordinate } from '../game/utils/coordinate';
+import { TilemapVisibility } from '../map/TilemapVisibility';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
@@ -10,7 +11,9 @@ class GameScene extends Phaser.Scene {
 	layer;
 	delta;
 	moveAllowed = true;
-	game: Game;
+	game: GameEngine;
+	heroPosition: Coordinate
+	tilemapVisibility: TilemapVisibility;
 	constructor() {
     super({
 			key: SceneName.Game
@@ -18,10 +21,11 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		this.game = new Game();
-		this.game.tilemap.startingPosition();
-		this.tilemap = this.game.tilemap.tiles;
-		
+		this.game = new GameEngine();
+		this.game.reInitLevel();
+
+		this.heroPosition = toPix(this.game.tilemap.startingPosition());
+		this.tilemap = this.game.tilemap.tilemap;
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
 	}
@@ -30,7 +34,12 @@ class GameScene extends Phaser.Scene {
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain');
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
-		this.hero = this.physics.add.sprite(16, 16, 'hero');
+
+		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(9);
+		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
+
+		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
+		this.hero.setOrigin(0,0);
 		this.cursors = this.input.keyboard.createCursorKeys();
 		this.layer = layer;
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -87,6 +96,7 @@ class GameScene extends Phaser.Scene {
 		if (this.cursors.up.isDown) {
 			this.moveTo('up')
 		}
+		this.tilemapVisibility.setActiveRoom(this.game.tilemap.getRoom());
 	}
 }
 

@@ -5,6 +5,7 @@ import { TileType } from "./tileType";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
+import { GameRange } from "../utils/range";
 
 export class TileMap {
     graph!: MapGraph;
@@ -130,7 +131,17 @@ export class TileMap {
     startingPosition() {
         for (let room of this.graph.rooms) {
             if (room.isEntry) {
-                
+                const x = new GameRange(room.rect.x, room.rect.x+room.rect.width).pick();
+                const y = new GameRange(room.rect.y, room.rect.x+room.rect.height).pick();
+                return {x,y};
+            }
+        }
+        throw new Error('not entry !!')
+    }
+    getRoom() {
+        for (let room of this.graph.rooms) {
+            if (room.isEntry) {
+                return room.rect;
             }
         }
     }

@@ -1,3 +1,5 @@
+import { Coordinate } from "../game/utils/coordinate";
+
 export type PixelPos = {
     x: number,
     y: number
@@ -6,7 +8,7 @@ export type TilePos = {
     x: number,
     y: number
 }
-export function toPix(pos): PixelPos {
+export function toPix(pos: Coordinate): PixelPos {
     return {
         x: pos.x*32,
         y: pos.y*32

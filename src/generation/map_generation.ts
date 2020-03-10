@@ -237,6 +237,7 @@ export function generateRLMap(Params) {
         var cpt = 0;
         while(!ok) {
             if (cpt > 10000) {
+                console.log('no entry =/');
                 return;
             }
             try {

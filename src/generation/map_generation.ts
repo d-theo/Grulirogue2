@@ -287,6 +287,9 @@ export function generateRLMap(Params) {
                         if (point.x === _center.x + (currentRoomData.rect.width/2) || point.x === _center.x - (currentRoomData.rect.width/2) ) {
                             throw new Error('nope');
                         }
+                        if (point.x === _center.x + (currentRoomData.rect.width/2) || point.x === _center.x - (currentRoomData.rect.width/2)) {
+                            throw new Error('nope');
+                        }
 
                         var X = Math.floor(point.x - _center.x < 0 ? (adjRooms[y].gameMetadata.rect.width/2) : -(adjRooms[y].gameMetadata.rect.width/2))
                         var Y = Math.floor(point.y - _center.y < 0 ? (adjRooms[y].gameMetadata.rect.height/2) : -(adjRooms[y].gameMetadata.rect.height/2))
@@ -322,6 +325,9 @@ export function generateRLMap(Params) {
                         point = middles[direction];
 
                         if (point.y === _center.y + (currentRoomData.rect.height/2) || point.y === _center.y - (currentRoomData.rect.height/2) ) {
+                            throw new Error('nope');
+                        }
+                        if (point.y === _center.y + (currentRoomData.rect.height/2) || point.y === _center.y - (currentRoomData.rect.height/2)) {
                             throw new Error('nope');
                         }
 

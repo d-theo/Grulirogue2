@@ -24,9 +24,9 @@ export function createTileMap(params: MapParamCreation) {
         const doors = map.doors;
         for (let door of doors) {
             if (door.isLocked) {
-                tilemap[door.position.x][door.position.y] = MapTerrain.DoorLocked;
+                tilemap[door.position.y][door.position.x] = MapTerrain.DoorLocked;
             } else {
-                tilemap[door.position.x][door.position.y] = MapTerrain.DoorOpen;
+                tilemap[door.position.y][door.position.x] = MapTerrain.DoorOpen;
             }
         }
         return tilemap;
@@ -35,7 +35,7 @@ export function createTileMap(params: MapParamCreation) {
     function makeRoomTile(rect, tilemap) {
         for (let x = rect.x; x < rect.x+rect.width; x++) {
             for (let y = rect.y; y < rect.y+rect.height; y++) {
-                tilemap[x][y] = MapTerrain.Floor;
+                tilemap[y][x] = MapTerrain.Floor;
             }
         }
         const points = pointsOfRect(rect);
@@ -44,10 +44,10 @@ export function createTileMap(params: MapParamCreation) {
         lineTile(points.C, points.D, tilemap, MapTerrain.WallS);
         lineTile(points.A, points.D, tilemap, MapTerrain.WallW);
 
-        tilemap[points.A.x][points.A.y] = MapTerrain.CornerNW;
-        tilemap[points.B.x][points.B.y] = MapTerrain.CornerNE;
-        tilemap[points.C.x][points.C.y] = MapTerrain.CornerSE;
-        tilemap[points.D.x][points.D.y] = MapTerrain.CornerSW;
+        tilemap[points.A.y][points.A.x] = MapTerrain.CornerNW;
+        tilemap[points.B.y][points.B.x] = MapTerrain.CornerNE;
+        tilemap[points.C.y][points.C.x] = MapTerrain.CornerSE;
+        tilemap[points.D.y][points.D.x] = MapTerrain.CornerSW;
     }
     
     function lineTile(A, B, tilemap, type) {
@@ -59,7 +59,7 @@ export function createTileMap(params: MapParamCreation) {
         var err = dx - dy;
      
         while(true) {
-           tilemap[x0][y0] = type;
+           tilemap[y0][x0] = type;
            if (Math.abs(x0-x1) < 0.0001 && Math.abs(y0-y1) < 0.0001 ) break;
            var e2 = 2*err;
            if (e2 > -dy) { err -= dy; x0  += sx; }

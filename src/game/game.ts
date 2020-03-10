@@ -12,6 +12,7 @@ import { throws } from "assert";
 import { cpus } from "os";
 import { TileVisibility } from "./tilemap/tile";
 import { AI } from "./monsters/ai";
+import {GreeceCreationParams} from '../map/terrain.greece';
 
 export class Game {
     tilemap: TileMap;
@@ -20,6 +21,7 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     log: Log;
+    level = 0;
     constructor() {
         this.tilemap = new TileMap();
         this.hero = new Hero();
@@ -29,6 +31,13 @@ export class Game {
         const behaviors = AI(this);
         this.monsters = new MonsterCollection(behaviors);
     }
+
+    reInitLevel() {
+        if (this.level < 4) {
+            this.tilemap.init(GreeceCreationParams);
+        }
+    }
+
     handleMessage(msg: GameMessage) {
         this.log.archive();
         let result: MessageResponse;

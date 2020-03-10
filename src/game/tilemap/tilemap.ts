@@ -3,14 +3,31 @@ import { Rect } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { TileType } from "./tileType";
 import { line } from "./sight";
+import {createMap, MapParamCreation} from '../../map/map-generator';
+import { MapGraph } from "../../generation/map_definition";
 
 export class TileMap {
-    tiles: Tile[][];
-    width = 8;
-    height = 3;
-    heightM1: number;
-    widthM1: number;
+    graph!: MapGraph;
+    tiles!: Tile[][];
+    tilemap!: number[][];
+    
+    width!: number;
+    height!: number;
+    heightM1!: number;
+    widthM1!: number;
     constructor() {
+        
+        this.heightM1 = this.height - 1;
+        this.widthM1 = this.width - 1;
+    }
+    init(params: MapParamCreation) {
+        const {tilemap, mapObject} = createMap(params);
+        this.tilemap = tilemap;
+        this.graph = mapObject;
+
+        this.height = tilemap.length;
+        this.width = tilemap[0].length;
+
         let tiles = [];
         let lines = [];
         for (let lineNb = 0; lineNb < this.height; lineNb++) {
@@ -20,12 +37,6 @@ export class TileMap {
             tiles.push(lines);
             lines = [];
         }
-        this.tiles = tiles;
-        this.getAt({x:1, y:1}).type = TileType.WallGrey;
-        this.getAt({x:2, y:1}).type = TileType.WallGrey;
-        this.getAt({x:3, y:1}).type = TileType.WallGrey;
-        this.heightM1 = this.height - 1;
-        this.widthM1 = this.width - 1;
     }
     getBorders(): Rect {
         return {
@@ -113,6 +124,13 @@ export class TileMap {
                 } else {
                     currTile.setOnSight();
                 }
+            }
+        }
+    }
+    startingPosition() {
+        for (let room of this.graph.rooms) {
+            if (room.isEntry) {
+                
             }
         }
     }

@@ -1,6 +1,5 @@
 import { createTileMap } from "../generation/map_tiling";
-
-import { addBiome } from "../generation/map_decoration";
+import {MapGraph} from '../generation/map_definition';
 
 /*export type MapParamCreation = {
     Area: 500, // min area of a room
@@ -23,7 +22,9 @@ export type MapParamCreation = {
     canvasHeight: number,
     Terrain: any;
 }
-export function createMap(param: MapParamCreation) {
+export function createMap(param: MapParamCreation): {tilemap: number[][], mapObject: MapGraph} {
     const {tilemap, mapObject} = createTileMap(param);
-    return {tilemap, mapObject};
+    return {
+        tilemap: tilemap,
+        mapObject: (mapObject as any as MapGraph)};
 }

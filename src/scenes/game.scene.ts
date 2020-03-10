@@ -1,15 +1,16 @@
 import {SceneName} from './scenes.constants';
 import {createMap} from '../map/map-generator';
 import {GreeceCreationParams} from '../map/terrain.greece';
+import {Game} from '../game/game';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
 	cursors: any;
 	tilemap;
-	mapObject;
 	layer;
 	delta;
 	moveAllowed = true;
+	game: Game;
 	constructor() {
     super({
 			key: SceneName.Game
@@ -17,30 +18,20 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		const {tilemap, mapObject} = createMap(GreeceCreationParams);
-		this.tilemap = tilemap;
-		debugger;
-		this.mapObject = mapObject;
+		this.game = new Game();
+		this.game.tilemap.startingPosition();
+		this.tilemap = this.game.tilemap.tiles;
+		
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
 	}
 
 	create() {
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
-
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain');
-
-		var layer = map.createStaticLayer(0, tileset, 0, 0) as any;
-
-		layer.setCollisionByProperty({ collide: true });
+		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 		this.hero = this.physics.add.sprite(16, 16, 'hero');
-
 		this.cursors = this.input.keyboard.createCursorKeys();
-
-		map.setCollision([1], true, true, layer);
-
-		this.physics.add.collider(this.hero, layer, () => console.log('col'), null, null);
-
 		this.layer = layer;
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero, false);

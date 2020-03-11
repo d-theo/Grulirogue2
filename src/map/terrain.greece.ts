@@ -3,7 +3,7 @@ import { Terrain } from "./terrain";
 export const terrainGreece: Terrain = {
     Void: 9,
     DoorOpen: 10,
-    DoorLocked: 10,
+    DoorLocked: 11,
     CornerSE:8,
     CornerNW:0,
     CornerNE:2,
@@ -13,6 +13,12 @@ export const terrainGreece: Terrain = {
     WallE: 5,
     WallW: 3,
     Floor: 4,
+    Deco: 1000,
+    Deco1: 12,
+    Deco2: 13,
+    Deco3: 14,
+    Deco4: [15,16],
+    Deco5: 17,
 };
 export const GreeceCreationParams = {
     Area: 250, // min area of a room

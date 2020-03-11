@@ -1,4 +1,4 @@
-export type Terrain = {
+export interface Terrain {
     Void: number,
     DoorOpen: number,
     DoorLocked: number,
@@ -11,4 +11,6 @@ export type Terrain = {
     WallE: number,
     WallW: number,
     Floor: number,
+    Deco: number,
+    [k: string]: any;
 }

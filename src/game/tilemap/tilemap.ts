@@ -1,5 +1,5 @@
 import { Tile } from "./tile";
-import { Rect } from "../utils/rectangle";
+import { Rect, randomIn } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
@@ -136,9 +136,7 @@ export class TileMap {
     startingPosition() {
         for (let room of this.graph.rooms) {
             if (room.isEntry) {
-                const x = new GameRange(room.rect.x+1, room.rect.x+room.rect.width-1).pick();
-                const y = new GameRange(room.rect.y+1, room.rect.x+room.rect.height-1).pick();
-                return {x,y};
+                return randomIn(room.rect);
             }
         }
         throw new Error('not entry !!')

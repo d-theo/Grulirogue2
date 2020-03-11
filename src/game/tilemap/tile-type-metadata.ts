@@ -8,7 +8,6 @@ export function tilePropertiesForTerrain(t: Terrain) {
     function isSolid(type: number) {
         return [
             t.CornerNW,
-            t.Void,
             t.CornerNE,
             t.CornerSE,
             t.CornerSW,

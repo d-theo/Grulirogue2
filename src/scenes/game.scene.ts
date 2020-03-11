@@ -5,6 +5,8 @@ import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { GameEventType } from '../game/events/events';
 import { MessageResponseStatus } from '../game/utils/types';
+import { TilemapItems } from '../map/tilemap-items';
+import { addBiome } from '../generation/map_decoration';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
@@ -16,6 +18,7 @@ class GameScene extends Phaser.Scene {
 	gameEngine: GameEngine;
 	heroPosition: Coordinate
 	tilemapVisibility: TilemapVisibility;
+	tilemapItems: TilemapItems;
 	constructor() {
     super({
 			key: SceneName.Game
@@ -38,14 +41,37 @@ class GameScene extends Phaser.Scene {
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 
+		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
+		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
+		this.addItems();
+
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
+
 		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
 		this.hero.setOrigin(0,0);
 		this.cursors = this.input.keyboard.createCursorKeys();
 		this.layer = layer;
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero, false);
+	}
+
+	addItems() {
+		this.tilemapItems.placeItems(this.gameEngine.currentTerrain().Deco4, (pos) => {
+			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
+		});
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, (pos) => {
+			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
+		});
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, (pos) => {
+			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
+		});
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, (pos) => {
+			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
+		});
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, (pos) => {
+			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
+		});
 	}
 
 	moveTo(pos) {

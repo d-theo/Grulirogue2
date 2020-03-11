@@ -1,4 +1,3 @@
-import { TileType } from './tileType';
 import { Coordinate } from '../utils/coordinate';
 export enum TileVisibility {
     Unknown = -1,
@@ -10,24 +9,26 @@ export enum TileVisibility {
 export class Tile {
     pos: Coordinate;
     visibility: TileVisibility;
-    type: TileType;
+    type: number;
     viewed = false;
-    constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: TileType}) {
+    isSolidFct: (n:number) => boolean;
+    isWalkableFct: (n:number) => boolean;;
+    constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: number, isSolidFct: (n:number) => boolean, isWalkableFct: (n:number) => boolean}) {
         this.pos = {x: arg.x, y: arg.y}
         this.visibility = arg.visibility || TileVisibility.Hidden;
-        this.type = arg.type || TileType.BlockGrey;
+        this.type = arg.type || -1;
+        this.isSolidFct = arg.isSolidFct;
+        this.isWalkableFct = arg.isWalkableFct;
     }
+
     isSolid() {
-        switch(this.type) {
-            case TileType.BlockGrey:
-                return false;
-            case TileType.DoorWood:
-            case TileType.WallGrey:
-                return true;
-        }
+        return this.isSolidFct(this.type);
+    }
+    isWalkable() {
+        return this.isWalkableFct(this.type);
     }
     isEmpty() {
-        return this.type === TileType.BlockGrey;
+        return this.isWalkableFct(this.type);
     }
     setObscurity() {
         if (this.viewed) {
@@ -38,5 +39,6 @@ export class Tile {
     }
     setOnSight() {
         this.visibility = TileVisibility.OnSight;
+        this.viewed = true;
     }
 }

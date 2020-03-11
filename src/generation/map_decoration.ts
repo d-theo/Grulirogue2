@@ -1,5 +1,4 @@
 const perlin = require('perlin-noise');
-import {Terrain} from '../map/terrain.constants';
 
 export type BiomeOption = {
     spawnChanceFactor?: number,
@@ -13,7 +12,7 @@ export function addBiome(tilemap, terrain, options:BiomeOption) {
     const terrainSpawnChance = options.spawnChanceFactor || 0.8;
     const propagation = options.propagationFactor || 0.5;
     const propagationEntropy = options.propagationEntropyFactor || 0.5;
-    const mapTerrain = options.onTerrainType || Terrain.BlockGrey;
+    const mapTerrain = options.onTerrainType || 1;
 
     const marked = {};
     const toExpand = [];

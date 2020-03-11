@@ -1,4 +1,4 @@
-export interface Terrain {
+export type Terrain = {
     Void: number,
     DoorOpen: number,
     DoorLocked: number,

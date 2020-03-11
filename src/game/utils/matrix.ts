@@ -10,7 +10,27 @@ export function matrixMap<T,U>(c: T[][], f:(x: T) => U): U[][] {
     return res;
 }
 
-export function matrixFlatten<T>(c: T[][]): c[] {
+export function matrixForEach<T>(c: T[][], f:(x: T) => void): void {
+    for (const i of c) {
+        for (const el of i) {
+            f(el);
+        }
+    }
+}
+
+export function matrixFilter<T>(c: T[][], f:(x: T) => boolean): T[] {
+    const res : T[] = [];
+    for (const i of c) {
+        for (const el of i) {
+            if (f(el)) {
+                res.push(el);
+            }
+        }
+    }
+    return res;
+}
+
+export function matrixFlatten<T>(c: T[][]): T[] {
     const res = [];
     for (let x = 0; x < c.length; x++) {
         for (let y = 0; y < c[0].length ; y++) {

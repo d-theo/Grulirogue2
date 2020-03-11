@@ -1,9 +1,7 @@
 import 'phaser';
-import {Game} from './game/game';
-
 import GameScene from './scenes/game.scene';
 
-const config:GameConfig = {
+const config = {
     type: Phaser.AUTO,
     parent: 'content',
     width: 1280,
@@ -17,7 +15,7 @@ const config:GameConfig = {
     physics: {
       default: 'arcade',
       arcade: {
-        gravity: false
+        gravity: {y:0}
       }
   }
 };

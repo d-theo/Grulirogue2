@@ -1,5 +1,6 @@
 import { createTileMap } from "../generation/map_tiling";
 import {MapGraph} from '../generation/map_definition';
+import { Terrain } from "./terrain";
 
 /*export type MapParamCreation = {
     Area: 500, // min area of a room
@@ -20,7 +21,7 @@ export type MapParamCreation = {
     MinSubSize: number, // subdivise into subcluster if cluster is bigger than MinSubSize
     canvasWidth: number,
     canvasHeight: number,
-    Terrain: any;
+    Terrain: Terrain;
 }
 export function createMap(param: MapParamCreation): {tilemap: number[][], mapObject: MapGraph} {
     const {tilemap, mapObject} = createTileMap(param);

@@ -1,11 +1,12 @@
-import { Tile, TileVisibility } from "./tile";
+import { Tile } from "./tile";
 import { Rect } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
-import { TileType } from "./tileType";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
 import { GameRange } from "../utils/range";
+import { matrixForEach } from "../utils/matrix";
+import { tilePropertiesForTerrain } from "./tile-type-metadata";
 
 export class TileMap {
     graph!: MapGraph;
@@ -16,12 +17,9 @@ export class TileMap {
     height!: number;
     heightM1!: number;
     widthM1!: number;
-    constructor() {
-        
-        this.heightM1 = this.height - 1;
-        this.widthM1 = this.width - 1;
-    }
+    constructor() {}
     init(params: MapParamCreation) {
+        const {isSolid, isWalkable} = tilePropertiesForTerrain(params.Terrain);
         const {tilemap, mapObject} = createMap(params);
         this.tilemap = tilemap;
         this.graph = mapObject;
@@ -33,11 +31,17 @@ export class TileMap {
         let lines = [];
         for (let lineNb = 0; lineNb < this.height; lineNb++) {
             for (let colNb = 0; colNb < this.width; colNb++) {
-                lines.push(new Tile({x:colNb, y:lineNb}));
+                const tile = new Tile({x:colNb, y:lineNb, isSolidFct: isSolid, isWalkableFct: isWalkable});
+                tile.type = tilemap[lineNb][colNb];
+                lines.push(tile);
             }
             tiles.push(lines);
             lines = [];
         }
+        this.tiles = tiles;
+
+        this.heightM1 = this.height - 1;
+        this.widthM1 = this.width - 1;
     }
     getBorders(): Rect {
         return {
@@ -98,6 +102,7 @@ export class TileMap {
     }
 
     computeSight(arg: {from: Coordinate, range: number}) {
+        matrixForEach(this.tiles, (t => t.setObscurity()));
         const {from, range} = arg;
         const right = Math.min(from.x + range, this.widthM1);
         const left = Math.max(from.x - range, 0);
@@ -108,12 +113,12 @@ export class TileMap {
         for (let h = top; h <= bottom; h++) {
             for (let w = left; w <= right; w++) {
                 arr.push({x: w, y:h});
-                this.getAt({x: w, y:h}).visibility = TileVisibility.Unknown;
             }
         }
-
+        
         for (const to of arr) {
             const positions = line({from, to});
+            this.getAt(positions.shift()).setOnSight();
             let currVisibility = 'visible';
             for (const pos of positions) {
                 const currTile = this.getAt(pos);
@@ -131,18 +136,11 @@ export class TileMap {
     startingPosition() {
         for (let room of this.graph.rooms) {
             if (room.isEntry) {
-                const x = new GameRange(room.rect.x, room.rect.x+room.rect.width).pick();
-                const y = new GameRange(room.rect.y, room.rect.x+room.rect.height).pick();
+                const x = new GameRange(room.rect.x+1, room.rect.x+room.rect.width-1).pick();
+                const y = new GameRange(room.rect.y+1, room.rect.x+room.rect.height-1).pick();
                 return {x,y};
             }
         }
         throw new Error('not entry !!')
-    }
-    getRoom() {
-        for (let room of this.graph.rooms) {
-            if (room.isEntry) {
-                return room.rect;
-            }
-        }
     }
 }

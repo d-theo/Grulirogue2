@@ -3,6 +3,8 @@ import {Game as GameEngine} from '../game/game';
 import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
+import { GameEventType } from '../game/events/events';
+import { MessageResponseStatus } from '../game/utils/types';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
@@ -11,7 +13,7 @@ class GameScene extends Phaser.Scene {
 	layer;
 	delta;
 	moveAllowed = true;
-	game: GameEngine;
+	gameEngine: GameEngine;
 	heroPosition: Coordinate
 	tilemapVisibility: TilemapVisibility;
 	constructor() {
@@ -21,23 +23,23 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		this.game = new GameEngine();
-		this.game.reInitLevel();
+		this.gameEngine = new GameEngine();
+		this.gameEngine.reInitLevel();
 
-		this.heroPosition = toPix(this.game.tilemap.startingPosition());
-		this.tilemap = this.game.tilemap.tilemap;
+		this.heroPosition = toPix(this.gameEngine.hero.pos);
+		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
+		this.load.image('terrain2', '/assets/tilemaps/greece2.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
 	}
 
 	create() {
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
-		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain');
+		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 
-		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(9);
+		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
-
 		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
 		this.hero.setOrigin(0,0);
 		this.cursors = this.input.keyboard.createCursorKeys();
@@ -47,8 +49,6 @@ class GameScene extends Phaser.Scene {
 	}
 
 	moveTo(pos) {
-		this.delta = 0;
-		this.moveAllowed = false;
 		let p = {
 			targets: this.hero,
 			ease: 'Linear',
@@ -56,23 +56,47 @@ class GameScene extends Phaser.Scene {
 			repeat: 0,
 			yoyo: false
 		}
-		
+		let newPos: Coordinate = {x:-1, y:-1};
+		let heroPos = this.gameEngine.hero.pos;
+		let dx = 0;
+		let dy = 0;
 		switch(pos){
 			case 'left': 
+				newPos = {x: heroPos.x-1, y: heroPos.y}
+				dx = -32;
 				p['x'] = { from: this.hero.x, to: this.hero.x-32 };
 				break;
 			case'right':
+				newPos = {x: heroPos.x+1, y: heroPos.y}
 				p['x'] = { from: this.hero.x, to: this.hero.x+32 };
-				//this.hero.x = this.hero.x+32;
+				dx = 32;
 				break;
 			case 'down':
+				newPos = {x: heroPos.x, y: heroPos.y+1}
 				p['y'] = { from: this.hero.y, to: this.hero.y+32 };
+				dy = 32;
 				break;
 			case 'up':
+				newPos = {x: heroPos.x, y: heroPos.y-1}
 				p['y'] = { from: this.hero.y, to: this.hero.y-32 };
+				dy = -32;
 				break;
 		}
-		this.tweens.add(p);
+		const res = this.gameEngine.handleMessage({
+			type: GameEventType.PlayerMove,
+			data: {
+				to: newPos
+			}
+		});
+		if (res.status !== MessageResponseStatus.Ok) {
+			return;
+		} else {
+			this.tweens.add(p);
+			//this.hero.x += dx;
+			//this.hero.y += dy;
+			this.delta = 0;
+			this.moveAllowed = false;
+		}
 	}
 
 	update(time: number, delta:number) {
@@ -96,7 +120,7 @@ class GameScene extends Phaser.Scene {
 		if (this.cursors.up.isDown) {
 			this.moveTo('up')
 		}
-		this.tilemapVisibility.setActiveRoom(this.game.tilemap.getRoom());
+		this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 	}
 }
 

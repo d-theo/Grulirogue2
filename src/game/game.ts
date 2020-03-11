@@ -13,6 +13,7 @@ import { cpus } from "os";
 import { TileVisibility } from "./tilemap/tile";
 import { AI } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
+import { Terrain } from "../map/terrain";
 
 export class Game {
     tilemap: TileMap;
@@ -36,8 +37,12 @@ export class Game {
         if (this.level < 4) {
             this.tilemap.init(GreeceCreationParams);
         }
+        this.startingPosition();
+        this.tilemap.computeSight({from: this.hero.pos, range:8});
     }
-
+    currentTerrain(): Terrain {
+        return GreeceCreationParams.Terrain;
+    }
     handleMessage(msg: GameMessage) {
         this.log.archive();
         let result: MessageResponse;
@@ -63,7 +68,8 @@ export class Game {
 
         if (result.status === MessageResponseStatus.NotAllowed || result.status === MessageResponseStatus.Error) {
             this.log.add('nothing');
-            return this.compact();
+            //return this.compact();
+            return result;
         }
 
         if (result.events && result.events.length > 0) {
@@ -74,7 +80,7 @@ export class Game {
 
         this.tilemap.computeSight({from: this.hero.pos, range:8});
         this.loopNb ++;
-        return this.compact();
+        return result;
     }
 
     checkNextTurn(timeSpent: number) {
@@ -129,5 +135,10 @@ export class Game {
         a[this.hero.pos.y][this.hero.pos.x] = "h";
         console.log(this.log.currentLog);
         return a;
+    }
+
+    startingPosition() {
+        const heroPos = this.tilemap.startingPosition();
+        this.hero.pos = heroPos;
     }
 }

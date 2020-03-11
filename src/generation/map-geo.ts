@@ -12,8 +12,8 @@ export function insideRect(rect) {
         if (n % 2 === 0) return n;
         return n-1;
     }
-    var width = toPair(rand(Math.floor(rect.width/3)+2, rect.width));
-    var height = toPair(rand(Math.floor(rect.height/3)+2, rect.height));
+    var width = toPair(rand(Math.floor(rect.width/3)+3, rect.width));
+    var height = toPair(rand(Math.floor(rect.height/3)+3, rect.height));
     return {
         width:width,
         height:height,

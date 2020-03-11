@@ -1,8 +1,8 @@
 import { Terrain } from "./terrain";
 
 export const terrainGreece: Terrain = {
-    Void: 11,
-    DoorOpen: 9,
+    Void: 9,
+    DoorOpen: 10,
     DoorLocked: 10,
     CornerSE:8,
     CornerNW:0,

@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack",
     "dev": "webpack",
-    "deploy": "webpack --config webpack.production.config.js"
+    "deploy": "webpack --config webpack.production.config.js",
+    "extrude": "tile-extruder --tileWidth 32 --tileHeight 32 --input ./assets/tilemaps/terrain.png --output ./assets/tilemaps/terrain2.png"
   },
   "repository": {
     "type": "git",
@@ -41,6 +42,7 @@
     "phaser": "^3.22.0",
     "raw-loader": "^0.5.1",
     "shortid": "^2.2.15",
+    "tile-extruder": "^2.0.3",
     "typescript": "^3.8.3",
     "webpack": "3.11.0"
   }

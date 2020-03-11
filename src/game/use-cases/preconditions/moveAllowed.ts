@@ -13,7 +13,7 @@ export function isTileEmpty(pos: Coordinate, movables: Movable[]):boolean {
 }
 export function isSurroundingClear (pos: Coordinate, map: TileMap):boolean {
     const tile = map.getAt(pos);
-    return !tile.isSolid();
+    return tile.isWalkable();
 }
 export function isMovingOnlyOneCase(a: Coordinate, b: Coordinate) :boolean{
     const xd = Math.abs(a.x - b.x);

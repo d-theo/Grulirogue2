@@ -1,17 +1,6 @@
 import { rand, insideRect, middleOfRect, getMiddlesOfRect, pointInRect, lineIntersectRect, distanceBetween, reduceMin } from "./map-geo";
 
 export function generateRLMap(Params) {
-    Params = Params || {
-        Area: 50000, // min area of a room
-        Fuzz: 0.25, // room size variation +-
-        MinClusterSize: 2, // minimal cluster of room
-        Width: 800,
-        Height: 600,
-        MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
-        canvasWidth: 1000,
-        canvasHeight: 1000,
-    }
-
     let G = createGraph();
     let ROOM_IDX = 0;
     generate();
@@ -236,10 +225,6 @@ export function generateRLMap(Params) {
         var ok = false;
         var cpt = 0;
         while(!ok) {
-            if (cpt > 10000) {
-                console.log('no entry =/');
-                return;
-            }
             try {
                 var root = createNode(0, {x:10, y:10, width:Params.Width, height:Params.Height});
                 var rooms = getChildrenOfBinaryGraph(root);

@@ -3,7 +3,6 @@ import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { GameRange } from "../utils/range";
 import { Tile } from "../tilemap/tile";
-import { TileType } from "../tilemap/tileType";
 /*
 'blind',
     'stun',
@@ -71,12 +70,12 @@ export class HoleSpell extends Spell{
     }
 }
 
-export class RockSpell extends Spell{
+/*export class RockSpell extends Spell{
     type = ['tile']
     cast(tile: Tile) {
-        tile.type = TileType.WallGrey;   
+        tile.type = TileType.WallGrey; 
     }
-}
+}*/
 
 export class InvisibilitySpell extends Spell{
     type = ['monster','hero'];

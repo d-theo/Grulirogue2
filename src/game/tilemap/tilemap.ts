@@ -4,9 +4,9 @@ import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
-import { GameRange } from "../utils/range";
 import { matrixForEach } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
+import { Terrain } from "../../map/terrain";
 
 export class TileMap {
     graph!: MapGraph;
@@ -17,9 +17,11 @@ export class TileMap {
     height!: number;
     heightM1!: number;
     widthM1!: number;
+    terrain!: Terrain;
     constructor() {}
     init(params: MapParamCreation) {
         const {isSolid, isWalkable} = tilePropertiesForTerrain(params.Terrain);
+        this.terrain = params.Terrain;
         const {tilemap, mapObject} = createMap(params);
         this.tilemap = tilemap;
         this.graph = mapObject;

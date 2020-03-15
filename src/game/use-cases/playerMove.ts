@@ -6,7 +6,11 @@ import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Coordinate } from "../utils/coordinate";
 
-export function playerMove(args: {pos: Coordinate, monsters: MonsterCollection, hero: Hero, tilemap: TileMap}): MessageResponse {
+export function playerMove(args: {
+    pos: Coordinate,
+    monsters: MonsterCollection, hero: Hero,
+    tilemap: TileMap
+}): MessageResponse {
     const {hero, pos, tilemap, monsters} = args;
     if (
         isTileEmpty(pos, monsters.monstersArray())
@@ -18,11 +22,19 @@ export function playerMove(args: {pos: Coordinate, monsters: MonsterCollection, 
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,
-        };   
+            events: [openDoors(), pickOnGround()]
+        };
     } else {
         return {
             timeSpent: 0,
             status: MessageResponseStatus.NotAllowed
         };
+    }
+}
+
+function openDoors(pos: Coordinate, tilemap: TileMap) {
+    const tile = tilemap.getAt(pos);
+    if (tilemap.terrain.DoorOpen === tile.type) {
+        tile.type = tilemap.terrain.Floor;
     }
 }

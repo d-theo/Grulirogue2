@@ -7,9 +7,12 @@ import { GameEventType } from '../game/events/events';
 import { MessageResponseStatus } from '../game/utils/types';
 import { TilemapItems } from '../map/tilemap-items';
 import { addBiome } from '../generation/map_decoration';
+import { Monster } from '../game/monsters/monster';
+import { monstersSpawn } from '../game/monsters/monster-spawn';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
+	gameMonsters: {monster: Monster, sprite: any}[] = [];
 	cursors: any;
 	tilemap;
 	layer;
@@ -26,14 +29,21 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
+		console.log('preload start');
 		this.gameEngine = new GameEngine();
+		console.log('game created');
 		this.gameEngine.reInitLevel();
+		console.log('level created');
 
 		this.heroPosition = toPix(this.gameEngine.hero.pos);
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
 		this.load.image('terrain2', '/assets/tilemaps/greece2.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
+		this.load.image('Snake', '/assets/sprites/snake.png');
+		this.load.image('Boar', '/assets/sprites/boar.png');
+		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
+		console.log('preload');
 	}
 
 	create() {
@@ -41,19 +51,30 @@ class GameScene extends Phaser.Scene {
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 
+		this.layer = layer;
+
 		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
 		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
 		this.addItems();
-
+		this.addMonsters();
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
-
+		
 		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
 		this.hero.setOrigin(0,0);
+		
 		this.cursors = this.input.keyboard.createCursorKeys();
-		this.layer = layer;
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero, false);
+	}
+
+	addMonsters() {
+		const mobToPlace = this.gameEngine.monsters.monstersArray();
+		for (const mob of mobToPlace) {
+			const m = this.physics.add.sprite(toPix(mob.pos.x), toPix(mob.pos.y), mob.name);
+			m.setOrigin(0,0);
+			this.gameMonsters.push({monster: mob, sprite: m});
+		}
 	}
 
 	addItems() {
@@ -125,11 +146,47 @@ class GameScene extends Phaser.Scene {
 		}
 	}
 
+	moveMonsters() {
+		for(const m of this.gameMonsters) {
+			const delta = this.adjustSpriteAndLogicPosition(m.sprite, m.monster);
+			if (delta) {
+				this.moveTo2(
+					m.sprite,
+					{x: m.sprite.x, y: m.sprite.y},
+					{x: m.sprite.x+delta.x, y: m.sprite.y+delta.y},
+				)
+			}
+		}
+	}
+
+	adjustSpriteAndLogicPosition(sprite, movable) {
+		const dx = toPix(movable.pos.x) - sprite.x;
+		const dy = toPix(movable.pos.y) - sprite.y;
+		if (dx !== 0 || dy !== 0) {
+			return {x: dx,y: dy};
+		} else {
+			return null;
+		}
+	}
+
+	moveTo2(target, posFrom: Coordinate, posTo: Coordinate) {
+		let p = {
+			targets: target,
+			ease: 'Linear',
+			duration: 50,
+			repeat: 0,
+			yoyo: false,
+			x: { from: posFrom.x, to: posTo.x },
+			y: { from: posFrom.y, to: posTo.y }
+		}
+		this.tweens.add(p);
+	}
+
 	update(time: number, delta:number) {
 		this.hero.setVelocity(0,0);
 		if (!this.moveAllowed) {
 			this.delta += delta;
-			if (this.delta > 250) {
+			if (this.delta > 300) {
 				this.moveAllowed = true;
 			}
 			return;
@@ -146,7 +203,9 @@ class GameScene extends Phaser.Scene {
 		if (this.cursors.up.isDown) {
 			this.moveTo('up')
 		}
+		this.moveMonsters();
 		this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
+		this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 	}
 }
 

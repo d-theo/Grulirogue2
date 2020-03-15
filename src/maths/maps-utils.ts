@@ -8,12 +8,20 @@ export type TilePos = {
     x: number,
     y: number
 }
-export function toPix(pos: Coordinate): PixelPos {
-    return {
-        x: pos.x*32,
-        y: pos.y*32
+
+export function toPix(n: number): number;
+export function toPix(pos: Coordinate): PixelPos;
+export function toPix(arg: Coordinate|number): PixelPos | number {
+    if (typeof arg === 'number') {
+        return arg*32;
+    } else {
+        return {
+            x: arg.x*32,
+            y: arg.y*32
+        }
     }
 }
+
 export function toTile(pos): TilePos {
     return {
         x: Math.floor(pos.x/32),

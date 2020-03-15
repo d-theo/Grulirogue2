@@ -22,10 +22,9 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     level: number = 1;
     inventory = new Inventory();
     constructor() {
-        this.health = new Health(20);
-        this.armour = new Armour({absord: 3});
-        this.weapon = new Weapon({});
-        this.pos = {x: 4, y: 0};
+        this.health = new Health(15);
+        this.armour = new Armour({absord: 1});
+        this.weapon = new Weapon({baseDamage: '3-5', range: 2});
         this.xp = 0;
     }
 

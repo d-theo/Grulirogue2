@@ -15,6 +15,5 @@ export function astar(args: {from: Coordinate, tiles: Tile[][], to: Coordinate})
         includeStartNode: false,
         includeEndNode: true
     });
-
     return aStar.findPath(from, to).map(v => ({x: v[0], y: v[1]}));
 }

@@ -10,7 +10,6 @@ export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordi
     if (
         isTileEmpty(pos, game.monsters.monstersArray())
         && isSurroundingClear(pos, game.tilemap)
-        && isMovingOnlyOneCase(game.hero.pos, pos)
         && isInsideMapBorder(pos, game.tilemap.getBorders())
     ) {
         monster.pos = pos;

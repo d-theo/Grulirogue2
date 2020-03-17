@@ -39,8 +39,15 @@ export const AI = (game: Game) => {
     function defaultAI(monster: Monster) {
         const dx = Math.abs(monster.pos.x - game.hero.pos.x);
         const dy = Math.abs(monster.pos.y - game.hero.pos.y);
-
-        if (Math.max(dx,dy) < 8) {
+        const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: game.hero.pos});
+        const distance = Math.max(dx,dy);
+        if (distance > 10) {
+            monster.asSeenHero = false;
+            return randomAI(monster);
+        } else if  (hasVisibility) {
+            monster.asSeenHero = true;
+            return agressiveAI(monster);
+        } else if (monster.asSeenHero) {
             return agressiveAI(monster);
         } else {
             return randomAI(monster);
@@ -58,15 +65,11 @@ export const AI = (game: Game) => {
                 monster
             });
         } else {
-            const R = 8;
+            const R = 10;
             const posAround = game.tilemap.subTitles({
                 from: monster.pos,
                 range: R,
             });
-
-            console.log(game.hero.pos)
-            console.log(monster.pos)
-            console.log(dx,dy)
 
             const path = astar({
                 from: {x:R, y:R},
@@ -89,7 +92,6 @@ export const AI = (game: Game) => {
     }
 
     function randomAI (monster: Monster) {
-        console.log('randomAI');
         const rand = new GameRange(-1,1);
         const x = rand.pick();
         const y = rand.pick();
@@ -97,7 +99,6 @@ export const AI = (game: Game) => {
             x: monster.pos.x+x,
             y: monster.pos.y+y
         };
-        console.log('move')
         monsterMove({
             game: game,
             monster: monster,

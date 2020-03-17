@@ -23,6 +23,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     enchants = new EnchantTable();
     name!: string;
     level: number = 1;
+    asSeenHero: boolean = false;
     private constructor() {
         // this.behavior = arg.behavior;
     }

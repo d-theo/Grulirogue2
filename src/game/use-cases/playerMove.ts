@@ -22,7 +22,7 @@ export function playerMove(args: {
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,
-            events: [openDoors(), pickOnGround()]
+            // events: [openDoors(pos, tilemap), pickOnGround()]
         };
     } else {
         return {
@@ -37,4 +37,7 @@ function openDoors(pos: Coordinate, tilemap: TileMap) {
     if (tilemap.terrain.DoorOpen === tile.type) {
         tile.type = tilemap.terrain.Floor;
     }
+}
+function pickOnGround() {
+
 }

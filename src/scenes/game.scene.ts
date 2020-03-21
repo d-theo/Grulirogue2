@@ -7,7 +7,7 @@ import { GameEventType } from '../game/events/events';
 import { MessageResponseStatus } from '../game/utils/types';
 import { TilemapItems } from '../map/tilemap-items';
 import { Monster } from '../game/monsters/monster';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened } from '../eventBus/game-bus';
 
 class GameScene extends Phaser.Scene {
 	hero: any;
@@ -21,6 +21,7 @@ class GameScene extends Phaser.Scene {
 	heroPosition: Coordinate
 	tilemapVisibility: TilemapVisibility;
 	tilemapItems: TilemapItems;
+	tilemapFloor: TilemapItems;
 
 
 	constructor() {
@@ -53,6 +54,8 @@ class GameScene extends Phaser.Scene {
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 
 		this.layer = layer;
+		this.tilemapFloor = new TilemapItems(this.layer, this.gameEngine.tilemap.graph.rooms);
+
 
 		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
 		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
@@ -101,7 +104,12 @@ class GameScene extends Phaser.Scene {
 				{x: this.hero.x, y: this.hero.y},
 				{x: this.hero.x+delta.x, y: this.hero.y+delta.y},
 			)
-		})
+		});
+		gameBus.subscribe(doorOpened, event => {
+			console.log('door opened')
+			const {pos} = event.payload;
+			this.layer.putTileAt(this.gameEngine.currentTerrain().DoorOpened, pos.x, pos.y);
+		});
 	}
 
 	placeMonsters() {
@@ -117,18 +125,24 @@ class GameScene extends Phaser.Scene {
 		this.tilemapItems.placeItems(this.gameEngine.currentTerrain().Deco4, (pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, (pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, 0.5 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, (pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, 0.5 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, (pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, 0.5 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, (pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, 0.5 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt1, 1,null);
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt1, 1,null);
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt2, 1,null);
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt2, 1,null);
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt3, 1,null);
+		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt3, 1,null);
 	}
 
 	moveTo(pos) {
@@ -187,18 +201,10 @@ class GameScene extends Phaser.Scene {
 			}
 			return;
 		}
-		if (this.cursors.left.isDown) {
-			this.moveTo('left')
-		}
-		if (this.cursors.right.isDown) {
-			this.moveTo('right')
-		}
-		if (this.cursors.down.isDown) {
-			this.moveTo('down')
-		}
-		if (this.cursors.up.isDown) {
-			this.moveTo('up')
-		}
+		if (this.cursors.left.isDown) this.moveTo('left')
+		if (this.cursors.right.isDown) this.moveTo('right')
+		if (this.cursors.down.isDown) this.moveTo('down')
+		if (this.cursors.up.isDown) this.moveTo('up')
 	}
 }
 

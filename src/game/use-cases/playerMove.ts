@@ -5,6 +5,7 @@ import { MonsterCollection } from "../monsters/monsterCollection";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Coordinate } from "../utils/coordinate";
+import { gameBus, doorOpened } from "../../eventBus/game-bus";
 
 export function playerMove(args: {
     pos: Coordinate,
@@ -19,6 +20,9 @@ export function playerMove(args: {
         && isInsideMapBorder(pos, tilemap.getBorders())
     ) {
         hero.pos = pos;
+        if (hasOpenedDoors(pos, tilemap)) {
+            gameBus.publish(doorOpened({pos}));
+        }
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,
@@ -32,11 +36,13 @@ export function playerMove(args: {
     }
 }
 
-function openDoors(pos: Coordinate, tilemap: TileMap) {
+function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     const tile = tilemap.getAt(pos);
     if (tilemap.terrain.DoorOpen === tile.type) {
-        tile.type = tilemap.terrain.Floor;
+        tile.type = tilemap.terrain.DoorOpened;
+        return true;
     }
+    return false;
 }
 function pickOnGround() {
 

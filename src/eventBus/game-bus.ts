@@ -5,6 +5,10 @@ import { Coordinate } from "../game/utils/coordinate";
 
 export const gameBus = new EventBus();
 
+export const doorOpened = createEventDefinition<{
+    pos: Coordinate
+}>()('doorOpened');
+
 export const logPublished = createEventDefinition<{
     data: string;
 }>()('logPublished');

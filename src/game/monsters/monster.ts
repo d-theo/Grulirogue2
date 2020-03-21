@@ -11,8 +11,10 @@ import { Enchantable, EnchantTable } from "../entitybase/enchantable";
 import { Behavior, AIBehavior } from "./ai";
 import { pickInRange, pickInArray } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
-
+let short = require('short-uuid');
+ 
 export class Monster implements Movable, Killable, Fighter, Enchantable {
+    id = short.generate();
     health!: Health;
     armour: Armour = new Armour({absorbBase: 0});
     weapon!: Weapon;

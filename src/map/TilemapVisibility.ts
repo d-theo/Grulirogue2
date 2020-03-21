@@ -20,13 +20,14 @@ export class TilemapVisibility {
         tiles.length
       );
     }
-    setFogOfWar1(tiles: Tile[][], gameMonsters: {monster: Monster, sprite: any}[]) {
+    setFogOfWar1(tiles: Tile[][], gameMonsters: { [id: string]: {monster: Monster, sprite: any} }) {
       const alphas = {
         [TileVisibility.OnSight]: 1,
         [TileVisibility.Hidden]: 0,
         [TileVisibility.Far]: 0,
       }
-      gameMonsters.forEach(m => {
+      
+      Object.values(gameMonsters).forEach(m => {
         const y = m.monster.pos.y;
         const x = m.monster.pos.x;
         m.sprite.alpha = alphas[tiles[y][x].visibility];

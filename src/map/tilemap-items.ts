@@ -10,19 +10,19 @@ export class TilemapItems {
                 if (r.rect.width > 2 && r.rect.height > 2) {
                     const pos = randomIn(r.rect,1);
                     this.itemLayer.putTilesAt(itemKind, pos.x, pos.y);
-                    cb(pos);
+                    cb && cb(pos);
                 }
             } catch(e){}
         });
     }
-    placeItem(itemKind, cb) {
+    placeItem(itemKind, chance ,cb) {
         this.rooms.forEach(r => {
             try {
                 var rand = Math.random();
-                if (rand > 0.5) return;
+                if (rand > chance) return;
                 const pos = randomIn(r.rect, 1);
                 this.itemLayer.putTileAt(itemKind, pos.x, pos.y);
-                cb(pos);
+                cb && cb(pos);
             } catch(e) {}
         });
     }

@@ -8,34 +8,68 @@ import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
 import { BuffEffect } from "../entitybase/effect";
 import { Enchantable, EnchantTable } from "../entitybase/enchantable";
-import { Behavior } from "./ai";
-
+import { Behavior, AIBehavior } from "./ai";
+import { pickInRange, pickInArray } from "../utils/random";
+import { microValidator } from "../utils/micro-validator";
+let short = require('short-uuid');
+ 
 export class Monster implements Movable, Killable, Fighter, Enchantable {
-    health: Health;
-    armour: Armour;
-    weapon: Weapon;
-    pos: Coordinate;
-    xp: number;
-    behavior: Behavior;
-    buffs: Buffs;
+    id = short.generate();
+    health!: Health;
+    armour: Armour = new Armour({absorbBase: 0});
+    weapon!: Weapon;
+    pos!: Coordinate;
+    xp!: number;
+    behavior!: Behavior;
+    buffs: Buffs = new Buffs();
     enchants = new EnchantTable();
+    name!: string;
     level: number = 1;
-    constructor(arg: {x?: number, y?: number, behavior: Behavior}) {
-        this.pos = {
-            x: arg.x || 2,
-            y: arg.y || 2,
-        };
-        this.buffs = new Buffs();
-        this.health = new Health(10);
-        this.armour = new Armour({absorbBase: 1});
-        this.weapon = new Weapon({});
-        this.xp = 100;
-        this.behavior = arg.behavior;
+    asSeenHero: boolean = false;
+    private constructor() {
+        // this.behavior = arg.behavior;
+    }
+    setXp(xp: number) {
+        this.xp = xp;
+        return this;
+    }
+    setPos(pos: Coordinate) {
+        this.pos = pos;
+        return this;
+    }
+    setHealth(h: Health) {
+        this.health = h;
+        return this;
+    }
+    setWeapon(w: Weapon) {
+        this.weapon = w;
+        return this;
+    }
+    setName(n: string) {
+        this.name = n;
+        return this;
+    }
+    setBehavior(f: Behavior) {
+        this.behavior = f;
+        return this;
     }
     addBuff(buff: BuffEffect) {
         this.buffs.addBuff(buff);
     }
     play() {
         this.behavior(this);
+    }
+    static makeMonster(arg: any) : Monster {
+        const {kind, danger, hp, damage, range, pos} = arg;
+        microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');
+        
+        const monster = new Monster();
+        return monster
+            .setHealth(new Health(pickInRange(hp)))
+            .setWeapon(new Weapon({baseDamage: pickInArray(damage), maxRange: range}))
+            .setXp(danger)
+            .setName(kind)
+            .setPos(pos)
+            .setBehavior(AIBehavior.Default());
     }
 }

@@ -3,6 +3,7 @@ import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder
 import { MessageResponseStatus } from "../utils/types";
 import { Monster } from "../monsters/monster";
 import { Coordinate } from "../utils/coordinate";
+import { gameBus, monsterMoved } from "../../eventBus/game-bus";
 
 export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordinate}) {
     const {game, monster, nextPos} = args;
@@ -10,14 +11,14 @@ export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordi
     if (
         isTileEmpty(pos, game.monsters.monstersArray())
         && isSurroundingClear(pos, game.tilemap)
-        && isMovingOnlyOneCase(game.hero.pos, pos)
         && isInsideMapBorder(pos, game.tilemap.getBorders())
     ) {
         monster.pos = pos;
+        gameBus.publish(monsterMoved({monster: monster}));
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,
-        };   
+        };
     } else {
         return {
             timeSpent: 0,

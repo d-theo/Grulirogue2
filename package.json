@@ -41,8 +41,10 @@
     "perlin-noise": "0.0.1",
     "phaser": "^3.22.0",
     "raw-loader": "^0.5.1",
+    "short-uuid": "^3.1.1",
     "shortid": "^2.2.15",
     "tile-extruder": "^2.0.3",
+    "ts-bus": "^2.3.1",
     "typescript": "^3.8.3",
     "webpack": "3.11.0"
   }

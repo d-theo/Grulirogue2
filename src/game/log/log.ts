@@ -1,22 +1,18 @@
-export class Log {
-    currentLog: string[];
-    allLog: string[];
-    constructor() {
-        this.currentLog = [];
-        this.allLog = [];
-    }
+import { gameBus, monsterAttacked, logPublished } from "../../eventBus/game-bus";
 
-    add(log: string) {
-        this.currentLog.push(log);
+export class Log {
+    static initialized = false;
+    static init() {
+        if (Log.initialized) {
+            return;
+        }
+        Log.initialized = true;
+
+        gameBus.subscribe(monsterAttacked, event => {
+            Log.log(`The monster is attacking you !`);
+        });
     }
-    getLog() {
-        return this.currentLog;
-    }
-    getFullLog() {
-        return this.allLog;
-    }
-    archive() {
-        this.allLog = this.allLog.concat(this.currentLog);
-        this.currentLog = [];
+    static log(msg: string) {
+        gameBus.publish(logPublished({data: msg}));
     }
 }

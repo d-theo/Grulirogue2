@@ -30,6 +30,9 @@ export class Tile {
     isEmpty() {
         return this.isWalkableFct(this.type);
     }
+    isOpenDoor() {
+        return 
+    }
     setObscurity() {
         if (this.viewed) {
             this.visibility = TileVisibility.Far;

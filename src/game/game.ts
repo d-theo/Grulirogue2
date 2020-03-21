@@ -2,18 +2,14 @@ import { TileMap } from "./tilemap/tilemap";
 import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
 import { playerMove } from "./use-cases/playerMove";
-import { GameMessage } from "./events/messages";
-import { GameEventType, InternalEventType, GameEvent } from "./events/events";
 import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
-import { playerAttack } from "./use-cases/playerAttack";
-import { Log } from "./log/log";
-import { throws } from "assert";
-import { cpus } from "os";
-import { TileVisibility } from "./tilemap/tile";
-import { AI } from "./monsters/ai";
+import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
+import { monstersSpawn } from "./monsters/monster-spawn";
+import {sightUpdated, gameBus, playerActionMove, playerMoved} from '../eventBus/game-bus';
+
 
 export class Game {
     tilemap: TileMap;
@@ -21,16 +17,16 @@ export class Game {
     monsters: MonsterCollection;
     loopNb: number;
     currentTurn: number;
-    log: Log;
-    level = 0;
+    level = 1;
     constructor() {
         this.tilemap = new TileMap();
         this.hero = new Hero();
         this.loopNb = 0;
         this.currentTurn = 0;
-        this.log = new Log();
+        this.monsters = new MonsterCollection();
         const behaviors = AI(this);
-        this.monsters = new MonsterCollection(behaviors);
+        AIBehavior.init(behaviors);
+        this.initBus();
     }
 
     reInitLevel() {
@@ -38,103 +34,53 @@ export class Game {
             this.tilemap.init(GreeceCreationParams);
         }
         this.startingPosition();
-        this.tilemap.computeSight({from: this.hero.pos, range:8});
+        this.adjustSight();
+        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, 20));
+        
+    }
+    initBus() {
+        gameBus.subscribe(playerActionMove, event => {
+            const {to} = event.payload;
+            const result: MessageResponse = playerMove({
+                monsters: this.monsters,
+                pos: to,
+                hero: this.hero,
+                tilemap: this.tilemap
+            });
+            if (result.status === MessageResponseStatus.Ok) {
+                gameBus.publish(playerMoved({}));
+                this.nextTurn(result.timeSpent);
+                this.adjustSight();
+            }
+        });
     }
     currentTerrain(): Terrain {
         return GreeceCreationParams.Terrain;
     }
-    handleMessage(msg: GameMessage) {
-        this.log.archive();
-        let result: MessageResponse;
-        this.log.add(msg.type);
-        switch(msg.type) {
-            case GameEventType.PlayerMove:
-                result = playerMove({
-                    monsters: this.monsters,
-                    pos: msg.data.to,
-                    hero: this.hero,
-                    tilemap: this.tilemap
-                });
-                break;
-            case GameEventType.PlayerAttack: 
-                result = playerAttack({
-                    attacked: this.getAttackable(msg.data.to),
-                    hero: this.hero,
-                    tilemap: this.tilemap
-                });
-                break;
-            default: throw new Error('not implemented code: '+JSON.stringify(msg));
-        }
 
-        if (result.status === MessageResponseStatus.NotAllowed || result.status === MessageResponseStatus.Error) {
-            this.log.add('nothing');
-            //return this.compact();
-            return result;
-        }
-
-        if (result.events && result.events.length > 0) {
-            this.resolveEvents(result.events);
-        }
-
-        this.checkNextTurn(result.timeSpent);
-
+    adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range:8});
-        this.loopNb ++;
-        return result;
+        gameBus.publish(sightUpdated({}));
     }
 
-    checkNextTurn(timeSpent: number) {
+    nextTurn(timeSpent: number) {
+        if (this.isNextTurn(timeSpent)) {
+            this.monsters.play();
+        }
+    }
+
+    isNextTurn(timeSpent: number) {
         this.currentTurn += timeSpent;
         if (this.currentTurn >= 1) {
             this.currentTurn = 0;
-            return 1;
+            return true;
         } else {
-            return 0;
+            return false;
         }
     }
-
-    resolveEvents(events: GameEvent[]) {
-        if (events.length === 0) return;
-        const nextEvent = events.shift() as GameEvent;
-        this.log.add(nextEvent.type);
-        switch(nextEvent.type) {
-            case InternalEventType.MonsterDead:
-                break;
-            default: throw new Error('not implemented code: '+JSON.stringify(nextEvent));
-        }
-        this.resolveEvents(events);
-    }
-
 
     getAttackable(pos: Coordinate) {
         return this.monsters.getAt(pos);
-    }
-
-
-    compact() {
-        const a = Array(this.tilemap.height).fill('-').map(()=>Array(this.tilemap.width).fill('-'));
-        for (let row of this.tilemap.tiles) {
-            for (let t of row) {
-                switch(t.visibility) {
-                    case TileVisibility.Hidden: 
-                        a[t.pos.y][t.pos.x] = '8';
-                        break;
-                    case TileVisibility.OnSight:
-                        a[t.pos.y][t.pos.x] = '-';
-                        break;
-                    case TileVisibility.Far:
-                        a[t.pos.y][t.pos.x] = '@';
-                        break;
-                }
-                if (t.isSolid()) a[t.pos.y][t.pos.x] = 'x'; 
-            }
-        }
-        for (let m of this.monsters.monstersArray()) {
-            a[m.pos.y][m.pos.x] = 'm';
-        }
-        a[this.hero.pos.y][this.hero.pos.x] = "h";
-        console.log(this.log.currentLog);
-        return a;
     }
 
     startingPosition() {

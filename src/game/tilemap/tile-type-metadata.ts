@@ -24,6 +24,7 @@ export function tilePropertiesForTerrain(t: Terrain) {
         return [
             t.Floor,
             t.DoorOpen,
+            t.DoorOpened,
             t.DoorLocked,
         ].indexOf(type) > -1;
     }

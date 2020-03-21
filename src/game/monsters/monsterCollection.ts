@@ -1,19 +1,18 @@
 import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
 import { Behavior } from './ai';
+import { monstersSpawn } from './monster-spawn';
 
 export class MonsterCollection {
-    monsters: Monster[];
-    behaviors: Map<string, Behavior>;
-    constructor(behaviors: Map<string, Behavior>) {
-        this.monsters = [
-            new Monster({behavior: behaviors.get('random') as Behavior})
-        ];
-        this.behaviors = behaviors;
-    }
+    monsters: Monster[] = [];
+    constructor() {}
 
     monstersArray() {
         return this.monsters;
+    }
+
+    setMonsters(monsters: Monster[]) {
+        this.monsters = monsters;
     }
 
     getAt(pos: Coordinate) {

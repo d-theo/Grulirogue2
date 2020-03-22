@@ -1,16 +1,25 @@
 import 'phaser';
 import GameScene from './scenes/game.scene';
+import HudScene from './scenes/hud.scene';
 
-const config = {
+import {test} from './hud';
+
+export const CellSize = 32;
+export const Los = 8;
+export const W = CellSize*23;
+export const H = CellSize*17;
+export const config = {
     type: Phaser.AUTO,
     parent: 'content',
-    width: 1280,
-    height: 720,
+    width: W,
+    height: H,
     resolution: 1, 
     backgroundColor: "#EDEEC9",
     pixelArt: true,
+    fps: 30,
     scene: [
-      GameScene
+      GameScene,
+      //HudScene
     ],
     physics: {
       default: 'arcade',
@@ -20,4 +29,5 @@ const config = {
   }
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+test();

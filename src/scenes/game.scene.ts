@@ -67,6 +67,7 @@ class GameScene extends Phaser.Scene {
 		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
 		this.hero.setOrigin(0,0);
 		
+		//this.cameras.main.setViewport(0, 0, 32*23, 32*17+16);
 		this.cursors = this.input.keyboard.createCursorKeys();
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero, false);
@@ -78,6 +79,8 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
+
+		//this.scene.launch(SceneName.Hud);
 	}
 
 	initGameEvents() {

@@ -18,6 +18,102 @@
     </style>
 </head>
 
-<body>
-    <div id="content"></div>
+<body class="g-body">
+    <div style="display: flex;">
+        <div id="content"></div>
+        <div class="hud">
+            <div class="hud-line">
+                <span>Grulito le vaillant</span>
+            </div>
+            <div class="hud-line">
+                <span>Level 1</span>
+            </div>
+            <div class="hud-line">
+                <span style="width: 50px;">HP : </span>
+                <div class="hud-bar-box">
+                    <div id="current-hp" class="hud-bar"></div>
+                    <div id="current-hp-value" class="hud-bar-value"></div>
+                </div>
+            </div>
+            <div class="hud-line">
+                <span style="width: 50px;">XP : </span>
+                <div class="hud-bar-box">
+                    <div id="current-xp" class="hud-bar"></div>
+                    <div id="current-xp-value" class="hud-bar-value"></div>
+                </div>
+            </div>
+            <div class="hud-line">
+                <span>Weapon 1 : </span><span>Water pistol</span>
+            </div>
+            <div class="hud-line">
+                <span>Ammo 1 : </span><span>2/2</span>
+            </div>
+            <div class="hud-line">
+                <span>Weapon 2 : </span><span>Tazer</span>
+            </div>
+            <div class="hud-line">
+                <span>Ammo 2 : </span><span>10/10</span>
+            </div>
+        </div>
+    </div>
+    <div class="log">
+        <p>
+            Bienvenue dans le grulirogue : va et trouve ton chat dans le dongeon ! 
+        </p>
+    </div>
 </body>
+
+<style>
+    .g-body {
+        display: flex;
+        flex-direction: column;
+    }
+    .log {
+        display: flex;
+        height: 100px;
+        background-color: black;
+        color: yellow;
+        margin-top: -6px;
+        width: 1005px;
+    }
+    .hud {
+        display: flex;
+        flex-direction: column;
+        background-color: black;
+        color: white;
+        width: 250px;
+        height: 524px;
+        padding: 10px;
+    }
+    .hud-line {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .hud-bar-box {
+        border: 1px white solid;
+        width: 200px;
+        height: 30px;
+        
+    }
+    .hud-bar {
+        width: 100%;
+        height: 100%;
+        transition: width 0.2s ease-in-out;
+    }
+    .hud-bar-value {
+        width: 100%;
+        height: 100%;
+        color: white;
+        bottom: 23px;
+        position: relative;
+        text-align: center;
+    }
+
+    #current-hp {
+        background-color: red;
+    }
+    #current-xp {
+        background-color: orange;
+    }
+</style>

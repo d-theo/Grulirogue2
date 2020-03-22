@@ -1,3 +1,4 @@
 export enum SceneName {
-    Game = 'GameScene'
+    Game = 'GameScene',
+    Inventory = 'InventoryScene'
 }

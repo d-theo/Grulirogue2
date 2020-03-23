@@ -1,6 +1,5 @@
 import 'phaser';
 import GameScene from './scenes/game.scene';
-import HudScene from './scenes/hud.scene';
 
 import {test} from './hud';
 
@@ -16,7 +15,6 @@ export const config = {
     resolution: 1, 
     backgroundColor: "#EDEEC9",
     pixelArt: true,
-    fps: 30,
     scene: [
       GameScene,
       //HudScene

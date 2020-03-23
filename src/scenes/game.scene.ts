@@ -64,8 +64,17 @@ class GameScene extends Phaser.Scene {
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 		
+
+		
 		this.hero = this.physics.add.sprite(this.heroPosition.x, this.heroPosition.y, 'hero');
 		this.hero.setOrigin(0,0);
+		/*
+		const container = new Phaser.GameObjects.Container(this.layer);
+		const graphics = this.add.graphics({ fillStyle: { color: 0x0000ff }});
+		var rect = new Phaser.Geom.Rectangle(this.heroPosition.x+2, this.heroPosition.y-6, 28, 4);
+		const healthbar = graphics.fillRectShape(rect);
+		container.add(this.hero);
+		container.add(healthbar);*/
 		
 		//this.cameras.main.setViewport(0, 0, 32*23, 32*17+16);
 		this.cursors = this.input.keyboard.createCursorKeys();
@@ -116,6 +125,7 @@ class GameScene extends Phaser.Scene {
 	}
 
 	placeMonsters() {
+		
 		const mobToPlace = this.gameEngine.monsters.monstersArray();
 		for (const mob of mobToPlace) {
 			const m = this.physics.add.sprite(toPix(mob.pos.x), toPix(mob.pos.y), mob.name);

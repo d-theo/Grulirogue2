@@ -1,27 +1,35 @@
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
 import { Attack } from "../fight/fight";
 import { HealthStatus } from "../entitybase/health";
-import { InternalEventType } from "../events/events";
+import { InternalEventType, GameEventType } from "../events/events";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Monster } from "../monsters/monster";
+import { gameBus, playerTookDammage } from "../../eventBus/game-bus";
 
 export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResponse {
     const {hero, monster} = args; 
 
     const damages = new Attack(monster, hero).do();
     const healthReport = hero.health.take(damages);
-    const evts = [];
-
-    console.log(hero.health);
-
+    if (healthReport.status === HealthStatus.Dammaged) {
+        gameBus.publish(playerTookDammage({
+            amount: healthReport.amount!,
+            monster: monster,
+            baseHp: hero.health.baseHp,
+            currentHp: hero.health.currentHp
+        }))
+    }
+    if (healthReport.status === HealthStatus.Unaffected) {
+        gameBus.publish(playerTookDammage({
+            amount: 0,
+            monster: monster,
+            baseHp: hero.health.baseHp,
+            currentHp: hero.health.currentHp
+        }));
+    }
     if (healthReport.status === HealthStatus.Dead) {
-        evts.push({
-            type: InternalEventType.HeroDead,
-            data: {
-                target: hero
-            }
-        });
+        console.log('dead');
     }
     
     return {
@@ -33,6 +41,5 @@ export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResp
                 target: hero
             }
         },
-        events: evts
     };
 }

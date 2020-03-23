@@ -1,4 +1,4 @@
-import { gameBus, monsterAttacked, logPublished } from "../../eventBus/game-bus";
+import { gameBus, monsterAttacked, logPublished, playerTookDammage } from "../../eventBus/game-bus";
 
 export class Log {
     static initialized = false;
@@ -8,8 +8,8 @@ export class Log {
         }
         Log.initialized = true;
 
-        gameBus.subscribe(monsterAttacked, event => {
-            Log.log(`The monster is attacking you !`);
+        gameBus.subscribe(playerTookDammage, event => {
+            Log.log(`${event.payload.monster.name} deals you ${Math.abs(event.payload.amount)} dammage`);
         });
     }
     static log(msg: string) {

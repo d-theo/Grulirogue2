@@ -5,6 +5,8 @@ import { Coordinate } from "../game/utils/coordinate";
 
 export const gameBus = new EventBus();
 
+export const gameStarted = createEventDefinition<{}>()('gameStarted');
+
 export const doorOpened = createEventDefinition<{
     pos: Coordinate
 }>()('doorOpened');
@@ -22,6 +24,13 @@ export const playerActionMove = createEventDefinition<{
 
 export const playerMoved = createEventDefinition<{
 }>()("playerMove");
+
+export const playerTookDammage = createEventDefinition<{
+    amount: number,
+    monster: Monster,
+    baseHp: number,
+    currentHp: number,
+}>()("playerTookDammage");
 
 export const monsterMoved = createEventDefinition<{
     monster: Monster

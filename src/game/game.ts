@@ -9,6 +9,7 @@ import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
 import {sightUpdated, gameBus, playerActionMove, playerMoved} from '../eventBus/game-bus';
+import { Log } from "./log/log";
 
 
 export class Game {
@@ -19,6 +20,7 @@ export class Game {
     currentTurn: number;
     level = 1;
     constructor() {
+        Log.init();
         this.tilemap = new TileMap();
         this.hero = new Hero();
         this.loopNb = 0;

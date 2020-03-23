@@ -4,7 +4,7 @@ import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 
 class GameScene extends Phaser.Scene {
@@ -70,6 +70,7 @@ class GameScene extends Phaser.Scene {
 
 		// hack ! 
 		setTimeout(() => {
+			gameBus.publish(gameStarted({}));
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);

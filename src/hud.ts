@@ -1,9 +1,21 @@
-import { gameBus, playerMoved } from "./eventBus/game-bus";
+import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage } from "./eventBus/game-bus";
 import $ from 'jquery';
 
 export function test() {
+    gameBus.subscribe(gameStarted, event => {
+        $('#hud').show();
+        $('#log').show();
+    });
+    gameBus.subscribe(logPublished, event => {
+        $('#log-txt').text(event.payload.data);
+    });
+    gameBus.subscribe(playerTookDammage, event => {
+        const curr = event.payload.currentHp * 100 / event.payload.baseHp;
+        $('#current-hp').width(curr+'%');
+        $('#current-hp-value').text(`${event.payload.currentHp} / ${event.payload.baseHp}`);
+    });
+
     $('#current-xp').width('0%');
-    $('#current-hp-value').text('10 / 10');
     $('#current-xp-value').text('0 / 100');
 
     let i =0;
@@ -12,6 +24,6 @@ export function test() {
         hp.text(''+i++);
     });
     /*setTimeout(() => {
-        $('#current-hp').width('50%');
+        
     }, 2000);*/
 };

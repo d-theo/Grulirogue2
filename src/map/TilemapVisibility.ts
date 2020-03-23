@@ -21,7 +21,7 @@ export class TilemapVisibility {
         tiles.length
       );
     }
-    setFogOfWar1(tiles: Tile[][], gameMonsters: { [id: string]: UIEntity ) {
+    setFogOfWar1(tiles: Tile[][], gameMonsters: { [id: string]: UIEntity }) {
       const alphas = {
         [TileVisibility.OnSight]: 1,
         [TileVisibility.Hidden]: 0,

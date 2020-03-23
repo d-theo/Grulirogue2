@@ -9,6 +9,7 @@ import { UIEntity } from '../UIEntities/ui-entity';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
+	target: any;
 	gameMonsters: { [id: string]:  UIEntity} = {};
 	cursors: any;
 	tilemap;
@@ -42,6 +43,7 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Snake', '/assets/sprites/snake.png');
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
+		this.load.image('target', '/assets/sprites/target.png');
 		console.log('preload');
 	}
 
@@ -61,6 +63,12 @@ class GameScene extends Phaser.Scene {
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 		
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
+		this.target = this.physics.add.sprite(0, 0, 'target');
+		this.target.setOrigin(0,0);
+		this.input.on('pointermove', () => {
+			this.target.setAlpha(0.9);
+		});
+		this.input.on('pointerup', this.handleMouseClick.bind(this));
 
 		this.cursors = this.input.keyboard.createCursorKeys();
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -74,7 +82,6 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
-
 		//this.scene.launch(SceneName.Hud);
 	}
 
@@ -130,6 +137,17 @@ class GameScene extends Phaser.Scene {
 		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt3, 1,null);
 	}
 
+	handleMouseClick() {
+		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
+		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+		this.target.x = tile.x * 32;
+		this.target.y = tile.y * 32;
+		const mob = this.gameEngine.getAttackable({x:tile.x, y:tile.y});
+		if (!mob) {
+			const t = this.gameEngine.tilemap.getAt({x:tile.x, y:tile.y});
+		}
+	}
+
 	moveTo(pos) {
 		let newPos: Coordinate = {x:-1, y:-1};
 		let heroPos = this.gameEngine.hero.pos;
@@ -149,6 +167,7 @@ class GameScene extends Phaser.Scene {
 		}
 		this.moveAllowed = false;
 		this.delta = 0;
+		this.target.setAlpha(0);
 		gameBus.publish(playerActionMove({
 			to: newPos
 		}));
@@ -163,10 +182,15 @@ class GameScene extends Phaser.Scene {
 			}
 			return;
 		}
-		if (this.cursors.left.isDown) this.moveTo('left')
-		if (this.cursors.right.isDown) this.moveTo('right')
-		if (this.cursors.down.isDown) this.moveTo('down')
-		if (this.cursors.up.isDown) this.moveTo('up')
+		if (this.cursors.left.isDown) this.moveTo('left');
+		if (this.cursors.right.isDown) this.moveTo('right');
+		if (this.cursors.down.isDown) this.moveTo('down');
+		if (this.cursors.up.isDown) this.moveTo('up');
+
+		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
+		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+		this.target.x = tile.x * 32;
+		this.target.y = tile.y * 32;
 	}
 }
 

@@ -1,5 +1,6 @@
 import {Tile, TileVisibility} from '../game/tilemap/tile';
 import { Monster } from '../game/monsters/monster';
+import { UIEntity } from '../UIEntities/ui-entity';
 
 export class TilemapVisibility {
     constructor(private shadowLayer) {}
@@ -20,7 +21,7 @@ export class TilemapVisibility {
         tiles.length
       );
     }
-    setFogOfWar1(tiles: Tile[][], gameMonsters: { [id: string]: {monster: Monster, sprite: any} }) {
+    setFogOfWar1(tiles: Tile[][], gameMonsters: { [id: string]: UIEntity ) {
       const alphas = {
         [TileVisibility.OnSight]: 1,
         [TileVisibility.Hidden]: 0,
@@ -28,8 +29,8 @@ export class TilemapVisibility {
       }
       
       Object.values(gameMonsters).forEach(m => {
-        const y = m.monster.pos.y;
-        const x = m.monster.pos.x;
+        const y = m.subject.pos.y;
+        const x = m.subject.pos.x;
         m.sprite.alpha = alphas[tiles[y][x].visibility];
       });
     }

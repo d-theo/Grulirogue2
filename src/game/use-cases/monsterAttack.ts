@@ -13,7 +13,7 @@ export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResp
     const healthReport = hero.health.take(damages);
     const evts = [];
 
-    console.log(healthReport);
+    console.log(hero.health);
 
     if (healthReport.status === HealthStatus.Dead) {
         evts.push({

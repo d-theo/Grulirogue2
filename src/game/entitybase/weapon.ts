@@ -5,7 +5,7 @@ import { pickInRange } from "../utils/random";
 export class Weapon extends Item {
     baseDamage: string;
     maxRange: number;
-    constructor(arg: any) { // Todo
+    constructor(arg: any) { // TODO
         super(arg);
         this.baseDamage = arg.baseDamage;
         this.maxRange = arg.maxRange || 1;

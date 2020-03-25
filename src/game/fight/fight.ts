@@ -6,6 +6,7 @@ export class Attack {
     do() {
         const weapon = this.attacker.weapon;
         const armour = this.target.armour;
-        return weapon.deal() - armour.absorbBase;
+        const dealt = weapon.deal();
+        return dealt - armour.baseAbsorb;
     }
 }

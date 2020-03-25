@@ -15,7 +15,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     health: Health;
     armour: Armour;
     weapon: Weapon;
-    pos: Coordinate;
+    pos!: Coordinate;
     enchants: EnchantTable = new EnchantTable();
     xp: number;
     buffs: Buffs = new Buffs();
@@ -23,8 +23,8 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     inventory = new Inventory();
     constructor() {
         this.health = new Health(15);
-        this.armour = new Armour({absord: 1});
-        this.weapon = new Weapon({baseDamage: '3-5', range: 2});
+        this.armour = new Armour({baseAbsorb: 0});
+        this.weapon = new Weapon({baseDamage: '3-5', maxRange: 2});
         this.xp = 0;
     }
 

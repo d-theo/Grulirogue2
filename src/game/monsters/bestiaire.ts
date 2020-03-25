@@ -19,7 +19,7 @@ export const Bestiaire = {
             danger: 15,
             hp: '10-15',
             damage: '3-5',
-            range: 5
+            range: 6
         }
     }
 }

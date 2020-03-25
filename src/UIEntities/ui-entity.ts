@@ -27,7 +27,12 @@ export class UIEntity {
         delta && this.animateToSynchronize(delta);
 	}
 	
-	update() {
+	updateHp() {
+		if (this.subject.health.currentHp <= 0) {
+			this.sprite.destroy();
+			this.healthBarFull.destroy();
+			this.healthBar.destroy();
+		}
 		if (this.subject.health.currentHp === this.subject.health.baseHp) {
 			this.healthBar.setAlpha(0);
 			this.healthBarFull.setAlpha(0);

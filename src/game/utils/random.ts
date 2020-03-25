@@ -17,7 +17,7 @@ export function pickInRange(arg1: string|number, arg2?: number): number {
     } else if (typeof arg1 === 'number' && arg2 == null) {
         return _.random(0, arg1);
     } else if (typeof arg1 === 'string') {
-        const args = arg1.split('-').map(parseInt);
+        const args = arg1.split('-').map(x => parseInt(x));
         return _.random(args[0], args[1]);
     } else {
         throw new Error(`invalid input for random ${arg1} ${arg2}`);

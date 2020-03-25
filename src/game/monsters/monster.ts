@@ -66,7 +66,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         const monster = new Monster();
         return monster
             .setHealth(new Health(pickInRange(hp)))
-            .setWeapon(new Weapon({baseDamage: pickInArray(damage), maxRange: range}))
+            .setWeapon(new Weapon({baseDamage: damage, maxRange: range}))
             .setXp(danger)
             .setName(kind)
             .setPos(pos)

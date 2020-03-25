@@ -1,6 +1,7 @@
 import {Tile, TileVisibility} from '../game/tilemap/tile';
 import { Monster } from '../game/monsters/monster';
 import { UIEntity } from '../UIEntities/ui-entity';
+import { Coordinate } from '../game/utils/coordinate';
 
 export class TilemapVisibility {
     constructor(private shadowLayer) {}
@@ -33,5 +34,21 @@ export class TilemapVisibility {
         const x = m.subject.pos.x;
         m.sprite.alpha = alphas[tiles[y][x].visibility];
       });
+    }
+    showRange(tiles: Tile[][]) {
+      for (let line of tiles) {
+        for (let t of line) {
+          const tile = this.shadowLayer.getTileAt(t.pos.x, t.pos.y);
+          tile.alpha = tile.alpha === 0 ? 0.1 : tile.alpha;
+        }
+      }
+    }
+    hideRange(tiles: Tile[][]) {
+      for (let line of tiles) {
+        for (let t of line) {
+          const tile = this.shadowLayer.getTileAt(t.pos.x, t.pos.y);
+          tile.alpha = tile.alpha === 0.1 ? 0 : tile.alpha;
+        }
+      }
     }
   }

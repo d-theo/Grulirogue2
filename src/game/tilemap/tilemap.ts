@@ -1,10 +1,10 @@
-import { Tile } from "./tile";
+import { Tile, TileVisibility } from "./tile";
 import { Rect, randomIn } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
-import { matrixForEach } from "../utils/matrix";
+import { matrixForEach, matrixFilter } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import { Terrain } from "../../map/terrain";
 
@@ -101,6 +101,10 @@ export class TileMap {
             arr.push(line);
         }
         return arr;
+    }
+
+    getSightAround(arg: {from: Coordinate, range: number}) {
+        return this.subTitles(arg);
     }
 
     computeSight(arg: {from: Coordinate, range: number}) {

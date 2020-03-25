@@ -32,9 +32,24 @@ export const playerTookDammage = createEventDefinition<{
     currentHp: number,
 }>()("playerTookDammage");
 
+export const playerAttackedMonster = createEventDefinition<{
+    amount: number,
+    monster: Monster,
+    baseHp: number,
+    currentHp: number;
+}>()('playerAttackedMonster');
+
+export const playerAttemptAttackMonster = createEventDefinition<{
+    monster: Monster,
+}>()('playerAttemptAttackMonster');
+
 export const monsterMoved = createEventDefinition<{
     monster: Monster
 }>()("monsterMove");
+
+export const monsterDead = createEventDefinition<{
+    monster: Monster
+}>()("monsterDead");
 
 export const monsterAttacked = createEventDefinition<{
     monster: Monster

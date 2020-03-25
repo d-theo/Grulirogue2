@@ -4,7 +4,7 @@ import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 
 class GameScene extends Phaser.Scene {
@@ -20,6 +20,7 @@ class GameScene extends Phaser.Scene {
 	tilemapVisibility: TilemapVisibility;
 	tilemapItems: TilemapItems;
 	tilemapFloor: TilemapItems;
+	range: any;
 
 	constructor() {
     super({
@@ -93,7 +94,7 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(monsterMoved, event => {
 			const {monster} = event.payload;
 			const m = this.gameMonsters[monster.id];
-			this.hero.update();
+			this.hero.updateHp();
 			m.move();
 		});
 		gameBus.subscribe(playerMoved, event => {
@@ -102,6 +103,10 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(doorOpened, event => {
 			const {pos} = event.payload;
 			this.layer.putTileAt(this.gameEngine.currentTerrain().DoorOpened, pos.x, pos.y);
+		});
+		gameBus.subscribe(playerAttackedMonster, event => {
+			const {monster} = event.payload;
+			this.gameMonsters[monster.id].updateHp();
 		});
 	}
 
@@ -143,6 +148,9 @@ class GameScene extends Phaser.Scene {
 		this.target.x = tile.x * 32;
 		this.target.y = tile.y * 32;
 		const mob = this.gameEngine.getAttackable({x:tile.x, y:tile.y});
+		if (mob) {
+			gameBus.publish(playerAttemptAttackMonster({monster: mob}));
+		}
 		if (!mob) {
 			const t = this.gameEngine.tilemap.getAt({x:tile.x, y:tile.y});
 		}
@@ -191,6 +199,26 @@ class GameScene extends Phaser.Scene {
 		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
 		this.target.x = tile.x * 32;
 		this.target.y = tile.y * 32;
+		if (this.gameEngine.getAttackable({x:tile.x, y:tile.y})) {
+			this.showRange();
+		} else {
+			this.hideRange();
+		}
+	}
+
+	hideRange() {
+		if (this.range == null) return;
+		this.tilemapVisibility.hideRange(this.range);
+		this.range = null;
+	}
+
+	showRange() {
+		if (this.range) return;
+		this.range = this.gameEngine.tilemap.getSightAround({
+			from : this.gameEngine.hero.pos,
+			range: this.gameEngine.hero.weapon.maxRange
+		});
+		this.tilemapVisibility.showRange(this.range);
 	}
 }
 

@@ -2,10 +2,16 @@ import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
 import { Behavior } from './ai';
 import { monstersSpawn } from './monster-spawn';
+import { gameBus, monsterDead } from '../../eventBus/game-bus';
 
 export class MonsterCollection {
     monsters: Monster[] = [];
-    constructor() {}
+    constructor() {
+        gameBus.subscribe(monsterDead, event => {
+            const {monster} = event.payload;
+            this.monsters = this.monsters.filter(m => m.id !== monster.id);
+        });
+    }
 
     monstersArray() {
         return this.monsters;

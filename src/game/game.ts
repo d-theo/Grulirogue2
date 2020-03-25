@@ -8,8 +8,9 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster} from '../eventBus/game-bus';
 import { Log } from "./log/log";
+import { playerAttack } from "./use-cases/playerAttack";
 
 
 export class Game {
@@ -55,6 +56,17 @@ export class Game {
                 this.adjustSight();
             }
         });
+        gameBus.subscribe(playerAttemptAttackMonster, event => {
+            const {monster} = event.payload;
+            const result: MessageResponse = playerAttack({
+                hero: this.hero,
+                attacked: monster,
+                tilemap: this.tilemap
+            });
+            if (result.status === MessageResponseStatus.Ok) {
+                this.nextTurn(result.timeSpent);
+            }
+        })
     }
     currentTerrain(): Terrain {
         return GreeceCreationParams.Terrain;

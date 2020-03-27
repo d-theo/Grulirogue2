@@ -11,12 +11,15 @@ import { monstersSpawn } from "./monsters/monster-spawn";
 import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
-
+import { ItemCollection } from "./items/item-collection";
+import { EffectMaker } from "./effects/effect";
+import { itemSpawn } from "./items/item-spawn";
 
 export class Game {
     tilemap: TileMap;
     hero: Hero;
     monsters: MonsterCollection;
+    items: ItemCollection;
     loopNb: number;
     currentTurn: number;
     level = 1;
@@ -27,6 +30,7 @@ export class Game {
         this.loopNb = 0;
         this.currentTurn = 0;
         this.monsters = new MonsterCollection();
+        this.items = new ItemCollection();
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         this.initBus();
@@ -40,6 +44,10 @@ export class Game {
         this.adjustSight();
         this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, 20));
         
+
+        EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
+        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, 20));
+        
     }
     initBus() {
         gameBus.subscribe(playerActionMove, event => {
@@ -48,7 +56,8 @@ export class Game {
                 monsters: this.monsters,
                 pos: to,
                 hero: this.hero,
-                tilemap: this.tilemap
+                tilemap: this.tilemap,
+                items: this.items
             });
             if (result.status === MessageResponseStatus.Ok) {
                 gameBus.publish(playerMoved({}));

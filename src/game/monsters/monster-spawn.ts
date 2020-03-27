@@ -7,7 +7,7 @@ export function monstersSpawn(rooms: any[], level: number, dangerLevel: number) 
     const dangerZones = distribute(rooms.length-2, dangerLevel);
     const monsterInLevel: Monster[] = [];
     for (let i = 1; i < rooms.length; i++) {
-        const danger = dangerZones[i];
+        const danger = dangerZones[i-1];
         const room = rooms[i];
         let total = 0;
         while(total < danger) {

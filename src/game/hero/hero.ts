@@ -7,9 +7,9 @@ import { Coordinate } from "../utils/coordinate";
 import { Movable } from "../entitybase/movable";
 import { Monster } from "../monsters/monster";
 import { Buffs } from "../entitybase/buffable";
-import { BuffEffect } from "../entitybase/effect";
 import { EnchantTable, Enchantable } from "../entitybase/enchantable";
 import { Inventory } from "./inventory";
+import { BuffDefinition } from "../effects/effect";
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     health: Health;
@@ -31,7 +31,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     gainXP(monster: Monster) {
         this.xp += monster.xp;
     }
-    addBuff(buff: BuffEffect) {
+    addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
 }

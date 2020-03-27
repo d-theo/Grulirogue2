@@ -1,10 +1,9 @@
-import { Spell } from "../entitybase/spell";
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { GameRange } from "../utils/range";
-import { Tile } from "../tilemap/tile";
+import { Effect } from "./effect";
 /*
-'blind',
+    'blind',
     'stun',
     'constitution',
     'precision',
@@ -27,7 +26,15 @@ import { Tile } from "../tilemap/tile";
     'weapon_enchant',
     'armour_enchant'
 */
-export class Stun extends Spell {
+export class HealEffect  {
+    constructor(private effect: Effect){}
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.health.currentHp = target.health.baseHp;
+    }
+}
+/*
+export class StunEffect extends Effect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -38,7 +45,7 @@ export class Stun extends Spell {
     }
 }
 
-export class Bleed extends Spell {
+export class BleedEffect extends Effect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -52,7 +59,7 @@ export class Bleed extends Spell {
     }
 }
 
-export class ConstSpell extends Spell{
+export class ConstEffect extends Effect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -63,21 +70,7 @@ export class ConstSpell extends Spell{
     }
 }
 
-export class HoleSpell extends Spell{
-    type = ['tile']
-    cast(tile: Tile) {
-        
-    }
-}
-
-/*export class RockSpell extends Spell{
-    type = ['tile']
-    cast(tile: Tile) {
-        tile.type = TileType.WallGrey; 
-    }
-}*/
-
-export class InvisibilitySpell extends Spell{
+export class InvisibilityEffect extends Effect{
     type = ['monster','hero'];
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -88,7 +81,7 @@ export class InvisibilitySpell extends Spell{
     }
 }
 
-export class SwapSpell extends Spell{
+export class SwapEffect extends Effect{
     type = ['monster','hero'];
     cast(target1: Hero|Monster, target2: Hero|Monster) {
         const pos = target1.pos;
@@ -97,7 +90,7 @@ export class SwapSpell extends Spell{
     }
 }
 
-export class TeleportationSpell extends Spell{
+export class TeleportationEffect extends Effect{
     type = ['monster','hero'];
     cast(target: Hero|Monster) {
         let done = false;
@@ -114,4 +107,4 @@ export class TeleportationSpell extends Spell{
             }
         }
     }
-}
+}*/

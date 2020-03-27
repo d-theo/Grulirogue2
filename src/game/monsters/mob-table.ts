@@ -15,15 +15,17 @@ export function mobsForLevel(level: number) {
     return MobTable[level-1];
 }
 
-type XTable = {
+export type XTable = {
     chance: number,
     type: any
 }[];
+
 export function getInTable(table: XTable): any {
     const weightSum = table.reduce((acc,val) => val.chance+acc, 0);
     let r = pickInRange(1,weightSum);
     for (const item of table) {
         r -= item.chance;
+        console.log(r, item);
         if (r <= 0) {
             return item.type;
         }

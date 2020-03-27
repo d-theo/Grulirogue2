@@ -1,18 +1,19 @@
-import { Game } from "../game";
 import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder} from "./preconditions/moveAllowed";
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
 import { MonsterCollection } from "../monsters/monsterCollection";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Coordinate } from "../utils/coordinate";
-import { gameBus, doorOpened } from "../../eventBus/game-bus";
+import { gameBus, doorOpened, itemPickedUp } from "../../eventBus/game-bus";
+import { ItemCollection } from "../items/item-collection";
 
 export function playerMove(args: {
     pos: Coordinate,
     monsters: MonsterCollection, hero: Hero,
-    tilemap: TileMap
+    tilemap: TileMap,
+    items: ItemCollection
 }): MessageResponse {
-    const {hero, pos, tilemap, monsters} = args;
+    const {hero, pos, tilemap, monsters, items} = args;
     if (
         isTileEmpty(pos, monsters.monstersArray())
         && isSurroundingClear(pos, tilemap)
@@ -23,10 +24,14 @@ export function playerMove(args: {
         if (hasOpenedDoors(pos, tilemap)) {
             gameBus.publish(doorOpened({pos}));
         }
+        const maybeItem = itemOnGround(pos, items);
+        if (maybeItem) {
+            hero.inventory.add(maybeItem);
+            gameBus.publish(itemPickedUp({item: maybeItem}));
+        }
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,
-            // events: [openDoors(pos, tilemap), pickOnGround()]
         };
     } else {
         return {
@@ -44,6 +49,6 @@ function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     }
     return false;
 }
-function pickOnGround() {
-
+function itemOnGround(pos: Coordinate, items: ItemCollection) {
+    return items.getAt(pos);
 }

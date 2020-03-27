@@ -6,11 +6,11 @@ import { Fighter } from "../entitybase/fighter";
 import { Movable } from "../entitybase/movable";
 import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
-import { BuffEffect } from "../entitybase/effect";
 import { Enchantable, EnchantTable } from "../entitybase/enchantable";
 import { Behavior, AIBehavior } from "./ai";
 import { pickInRange, pickInArray } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
+import { BuffDefinition } from "../effects/effect";
 let short = require('short-uuid');
  
 export class Monster implements Movable, Killable, Fighter, Enchantable {
@@ -53,7 +53,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.behavior = f;
         return this;
     }
-    addBuff(buff: BuffEffect) {
+    addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
     play() {

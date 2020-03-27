@@ -2,6 +2,7 @@
 import { createEventDefinition, EventBus } from "ts-bus";
 import { Monster } from "../game/monsters/monster";
 import { Coordinate } from "../game/utils/coordinate";
+import { Item } from "../game/entitybase/item";
 
 export const gameBus = new EventBus();
 
@@ -24,6 +25,10 @@ export const playerActionMove = createEventDefinition<{
 
 export const playerMoved = createEventDefinition<{
 }>()("playerMove");
+
+export const itemPickedUp = createEventDefinition<{
+    item: Item;
+}>()('itemPickedUp');
 
 export const playerTookDammage = createEventDefinition<{
     amount: number,

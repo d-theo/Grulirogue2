@@ -6,11 +6,14 @@ import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
 import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
+import { Item } from '../game/entitybase/item';
+import { UIItem } from '../UIEntities/ui-item';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
 	target: any;
 	gameMonsters: { [id: string]:  UIEntity} = {};
+	gameItems: { [id: string]:  UIItem} = {};
 	cursors: any;
 	tilemap;
 	layer;
@@ -45,6 +48,7 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
 		this.load.image('target', '/assets/sprites/target.png');
+		this.load.image('potion-red', '/assets/sprites/potion-red.png');
 		console.log('preload');
 	}
 
@@ -60,6 +64,7 @@ class GameScene extends Phaser.Scene {
 		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
 		this.addDecorations();
 		this.placeMonsters();
+		this.placeItems();
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 		
@@ -115,6 +120,13 @@ class GameScene extends Phaser.Scene {
 		for (const mob of mobToPlace) {
 			const monster = new UIEntity(this, mob, mob.name)
 			this.gameMonsters[mob.id] = monster;
+		}
+	}
+	placeItems() {
+		const itemsToPlace: Item[] = this.gameEngine.items.itemsArray();
+		for (const i of itemsToPlace) {
+			const item = new UIItem(this, i, i.skin)
+			this.gameItems[i.id] = item;
 		}
 	}
 

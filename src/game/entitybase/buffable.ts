@@ -1,12 +1,13 @@
-import { BuffEffect } from "./effect";
+import { BuffDefinition } from "../effects/effect";
+
 const shortid = require('shortid');
 
 export class Buffs {
-    buffs = new Map<string, BuffEffect>();
-    addBuff(buff: BuffEffect) {
+    buffs = new Map<string, BuffDefinition>();
+    addBuff(buff: BuffDefinition) {
         this.buffs.set(shortid.generate(), buff);
     }
-    detachBuff(buff: BuffEffect) {
+    detachBuff(buff: BuffDefinition) {
         
     }
     cleanBuff() {

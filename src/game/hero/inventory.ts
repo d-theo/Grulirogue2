@@ -42,7 +42,24 @@ export class Inventory {
         inventory.sections = sections;
         for (let k of sections) {
             inventory[k] = inventory[k]
-                .map(i => ({...i.item, equiped: this.equiped.has(i.item.id)}));
+                .reduce((acc, val) => {
+                    console.log(val)
+                    if (val.kind === 'Consumables') {
+                        let found = acc.find((i:any) => {
+                            console.log(i.item.name, val.item.name);
+                            return i.item.name == val.item.name
+                        });
+                        if (found) {
+                            found.count++;
+                        } else {
+                            acc.push(val);
+                        }
+                    } else {
+                        acc.push(val);
+                    }
+                    return acc;
+                }, [])
+                .map((i: any) => ({...i.item, count: i.count, equiped: this.equiped.has(i.item.id)}))
         }
 
         return inventory;

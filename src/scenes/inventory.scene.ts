@@ -7,6 +7,7 @@ class InventoryScene extends Phaser.Scene {
   letters: any;
   scroller: any;
   currentSelected: string;
+  alreadyLoaded = false;
   constructor() {
     super({
       key: SceneName.Inventory,
@@ -16,6 +17,15 @@ class InventoryScene extends Phaser.Scene {
   init(config: any) {
     this.config = config;
     this.currentSelected = 'a';
+  }
+
+  preload() {
+    if (this.alreadyLoaded) {
+      return;
+    }
+
+    this.alreadyLoaded = true;
+    this.registerInputs();
   }
 
   create() {
@@ -68,7 +78,7 @@ class InventoryScene extends Phaser.Scene {
         const weapon1 = this.add.text(0, 0, `${letter} | `, font).setOrigin(0);
         const sprite = this.add.sprite(30, -3, item.skin).setOrigin(0);
         sprite.setScale(0.7);
-        const weaponName = this.add.text(60, 0, `${item.name}${item.equiped ? '(equiped)' : ''}`, font).setOrigin(0);
+        const weaponName = this.add.text(60, 0, `${item.count ? item.count : ''} ${item.name}${item.equiped ? '(equiped)' : ''}`, font).setOrigin(0);
         this.letters[letter] = {
           id: item.id,
           txt: weaponName
@@ -89,7 +99,6 @@ class InventoryScene extends Phaser.Scene {
     let mask = new Phaser.Display.Masks.GeometryMask(this, shape);
     panel.setMask(mask);
 
-    this.registerInputs();
     this.selectLine(this.currentSelected);
   }
 
@@ -110,6 +119,7 @@ class InventoryScene extends Phaser.Scene {
     var down = this.input.keyboard.addKey('DOWN');
     down.on('up', (event) => {
       //this.scroller.incY(-32);
+      console.log('up');
       this.unSelectLine(this.currentSelected);
       this.currentSelected = String.fromCharCode(this.currentSelected.charCodeAt(0)+1);
       try {

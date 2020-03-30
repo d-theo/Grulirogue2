@@ -1,7 +1,13 @@
 import { Item } from "../entitybase/item";
+import * as _ from 'lodash';
+import { IEffect } from "../effects/effects";
+import { ItemVisitor } from "./item-visitor";
+
+export const PotionColors = ['blue', 'dark', 'red', 'brown', 'pink', 'orange', 'yellow', 'green', 'purple']
 
 export class Potion extends Item {
-    effect: Function;
+    effect: IEffect;
+    static colors: string[] = _.shuffle(_.cloneDeep(PotionColors));
     static mystery: any = {};
     constructor(args: any) {
         super(args);
@@ -12,6 +18,12 @@ export class Potion extends Item {
         this.skin = Potion.mystery[this.name];
     }
     randomColor() {
-        return 'potion-red';
+        return 'potion-'+Potion.colors.pop();
+    }
+    use(target: any) {
+        this.effect.cast(target);
+    }
+    visit(visitor: ItemVisitor) {
+        return visitor.visitPotion(this);
     }
 }

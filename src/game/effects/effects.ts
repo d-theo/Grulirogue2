@@ -2,6 +2,7 @@ import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { GameRange } from "../utils/range";
 import { Effect } from "./effect";
+import { gameBus, playerHealed, logPublished } from "../../eventBus/game-bus";
 /*
     'blind',
     'stun',
@@ -26,11 +27,27 @@ import { Effect } from "./effect";
     'weapon_enchant',
     'armour_enchant'
 */
-export class HealEffect  {
-    constructor(private effect: Effect){}
+export interface IEffect {
+    type: string[];
+    cast: Function;
+}
+
+export class HealEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.health.currentHp = target.health.baseHp;
+        gameBus.publish(playerHealed({}));
+    }
+}
+export class ThicknessEffect implements IEffect {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            tick: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
+            end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
+            turns: 5
+        });
+        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
     }
 }
 /*

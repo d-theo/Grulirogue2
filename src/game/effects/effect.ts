@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, TeleportationEffect } from './effects';
+import { HealEffect, ThicknessEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -19,6 +19,7 @@ export enum Effects {
     Invisibility = 'invisibility',
     Swap = 'swap',
     Teleportation = 'teleportation',
+    Thick = 'thick',
 }
 
 let tilemap: TileMap;
@@ -41,7 +42,9 @@ function createEffect(name: Effects) {
     microValidator([tilemap, hero, monsters], 'createEffect failure: null');
     switch(name) {
         case Effects.Heal:
-            return new HealEffect(effect);
+            return new HealEffect();
+        case Effects.Thick:
+            return new ThicknessEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
         /*case Effects.Teleportation:

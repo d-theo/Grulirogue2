@@ -4,10 +4,12 @@ import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
+import { PotionColors } from '../game/items/potion';
+import { Hero } from '../game/hero/hero';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -32,11 +34,8 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		console.log('preload start');
 		this.gameEngine = new GameEngine();
-		console.log('game created');
 		this.gameEngine.reInitLevel();
-		console.log('level created');
 
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
@@ -48,8 +47,9 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
 		this.load.image('target', '/assets/sprites/target.png');
-		this.load.image('potion-red', '/assets/sprites/potion-red.png');
-		console.log('preload');
+		for (const c of PotionColors) {
+			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
+		}
 	}
 
 	create() {
@@ -88,7 +88,11 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
-		//this.scene.launch(SceneName.Hud);
+		
+		var keyObj = this.input.keyboard.addKey('I');
+		keyObj.on('down', (event) => {
+			this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+		});
 	}
 
 	initGameEvents() {
@@ -113,6 +117,13 @@ class GameScene extends Phaser.Scene {
 			const {monster} = event.payload;
 			this.gameMonsters[monster.id].updateHp();
 		});
+		gameBus.subscribe(itemPickedUp, event => {
+			const {item} = event.payload;
+			this.gameItems[item.id].pickedUp();
+		});
+		gameBus.subscribe(playerHealed, event => {
+			this.hero.updateHp();
+        });
 	}
 
 	placeMonsters() {
@@ -164,7 +175,11 @@ class GameScene extends Phaser.Scene {
 			gameBus.publish(playerAttemptAttackMonster({monster: mob}));
 		}
 		if (!mob) {
-			const t = this.gameEngine.tilemap.getAt({x:tile.x, y:tile.y});
+			//const t = this.gameEngine.tilemap.getAt({x:tile.x, y:tile.y});
+			/*gameBus.publish(playerUseItem({
+				item: this.gameItems[k].subject,
+				target: this.hero.subject as Hero
+			}));*/
 		}
 	}
 

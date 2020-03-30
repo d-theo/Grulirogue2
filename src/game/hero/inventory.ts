@@ -1,12 +1,18 @@
 import { Item } from "../entitybase/item";
+import { ItemVisitor } from "../items/item-visitor";
+import _ from 'lodash';
 
 export class Inventory {
     bag: Item[];
     gold: number = 0;
     size: number;
+    equiped = new Set();
     constructor() {
         this.size = 12;
         this.bag = [];
+    }
+    flagEquiped(item: Item) {
+        this.equiped.add(item.id);
     }
     addGold(n: number) {
         this.gold += n;
@@ -24,5 +30,21 @@ export class Inventory {
     }
     drop(item: Item) {
         this.bag = this.bag.filter(i => i !== item);
+    }
+    openBag() {
+        const itemVisitor = new ItemVisitor();
+        let inventory = _(this.bag)
+            .map((item: Item) => item.visit(itemVisitor))
+            .groupBy('kind')
+            .value();
+        
+        const sections = Object.keys(inventory);
+        inventory.sections = sections;
+        for (let k of sections) {
+            inventory[k] = inventory[k]
+                .map(i => ({...i.item, equiped: this.equiped.has(i.item.id)}));
+        }
+
+        return inventory;
     }
 }

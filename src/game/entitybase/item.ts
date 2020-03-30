@@ -1,6 +1,7 @@
 import { Coordinate } from "../utils/coordinate";
+import { ItemVisitor } from "../items/item-visitor";
 let short = require('short-uuid');
-export class Item {
+export abstract class Item {
     id = short.generate();
     name: string;
     description: string;
@@ -15,4 +16,6 @@ export class Item {
         this.name = arg.name || '';
         this.skin = arg.skin || 'hero'
     }
+    abstract use(args: any): any;
+    abstract visit(itemVisitor: ItemVisitor): any;
 }

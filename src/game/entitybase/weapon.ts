@@ -1,6 +1,7 @@
 import { Item } from "./item";
 import { GameRange } from "../utils/range";
 import { pickInRange } from "../utils/random";
+import { ItemVisitor } from "../items/item-visitor";
 
 export class Weapon extends Item {
     baseDamage: string;
@@ -12,5 +13,9 @@ export class Weapon extends Item {
     }
     deal() {
         return pickInRange(this.baseDamage);
+    }
+    use() {}
+    visit(itemVisitor: ItemVisitor) {
+        return itemVisitor.visitWeapon(this);
     }
 }

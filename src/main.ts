@@ -2,6 +2,7 @@ import 'phaser';
 import GameScene from './scenes/game.scene';
 
 import {test} from './hud';
+import InventoryScene from './scenes/inventory.scene';
 
 export const CellSize = 32;
 export const Los = 8;
@@ -15,9 +16,10 @@ export const config = {
     resolution: 1, 
     backgroundColor: "#EDEEC9",
     pixelArt: true,
+    transparent: true,
     scene: [
       GameScene,
-      //HudScene
+      InventoryScene,
     ],
     physics: {
       default: 'arcade',

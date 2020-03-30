@@ -11,7 +11,7 @@ export const Potions = {
     Thickness: {
         name:'thickness potion',
         description: '',
-        effect: () => {},
+        effect: () => EffectMaker.create(Effects.Thick),
     },
     Health: {
         name:'health potion',
@@ -50,10 +50,10 @@ export const ItemTable: XTable[] = [
 ]
 
 export const PotionTable: XTable = [
-    {chance: 0, type: Potions.Thickness},
+    {chance: 50, type: Potions.Thickness},
     {chance: 0, type: Potions.Speed},
     {chance: 0, type: Potions.Accuracy},
-    {chance: 100, type: Potions.Health}
+    {chance: 50, type: Potions.Health}
 ];
 
 export const ScrollTable: XTable = [
@@ -141,13 +141,16 @@ export const craftWeapon = (tier: number) => {
 }
 
 export function getRandomLoot(level: number): Item {
-    console.log(ItemTable[level-1])
     const itemKind = getInTable(ItemTable[level-1]);
     let loot: Item;
     switch (itemKind) {
         case "potion": 
             const p = getInTable(PotionTable);
-            loot = new Potion(p);
+            loot = new Potion({
+                name: p.name,
+                description: p.description,
+                effect: p.effect()
+            });
             break;
         case "scroll": 
             const s = getInTable(ScrollTable);

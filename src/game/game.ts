@@ -8,7 +8,7 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -46,7 +46,7 @@ export class Game {
         
 
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
-        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, 20));
+        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, 10));
         
     }
     initBus() {
@@ -75,7 +75,14 @@ export class Game {
             if (result.status === MessageResponseStatus.Ok) {
                 this.nextTurn(result.timeSpent);
             }
-        })
+        });
+        gameBus.subscribe(playerUseItem, event => {
+            const {target, item} = event.payload;
+            item.use(target);
+            /*if (result.status === MessageResponseStatus.Ok) {
+                this.nextTurn(result.timeSpent);
+            }*/
+        });
     }
     currentTerrain(): Terrain {
         return GreeceCreationParams.Terrain;

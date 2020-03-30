@@ -3,6 +3,7 @@ import { createEventDefinition, EventBus } from "ts-bus";
 import { Monster } from "../game/monsters/monster";
 import { Coordinate } from "../game/utils/coordinate";
 import { Item } from "../game/entitybase/item";
+import { Hero } from "../game/hero/hero";
 
 export const gameBus = new EventBus();
 
@@ -26,6 +27,11 @@ export const playerActionMove = createEventDefinition<{
 export const playerMoved = createEventDefinition<{
 }>()("playerMove");
 
+export const playerUseItem = createEventDefinition<{
+    item: Item,
+    target: Monster | Hero,
+}>()('playerUseItem');
+
 export const itemPickedUp = createEventDefinition<{
     item: Item;
 }>()('itemPickedUp');
@@ -36,6 +42,9 @@ export const playerTookDammage = createEventDefinition<{
     baseHp: number,
     currentHp: number,
 }>()("playerTookDammage");
+
+export const playerHealed = createEventDefinition<{
+}>()("playerHealed");
 
 export const playerAttackedMonster = createEventDefinition<{
     amount: number,

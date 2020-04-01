@@ -6,6 +6,8 @@ export class Armour extends Item {
     constructor(arg: any) { // Todo
         super(arg);
         this.baseAbsorb = arg.baseAbsorb || 0;
+        this.keyMapping['w'] = this.use.bind(this);
+        this.keyDescription['w'] = '(w)ear';
     }
     use(){}
     visit(itemVisitor: ItemVisitor) {

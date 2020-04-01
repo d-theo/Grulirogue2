@@ -10,6 +10,8 @@ export class Weapon extends Item {
         super(arg);
         this.baseDamage = arg.baseDamage;
         this.maxRange = arg.maxRange || 1;
+        this.keyMapping['w'] = this.use.bind(this);
+        this.keyDescription['w'] = '(w)ield';
     }
     deal() {
         return pickInRange(this.baseDamage);

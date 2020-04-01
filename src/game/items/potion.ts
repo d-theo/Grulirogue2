@@ -16,6 +16,8 @@ export class Potion extends Item {
             Potion.mystery[this.name] = this.randomColor();
         }
         this.skin = Potion.mystery[this.name];
+        this.keyMapping['q'] = this.use.bind(this);
+        this.keyDescription['q'] = '(q)uaff';
     }
     randomColor() {
         return 'potion-'+Potion.colors.pop();

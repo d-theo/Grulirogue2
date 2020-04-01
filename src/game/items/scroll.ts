@@ -6,6 +6,8 @@ export class Scroll extends Item {
     constructor(args: any) {
         super(args);
         this.effect = args.effect;
+        this.keyMapping['r'] = this.use.bind(this);
+        this.keyDescription['r'] = '(r)ead';
     }
     use() {
         

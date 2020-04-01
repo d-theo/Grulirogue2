@@ -36,6 +36,10 @@ export const itemPickedUp = createEventDefinition<{
     item: Item;
 }>()('itemPickedUp');
 
+export const itemDropped = createEventDefinition<{
+    item: Item;
+}>()('itemDropped');
+
 export const playerTookDammage = createEventDefinition<{
     amount: number,
     monster: Monster,

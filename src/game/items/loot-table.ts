@@ -19,7 +19,7 @@ export const Potions = {
         effect: () => EffectMaker.create(Effects.Heal),
     },
     Dodge: {
-        name:'health potion',
+        name:'potion of agility',
         description: 'A potion that makes you more agile but also more fragile',
         effect: () => EffectMaker.create(Effects.Dodge),
     },
@@ -41,11 +41,11 @@ export const Potions = {
     Accuracy: {
         name:'accuraty potion',
         description: 'Makes your mind more focus',
-        effect: () => {},
+        effect: () => EffectMaker.create(Effects.Accuraty),
     },
     Speed: {
         name:'Potion of celerity',
-        description: '',
+        description: 'A potion that makes you run faster',
         effect: () => EffectMaker.create(Effects.Speed),
     },
     XP: {

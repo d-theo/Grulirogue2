@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 export function matrixMap<T,U>(c: T[][], f:(x: T) => U): U[][] {
     const res: U[][] = [];
     for (const i of c) {

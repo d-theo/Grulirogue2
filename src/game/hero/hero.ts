@@ -56,4 +56,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         this.buffs.apply(this);
     }
     levelUp() {}
+    consumeItem(item: Item) {
+        this.inventory.remove(item);
+    }
 }

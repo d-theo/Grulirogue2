@@ -1,5 +1,5 @@
-import { Item } from "../game/entitybase/item";
-import { InventoryFont } from "./inventory.scene";
+import { Item } from "../../game/entitybase/item";
+import { InventoryFont } from "../inventory.scene";
 
 export class ItemLine extends Phaser.GameObjects.Container {
     weaponName;

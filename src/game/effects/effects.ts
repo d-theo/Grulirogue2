@@ -116,6 +116,18 @@ export class BlindEffect implements IEffect   {
     }
 }
 
+export class AccuratyEffect implements IEffect   {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.weapon.maxRange += 1,
+            end: (t: Hero|Monster) => t.weapon.maxRange -= 1,
+            turns: 15
+        });
+        gameBus.publish(logPublished({data: `${target.name} feels more confident`}));
+    }
+}
+
 export class RageEffect implements IEffect   {
     type = ['monster','hero']
     cast(target: Hero|Monster) {

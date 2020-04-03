@@ -65,30 +65,16 @@ export const AI = (game: Game) => {
                 monster
             });
         } else {
-
-            
-
-            const R = 10;
-            const posAround = game.tilemap.subTitles({
-                from: monster.pos,
-                range: R,
-            });
-
             const path = astar({
-                from: {x:R, y:R},
-                to: {x:R-dx, y:R-dy},
-                tiles: posAround
+                from: monster.pos,
+                to: game.hero.pos,
+                tiles: game.tilemap.tiles
             });
-            const delta = {
-                x: monster.pos.x - R,
-                y: monster.pos.y - R
-            }
-            const dpath = path.map(pos => {return {x: pos.x+delta.x, y:pos.y+delta.y}});
             if (path.length > 0) {
                 monsterMove({
                     game: game,
                     monster: monster,
-                    nextPos: dpath[0]
+                    nextPos: path[0]
                 });
             }
         }

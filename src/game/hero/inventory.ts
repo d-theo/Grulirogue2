@@ -28,8 +28,11 @@ export class Inventory {
         item.pos = null;
         this.bag.push(item);
     }
-    drop(item: Item) {
+    /*drop(item: Item) {
         this.bag = this.bag.filter(i => i !== item);
+    }*/
+    remove(item: Item) {
+        this.bag = this.bag.filter(i => i.id !== item.id);
     }
     openBag() {
         const itemVisitor = new ItemVisitor();
@@ -43,7 +46,6 @@ export class Inventory {
         for (let k of sections) {
             inventory[k] = inventory[k]
                 .reduce((acc, val) => {
-                    console.log(val)
                     if (val.kind === 'Consumables') {
                         let found = acc.find((i:any) => {
                             return i.item.name == val.item.name

@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, TeleportationEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect } from './effects';
+import { HealEffect, ThicknessEffect, TeleportationEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -29,6 +29,7 @@ export enum Effects {
     Stupid = 'Stupid',
     Speed = 'Speed',
     Rage = 'Rage',
+    Accuraty = 'Accuraty',
 }
 
 let tilemap: TileMap;
@@ -76,6 +77,8 @@ function createEffect(name: Effects) {
             return new SpeedEffect();
         case Effects.Rage:
             return new RageEffect();
+        case Effects.Accuraty:
+            return new AccuratyEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
         /*case Effects.Teleportation:

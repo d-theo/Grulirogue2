@@ -1,8 +1,8 @@
 import {
   SceneName
 } from "./scenes.constants";
-import { InventoryView } from "./inventory-view";
-import { InventoryDescriptionView } from "./inventory-description";
+import { InventoryView } from "./inventory/inventory-view";
+import { InventoryDescriptionView } from "./inventory/inventory-description";
 import { Item } from "../game/entitybase/item";
 
 export const InventoryFont = {
@@ -137,12 +137,6 @@ class InventoryScene extends Phaser.Scene {
         }
       }
     });
-
-    /*var leaveDescScreen = this.input.keyboard.addKey('ESC');
-    leaveDescScreen.on('up', (event) => {
-      Object.keys(selectedItem.keyMapping).map(k => this.input.keyboard.removeKey(k));
-      panel.destroy();
-    });*/
   }
 }
 

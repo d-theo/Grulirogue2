@@ -14,6 +14,7 @@ import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { itemSpawn } from "./items/item-spawn";
+import { Item } from "./entitybase/item";
 
 export class Game {
     tilemap: TileMap;
@@ -79,7 +80,10 @@ export class Game {
         gameBus.subscribe(playerUseItem, event => {
             const {target, item, action} = event.payload;
             const usedItem = this.items.getItemById(item.id);
-            usedItem && usedItem.keyMapping[action](target);
+            if (usedItem) {
+                usedItem.keyMapping[action](target);
+                this.hero.consumeItem(usedItem);
+            }
             this.nextTurn(1);
         });
     }

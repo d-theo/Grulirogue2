@@ -1,4 +1,4 @@
-import { InventoryFont } from "./inventory.scene";
+import { InventoryFont } from "../inventory.scene";
 import { ItemLine } from "./item-line.component";
 
 export class InventoryDescriptionView extends Phaser.GameObjects.Container {
@@ -17,7 +17,6 @@ export class InventoryDescriptionView extends Phaser.GameObjects.Container {
         let y = 32;
         const line = new ItemLine(this.scene, x, y);
         line.inputs({letter: selectedLetter, item: selectedItem});
-        selectedItem.description = "c'est cool ici";
         y+= 64;
         const desc = this.scene.add.text(x, y, selectedItem.description, InventoryFont).setOrigin(0);
         const usage = this.scene.add.text(viewW/2, viewH-30, Object.values(selectedItem.keyDescription).join('/'), InventoryFont).setOrigin(0.5, 0);

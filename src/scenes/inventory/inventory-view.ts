@@ -1,5 +1,4 @@
-import { Item } from "../game/entitybase/item";
-import { InventoryFont } from "./inventory.scene";
+import { InventoryFont } from "./../inventory.scene";
 import { ItemLine } from "./item-line.component";
 
 export class InventoryView extends Phaser.GameObjects.Container {

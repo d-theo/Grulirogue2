@@ -13,6 +13,7 @@ import { BuffDefinition } from "../effects/effect";
 import { Item } from "../entitybase/item";
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
+    name: string;
     health: Health;
     armour: Armour;
     weapon: Weapon;
@@ -23,6 +24,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     level: number = 1;
     private inventory = new Inventory();
     constructor() {
+        this.name = "grul le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
         this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
@@ -47,4 +49,8 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
+    resolveBuffs() {
+        this.buffs.apply(this);
+    }
+    levelUp() {}
 }

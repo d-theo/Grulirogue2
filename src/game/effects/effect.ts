@@ -6,7 +6,8 @@ import { HealEffect, ThicknessEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
-    tick: Function;
+    start: Function | null;
+    tick?: Function;
     end: Function;
     turns: number
 };

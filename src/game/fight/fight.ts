@@ -7,6 +7,6 @@ export class Attack {
         const weapon = this.attacker.weapon;
         const armour = this.target.armour;
         const dealt = weapon.deal();
-        return dealt - armour.baseAbsorb;
+        return Math.max(0, dealt - armour.baseAbsorb);
     }
 }

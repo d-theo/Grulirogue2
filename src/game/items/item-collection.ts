@@ -12,6 +12,9 @@ export class ItemCollection {
     itemsArray() {
         return this.items;
     }
+    getItemById(id: string) {
+        return this.items.find(i => id === i.id);
+    }
     getAt(pos: Coordinate) {
         const item = this.items.find(i => i.pos && equalsCoordinate(i.pos, pos));
         if  (!item) {

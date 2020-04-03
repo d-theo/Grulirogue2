@@ -46,7 +46,6 @@ export class Inventory {
                     console.log(val)
                     if (val.kind === 'Consumables') {
                         let found = acc.find((i:any) => {
-                            console.log(i.item.name, val.item.name);
                             return i.item.name == val.item.name
                         });
                         if (found) {

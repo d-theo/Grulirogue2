@@ -1,7 +1,5 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { GameRange } from "../utils/range";
-import { Effect } from "./effect";
 import { gameBus, playerHealed, logPublished } from "../../eventBus/game-bus";
 /*
     'blind',
@@ -26,6 +24,7 @@ import { gameBus, playerHealed, logPublished } from "../../eventBus/game-bus";
     'explosive',
     'weapon_enchant',
     'armour_enchant'
+    fog
 */
 export interface IEffect {
     type: string[];
@@ -36,32 +35,71 @@ export class HealEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.health.currentHp = target.health.baseHp;
-        gameBus.publish(playerHealed({}));
+        gameBus.publish(playerHealed({
+            baseHp: target.health.baseHp,
+            currentHp: target.health.currentHp
+        }));
     }
 }
 export class ThicknessEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            tick: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
+            start: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
             end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
             turns: 5
         });
         gameBus.publish(logPublished({data:'Your skin seems thicker'}));
     }
 }
-/*
-export class StunEffect extends Effect  {
+export class CleaningEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            tick: (t: Hero|Monster) => t.enchants.stuned = true,
-            end: (t: Hero|Monster) => t.enchants.stuned = false,
+            start: null,
+            end: (t: Hero|Monster) => t.buffs.cleanBuff(),
+            turns: 0
+        });
+        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
+    }
+}
+export class DodgeEffect implements IEffect {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
+            end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
             turns: 5
         });
+        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
     }
 }
 
+export class XPEffect implements IEffect {
+    type = ['hero']
+    cast(target: Hero) {
+        target.addBuff({
+            start: null,
+            end: (t: Hero) => t.levelUp(),
+            turns: 0
+        });
+        gameBus.publish(logPublished({data:'You are wiser !'}));
+    }
+}
+
+export class StunEffect implements IEffect   {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.enchants.stuned = true,
+            end: (t: Hero|Monster) => t.enchants.stuned = false,
+            turns: 5
+        });
+        gameBus.publish(logPublished({data: `${target.name} is stuned`}));
+    }
+}
+
+/*
 export class BleedEffect extends Effect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {

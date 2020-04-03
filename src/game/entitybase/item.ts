@@ -19,7 +19,7 @@ export abstract class Item {
         this.name = arg.name || '';
         this.skin = arg.skin || 'hero'
         
-        this.keyMapping['d'] = this.use.bind(this);
+        this.keyMapping['d'] = (args:any) => this.use.apply(this, args);
         this.keyDescription['d'] = '(d)rop';
     }
     abstract use(args: any): any;

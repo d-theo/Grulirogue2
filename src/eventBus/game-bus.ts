@@ -30,6 +30,7 @@ export const playerMoved = createEventDefinition<{
 export const playerUseItem = createEventDefinition<{
     item: Item,
     target: Monster | Hero,
+    action: string,
 }>()('playerUseItem');
 
 export const itemPickedUp = createEventDefinition<{
@@ -48,6 +49,8 @@ export const playerTookDammage = createEventDefinition<{
 }>()("playerTookDammage");
 
 export const playerHealed = createEventDefinition<{
+    baseHp: number,
+    currentHp: number,
 }>()("playerHealed");
 
 export const playerAttackedMonster = createEventDefinition<{

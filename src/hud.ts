@@ -1,4 +1,4 @@
-import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage } from "./eventBus/game-bus";
+import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed } from "./eventBus/game-bus";
 import $ from 'jquery';
 
 export function test() {
@@ -10,6 +10,11 @@ export function test() {
         $('#log-txt').text(event.payload.data);
     });
     gameBus.subscribe(playerTookDammage, event => {
+        const curr = event.payload.currentHp * 100 / event.payload.baseHp;
+        $('#current-hp').width(curr+'%');
+        $('#current-hp-value').text(`${event.payload.currentHp} / ${event.payload.baseHp}`);
+    });
+    gameBus.subscribe(playerHealed, event => {
         const curr = event.payload.currentHp * 100 / event.payload.baseHp;
         $('#current-hp').width(curr+'%');
         $('#current-hp-value').text(`${event.payload.currentHp} / ${event.payload.baseHp}`);

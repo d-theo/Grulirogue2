@@ -30,9 +30,15 @@ export class MonsterCollection {
         }
     }
 
+    resolveBuffs() {
+        for (const m of this.monsters) {
+            m.buffs.apply(m);
+        }
+    }
     play() {
         for (const m of this.monsters) {
-            m.play();
+            if (!m.enchants.stuned)
+                m.play();
         }
     }
 }

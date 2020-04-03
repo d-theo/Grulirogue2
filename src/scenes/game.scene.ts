@@ -88,10 +88,20 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
-		
-		var keyObj = this.input.keyboard.addKey('I');
-		keyObj.on('down', (event) => {
-			this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+
+		this.input.keyboard.on('keyup', (event) => {
+			switch (event.key) {
+				case 'i': return this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+			}
+		});
+		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
+			if (data) {
+				gameBus.publish(playerUseItem({
+					item: data.item,
+					target: this.hero.subject as Hero,
+					action: data.key
+				}));
+			}
 		});
 	}
 
@@ -212,15 +222,20 @@ class GameScene extends Phaser.Scene {
 		this.hero.sprite.setVelocity(0,0);
 		if (!this.moveAllowed) {
 			this.delta += delta;
-			if (this.delta > 300) {
+			if (this.delta > 200) {
 				this.moveAllowed = true;
 			}
 			return;
 		}
-		if (this.cursors.left.isDown) this.moveTo('left');
-		if (this.cursors.right.isDown) this.moveTo('right');
-		if (this.cursors.down.isDown) this.moveTo('down');
-		if (this.cursors.up.isDown) this.moveTo('up');
+
+		var isUpDown = this.cursors.up.isDown;
+		var isDownDown = this.cursors.down.isDown;
+		var isLeftDown = this.cursors.left.isDown;
+		var isRightDown = this.cursors.right.isDown;
+		if (isUpDown) 	 return this.moveTo('up');
+		if (isDownDown)  return this.moveTo('down');
+		if (isLeftDown)  return this.moveTo('left');
+		if (isRightDown) return this.moveTo('right');
 
 		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
 		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);

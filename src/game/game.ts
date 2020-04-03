@@ -77,11 +77,10 @@ export class Game {
             }
         });
         gameBus.subscribe(playerUseItem, event => {
-            const {target, item} = event.payload;
-            item.use(target);
-            /*if (result.status === MessageResponseStatus.Ok) {
-                this.nextTurn(result.timeSpent);
-            }*/
+            const {target, item, action} = event.payload;
+            const usedItem = this.items.getItemById(item.id);
+            usedItem && usedItem.keyMapping[action](target);
+            this.nextTurn(1);
         });
     }
     currentTerrain(): Terrain {
@@ -95,7 +94,13 @@ export class Game {
 
     nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
+            this.hero.resolveBuffs();
+            this.monsters.resolveBuffs();
             this.monsters.play();
+        }
+
+        if (this.hero.enchants.stuned) {
+            this.nextTurn(1);
         }
     }
 

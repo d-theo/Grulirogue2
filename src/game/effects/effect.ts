@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect } from './effects';
+import { HealEffect, ThicknessEffect, TeleportationEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -13,20 +13,28 @@ export type BuffDefinition = {
 };
 
 export enum Effects {
-    Heal = 'heal',
-    Stun = 'stun',
-    Bleed = 'bleed',
-    Const = 'const',
-    Invisibility = 'invisibility',
-    Swap = 'swap',
-    Teleportation = 'teleportation',
-    Thick = 'thick',
+    Heal = 'Heal',
+    Bleed = 'Bleed',
+    Const = 'Const',
+    Invisibility = 'Invisibility',
+    Swap = 'Swap',
+    Teleportation = 'Teleportation',
+    Thick = 'Thick',
+    Cleaning = 'Cleaning',
+    Dodge = 'Dodge',
+    XP = 'XP',
+    Stun = 'Stun',
+    Blind = 'Blind',
+    Poison = 'Poison',
+    Stupid = 'Stupid',
+    Speed = 'Speed',
+    Rage = 'Rage',
 }
 
 let tilemap: TileMap;
 let hero: Hero;
 let monsters: MonsterCollection;
-let effect: Effect;
+let effect: WorldEffect;
 export const EffectMaker = {
     set: initEffects,
     create: createEffect
@@ -36,7 +44,7 @@ function initEffects(args: {tilemap : TileMap, hero: Hero, monsters: MonsterColl
     tilemap = args.tilemap;
     hero = args.hero;
     monsters = args.monsters;
-    effect = new Effect(tilemap, hero, monsters);
+    effect = new WorldEffect(tilemap, hero, monsters);
 }
 
 function createEffect(name: Effects) {
@@ -46,6 +54,28 @@ function createEffect(name: Effects) {
             return new HealEffect();
         case Effects.Thick:
             return new ThicknessEffect();
+        case Effects.Teleportation:
+            return new TeleportationEffect(effect);
+        case Effects.Cleaning:
+            return new CleaningEffect();
+        case Effects.Stun:
+            return new StunEffect();
+        case Effects.Dodge:
+            return new DodgeEffect();
+        case Effects.XP:
+            return new XPEffect();
+        case Effects.Bleed:
+            return new BleedEffect();
+        case Effects.Poison:
+            return new PoisonEffect();
+        case Effects.Stupid:
+            return new StupidityEffect();
+        case Effects.Swap:
+            return new SwapEffect();
+        case Effects.Speed:
+            return new SpeedEffect();
+        case Effects.Rage:
+            return new RageEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
         /*case Effects.Teleportation:
@@ -53,32 +83,32 @@ function createEffect(name: Effects) {
     }
 }
 
-export class Effect {
+export class WorldEffect {
     constructor(
         protected tilemap : TileMap,
         protected hero: Hero,
         protected monsters: MonsterCollection,
     ) {}
 
-    protected monsterAt(pos: Coordinate) {
+    monsterAt(pos: Coordinate) {
         return this.monsters.getAt(pos);
     }
-    protected getMapWidth() {
+    getMapWidth() {
         return this.tilemap.widthM1;
     }
-    protected getMapHeight() {
+    getMapHeight() {
         return this.tilemap.heightM1;
     }
-    protected tileIsEmpty(pos: Coordinate) {
+    tileIsEmpty(pos: Coordinate) {
         return this.tilemap.getAt(pos).isEmpty();
     }
-    protected getHero() {
+    getHero() {
         return this.hero;
     }
-    protected tileAt(pos: Coordinate) {
+    tileAt(pos: Coordinate) {
         return this.tilemap.getAt(pos);
     }
-    protected map() {
+    map() {
         return this.tilemap.tiles;
     }
 }

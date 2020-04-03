@@ -1,6 +1,9 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { gameBus, playerHealed, logPublished } from "../../eventBus/game-bus";
+import { GameRange } from "../utils/range";
+import { WorldEffect } from "./effect";
+import { pickInRange } from "../utils/random";
 /*
     'blind',
     'stun',
@@ -45,8 +48,14 @@ export class ThicknessEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            start: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
-            end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
+            start: (t: Hero|Monster) => {
+                t.armour.baseAbsorb += 5;
+                t.speed = t.speed * 2;
+            },
+            end: (t: Hero|Monster) => {
+                t.armour.baseAbsorb -= 5;
+                t.speed = t.speed / 2;
+            },
             turns: 5
         });
         gameBus.publish(logPublished({data:'Your skin seems thicker'}));
@@ -55,14 +64,11 @@ export class ThicknessEffect implements IEffect {
 export class CleaningEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
-        target.addBuff({
-            start: null,
-            end: (t: Hero|Monster) => t.buffs.cleanBuff(),
-            turns: 0
-        });
-        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
+        target.buffs.cleanBuff();
+        gameBus.publish(logPublished({data:`${target.name} looks purified`}));
     }
 }
+
 export class DodgeEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
@@ -71,19 +77,19 @@ export class DodgeEffect implements IEffect {
             end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
             turns: 5
         });
-        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
+        gameBus.publish(logPublished({data:`${target.name} feels more agile`}));
     }
 }
 
 export class XPEffect implements IEffect {
-    type = ['hero']
-    cast(target: Hero) {
-        target.addBuff({
-            start: null,
-            end: (t: Hero) => t.levelUp(),
-            turns: 0
-        });
-        gameBus.publish(logPublished({data:'You are wiser !'}));
+    type = ['hero','monster']
+    cast(target: Hero | Monster) {
+        if (target.xp) {
+            (target as Hero).levelUp();
+            gameBus.publish(logPublished({data:'you are wiser !'}));
+        } else {
+            gameBus.publish(logPublished({data:'noting happens'}));
+        }
     }
 }
 
@@ -98,22 +104,119 @@ export class StunEffect implements IEffect   {
         gameBus.publish(logPublished({data: `${target.name} is stuned`}));
     }
 }
-
-/*
-export class BleedEffect extends Effect  {
+export class BlindEffect implements IEffect   {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
+            start: (t: Hero|Monster) => t.sight -= 6,
+            end: (t: Hero|Monster) => t.sight += 6,
+            turns: 15
+        });
+        gameBus.publish(logPublished({data: `${target.name} is stuned`}));
+    }
+}
+
+export class RageEffect implements IEffect   {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        const rageLevel = pickInRange('3-5');
+        target.addBuff({
+            start: (t: Hero|Monster) => {
+                t.armour.baseAbsorb -= rageLevel;
+                t.weapon.baseDamage += rageLevel;
+            },
+            end: (t: Hero|Monster) => {
+                t.armour.baseAbsorb -= rageLevel;
+                t.weapon.baseDamage += rageLevel;
+            },
+            turns: 10
+        });
+        gameBus.publish(logPublished({data: `${target.name} is getting mad !`}));
+    }
+}
+
+export class TeleportationEffect implements IEffect  {
+    type = ['monster','hero'];
+    constructor(private readonly world: WorldEffect) {}
+    cast(target: Hero|Monster) {
+        let done = false;
+        const rX = new GameRange(0, this.world.getMapWidth());
+        const rY = new GameRange(0, this.world.getMapHeight());
+        while(!done) {
+            const pos = {
+                x: rX.pick(),
+                y: rY.pick()
+            };
+            if (this.world.tileIsEmpty(pos) && this.world.monsterAt(pos) == null) {
+                done = true;
+                target.pos = pos;
+            }
+        }
+    }
+}
+export class BleedEffect implements IEffect  {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.enchants.bleeding = true,
             tick: (t: Hero|Monster) => {
-                t.enchants.bleeding = true
-                t.health.take(new GameRange(3,6).pick())
+                t.health.take(new GameRange(5,10).pick())
             },
             end: (t: Hero|Monster) => t.enchants.bleeding = false,
+            turns: 3
+        });
+    }
+}
+export class PoisonEffect implements IEffect  {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.enchants.poisoned = true,
+            tick: (t: Hero|Monster) => {
+                t.health.take(new GameRange(2,4).pick())
+            },
+            end: (t: Hero|Monster) => t.enchants.poisoned = false,
             turns: 7
         });
     }
 }
+export class SpeedEffect implements IEffect  {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => {
+                t.enchants.speed = true;
+                t.speed = t.speed/2;
+            },
+            end: (t: Hero|Monster) => {
+                t.enchants.speed = false;
+                t.speed = t.speed * 2;
+            },
+            turns: 7
+        });
+    }
+}
+export class StupidityEffect implements IEffect  {
+    type = ['monster','hero']
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.enchants.stupid = true,
+            end: (t: Hero|Monster) => t.enchants.stupid = false,
+            turns: 10
+        });
+    }
+}
 
+export class SwapEffect implements IEffect {
+    type = ['monster','hero'];
+    cast(target1: Hero|Monster, target2: Hero|Monster) {
+        const pos = target1.pos;
+        target1.pos = target2.pos;
+        target2.pos = pos;
+    }
+}
+
+/*
 export class ConstEffect extends Effect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
@@ -135,31 +238,4 @@ export class InvisibilityEffect extends Effect{
         });
     }
 }
-
-export class SwapEffect extends Effect{
-    type = ['monster','hero'];
-    cast(target1: Hero|Monster, target2: Hero|Monster) {
-        const pos = target1.pos;
-        target1.pos = target2.pos;
-        target2.pos = pos;
-    }
-}
-
-export class TeleportationEffect extends Effect{
-    type = ['monster','hero'];
-    cast(target: Hero|Monster) {
-        let done = false;
-        const rX = new GameRange(0, this.getMapWidth());
-        const rY = new GameRange(0, this.getMapHeight());
-        while(!done) {
-            const pos = {
-                x: rX.pick(),
-                y: rY.pick()
-            };
-            if (this.tileIsEmpty(pos) && this.monsterAt(pos) == null) {
-                done = true;
-                target.pos = pos;
-            }
-        }
-    }
-}*/
+*/

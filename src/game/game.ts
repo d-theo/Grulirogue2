@@ -88,7 +88,7 @@ export class Game {
     }
 
     adjustSight() {
-        this.tilemap.computeSight({from: this.hero.pos, range:8});
+        this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
         gameBus.publish(sightUpdated({}));
     }
 

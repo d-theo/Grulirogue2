@@ -30,7 +30,7 @@ export function playerMove(args: {
             gameBus.publish(itemPickedUp({item: maybeItem}));
         }
         return {
-            timeSpent: 1,
+            timeSpent: hero.speed,
             status: MessageResponseStatus.Ok,
         };
     } else {

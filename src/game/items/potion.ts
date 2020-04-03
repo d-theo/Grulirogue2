@@ -3,7 +3,18 @@ import * as _ from 'lodash';
 import { IEffect } from "../effects/effects";
 import { ItemVisitor } from "./item-visitor";
 
-export const PotionColors = ['blue', 'dark', 'red', 'brown', 'pink', 'orange', 'yellow', 'green', 'purple']
+export const PotionColors = [
+    'blue',
+    'dark',
+    'red',
+    'brown',
+    'pink',
+    'orange',
+    'yellow',
+    'green',
+    'purple',
+    'white'
+];
 
 export class Potion extends Item {
     effect: IEffect;

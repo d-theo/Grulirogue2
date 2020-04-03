@@ -5,7 +5,6 @@ import {test} from './hud';
 import InventoryScene from './scenes/inventory.scene';
 
 export const CellSize = 32;
-export const Los = 8;
 export const W = CellSize*23;
 export const H = CellSize*17;
 export const config = {

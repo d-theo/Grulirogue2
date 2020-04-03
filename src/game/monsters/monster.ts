@@ -26,6 +26,8 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     name!: string;
     level: number = 1;
     asSeenHero: boolean = false;
+    sight = 8;
+    speed = 1;
     private constructor() {
         // this.behavior = arg.behavior;
     }

@@ -23,12 +23,15 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     buffs: Buffs = new Buffs();
     level: number = 1;
     private inventory = new Inventory();
+    sight: number;
+    speed: number = 1;
     constructor() {
         this.name = "grul le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
         this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
         this.xp = 0;
+        this.sight = 8;
         this.addToBag(this.armour);
         this.addToBag(this.weapon);
         this.equip(this.armour);

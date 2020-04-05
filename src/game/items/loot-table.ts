@@ -105,7 +105,7 @@ export const ScrollTable: XTable = [
 ];
 
 export const DmgPerTier = [1,3,5,10,15];
-export const rangePerTier = [1,1,3,4,5];
+export const rangePerTier = [1,2,3,4,5];
 
 export const namesPerRange = [
 {

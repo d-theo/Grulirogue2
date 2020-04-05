@@ -43,7 +43,18 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     addToBag(item: Item) {
         this.inventory.add(item);
     }
+    dropItem(item: Item) {
+        item.pos = this.pos;
+        this.inventory.flagEquiped(item);
+        this.inventory.remove(item);
+    }
     equip(item: Item) {
+        if (item instanceof Weapon) {
+            if (this.weapon) {
+                this.inventory.flagUnEquiped(this.weapon);
+            }
+            this.weapon = item;
+        }
         this.inventory.flagEquiped(item);
     }
     gainXP(monster: Monster) {
@@ -55,8 +66,13 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     resolveBuffs() {
         this.buffs.apply(this);
     }
+    getItem(item: Item) {
+        return this.inventory.getItem(item);
+    }
     levelUp() {}
     consumeItem(item: Item) {
-        this.inventory.remove(item);
+        if (item.isUsed) {
+            this.inventory.remove(item);
+        }
     }
 }

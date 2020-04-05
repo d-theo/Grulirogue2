@@ -1,9 +1,16 @@
-import { randomIn } from "../game/utils/rectangle";
+import { randomIn, Rect } from "../game/utils/rectangle";
 
 export class TilemapItems {
-    constructor(private itemLayer, private rooms) {}
+    constructor(private itemLayer, private rooms:{
+        roomId: number,
+        groupId: number,
+        rect: Rect,
+        isEntry: boolean,
+        isExit: boolean
+    }[]) {}
     placeItems(itemKind, cb) {
         this.rooms.forEach(r => {
+            if (r.isEntry || r.isExit) return;
             try {
                 var rand = Math.random();
                 if (rand > 0.5) return;
@@ -17,6 +24,7 @@ export class TilemapItems {
     }
     placeItem(itemKind, chance ,cb) {
         this.rooms.forEach(r => {
+            if (r.isEntry || r.isExit) return;
             try {
                 var rand = Math.random();
                 if (rand > chance) return;

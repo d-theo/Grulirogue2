@@ -12,11 +12,17 @@ export class Weapon extends Item {
         this.maxRange = arg.maxRange || 1;
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ield';
+        this.description = `kind: ${this.skin}
+        dammages: ${this.baseDamage}
+        range: ${this.maxRange}`
     }
+
     deal() {
         return pickInRange(this.baseDamage);
     }
-    use() {}
+    use(target: any) {
+        target.equip(this);
+    }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitWeapon(this);
     }

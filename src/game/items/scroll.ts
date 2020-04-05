@@ -10,7 +10,7 @@ export class Scroll extends Item {
         this.keyDescription['r'] = '(r)ead';
     }
     use() {
-        
+        this.isUsed = true;
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitScroll(this);

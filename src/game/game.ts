@@ -8,13 +8,14 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { itemSpawn } from "./items/item-spawn";
 import { Item } from "./entitybase/item";
+import { Monster } from "./monsters/monster";
 
 export class Game {
     tilemap: TileMap;
@@ -78,12 +79,16 @@ export class Game {
             }
         });
         gameBus.subscribe(playerUseItem, event => {
-            const {target, item, action} = event.payload;
-            const usedItem = this.items.getItemById(item.id);
-            if (usedItem) {
+            const {owner, target, item, action} = event.payload;
+            const usedItem = owner.getItem(item);
+            console.log('target',target);
+            if (usedItem !== undefined) {
                 usedItem.keyMapping[action](target);
                 this.hero.consumeItem(usedItem);
             }
+            this.nextTurn(1);
+        });
+        gameBus.subscribe(waitATurn, event => {
             this.nextTurn(1);
         });
     }
@@ -126,4 +131,22 @@ export class Game {
         const heroPos = this.tilemap.startingPosition();
         this.hero.pos = heroPos;
     }
+
+	getNearestAttackables(): Monster[] {
+        let nearest = [];
+		for (const mob of this.monsters.monstersArray()) {
+            const posA = mob.pos;
+            const posB = this.hero.pos;
+            const dist = Math.abs(posA.x - posB.x) + Math.abs(posA.y - posB.y);
+            if (dist <= this.hero.weapon.maxRange 
+                && this.tilemap.hasVisibility({from: posA, to: posB})) {
+                nearest.push(mob);
+            }
+        }
+        return nearest.sort((a,b) => {
+            const distA = Math.abs(a.pos.x - this.hero.pos.x) + Math.abs(a.pos.y - this.hero.pos.y);
+            const distB = Math.abs(b.pos.x - this.hero.pos.x) + Math.abs(b.pos.y - this.hero.pos.y);
+            return distA > distB ? 1 : -1;
+        });
+	}
 }

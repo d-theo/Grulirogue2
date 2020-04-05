@@ -4,7 +4,7 @@ import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -27,6 +27,9 @@ class GameScene extends Phaser.Scene {
 	tilemapFloor: TilemapItems;
 	range: any;
 
+	mode:'play' | 'select' = 'play';
+	currentAction: 'fire' | null = null;
+	actionContext: any;
 	constructor() {
     super({
 			key: SceneName.Game
@@ -47,6 +50,9 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
 		this.load.image('target', '/assets/sprites/target.png');
+
+		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
+		this.load.image('Fist', '/assets/sprites/blowpipe.png');
 		for (const c of PotionColors) {
 			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
 		}
@@ -92,6 +98,56 @@ class GameScene extends Phaser.Scene {
 		this.input.keyboard.on('keyup', (event) => {
 			switch (event.key) {
 				case 'i': return this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+				case 'f': 
+					if (this.mode === 'play') {
+						const mobs = this.gameEngine.getNearestAttackables();
+						if (mobs.length === 0) {
+							gameBus.publish(logPublished({data:'noting to attack'}));
+						} else {
+							gameBus.publish(logPublished({data:'who do you want to attack ?'}));
+							const mob = mobs[0];
+							this.target.alpha = 1;
+							this.target.x = mob.pos.x * 32;
+							this.target.y = mob.pos.y * 32;
+							this.mode = 'select';
+							this.currentAction = 'fire';
+							this.actionContext = mobs;
+						}
+					} else if (this.mode === 'select') {
+						const mob = this.gameEngine.getAttackable({
+							x:this.target.x/32,
+							y:this.target.y/32
+						});
+						if (mob) {
+							gameBus.publish(playerAttemptAttackMonster({monster: mob}));
+						}
+						this.target.alpha = 0;
+						this.mode = 'play';
+						this.currentAction = null;
+						this.actionContext = null;
+					}
+					break;
+				case 'z': {
+					if (this.mode === 'select' && this.currentAction === 'fire') {
+						const last = this.actionContext.shift();
+						this.actionContext.push(last);
+						const mob = this.actionContext[0];
+						this.target.alpha = 1;
+						this.target.x = mob.pos.x * 32;
+						this.target.y = mob.pos.y * 32;
+					}
+					break;
+				}
+				case 'Escape' : {
+					gameBus.publish(logPublished({data:'forget that'}));
+					this.mode = 'play';
+					this.currentAction = null;
+					break;
+				}
+				case 'w' : {
+					gameBus.publish(waitATurn({}));
+					break;
+				}
 			}
 		});
 		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
@@ -99,7 +155,8 @@ class GameScene extends Phaser.Scene {
 				gameBus.publish(playerUseItem({
 					item: data.item,
 					target: this.hero.subject as Hero,
-					action: data.key
+					action: data.key,
+					owner: this.hero.subject as Hero
 				}));
 			}
 		});
@@ -133,6 +190,10 @@ class GameScene extends Phaser.Scene {
 		});
 		gameBus.subscribe(playerHealed, event => {
 			this.hero.updateHp();
+		});
+		gameBus.subscribe(itemDropped, event => {
+			const {item} = event.payload;
+			this.gameItems[item.id] = new UIItem(this, item, item.skin);
         });
 	}
 
@@ -143,10 +204,14 @@ class GameScene extends Phaser.Scene {
 			this.gameMonsters[mob.id] = monster;
 		}
 	}
+	
 	placeItems() {
 		const itemsToPlace: Item[] = this.gameEngine.items.itemsArray();
 		for (const i of itemsToPlace) {
-			const item = new UIItem(this, i, i.skin)
+			if (! this.gameEngine.tilemap.getAt(i.pos).isWalkable()) continue;
+			if (this.gameEngine.tilemap.getAt(i.pos).isEntry) continue;
+			if (this.gameEngine.tilemap.getAt(i.pos).isExit) continue;
+			const item = new UIItem(this, i, i.skin);
 			this.gameItems[i.id] = item;
 		}
 	}
@@ -228,23 +293,25 @@ class GameScene extends Phaser.Scene {
 			return;
 		}
 
-		var isUpDown = this.cursors.up.isDown;
-		var isDownDown = this.cursors.down.isDown;
-		var isLeftDown = this.cursors.left.isDown;
-		var isRightDown = this.cursors.right.isDown;
-		if (isUpDown) 	 return this.moveTo('up');
-		if (isDownDown)  return this.moveTo('down');
-		if (isLeftDown)  return this.moveTo('left');
-		if (isRightDown) return this.moveTo('right');
-
-		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
-		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-		this.target.x = tile.x * 32;
-		this.target.y = tile.y * 32;
-		if (this.gameEngine.getAttackable({x:tile.x, y:tile.y})) {
-			this.showRange();
-		} else {
-			this.hideRange();
+		if (this.mode === 'play') {
+			var isUpDown = this.cursors.up.isDown;
+			var isDownDown = this.cursors.down.isDown;
+			var isLeftDown = this.cursors.left.isDown;
+			var isRightDown = this.cursors.right.isDown;
+			if (isUpDown) 	 return this.moveTo('up');
+			if (isDownDown)  return this.moveTo('down');
+			if (isLeftDown)  return this.moveTo('left');
+			if (isRightDown) return this.moveTo('right');
+			
+			const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
+			const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+			this.target.x = tile.x * 32;
+			this.target.y = tile.y * 32;
+			if (this.gameEngine.getAttackable({x:tile.x, y:tile.y})) {
+				this.showRange();
+			} else {
+				this.hideRange();
+			}
 		}
 	}
 

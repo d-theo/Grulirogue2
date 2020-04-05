@@ -26,6 +26,7 @@ export function tilePropertiesForTerrain(t: Terrain) {
             t.DoorOpen,
             t.DoorOpened,
             t.DoorLocked,
+            t.Stair,
         ].indexOf(type) > -1;
     }
 }

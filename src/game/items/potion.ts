@@ -35,6 +35,7 @@ export class Potion extends Item {
     }
     use(target: any) {
         this.effect.cast(target);
+        this.isUsed = true;
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitPotion(this);

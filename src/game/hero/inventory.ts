@@ -14,6 +14,12 @@ export class Inventory {
     flagEquiped(item: Item) {
         this.equiped.add(item.id);
     }
+    getItem(item: Item) {
+        return this.bag.find(i => i.id === item.id);
+    }
+    flagUnEquiped(item: Item) {
+        this.equiped.delete(item.id);
+    }
     addGold(n: number) {
         this.gold += n;
     }

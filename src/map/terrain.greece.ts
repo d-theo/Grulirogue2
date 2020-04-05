@@ -5,6 +5,8 @@ export const terrainGreece: Terrain = {
     DoorOpen: 10,
     DoorOpened: 21,
     DoorLocked: 11,
+    Stair: 22,
+    Button: 23,
     CornerSE:8,
     CornerNW:0,
     CornerNE:2,

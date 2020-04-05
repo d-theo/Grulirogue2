@@ -81,7 +81,7 @@ export const Scrolls = {
 }
 
 export const ItemTable: XTable[] = [
-    [{chance: 100, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}],
+    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
 ]
 
 export const PotionTable: XTable = [
@@ -179,6 +179,12 @@ export const craftWeapon = (tier: number) => {
     const weaponDmg = dmg.join('-');
 
     const weaponName = `${getDmgName(dmg[1])} ${getRangeName(weaponRange)}`;
+    return new Weapon({
+        name: weaponName,
+        baseDamage: weaponDmg,
+        maxRange: weaponRange,
+        skin: getRangeName(weaponRange)
+    });
 }
 
 export function getRandomLoot(level: number): Item {
@@ -199,7 +205,7 @@ export function getRandomLoot(level: number): Item {
             break;
         case "weapon": 
             const w = craftWeapon(pickInRange(level-1,level+1));
-            loot = new Weapon(w);
+            loot = w;
             break;
         default:
             throw new Error(`Not implemented loot type : ${itemKind.type}`);

@@ -109,6 +109,7 @@ class InventoryScene extends Phaser.Scene {
             panel.inputs({viewW: this.halfw, viewH: this.halfh, selectedItem: selectedItem, selectedLetter: this.currentSelected});
             this.add.existing(panel);
             break;
+          case 'Escape':
           case 'i':
             listener.clearCaptures();
             this.scene.resume(SceneName.Game);

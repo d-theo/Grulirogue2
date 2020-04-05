@@ -12,7 +12,9 @@ export class Tile {
     type: number;
     viewed = false;
     isSolidFct: (n:number) => boolean;
-    isWalkableFct: (n:number) => boolean;;
+    isWalkableFct: (n:number) => boolean;
+    isEntry = false;
+    isExit = false;
     constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: number, isSolidFct: (n:number) => boolean, isWalkableFct: (n:number) => boolean}) {
         this.pos = {x: arg.x, y: arg.y}
         this.visibility = arg.visibility || TileVisibility.Hidden;

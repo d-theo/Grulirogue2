@@ -9,6 +9,8 @@ export const gameBus = new EventBus();
 
 export const gameStarted = createEventDefinition<{}>()('gameStarted');
 
+export const waitATurn = createEventDefinition<{}>()('waitATurn');
+
 export const doorOpened = createEventDefinition<{
     pos: Coordinate
 }>()('doorOpened');
@@ -29,6 +31,7 @@ export const playerMoved = createEventDefinition<{
 
 export const playerUseItem = createEventDefinition<{
     item: Item,
+    owner: Hero,
     target: Monster | Hero,
     action: string,
 }>()('playerUseItem');

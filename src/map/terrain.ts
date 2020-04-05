@@ -12,5 +12,7 @@ export interface Terrain {
     WallW: number,
     Floor: number,
     Deco: number,
+    Stair: number;
+    Button: number;
     [k: string]: any;
 }

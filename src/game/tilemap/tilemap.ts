@@ -8,6 +8,7 @@ import { matrixForEach, matrixFilter } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import { Terrain } from "../../map/terrain";
 import { pickInArray } from "../utils/random";
+import * as _ from 'lodash';
 
 export class TileMap {
     graph!: MapGraph;

@@ -14,5 +14,6 @@ export interface Terrain {
     Deco: number,
     Stair: number;
     Button: number;
+    ButtonPushed: number;
     [k: string]: any;
 }

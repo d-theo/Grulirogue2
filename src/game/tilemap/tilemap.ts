@@ -153,7 +153,7 @@ export class TileMap {
         }
     }
     setButtons() {
-        const ids = _.groupBy(this.graph.rooms, 'roomId');
+        const ids = _.groupBy(this.graph.rooms, 'groupId');
         for (const rooms of Object.values(ids)) {
             const r = pickInArray(rooms);
             const pos = randomIn(r.rect);

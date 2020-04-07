@@ -10,6 +10,16 @@ export const gameBus = new EventBus();
 export const gameStarted = createEventDefinition<{}>()('gameStarted');
 
 export const waitATurn = createEventDefinition<{}>()('waitATurn');
+export const nextLevel = createEventDefinition<{}>()('nextLevel');
+export const nextLevelCreated = createEventDefinition<{
+    level: number
+}>()('nextLevelCreated');
+
+export const xpHasChanged = createEventDefinition<{
+    current: number;
+    total: number;
+    status: 'xp_gained' | 'level_up'
+}>()('xpHasChanged');
 
 export const doorOpened = createEventDefinition<{
     pos: Coordinate

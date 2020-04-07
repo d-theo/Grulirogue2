@@ -37,14 +37,15 @@ export class TileMap {
             for (let colNb = 0; colNb < this.width; colNb++) {
                 const tile = new Tile({x:colNb, y:lineNb, isSolidFct: isSolid, isWalkableFct: isWalkable});
                 tile.type = tilemap[lineNb][colNb];
+                if (tile.type === this.terrain.Stair) {
+                    tile.isExit = true;
+                }
                 lines.push(tile);
             }
             tiles.push(lines);
             lines = [];
         }
         this.tiles = tiles;
-        this.setExit();
-        this.setButtons();
         this.heightM1 = this.height - 1;
         this.widthM1 = this.width - 1;
     }
@@ -140,25 +141,6 @@ export class TileMap {
                     currTile.setOnSight();
                 }
             }
-        }
-    }
-    setExit() {
-        for (let room of this.graph.rooms) {
-            if (room.isExit) {
-                const pos = randomIn(room.rect);
-                this.getAt(pos).type = this.terrain.Stair;
-                this.getAt(pos).isExit = true;
-                this.tilemap[pos.y][pos.x] = this.terrain.Stair;
-            }
-        }
-    }
-    setButtons() {
-        const ids = _.groupBy(this.graph.rooms, 'groupId');
-        for (const rooms of Object.values(ids)) {
-            const r = pickInArray(rooms);
-            const pos = randomIn(r.rect);
-            this.getAt(pos).type = this.terrain.Button;
-            this.tilemap[pos.y][pos.x] = this.terrain.Button;
         }
     }
     startingPosition() {

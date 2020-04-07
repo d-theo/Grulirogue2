@@ -13,4 +13,7 @@ export class UIItem {
 	pickedUp() {
 		this.sprite.destroy();
 	}
+	destroy() {
+		this.sprite.destroy();
+	}
 }

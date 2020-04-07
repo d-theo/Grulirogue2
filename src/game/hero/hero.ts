@@ -16,10 +16,12 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;
     health: Health;
     armour: Armour;
+    dodge: number = 0.30;
     weapon: Weapon;
     pos!: Coordinate;
     enchants: EnchantTable = new EnchantTable();
     xp: number;
+    nextXp: number;
     buffs: Buffs = new Buffs();
     level: number = 1;
     private inventory = new Inventory();
@@ -29,13 +31,17 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         this.name = "grul le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
-        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
+        this.weapon = new Weapon({baseDamage: /*'2-4'*/'15-15', maxRange: 10, name: 'fist', description: 'your fists are not prepared for this'});
         this.xp = 0;
+        this.calcNextXp();
         this.sight = 8;
         this.addToBag(this.armour);
         this.addToBag(this.weapon);
         this.equip(this.armour);
         this.equip(this.weapon);
+    }
+    calcNextXp() {
+        this.nextXp = (75*(this.level*this.level)) - (125*this.level) + (100);
     }
     openBag() {
         return this.inventory.openBag();
@@ -57,8 +63,21 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         }
         this.inventory.flagEquiped(item);
     }
-    gainXP(monster: Monster) {
+    gainXP(monster: Monster): {total: number, current: number, status: 'xp_gained' | 'level_up'} {
+        let status: 'xp_gained' | 'level_up' = 'xp_gained';
         this.xp += monster.xp;
+        console.log(monster.xp);
+        if (this.nextXp < this.xp) {
+            this.level ++;
+            this.calcNextXp();
+            this.xp = 0;
+            status = 'level_up';
+        }
+        return {
+            total: this.nextXp,
+            current: this.xp,
+            status
+        };
     }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);

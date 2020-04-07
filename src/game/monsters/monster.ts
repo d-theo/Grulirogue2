@@ -28,11 +28,13 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     asSeenHero: boolean = false;
     sight = 8;
     speed = 1;
+    dodge: number = 0.20;
     private constructor() {
         // this.behavior = arg.behavior;
     }
     setXp(xp: number) {
         this.xp = xp;
+        this.level = Math.floor(this.xp / 5);
         return this;
     }
     setPos(pos: Coordinate) {

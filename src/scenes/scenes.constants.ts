@@ -1,4 +1,5 @@
 export enum SceneName {
     Game = 'GameScene',
-    Inventory = 'InventoryScene'
+    Inventory = 'InventoryScene',
+    InterLevel = 'InterLevel'
 }

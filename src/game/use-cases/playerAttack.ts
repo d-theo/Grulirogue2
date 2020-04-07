@@ -7,7 +7,7 @@ import { TileMap } from "../tilemap/tilemap";
 import { Killable } from "../entitybase/killable";
 import { Movable } from "../entitybase/movable";
 import { Log } from "../log/log";
-import { gameBus, playerAttackedMonster, monsterDead } from "../../eventBus/game-bus";
+import { gameBus, playerAttackedMonster, monsterDead, xpHasChanged } from "../../eventBus/game-bus";
 import { Monster } from "../monsters/monster";
 
 export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|null, tilemap: TileMap}): MessageResponse {
@@ -47,6 +47,8 @@ export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|nul
     }));
     
     if (healthReport.status === HealthStatus.Dead) {
+        const report = hero.gainXP(attacked as any as Monster);
+        gameBus.publish(xpHasChanged(report));
         gameBus.publish(monsterDead({
             monster: attacked as any as Monster,
         }));

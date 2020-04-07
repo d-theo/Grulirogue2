@@ -36,5 +36,9 @@ export const GreeceCreationParams = {
     MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
     canvasWidth: 100,
     canvasHeight: 100,
-    Terrain: terrainGreece
+    Terrain: terrainGreece,
+    Algo: 'rogue',
+    Locks: false,
+    Danger: [50, 70, 70, 80],
+    Loots: [10, 6, 4, 4]
 };

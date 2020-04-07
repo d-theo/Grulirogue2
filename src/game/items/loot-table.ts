@@ -82,6 +82,9 @@ export const Scrolls = {
 
 export const ItemTable: XTable[] = [
     [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
+    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
+    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
+    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
 ]
 
 export const PotionTable: XTable = [

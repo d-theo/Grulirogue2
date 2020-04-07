@@ -1,10 +1,9 @@
 import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
-import { toPix } from '../maths/maps-utils';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -30,6 +29,8 @@ class GameScene extends Phaser.Scene {
 	mode:'play' | 'select' = 'play';
 	currentAction: 'fire' | null = null;
 	actionContext: any;
+
+	subs:any = [];
 	constructor() {
     super({
 			key: SceneName.Game
@@ -37,9 +38,7 @@ class GameScene extends Phaser.Scene {
 	}
 	
 	preload() {
-		this.gameEngine = new GameEngine();
-		this.gameEngine.reInitLevel();
-
+		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain', '/assets/tilemaps/greece.png');
 		this.load.image('terrain2', '/assets/tilemaps/greece2.png');
@@ -53,9 +52,127 @@ class GameScene extends Phaser.Scene {
 
 		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
 		this.load.image('Fist', '/assets/sprites/blowpipe.png');
+		this.load.image('Slingshot', '/assets/sprites/slingshot.png');
 		for (const c of PotionColors) {
 			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
 		}
+	}
+
+	reInit() {
+		console.log('reinit')
+		this.gameEngine = GameEngine.getInstance();
+		this.tilemap = this.gameEngine.tilemap.tilemap;
+		this.subs = [];
+		Object.values(this.gameMonsters).forEach(v => v.destroy())
+		Object.values(this.gameItems).forEach(v => v.destroy())
+		this.gameMonsters = {};
+		this.gameItems = {};
+
+		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
+		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
+		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
+
+		this.layer = layer;
+		this.tilemapFloor = new TilemapItems(this.layer, this.gameEngine.tilemap.graph.rooms);
+
+		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
+		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
+		this.addDecorations();
+		this.placeMonsters();
+		this.placeItems();
+		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
+		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
+		
+		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
+		this.target = this.physics.add.sprite(0, 0, 'target');
+		this.target.setOrigin(0,0);
+		this.input.on('pointermove', () => {
+			this.target.setAlpha(0.9);
+		});
+		this.input.on('pointerup', this.handleMouseClick.bind(this));
+
+		this.cursors = this.input.keyboard.createCursorKeys();
+		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+		this.cameras.main.startFollow(this.hero.sprite, false);
+
+		this.initGameEvents();
+
+		// hack ! 
+		setTimeout(() => {
+			console.log('??????')
+			gameBus.publish(gameStarted({}));
+			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
+			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
+		}, 50);
+
+		this.input.keyboard.on('keyup', (event) => {
+			switch (event.key) {
+				case 'i': return this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+				case 'f': 
+					if (this.mode === 'play') {
+						const mobs = this.gameEngine.getNearestAttackables();
+						if (mobs.length === 0) {
+							gameBus.publish(logPublished({data:'noting to attack'}));
+						} else {
+							gameBus.publish(logPublished({data:'who do you want to attack ?'}));
+							const mob = mobs[0];
+							this.target.alpha = 1;
+							this.target.x = mob.pos.x * 32;
+							this.target.y = mob.pos.y * 32;
+							this.mode = 'select';
+							this.currentAction = 'fire';
+							this.actionContext = mobs;
+						}
+					} else if (this.mode === 'select') {
+						const mob = this.gameEngine.getAttackable({
+							x:this.target.x/32,
+							y:this.target.y/32
+						});
+						if (mob) {
+							gameBus.publish(playerAttemptAttackMonster({monster: mob}));
+						}
+						this.target.alpha = 0;
+						this.mode = 'play';
+						this.currentAction = null;
+						this.actionContext = null;
+					}
+					break;
+				case 'z': {
+					if (this.mode === 'select' && this.currentAction === 'fire') {
+						const last = this.actionContext.shift();
+						this.actionContext.push(last);
+						const mob = this.actionContext[0];
+						this.target.alpha = 1;
+						this.target.x = mob.pos.x * 32;
+						this.target.y = mob.pos.y * 32;
+					}
+					break;
+				}
+				case 'Escape' : {
+					gameBus.publish(logPublished({data:'forget that'}));
+					this.mode = 'play';
+					this.currentAction = null;
+					break;
+				}
+				case 'w' : {
+					gameBus.publish(waitATurn({}));
+					break;
+				}
+				case '>':
+					gameBus.publish(nextLevel({}));
+					break;
+			}
+		});
+		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
+			if (data) {
+				gameBus.publish(playerUseItem({
+					item: data.item,
+					target: this.hero.subject as Hero,
+					action: data.key,
+					owner: this.hero.subject as Hero
+				}));
+			}
+		});
 	}
 
 	create() {
@@ -148,6 +265,12 @@ class GameScene extends Phaser.Scene {
 					gameBus.publish(waitATurn({}));
 					break;
 				}
+				case '>':
+					if (this.gameEngine.canGoToNextLevel()) {
+						this.subs.forEach(s => s());
+						gameBus.publish(nextLevel({}));
+					}
+					break;
 			}
 		});
 		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
@@ -163,38 +286,42 @@ class GameScene extends Phaser.Scene {
 	}
 
 	initGameEvents() {
-		gameBus.subscribe(sightUpdated, event => {
+		this.subs.push(gameBus.subscribe(sightUpdated, event => {
+			console.log('FOW');
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
-		});
-		gameBus.subscribe(monsterMoved, event => {
+		}));
+		this.subs.push(gameBus.subscribe(monsterMoved, event => {
 			const {monster} = event.payload;
 			const m = this.gameMonsters[monster.id];
 			this.hero.updateHp();
 			m.move();
-		});
-		gameBus.subscribe(playerMoved, event => {
+		}));
+		this.subs.push(gameBus.subscribe(playerMoved, event => {
 			this.hero.move();
-		});
-		gameBus.subscribe(doorOpened, event => {
+		}));
+		this.subs.push(gameBus.subscribe(doorOpened, event => {
 			const {pos} = event.payload;
 			this.layer.putTileAt(this.gameEngine.currentTerrain().DoorOpened, pos.x, pos.y);
-		});
-		gameBus.subscribe(playerAttackedMonster, event => {
+		}));
+		this.subs.push(gameBus.subscribe(playerAttackedMonster, event => {
 			const {monster} = event.payload;
 			this.gameMonsters[monster.id].updateHp();
-		});
-		gameBus.subscribe(itemPickedUp, event => {
+		}));
+		this.subs.push(gameBus.subscribe(itemPickedUp, event => {
 			const {item} = event.payload;
 			this.gameItems[item.id].pickedUp();
-		});
-		gameBus.subscribe(playerHealed, event => {
+		}));
+		this.subs.push(gameBus.subscribe(playerHealed, event => {
 			this.hero.updateHp();
-		});
-		gameBus.subscribe(itemDropped, event => {
+		}));
+		this.subs.push(gameBus.subscribe(itemDropped, event => {
 			const {item} = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
-        });
+		}));
+		gameBus.subscribe(nextLevelCreated, event => {
+			this.reInit();
+		});
 	}
 
 	placeMonsters() {

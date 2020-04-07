@@ -2,19 +2,29 @@ import { generateRLMap } from "./map_generation";
 import { pointsOfRect } from "./map-geo";
 import { MapParamCreation } from "../map/map-generator";
 import {Terrain} from '../map/terrain';
+import { randomIn } from "../game/utils/rectangle";
+import { generateOlMap } from "./map_generation_ol";
 
 export function createTileMap(params: MapParamCreation) {
     const MapTerrain: Terrain = params.Terrain;
-    const map = generateRLMap(params);
+    let map;
+    if (params.Algo === 'rogue') {
+        map = generateRLMap(params);
+    } else {
+        map = generateOlMap(params);
+    }
+    
     const tilemap = tile(map, params);
     return {tilemap, mapObject: map};
-
-    function tile(map, params) {
+    
+    function tile(map, params: MapParamCreation) {
         const tilemap = Array(params.canvasHeight).fill(MapTerrain.Void).map(()=>Array(params.canvasWidth).fill(MapTerrain.Void));
         const rooms = map.rooms;
         for (var x = 0; x < rooms.length; x++) {
             makeRoomTile(rooms[x].rect, tilemap);
         }
+        makeExit(rooms, tilemap);
+
         const vertices = map.vertices;
         for (let vertex of vertices) {
             for (let line of vertex.segments) {
@@ -23,7 +33,7 @@ export function createTileMap(params: MapParamCreation) {
         }
         const doors = map.doors;
         for (let door of doors) {
-            if (door.isLocked) {
+            if (door.isLocked && params.Locks) {
                 tilemap[door.position.y][door.position.x] = MapTerrain.DoorLocked;
             } else {
                 tilemap[door.position.y][door.position.x] = MapTerrain.DoorOpen;
@@ -66,4 +76,12 @@ export function createTileMap(params: MapParamCreation) {
            if (e2 < dx) { err += dx; y0  += sy; }
         }
      }
+     function makeExit(rooms, tilemap) {
+        for (let room of rooms) {
+            if (room.isExit) {
+                const pos = randomIn(room.rect);
+                tilemap[pos.y][pos.x] = MapTerrain.Stair;
+            }
+        }
+    }
 }

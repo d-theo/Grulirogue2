@@ -7,6 +7,45 @@ export function pointsOfRect(rect) {
     }
 }
 
+export function randomSizeRect(x:number, y: number, width: number, height: number, fuzz: number) {
+    const rw = Math.floor(width * rand(-fuzz, fuzz));
+    const rh = Math.floor(height * rand(-fuzz, fuzz));
+    return {
+        x,
+        y,
+        width: width + rw,
+        height: height + rh
+    };
+}
+
+export function isOverlaping(r1, r2) {
+    return require("rectangle-overlap")(r1, r2) != null;
+}
+
+export function randomPointOfEdge(rect, forceDirection?: string) {
+    const {x,y,width, height} = rect;
+    const forced = {'N': 0, 'S': 1, 'E': 2, 'W': 3};
+    const dirs = ['N','S','E','W'];
+    const points = [
+        { x: rand(x+1, x+width-1), y: y},
+        { x: rand(x+1, x+width-1), y: y+height},
+        { x: x + width, y: rand(y+1, y+height-1)},
+        { x: x, y: rand(y+1, y+height-1)},
+    ];
+    if (forceDirection) {
+        return {
+            direction: forceDirection,
+            pos: points[forced[forceDirection]]
+        }
+    } else {
+        const idx = rand(0,3);
+        return {
+            direction : dirs[idx],
+            pos: points[idx],
+        };
+    }
+}
+
 export function insideRect(rect) {
     function toPair(n) {
         if (n % 2 === 0) return n;

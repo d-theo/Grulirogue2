@@ -26,7 +26,7 @@
                 <span>Grulito le vaillant</span>
             </div>
             <div class="hud-line">
-                <span>Level 1</span>
+                <span>Level <span id="current-level">1</span></span>
             </div>
             <div class="hud-line">
                 <span style="width: 50px;">HP : </span>
@@ -76,6 +76,11 @@
         margin-top: -6px;
         width: 1006px;
         border-top: yellow solid 1px;
+        overflow-y: scroll;
+        white-space: pre-line;
+    }
+    .log::-webkit-scrollbar {
+        display: none;
     }
     .hud {
         display: flex;
@@ -111,7 +116,9 @@
         position: relative;
         text-align: center;
     }
-
+    #log-txt::-webkit-scrollbar {
+        display: none;
+    }
     #current-hp {
         background-color: red;
     }

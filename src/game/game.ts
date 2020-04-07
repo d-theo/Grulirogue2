@@ -8,7 +8,7 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -18,6 +18,7 @@ import { Item } from "./entitybase/item";
 import { Monster } from "./monsters/monster";
 
 export class Game {
+    static Engine: Game;
     tilemap: TileMap;
     hero: Hero;
     monsters: MonsterCollection;
@@ -36,20 +37,31 @@ export class Game {
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         this.initBus();
+        this.reInitLevel();
+    }
+
+    static getInstance() {
+        if (Game.Engine != null) {
+            return Game.Engine;
+        } else {
+            Game.Engine = new Game();
+            return Game.Engine;
+        }
     }
 
     reInitLevel() {
         if (this.level < 4) {
+            GreeceCreationParams.Algo = this.level % 2 == 0 ? 'dig' : 'rogue';
             this.tilemap.init(GreeceCreationParams);
         }
         this.startingPosition();
         this.adjustSight();
-        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, 20));
-        
-
+        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, GreeceCreationParams.Danger[this.level-1]));
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
-        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, 10));
-        
+        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, GreeceCreationParams.Loots[this.level-1]));
+        if (this.level > 1) {
+            gameBus.publish(nextLevelCreated({level: this.level}));
+        }
     }
     initBus() {
         gameBus.subscribe(playerActionMove, event => {
@@ -81,7 +93,6 @@ export class Game {
         gameBus.subscribe(playerUseItem, event => {
             const {owner, target, item, action} = event.payload;
             const usedItem = owner.getItem(item);
-            console.log('target',target);
             if (usedItem !== undefined) {
                 usedItem.keyMapping[action](target);
                 this.hero.consumeItem(usedItem);
@@ -91,6 +102,15 @@ export class Game {
         gameBus.subscribe(waitATurn, event => {
             this.nextTurn(1);
         });
+        gameBus.subscribe(nextLevel, event => {
+            if (this.canGoToNextLevel()) {
+                this.level ++;
+                this.reInitLevel();
+            }
+        });
+    }
+    canGoToNextLevel() {
+        return this.tilemap.getAt(this.hero.pos).isExit;
     }
     currentTerrain(): Terrain {
         return GreeceCreationParams.Terrain;

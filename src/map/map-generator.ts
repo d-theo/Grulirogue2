@@ -22,6 +22,8 @@ export type MapParamCreation = {
     canvasWidth: number,
     canvasHeight: number,
     Terrain: Terrain;
+    Algo: string;
+    Locks: boolean;
 }
 export function createMap(param: MapParamCreation): {tilemap: number[][], mapObject: MapGraph} {
     const {tilemap, mapObject} = createTileMap(param);

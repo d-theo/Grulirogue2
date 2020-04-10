@@ -156,6 +156,17 @@ export const namesPerDamage = [
     }
 ];
 
+export const WeaponEchants: XTable = [
+    {chance: 59, type: 'nothing'},
+    {chance: 15, type: 'plus_one'},
+    {chance: 10, type: 'plus_two'},
+    {chance: 5, type: 'poisoned'},
+    {chance: 5, type: 'bleed'},
+    {chance: 3, type: 'plus_three'},
+    {chance: 2, type: 'plus_four'},
+    {chance: 1, type: 'plus_five'},
+];
+
 const getDmgName = (dmg: number) => {
     for(let n of namesPerDamage) {
         if (dmg <= n.lessThan) {

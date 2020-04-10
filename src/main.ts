@@ -20,7 +20,6 @@ export const config = {
     scene: [
       GameScene,
       InventoryScene,
-      InterLevelScene
     ],
     physics: {
       default: 'arcade',

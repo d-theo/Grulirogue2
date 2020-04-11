@@ -36,7 +36,6 @@ export class MonsterCollection {
         }
     }
     play() {
-        console.log('play');
         for (const m of this.monsters) {
             if (!m.enchants.stuned)
                 m.play();

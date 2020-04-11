@@ -298,16 +298,16 @@ class GameScene extends Phaser.Scene {
 		this.tilemapItems.placeItems(this.gameEngine.currentTerrain().Deco4, (pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, 0.5 ,(pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, 0.7 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, 0.5 ,(pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, 0.7 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, 0.5 ,(pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, 0.7 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, 0.5 ,(pos) => {
+		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, 0.7 ,(pos) => {
 			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
 		});
 		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt1, 1,null);
@@ -325,6 +325,7 @@ class GameScene extends Phaser.Scene {
 		this.target.y = tile.y * 32;
 		const mob = this.gameEngine.getAttackable({x:tile.x, y:tile.y});
 		if (mob) {
+			console.log(mob);
 			gameBus.publish(playerAttemptAttackMonster({monster: mob}));
 		}
 		if (!mob) {
@@ -381,6 +382,8 @@ class GameScene extends Phaser.Scene {
 			if (isLeftDown)  return this.moveTo('left');
 			if (isRightDown) return this.moveTo('right');
 			
+			Object.values(this.gameMonsters).forEach(v => v.move());
+
 			const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
 			const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
 			this.target.x = tile.x * 32;

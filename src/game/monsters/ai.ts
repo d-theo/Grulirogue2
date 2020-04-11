@@ -43,13 +43,17 @@ export const AI = (game: Game) => {
         const distance = Math.max(dx,dy);
         if (distance > monster.sight + 3) {
             monster.asSeenHero = false;
+            monster.currentAI = 'random';
             return randomAI(monster);
         } else if  (hasVisibility) {
             monster.asSeenHero = true;
+            monster.currentAI = 'agressive';
             return agressiveAI(monster);
         } else if (monster.asSeenHero) {
+            monster.currentAI = 'agressive';
             return agressiveAI(monster);
         } else {
+            monster.currentAI = 'random';
             return randomAI(monster);
         }
     }
@@ -60,15 +64,22 @@ export const AI = (game: Game) => {
         const dy = monster.pos.y - game.hero.pos.y;
         const range = Math.max(Math.abs(dx),Math.abs(dy));
         if (monster.weapon.maxRange >= range && hasVisibility) {
+            console.log('attack')
             monsterAttack({
                 hero: game.hero,
                 monster
             });
         } else {
+            const otherMobsPositions = game
+                .monsters
+                .monstersArray()
+                .filter(m => m.id !== monster.id)
+                .map(m => m.pos);
             const path = astar({
                 from: monster.pos,
                 to: game.hero.pos,
-                tiles: game.tilemap.tiles
+                tiles: game.tilemap.tiles,
+                additionnalObstacle: otherMobsPositions
             });
             if (path.length > 0) {
                 monsterMove({
@@ -76,6 +87,8 @@ export const AI = (game: Game) => {
                     monster: monster,
                     nextPos: path[0]
                 });
+            } else {
+                console.log('no path')
             }
         }
     }

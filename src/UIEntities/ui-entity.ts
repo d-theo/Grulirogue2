@@ -27,7 +27,7 @@ export class UIEntity {
         delta && this.animateToSynchronize(delta);
 	}
 	destroy(isHero = false) {
-		if (!isHero)	this.sprite.destroy();
+		if (!isHero)this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
 	}

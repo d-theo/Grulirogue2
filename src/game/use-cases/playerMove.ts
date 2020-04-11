@@ -16,14 +16,11 @@ export function playerMove(args: {
     const {hero, pos, tilemap, monsters, items} = args;
     if (
         isTileEmpty(pos, monsters.monstersArray())
-        && isSurroundingClear(pos, tilemap)
+        && (isSurroundingClear(pos, tilemap) || hasOpenedDoors(pos, tilemap))
         && isMovingOnlyOneCase(hero.pos, pos)
         && isInsideMapBorder(pos, tilemap.getBorders())
     ) {
         hero.pos = pos;
-        if (hasOpenedDoors(pos, tilemap)) {
-            gameBus.publish(doorOpened({pos}));
-        }
         const maybeItem = itemOnGround(pos, items);
         if (maybeItem) {
             hero.addToBag(maybeItem);
@@ -45,6 +42,7 @@ function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     const tile = tilemap.getAt(pos);
     if (tilemap.terrain.DoorOpen === tile.type) {
         tile.type = tilemap.terrain.DoorOpened;
+        gameBus.publish(doorOpened({pos}));
         return true;
     }
     return false;

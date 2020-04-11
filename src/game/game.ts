@@ -162,7 +162,7 @@ export class Game {
 		for (const mob of this.monsters.monstersArray()) {
             const posA = mob.pos;
             const posB = this.hero.pos;
-            const dist = Math.abs(posA.x - posB.x) + Math.abs(posA.y - posB.y);
+            const dist = Math.min(Math.abs(posA.x - posB.x),Math.abs(posA.y - posB.y));
             if (dist <= this.hero.weapon.maxRange 
                 && this.tilemap.hasVisibility({from: posA, to: posB})) {
                 nearest.push(mob);

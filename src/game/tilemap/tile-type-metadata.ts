@@ -23,9 +23,7 @@ export function tilePropertiesForTerrain(t: Terrain) {
     function isWalkable(type: number) {
         return [
             t.Floor,
-            t.DoorOpen,
             t.DoorOpened,
-            t.DoorLocked,
             t.Stair,
             t.ButtonPushed,
             t.Button

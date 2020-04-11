@@ -29,6 +29,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     sight = 8;
     speed = 1;
     dodge: number = 0.20;
+    currentAI: string = '';
     private constructor() {
         // this.behavior = arg.behavior;
     }
@@ -61,6 +62,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.buffs.addBuff(buff);
     }
     play() {
+        console.log('play',this);
         this.behavior(this);
     }
     static makeMonster(arg: any) : Monster {

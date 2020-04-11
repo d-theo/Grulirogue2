@@ -14,6 +14,8 @@ import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
 
+const XP = [0, 50, 115, 200, 300, 450, 700, 900];
+
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;
     health: Health;
@@ -52,9 +54,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         this.heroSkills = new HeroSkills(this);
     }
     calcNextXp() {
-        //this.nextXp = (75*(this.level*this.level)) - (125*this.level) + (100);
-        this.nextXp = Math.floor((-(5*(this.level*this.level*this.level))/6)+ (15*(this.level*this.level)) + 
-            ((155*this.level)/6)+100);
+        this.nextXp = XP[this.level] - XP[this.level-1];
     }
     openBag() {
         return this.inventory.openBag();

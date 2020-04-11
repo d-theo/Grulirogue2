@@ -9,7 +9,9 @@ export class Armour extends Item {
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ear';
     }
-    use(){}
+    use(target: any) {
+        target.equip(this);
+    }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitArmor(this);
     }

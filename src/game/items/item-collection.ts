@@ -3,8 +3,7 @@ import { Coordinate, equalsCoordinate } from "../utils/coordinate";
 
 export class ItemCollection {
     items: Item[] = [];
-    constructor() {
-        
+    constructor() { 
     }
     setItems(items: Item[]) {
         this.items = items;

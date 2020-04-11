@@ -6,6 +6,7 @@ import { Potion } from "./potion";
 import { Item } from "../entitybase/item";
 import { Weapon } from "../entitybase/weapon";
 import { Scroll } from "./scroll";
+import { Armour } from "../entitybase/armour";
 
 export const Potions = {
     Thickness: {
@@ -65,6 +66,26 @@ export const Potions = {
     }
 }
 
+export const Armours = {
+    Classic: {
+        name: 'Light Armour',
+        absorb: '1-2',
+        description: 'Does what it is supposed to do.',
+        skin: 'light armour'
+    },
+    Heavy: {
+        name: 'Heavy Armour',
+        absorb: '3-4',
+        description: 'Absorb the dammage at the cost of being less agile',
+        skin: 'heavy armour'
+    }
+}
+
+export const ArmoursTable: XTable = [
+    {chance: 75, type: Armours.Classic},
+    {chance: 25, type: Armours.Heavy},
+];
+
 export const Scrolls = {
     Fear: {
 
@@ -81,10 +102,10 @@ export const Scrolls = {
 }
 
 export const ItemTable: XTable[] = [
-    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
-    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
-    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
-    [{chance: 85, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}],
+    [{chance: 70, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
+    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
 ]
 
 export const PotionTable: XTable = [
@@ -268,6 +289,15 @@ export function getRandomLoot(level: number): Item {
             const w = craftWeapon(pickInRange(level-1,level+1));
             loot = w;
             break;
+        case 'armour':
+            const armour = getInTable(ArmoursTable);
+            const a = new Armour({
+                name: armour.name,
+                baseAbsorb: armour.absorb,
+                description: armour.description,
+                skin: armour.skin
+            });
+            loot = a;   
         default:
             throw new Error(`Not implemented loot type : ${itemKind.type}`);
     }

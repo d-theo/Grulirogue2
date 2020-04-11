@@ -1,4 +1,4 @@
-import { Tile, TileVisibility } from "./tile";
+import { Tile } from "./tile";
 import { Rect, randomIn } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
@@ -7,8 +7,13 @@ import { MapGraph } from "../../generation/map_definition";
 import { matrixForEach, matrixFilter } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import { Terrain } from "../../map/terrain";
-import { pickInArray } from "../utils/random";
 import * as _ from 'lodash';
+import { Monster } from "../monsters/monster";
+import { Hero } from "../hero/hero";
+import { IEffect } from "../effects/effects";
+let short = require('short-uuid');
+
+type DebuffDuration = {id: string, duration: number, triggered: boolean, pos: Coordinate};
 
 export class TileMap {
     graph!: MapGraph;
@@ -20,6 +25,8 @@ export class TileMap {
     heightM1!: number;
     widthM1!: number;
     terrain!: Terrain;
+
+    debuffDurations: DebuffDuration[] = [];
     constructor() {}
     init(params: MapParamCreation) {
         const {isSolid, isWalkable} = tilePropertiesForTerrain(params.Terrain);
@@ -59,6 +66,44 @@ export class TileMap {
     }
     getAt(pos: Coordinate): Tile {
         return this.tiles[pos.y][pos.x];
+    }
+
+    addTileEffects(args: {pos: Coordinate, debuff: IEffect, durationAfterWalk: number, type: string}) {
+        const {pos, debuff, durationAfterWalk, type} = args;
+        const id = short.generate();
+        this.getAt(pos).addDebuff({id, debuff: debuff});
+        this.debuffDurations.push({id, duration: durationAfterWalk, triggered: false, pos});
+        return id;
+    }
+    playTileEffectsOn(hero: Hero, monsters: Monster[]) {
+        let ids = this.playTileEffectOnWalker(hero);
+        monsters.forEach(m => {
+            ids = ids.concat(this.playTileEffectOnWalker(m));
+        });
+        for (let timer of this.debuffDurations) {
+            if (ids.indexOf(timer.id) > -1) {
+                timer.triggered = true;
+            }
+            if (timer.triggered) {
+                timer.duration -= 1;
+            }
+            if (timer.duration === 0) {
+                const tile = this.getAt(timer.pos);
+                tile.removeDebuff(timer.id);
+            }
+        }
+    }
+    private playTileEffectOnWalker(walker: Hero | Monster) {
+        const tile = this.getAt(walker.pos);
+        const debuffs = tile.getDebuffs();
+        const idTriggered: string[] = [];
+        if (debuffs.length > 0) {
+            debuffs.forEach(d => {
+                d.debuff.cast(walker);
+                idTriggered.push(d.id);
+            });
+        }
+        return idTriggered;
     }
 
     hasVisibility(arg:{from: Coordinate, to:Coordinate}) {

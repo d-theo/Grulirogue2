@@ -8,14 +8,15 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, playerSetTrap, effectSet} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
-import { EffectMaker } from "./effects/effect";
+import { EffectMaker, Effects } from "./effects/effect";
 import { itemSpawn } from "./items/item-spawn";
 import { Item } from "./entitybase/item";
 import { Monster } from "./monsters/monster";
+import { MapEffect } from "../map/map-effect";
 
 export class Game {
     static Engine: Game;
@@ -112,6 +113,20 @@ export class Game {
             const {name} = event.payload;
             this.hero.heroSkills.learnSkill(name);
         });
+        gameBus.subscribe(playerSetTrap, event => {
+            const pos = this.hero.pos;
+            const id = this.tilemap.addTileEffects({
+                debuff: EffectMaker.create(Effects.Bleed),
+                pos,
+                durationAfterWalk: 1,
+                type: 'TrapBleed'
+            });
+            gameBus.publish(effectSet({
+                name: id,
+                type: MapEffect.Spike,
+                pos
+            }));
+        });
     }
     canGoToNextLevel() {
         return this.tilemap.getAt(this.hero.pos).isExit;
@@ -131,6 +146,7 @@ export class Game {
             this.hero.resolveBuffs();
             this.monsters.resolveBuffs();
             this.monsters.play();
+            this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
         }
 
         if (this.hero.enchants.stuned) {

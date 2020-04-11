@@ -301,8 +301,9 @@ export function getRandomLoot(level: number): Item {
                 skin: armour.skin
             });
             loot = a;   
+            break;
         default:
-            throw new Error(`Not implemented loot type : ${itemKind.type}`);
+            throw new Error(`Not implemented loot type : ${itemKind}`);
     }
     return loot;
 }

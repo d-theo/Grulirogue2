@@ -8,7 +8,7 @@ import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
 import { Enchantable, EnchantTable } from "../entitybase/enchantable";
 import { Behavior, AIBehavior } from "./ai";
-import { pickInRange, pickInArray } from "../utils/random";
+import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
 import { BuffDefinition } from "../effects/effect";
 let short = require('short-uuid');
@@ -28,7 +28,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
     asSeenHero: boolean = false;
     sight = 8;
     speed = 1;
-    dodge: number = 0.20;
+    dodge: number = 0.15;
     currentAI: string = '';
     private constructor() {
         // this.behavior = arg.behavior;
@@ -62,7 +62,6 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.buffs.addBuff(buff);
     }
     play() {
-        console.log('play',this);
         this.behavior(this);
     }
     static makeMonster(arg: any) : Monster {

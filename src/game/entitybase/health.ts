@@ -33,7 +33,7 @@ export class Health {
         this.currentHp = Math.min(this.currentHp-hp, this.baseHp);
         if (this.currentHp <= 0) {
             return {
-                status: HealthStatus.Dead
+                status: HealthStatus.Dead,
                 amount: this.currentHp
             }
         } else {
@@ -48,7 +48,7 @@ export class Health {
                     amount: this.currentHp - oldHp
                 };
             } else {
-                return {status: HealthStatus.Unaffected};
+                return {status: HealthStatus.Unaffected, amount: 0};
             }
         }
     }

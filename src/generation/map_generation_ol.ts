@@ -20,7 +20,6 @@ export function generateOlMap(params: MapParamCreation) {
     let x = 0;
     while (true) {
         x++;
-        console.log(area/maxArea);
         if (x > 1000 || area/maxArea > 0.90) {break;} 
         const startingRoom = _.sample(rooms);
         const door = randomPointOfEdge(startingRoom);

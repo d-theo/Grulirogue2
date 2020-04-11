@@ -4,6 +4,7 @@ import { Monster } from "../game/monsters/monster";
 import { Coordinate } from "../game/utils/coordinate";
 import { Item } from "../game/entitybase/item";
 import { Hero } from "../game/hero/hero";
+import { MapEffect } from '../map/map-effect';
 
 export const gameBus = new EventBus();
 
@@ -60,7 +61,8 @@ export const itemDropped = createEventDefinition<{
 
 export const playerTookDammage = createEventDefinition<{
     amount: number,
-    monster: Monster,
+    monster?: Monster,
+    source?: string,
     baseHp: number,
     currentHp: number,
 }>()("playerTookDammage");
@@ -90,6 +92,14 @@ export const monsterDead = createEventDefinition<{
     monster: Monster
 }>()("monsterDead");
 
+export const effectSet = createEventDefinition<{
+    name: string;
+    pos: Coordinate;
+    type: MapEffect;
+}>()('effectSet');
+
 export const monsterAttacked = createEventDefinition<{
     monster: Monster
 }>()("monsterAttack");
+
+export const playerSetTrap = createEventDefinition<{}>()('playerSetTrap');

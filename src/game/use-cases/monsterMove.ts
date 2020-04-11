@@ -15,6 +15,7 @@ export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordi
     ) {
         monster.pos = pos;
         gameBus.publish(monsterMoved({monster: monster}));
+
         return {
             timeSpent: 1,
             status: MessageResponseStatus.Ok,

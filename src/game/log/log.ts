@@ -9,9 +9,12 @@ export class Log {
         Log.initialized = true;
 
         gameBus.subscribe(playerTookDammage, event => {
-            Log.log(`${event.payload.monster.name} deals you ${Math.abs(event.payload.amount)} dammage`);
+            if (event.payload.monster) {
+                Log.log(`${event.payload.monster.name} deals you ${Math.abs(event.payload.amount)} dammage`);
+            } else {
+                Log.log(`You suffer from ${event.payload.source}`);
+            }
         });
-        playerAttackedMonster
         gameBus.subscribe(playerAttackedMonster, event => {
             Log.log(`You deal ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
         });

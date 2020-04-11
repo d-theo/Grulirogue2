@@ -1,9 +1,9 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, playerHealed, logPublished } from "../../eventBus/game-bus";
+import { gameBus, playerHealed, logPublished, playerTookDammage } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect } from "./effect";
-import { pickInRange } from "../utils/random";
+import { pickInRange, pickInArray } from "../utils/random";
 /*
     'blind',
     'stun',
@@ -173,24 +173,49 @@ export class TeleportationEffect implements IEffect  {
 export class BleedEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
+        const bleed = (t: Hero | Monster) => {
+            const dmg = pickInRange('4-6');
+            const healthReport = t.health.take(dmg);
+            if (t instanceof Hero) {
+                gameBus.publish(playerTookDammage({
+                    amount: healthReport.amount,
+                    source: 'bleeding',
+                    baseHp: t.health.baseHp,
+                    currentHp: t.health.currentHp
+                }));
+            }
+        }
+
         target.addBuff({
-            start: (t: Hero|Monster) => t.enchants.bleeding = true,
-            tick: (t: Hero|Monster) => {
-                t.health.take(new GameRange(5,10).pick())
-            },
+            start: (t: Hero|Monster) => {t.enchants.bleeding = true; bleed(t)},
+            tick: (t: Hero|Monster) => bleed(t),
             end: (t: Hero|Monster) => t.enchants.bleeding = false,
             turns: 3
         });
+        gameBus.publish(logPublished({data: `${target.name} starts bleeding`}));
     }
 }
 export class PoisonEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
+        const poison = (t: Hero | Monster) => {
+            const dmg = pickInRange('1-3');
+            const healthReport = t.health.take(dmg);
+            if (t instanceof Hero) {
+                gameBus.publish(playerTookDammage({
+                    amount: healthReport.amount,
+                    source: 'poisoning',
+                    baseHp: t.health.baseHp,
+                    currentHp: t.health.currentHp
+                }));
+            }
+        }
         target.addBuff({
-            start: (t: Hero|Monster) => t.enchants.poisoned = true,
-            tick: (t: Hero|Monster) => {
-                t.health.take(new GameRange(2,4).pick())
+            start: (t: Hero|Monster) => { 
+                t.enchants.poisoned = true;
+                poison(t);
             },
+            tick: (t: Hero|Monster) => poison(t),
             end: (t: Hero|Monster) => t.enchants.poisoned = false,
             turns: 7
         });

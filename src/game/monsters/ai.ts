@@ -64,7 +64,6 @@ export const AI = (game: Game) => {
         const dy = monster.pos.y - game.hero.pos.y;
         const range = Math.max(Math.abs(dx),Math.abs(dy));
         if (monster.weapon.maxRange >= range && hasVisibility) {
-            console.log('attack')
             monsterAttack({
                 hero: game.hero,
                 monster
@@ -87,8 +86,6 @@ export const AI = (game: Game) => {
                     monster: monster,
                     nextPos: path[0]
                 });
-            } else {
-                console.log('no path')
             }
         }
     }

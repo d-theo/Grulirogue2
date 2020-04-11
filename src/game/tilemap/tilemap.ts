@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { IEffect } from "../effects/effects";
+import { gameBus, effectUnset } from "../../eventBus/game-bus";
 let short = require('short-uuid');
 
 type DebuffDuration = {id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -90,6 +91,7 @@ export class TileMap {
             if (timer.duration === 0) {
                 const tile = this.getAt(timer.pos);
                 tile.removeDebuff(timer.id);
+                gameBus.publish(effectUnset({name: timer.id}));
             }
         }
     }

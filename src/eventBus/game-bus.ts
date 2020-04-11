@@ -97,6 +97,9 @@ export const effectSet = createEventDefinition<{
     pos: Coordinate;
     type: MapEffect;
 }>()('effectSet');
+export const effectUnset = createEventDefinition<{
+    name: string;
+}>()('effectUnset');
 
 export const monsterAttacked = createEventDefinition<{
     monster: Monster

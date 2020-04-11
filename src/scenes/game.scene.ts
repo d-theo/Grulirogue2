@@ -3,7 +3,7 @@ import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, playerSetTrap, effectSet } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, playerSetTrap, effectSet, effectUnset } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -56,8 +56,8 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Fist', '/assets/sprites/blowpipe.png');
 		this.load.image('Slingshot', '/assets/sprites/slingshot.png');
 
-		this.load.image('Slingshot', '/assets/sprites/armour-light.png');
-		this.load.image('Slingshot', '/assets/sprites/armour-heavy.png');
+		this.load.image('armour-light', '/assets/sprites/armour-light.png');
+		this.load.image('armour-heavy', '/assets/sprites/armour-heavy.png');
 		this.load.image('Spikes', '/assets/sprites/spikes.png');
 		for (const c of PotionColors) {
 			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
@@ -278,6 +278,11 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(effectSet, event => {
 			const {name, type, pos} = event.payload;
 			this.gameEffects[name] = new UIEffect(this, {name, pos}, type);
+		}));
+		this.subs.push(gameBus.subscribe(effectUnset, event => {
+			const {name} = event.payload;
+			this.gameEffects[name].destroy();
+			this.gameEffects[name] = undefined;
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {
 			this.reInit();

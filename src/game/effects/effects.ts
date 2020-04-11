@@ -36,8 +36,12 @@ export interface IEffect {
 
 export class HealEffect implements IEffect {
     type = ['monster','hero']
-    cast(target: Hero|Monster) {
-        target.health.currentHp = target.health.baseHp;
+    cast(target: Hero) {
+        let bonus = pickInRange('10-20');
+        if (target.skillFlags.improvedPotionEffect > 0) {
+            bonus += 10 * target.skillFlags.improvedPotionEffect;
+        }
+        target.health.take(-bonus);
         gameBus.publish(playerHealed({
             baseHp: target.health.baseHp,
             currentHp: target.health.currentHp

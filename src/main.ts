@@ -3,7 +3,7 @@ import GameScene from './scenes/game.scene';
 
 import {test} from './hud';
 import InventoryScene from './scenes/inventory.scene';
-import InterLevelScene from './scenes/inter-level.scene';
+import SkillTreeScene from './scenes/skilltree.scene';
 
 export const CellSize = 32;
 export const W = CellSize*23;
@@ -20,6 +20,7 @@ export const config = {
     scene: [
       GameScene,
       InventoryScene,
+      SkillTreeScene,
     ],
     physics: {
       default: 'arcade',

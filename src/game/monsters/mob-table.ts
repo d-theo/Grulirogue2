@@ -2,7 +2,7 @@ import {Bestiaire} from './bestiaire';
 import { pickInRange } from '../utils/random';
 
 export const MobTable: XTable[] = [
-    [{chance: 90, type: Bestiaire.Greece.Snake}, {chance: 10, type: Bestiaire.Greece.Boar}],
+    [{chance: 95, type: Bestiaire.Greece.Snake}, {chance: 5, type: Bestiaire.Greece.Boar}],
     [{chance: 80, type: Bestiaire.Greece.Snake}, {chance: 20, type: Bestiaire.Greece.Boar}],
     [{chance: 50, type: Bestiaire.Greece.Snake}, {chance: 40, type: Bestiaire.Greece.Boar}, {chance: 10, type: Bestiaire.Greece.Centaurus}],
 ]

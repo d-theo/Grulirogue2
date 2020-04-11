@@ -182,7 +182,7 @@ const getRangeName = (range: number) => {
     }
 }
 
-export const craftWeapon = (tier: number) => {
+export const craftWeapon = (tier: number): Weapon => {
     if (tier <= 0) tier = 1;
     const dmgIdx = pickInRange(`${tier-1}-${tier+1}`);
     const rangeIdx = pickInRange(`${tier-1}-${tier+1}`);
@@ -193,12 +193,59 @@ export const craftWeapon = (tier: number) => {
     const weaponDmg = dmg.join('-');
 
     const weaponName = `${getDmgName(dmg[1])} ${getRangeName(weaponRange)}`;
-    return new Weapon({
+    const w = new Weapon({
         name: weaponName,
         baseDamage: weaponDmg,
         maxRange: weaponRange,
         skin: getRangeName(weaponRange)
     });
+
+    const enchants = enchantsForWeapon();
+    for (const e of enchants) {
+        switch(e.type) {
+            case 'nothing':
+                break;
+            case 'plus_one':
+                w.additionnalDmg += 1;
+                break;
+            case 'plus_two':
+                w.additionnalDmg += 1;
+                break;
+            case 'plus_three':
+                w.additionnalDmg += 1;
+                break;
+            case 'plus_four':
+                w.additionnalDmg += 1;
+                break;
+            case 'plus_five':
+                w.additionnalDmg += 1;
+                break;
+            case 'bleed':
+                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target'});
+                w.description += '\ninflict bleeding';
+                break;
+            case 'poison':
+                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target'});
+                w.description += '\npoison the target';
+                break;
+            default:
+                break;
+        }
+    }
+    return w;
+}
+
+function enchantsForWeapon() {
+    const p = pickInRange('0-100');
+    if (p > 90) {
+        return [getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants)];
+    } else if (p > 60) {
+        return [getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants)];
+    } else if (p > 30) {
+        return [getInTable(WeaponEchants), getInTable(WeaponEchants)];
+    } else {
+        return [getInTable(WeaponEchants)];
+    }
 }
 
 export function getRandomLoot(level: number): Item {

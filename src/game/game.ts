@@ -8,7 +8,7 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -58,7 +58,7 @@ export class Game {
         this.adjustSight();
         this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, GreeceCreationParams.Danger[this.level-1]));
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
-        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, GreeceCreationParams.Loots[this.level-1]));
+        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, this.hero.skillFlags.additionnalItemPerLevel + GreeceCreationParams.Loots[this.level-1]));
         if (this.level > 1) {
             gameBus.publish(nextLevelCreated({level: this.level}));
         }
@@ -108,6 +108,10 @@ export class Game {
                 this.reInitLevel();
             }
         });
+        gameBus.subscribe(playerChoseSkill, event => {
+            const {name} = event.payload;
+            this.hero.heroSkills.learnSkill(name);
+        });
     }
     canGoToNextLevel() {
         return this.tilemap.getAt(this.hero.pos).isExit;
@@ -123,6 +127,7 @@ export class Game {
 
     nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
+            this.hero.regenHealth();
             this.hero.resolveBuffs();
             this.monsters.resolveBuffs();
             this.monsters.play();

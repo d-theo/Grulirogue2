@@ -14,7 +14,7 @@ export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResp
     const healthReport = hero.health.take(damages);
     if (healthReport.status === HealthStatus.Dammaged) {
         gameBus.publish(playerTookDammage({
-            amount: healthReport.amount!,
+            amount: healthReport.amount,
             monster: monster,
             baseHp: hero.health.baseHp,
             currentHp: hero.health.currentHp
@@ -29,7 +29,12 @@ export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResp
         }));
     }
     if (healthReport.status === HealthStatus.Dead) {
-        console.log('dead');
+        gameBus.publish(playerTookDammage({
+            amount: healthReport.amount,
+            monster: monster,
+            baseHp: hero.health.baseHp,
+            currentHp: hero.health.currentHp
+        }));
     }
     
     return {

@@ -19,6 +19,7 @@ export class Log {
 			Log.log(`You picked up a ${event.payload.item.name} on the ground`);
         });
         gameBus.subscribe(playerHealed, event => {
+            if (event.payload.isSilent) return;
             Log.log(`You feel better`);
         });
     }

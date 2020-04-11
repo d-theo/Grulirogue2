@@ -11,6 +11,8 @@ import { EnchantTable, Enchantable } from "../entitybase/enchantable";
 import { Inventory } from "./inventory";
 import { BuffDefinition } from "../effects/effect";
 import { Item } from "../entitybase/item";
+import { FightModifier } from "../entitybase/fight-modifier";
+import  HeroSkills from "./hero-skills";
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;
@@ -21,17 +23,25 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     pos!: Coordinate;
     enchants: EnchantTable = new EnchantTable();
     xp: number;
-    nextXp: number;
+    nextXp!: number;
     buffs: Buffs = new Buffs();
     level: number = 1;
     private inventory = new Inventory();
     sight: number;
     speed: number = 1;
+    fightModifier = new FightModifier();
+    skillFlags = {
+        regenHpOverTime: 0,
+        gainHpPerLevel: 0,
+        improvedPotionEffect: 0,
+        additionnalItemPerLevel: 0
+    };
+    heroSkills: HeroSkills;
     constructor() {
         this.name = "grul le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
-        this.weapon = new Weapon({baseDamage: /*'2-4'*/'15-15', maxRange: 10, name: 'fist', description: 'your fists are not prepared for this'});
+        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
         this.xp = 0;
         this.calcNextXp();
         this.sight = 8;
@@ -39,6 +49,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         this.addToBag(this.weapon);
         this.equip(this.armour);
         this.equip(this.weapon);
+        this.heroSkills = new HeroSkills(this);
     }
     calcNextXp() {
         this.nextXp = (75*(this.level*this.level)) - (125*this.level) + (100);
@@ -66,11 +77,8 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     gainXP(monster: Monster): {total: number, current: number, status: 'xp_gained' | 'level_up'} {
         let status: 'xp_gained' | 'level_up' = 'xp_gained';
         this.xp += monster.xp;
-        console.log(monster.xp);
-        if (this.nextXp < this.xp) {
-            this.level ++;
-            this.calcNextXp();
-            this.xp = 0;
+        if (this.nextXp <= this.xp) {
+            this.levelUp();
             status = 'level_up';
         }
         return {
@@ -88,10 +96,22 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     getItem(item: Item) {
         return this.inventory.getItem(item);
     }
-    levelUp() {}
+    levelUp() {
+        this.level ++;
+        this.calcNextXp();
+        this.xp = 0;
+        if (this.skillFlags.gainHpPerLevel > 0) {
+            this.health.getStronger(this.skillFlags.gainHpPerLevel);
+        }
+    }
     consumeItem(item: Item) {
         if (item.isUsed) {
             this.inventory.remove(item);
+        }
+    }
+    regenHealth() {
+        if (this.skillFlags.regenHpOverTime > 0) {
+            this.health.regenHealth();
         }
     }
 }

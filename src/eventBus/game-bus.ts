@@ -15,6 +15,10 @@ export const nextLevelCreated = createEventDefinition<{
     level: number
 }>()('nextLevelCreated');
 
+export const playerChoseSkill = createEventDefinition<{
+    name: string;
+}>()('playerChoseSkill');
+
 export const xpHasChanged = createEventDefinition<{
     current: number;
     total: number;
@@ -64,6 +68,7 @@ export const playerTookDammage = createEventDefinition<{
 export const playerHealed = createEventDefinition<{
     baseHp: number,
     currentHp: number,
+    isSilent?: boolean,
 }>()("playerHealed");
 
 export const playerAttackedMonster = createEventDefinition<{

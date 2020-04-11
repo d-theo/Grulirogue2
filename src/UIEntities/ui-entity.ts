@@ -26,14 +26,14 @@ export class UIEntity {
         const delta = this.adjustSpriteAndLogicPosition();
         delta && this.animateToSynchronize(delta);
 	}
-	destroy() {
-		this.sprite.destroy();
+	destroy(isHero = false) {
+		if (!isHero)	this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
 	}
-	updateHp() {
+	updateHp(isHero = false) {
 		if (this.subject.health.currentHp <= 0) {
-			this.destroy();
+			this.destroy(isHero);
 		}
 		if (this.subject.health.currentHp === this.subject.health.baseHp) {
 			this.healthBar.setAlpha(0);

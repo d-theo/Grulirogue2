@@ -3,7 +3,7 @@ import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -59,7 +59,6 @@ class GameScene extends Phaser.Scene {
 	}
 
 	reInit() {
-		console.log('reinit')
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.subs = [];
@@ -99,71 +98,12 @@ class GameScene extends Phaser.Scene {
 
 		// hack ! 
 		setTimeout(() => {
-			console.log('??????')
 			gameBus.publish(gameStarted({}));
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
 
-		this.input.keyboard.on('keyup', (event) => {
-			switch (event.key) {
-				case 'i': return this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
-				case 'f': 
-					if (this.mode === 'play') {
-						const mobs = this.gameEngine.getNearestAttackables();
-						if (mobs.length === 0) {
-							gameBus.publish(logPublished({data:'noting to attack'}));
-						} else {
-							gameBus.publish(logPublished({data:'who do you want to attack ?'}));
-							const mob = mobs[0];
-							this.target.alpha = 1;
-							this.target.x = mob.pos.x * 32;
-							this.target.y = mob.pos.y * 32;
-							this.mode = 'select';
-							this.currentAction = 'fire';
-							this.actionContext = mobs;
-						}
-					} else if (this.mode === 'select') {
-						const mob = this.gameEngine.getAttackable({
-							x:this.target.x/32,
-							y:this.target.y/32
-						});
-						if (mob) {
-							gameBus.publish(playerAttemptAttackMonster({monster: mob}));
-						}
-						this.target.alpha = 0;
-						this.mode = 'play';
-						this.currentAction = null;
-						this.actionContext = null;
-					}
-					break;
-				case 'z': {
-					if (this.mode === 'select' && this.currentAction === 'fire') {
-						const last = this.actionContext.shift();
-						this.actionContext.push(last);
-						const mob = this.actionContext[0];
-						this.target.alpha = 1;
-						this.target.x = mob.pos.x * 32;
-						this.target.y = mob.pos.y * 32;
-					}
-					break;
-				}
-				case 'Escape' : {
-					gameBus.publish(logPublished({data:'forget that'}));
-					this.mode = 'play';
-					this.currentAction = null;
-					break;
-				}
-				case 'w' : {
-					gameBus.publish(waitATurn({}));
-					break;
-				}
-				case '>':
-					gameBus.publish(nextLevel({}));
-					break;
-			}
-		});
-		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
+		/*this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
 			if (data) {
 				gameBus.publish(playerUseItem({
 					item: data.item,
@@ -172,7 +112,7 @@ class GameScene extends Phaser.Scene {
 					owner: this.hero.subject as Hero
 				}));
 			}
-		});
+		});*/
 	}
 
 	create() {
@@ -273,13 +213,19 @@ class GameScene extends Phaser.Scene {
 					break;
 			}
 		});
-		this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
-			if (data) {
+		this.events.on('resume', (sys, data:{action: 'pickSkill'|'useItem', key: string, item: Item} | undefined) => {
+			console.log(data);
+			if (data && data.action === 'useItem') {
 				gameBus.publish(playerUseItem({
 					item: data.item,
 					target: this.hero.subject as Hero,
 					action: data.key,
 					owner: this.hero.subject as Hero
+				}));
+			} else if (data && data.action === 'pickSkill') {
+				console.log('picked skill');
+				gameBus.publish(playerChoseSkill({
+					name: data.item.name
 				}));
 			}
 		});
@@ -287,14 +233,13 @@ class GameScene extends Phaser.Scene {
 
 	initGameEvents() {
 		this.subs.push(gameBus.subscribe(sightUpdated, event => {
-			console.log('FOW');
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}));
 		this.subs.push(gameBus.subscribe(monsterMoved, event => {
 			const {monster} = event.payload;
 			const m = this.gameMonsters[monster.id];
-			this.hero.updateHp();
+			this.hero.updateHp(true);
 			m.move();
 		}));
 		this.subs.push(gameBus.subscribe(playerMoved, event => {
@@ -318,6 +263,12 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(itemDropped, event => {
 			const {item} = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
+		}));
+		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
+			const {status} = event.payload;
+			if (status === 'level_up') {
+				this.scene.pause().launch(SceneName.SkillTreeScene, this.gameEngine.hero.heroSkills.AllSkills);
+			}
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {
 			this.reInit();

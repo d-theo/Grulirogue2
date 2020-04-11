@@ -1,4 +1,7 @@
+import { Buffs } from "./buffable";
+
 export interface Enchantable {
+    buffs: Buffs;
     enchants: EnchantTable
 }
 export class EnchantTable {

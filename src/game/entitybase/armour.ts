@@ -3,9 +3,11 @@ import { ItemVisitor } from "../items/item-visitor";
 
 export class Armour extends Item {
     public baseAbsorb: number;
+    public bulky: number;
     constructor(arg: any) { // Todo
         super(arg);
         this.baseAbsorb = arg.baseAbsorb || 0;
+        this.bulky = arg.bulky || 0;
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ear';
     }

@@ -9,6 +9,9 @@ export class Attack {
         if ((this.target as any).level) {
             dodge += (this.attacker.level - (this.target as any).level) * 0.10;
         }
+        if (this.target instanceof Hero) {
+            dodge -= this.target.armour.bulky;
+        }
         if (Math.random() < dodge) {
             return 0;
         }

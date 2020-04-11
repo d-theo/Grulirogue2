@@ -71,13 +71,15 @@ export const Armours = {
         name: 'Light Armour',
         absorb: '1-2',
         description: 'Does what it is supposed to do.',
-        skin: 'light armour'
+        skin: 'light armour',
+        bulky: 0,
     },
     Heavy: {
         name: 'Heavy Armour',
         absorb: '3-4',
         description: 'Absorb the dammage at the cost of being less agile',
-        skin: 'heavy armour'
+        skin: 'heavy armour',
+        bulky: 0.15,
     }
 }
 
@@ -293,7 +295,8 @@ export function getRandomLoot(level: number): Item {
             const armour = getInTable(ArmoursTable);
             const a = new Armour({
                 name: armour.name,
-                baseAbsorb: armour.absorb,
+                baseAbsorb: pickInRange(armour.absorb),
+                bulky: armour.bulky,
                 description: armour.description,
                 skin: armour.skin
             });

@@ -112,6 +112,12 @@ import { SkillView } from "./skills/skill-view";
               this.scene.stop(SceneName.SkillTreeScene);
               this.scene.resume(SceneName.Game, data);
               break;
+            case 'g':
+            case 'Escape':
+              listener.clearCaptures();
+              this.scene.resume(SceneName.Game);
+              this.scene.stop(SceneName.SkillTreeScene);
+              break;
             default:
               break;     
         }

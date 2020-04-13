@@ -7,14 +7,12 @@ export function handleHealthReport(
     healthReport: HealthReport,
     monster: Monster,
     damages: number) {
-    console.log(healthReport);
     gameBus.publish(playerAttackedMonster({
         amount: damages,
         monster: monster,
         currentHp: monster.health.currentHp,
         baseHp: monster.health.baseHp
     }));
-
     if (healthReport.status === HealthStatus.Dead) {
         gameBus.publish(heroGainedXp({
             amount: monster.xp

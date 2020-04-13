@@ -15,6 +15,8 @@ export class EnchantTable {
     private speed=false;
     private agile = false;
     private confident = false;
+    private moreDamage = false;
+    private moreVulnerable = false;
     constructor(private readonly notif: boolean = false) {}
     setStuned(x: boolean) {
         this.stuned = x;
@@ -48,6 +50,14 @@ export class EnchantTable {
         this.confident = x;
         this.update();
     }
+    setMoreDamage(x: boolean) {
+        this.moreDamage = x;
+        this.update();
+    }
+    setMoreVulnerable(x: boolean) {
+        this.moreVulnerable = x;
+        this.update();
+    }
     getStuned() {
         return this.stuned;
     }
@@ -72,7 +82,6 @@ export class EnchantTable {
     getConfident() {
         return this.confident;
     }
-
     report() {
         let r = [];
         if (this.stuned) {
@@ -98,6 +107,12 @@ export class EnchantTable {
         }
         if(this.confident) {
             r.push('Range+')
+        }
+        if (this.moreVulnerable) {
+            r.push('Absorb-');
+        }
+        if (this.moreDamage) {
+            r.push('Dmg+');
         }
         return r;
     }

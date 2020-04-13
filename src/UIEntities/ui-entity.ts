@@ -3,6 +3,7 @@ import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
 import { Movable } from "../game/entitybase/movable";
 import { Killable } from "../game/entitybase/killable";
+import { gameBus, gameOver } from "../eventBus/game-bus";
 
 export class UIEntity {
     sprite: any;
@@ -33,6 +34,9 @@ export class UIEntity {
 	}
 	updateHp(isHero = false) {
 		if (this.subject.health.currentHp <= 0) {
+			if (isHero) {
+				gameBus.publish(gameOver({}));
+			}
 			this.destroy(isHero);
 		}
 		if (this.subject.health.currentHp === this.subject.health.baseHp) {

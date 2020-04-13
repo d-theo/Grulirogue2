@@ -129,3 +129,4 @@ export const enchantChanged = createEventDefinition<{
 export const heroTargetMonster = createEventDefinition<{
     monster: Monster,
 }>()('heroTargetMonster');
+export const gameOver = createEventDefinition<{}>()('gameOver');

@@ -52,6 +52,15 @@
                 <p class="multiline" id="enchants"></p>
             </div>
         </div>
+        <div class="howtoplay">
+            <div>How to play: </div>
+            <div>* [Arrows] to move</div>
+            <div>* [w] to pass your turn</div>
+            <div>* [f] to attack, [z] to switch target when attacking (or [Arrows]), [Esc] to cancel</div>
+            <div>* [i] to display inventory, [Esc] or [i] to leave it</div>
+            <div>* [g] to display skills, [Enter] to select and cast one</div>
+            <div>* [>] to go to the next level when sitting on stairs</div>
+        </div>
     </div>
     <div style="display: none;" id="log" class="log multiline">
         <p id="log-txt">
@@ -61,6 +70,11 @@
 <script type="text/javascript" src="./dist/vendor.bundle.js"></script><script type="text/javascript" src="./dist/bundle.js"></script></body>
 
 <style>
+    .howtoplay {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+    }
     .g-body {
         display: flex;
         flex-direction: column;

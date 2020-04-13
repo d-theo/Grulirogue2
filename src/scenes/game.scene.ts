@@ -3,7 +3,7 @@ import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -244,7 +244,7 @@ class GameScene extends Phaser.Scene {
 					break;
 				}
 				case 'g': {
-					if (this.mode === 'play') {
+					if (this.mode === 'play' && this.gameEngine.hero.heroSkills.usableSkills().length > 0) {
 						this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.usableSkills(), action: 'useSkill'});
 					}
 				}	
@@ -390,6 +390,9 @@ class GameScene extends Phaser.Scene {
 			const {name} = event.payload;
 			this.gameEffects[name].destroy();
 			this.gameEffects[name] = undefined;
+		}));
+		this.subs.push(gameBus.subscribe(gameOver, event => {
+			this.scene.pause().launch(SceneName.GameOver);
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {
 			this.reInit();

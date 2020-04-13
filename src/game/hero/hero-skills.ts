@@ -18,10 +18,10 @@ export class HeroSkills {
         {name: 'explorer', description: 'you find more items', level: 0, maxLevel: 3},
         {name: 'overseer', description: 'you see further', level: 0, maxLevel: 1},
         {name: 'snake', description: 'you avoid hits more often', level: 0, maxLevel: 3},
-        {name: 'coward', usable: true, description: 'you gain a new ability that allow to run. More level in this skill will decrease the cooldown.', level: 1, maxLevel: 3},
+        {name: 'coward', usable: true, description: 'you gain a new ability that allow to run. More level in this skill will decrease the cooldown.', level: 0, maxLevel: 3},
         {name: 'warrior', description: 'your attacks are stronger', level: 0, maxLevel: 3},
-        {name: 'sneaky', usable: true, description: 'you gain a new ability that allow to set traps. More level in this skill will increase cooldown and trap dammages.', level: 1, maxLevel: 3},
-        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
+        {name: 'sneaky', usable: true, description: 'you gain a new ability that allow to set traps. More level in this skill will increase cooldown and trap dammages.', level: 0, maxLevel: 3},
+        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 0},
     ];
 
     Cooldowns = {

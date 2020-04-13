@@ -31,14 +31,16 @@ export class TrapSpell implements IEffect {
             type: MapEffect.Spike,
             pos
         }));
+        gameBus.publish(logPublished({data: `trap has been set`}));
     }
 }
 
 export class IdentifiySpell implements IEffect {
-    type = ['ground'];
+    type = ['chose_item'];
     constructor() {}
     cast(item: Item) {
         item.reveal();
+        gameBus.publish(logPublished({data: `You identify a ${item.name}`}));
     }
 }
 
@@ -143,7 +145,7 @@ export class BlindEffect implements IEffect   {
             end: (t: Hero|Monster) => t.sight += 6,
             turns: 15
         });
-        gameBus.publish(logPublished({data: `${target.name} is stuned`}));
+        gameBus.publish(logPublished({data: `${target.name} sees nothing !`}));
     }
 }
 
@@ -217,12 +219,14 @@ export class ImproveArmourSpell implements IEffect  {
     type = ['chose_armour'];
     cast(target: Armour) {
         target.baseAbsorb += 1;
+        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
     }
 }
 export class ImproveWeaponSpell implements IEffect  {
     type = ['chose_weapon'];
     cast(target: Weapon) {
         target.additionnalDmg += 1;
+        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
     }
 }
 

@@ -316,11 +316,18 @@ class GameScene extends Phaser.Scene {
 							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Armours']), action: 'pickItem'});
 						},500);
 					} else if (type === 'chose_weapon') {
-						gameBus.publish(logPublished({data:'Select an item'}));
+						gameBus.publish(logPublished({data:'Select a weapon'}));
 						this.currentAction = 'scroll_chose_item';
 						this.actionContext = scroll;
 						setTimeout(() => {
 							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons']), action: 'pickItem'});
+						},500);
+					} else if (type === 'chose_item') {
+						gameBus.publish(logPublished({data:'Select an item'}));
+						this.currentAction = 'scroll_chose_item';
+						this.actionContext = scroll;
+						setTimeout(() => {
+							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']), action: 'pickItem'});
 						},500);
 					}
 					return;

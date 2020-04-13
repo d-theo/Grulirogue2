@@ -117,8 +117,8 @@ export const Scrolls = {
 }
 
 export const ItemTable: XTable[] = [
-    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
-    //[{chance: 100, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}, {chance: 0, type: 'armour'}],
+    //[{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
+    [{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 100, type: 'weapon'}, {chance: 0, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
@@ -239,10 +239,9 @@ export const craftWeapon = (tier: number): Weapon => {
         maxRange: weaponRange,
         skin: getRangeName(weaponRange)
     });
-
     const enchants = enchantsForWeapon();
     for (const e of enchants) {
-        switch(e.type) {
+        switch(e) {
             case 'nothing':
                 break;
             case 'plus_one':

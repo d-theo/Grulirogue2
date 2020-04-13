@@ -8,7 +8,7 @@ export function test() {
     });
     gameBus.subscribe(logPublished, event => {
         const txt = $('#log-txt').text();
-        $('#log-txt').text(event.payload.data+'\n'+txt);
+        $('#log-txt').text(event.payload.data+'\n\n'+txt);
     });
     gameBus.subscribe(playerTookDammage, event => {
         const curr = event.payload.currentHp * 100 / event.payload.baseHp;

@@ -5,8 +5,8 @@ export class InventoryView extends Phaser.GameObjects.Container {
     scroller: any;
     config;
     letters;
-    inputs(args: {viewW: number, viewH: number, config: any}) {
-        const {viewW, viewH, config} = args;
+    inputs(args: {viewW: number, viewH: number, config: any, title: string}) {
+        const {viewW, viewH, config, title} = args;
         this.config = config;
 
         var graphics = this.scene.add.graphics();
@@ -26,7 +26,7 @@ export class InventoryView extends Phaser.GameObjects.Container {
         this.letters = {};
         let currLetter = 'a'.charCodeAt(0);
         this.scroller = this.scene.add.group();
-        this.add(this.scene.add.text(viewW / 2, y, 'Inventory', InventoryFont).setOrigin(0.5, 0));
+        this.add(this.scene.add.text(viewW / 2, y, title, InventoryFont).setOrigin(0.5, 0));
         nextLine();
         for (const section of this.config.sections) {
             const sectionTitle = this.scene.add.text(x, y, section, InventoryFont).setOrigin(0);

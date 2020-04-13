@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Phaser3 - ES6 - Webpack</title>
+    <title>Grulirogue 2</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -53,7 +53,9 @@
             </div>
         </div>
         <div class="howtoplay">
-            <div>How to play: </div>
+            <div>Welcome adventurer, your cat has wandered off and fallen into a space vortex!!! You must summon all your courage for he needs you! Travel through time, defeat obstacles and bring kitty home safely.
+                But beware for a false move and kitty will be lost for good.</div>
+            <div class="manual">How to play: </div>
             <div>* [Arrows] to move</div>
             <div>* [w] to pass your turn</div>
             <div>* [f] to attack, [z] to switch target when attacking (or [Arrows]), [Esc] to cancel</div>
@@ -64,12 +66,19 @@
     </div>
     <div style="display: none;" id="log" class="log multiline">
         <p id="log-txt">
-            Welcome back to the Grulirogue ! Find your cat in the dungeon or die trying... 
+            Welcome back to the Grulirogue ! Find your cat in Ancien Greece or die trying... 
         </p>
     </div>
-<script type="text/javascript" src="./dist/vendor.bundle.js"></script><script type="text/javascript" src="./dist/bundle.js"></script></body>
 
 <style>
+    html {
+        font-family: Courier New;
+    }
+    .manual {
+        margin-top: 30px;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
     .howtoplay {
         padding: 25px;
         display: flex;
@@ -138,4 +147,4 @@
     #current-xp {
         background-color: orange;
     }
-</style></html>
+</style></body></html><script type="text/javascript" src="./dist/vendor.bundle.js"></script><script type="text/javascript" src="./dist/bundle.js"></script>

@@ -36,7 +36,7 @@ export class Weapon extends Item {
         if (this.identified) {
             return this._name;
         } else {
-            return `An unidentified ${this.skin}`;
+            return `${this.skin} (unidentified)`;
         }
     }
 

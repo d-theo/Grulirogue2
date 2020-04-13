@@ -53,7 +53,8 @@ class InventoryScene extends Phaser.Scene {
     g.fillStyle(0x000000, 0.7);
     g.fillRect(0, 0, this.w, this.h);
     const viewPanel = new InventoryView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
-    const {letters} = viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config});
+    const title = this.action === 'pickItem' ? 'Select an item' : 'Inventory';
+    const {letters} = viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config, title: title});
     this.add.existing(viewPanel);
 
     this.letters = letters;

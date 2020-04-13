@@ -1,6 +1,7 @@
 import { Hero } from "./hero";
 import { EffectMaker, SpellNames, Effects } from "../effects/effect";
 import { SpeedEffect, RogueSpell, TrapSpell } from "../effects/effects";
+import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc } from "./skill-desc";
 
 export enum SkillNames {
     Rogue = 'rogue',
@@ -11,17 +12,17 @@ export enum SkillNames {
 export class HeroSkills {
     constructor(private hero: Hero) {}
     AllSkills = [
-        {name: 'tireless', description: 'Regenerate hp over time. More level in this skill will regenerate faster', level: 0, maxLevel: 3},
-        {name: 'tank', description: 'Gain permanent HP each level. More level in this skill allow to gain more hp/level', level: 0, maxLevel: 3},
-        {name: 'alchemist', description: 'Some potions are more efficient. More specialization in this path will increase the bonuses', level: 0, maxLevel: 3},
-        {name: 'monk', description: 'you are a beast with your fists. More expertise = more dammage !', level: 0, maxLevel: 5},
-        {name: 'explorer', description: 'you find more items', level: 0, maxLevel: 3},
-        {name: 'overseer', description: 'you see further', level: 0, maxLevel: 1},
-        {name: 'snake', description: 'you avoid hits more often', level: 0, maxLevel: 3},
-        {name: 'coward', usable: true, description: 'you gain a new ability that allow to run. More level in this skill will decrease the cooldown.', level: 0, maxLevel: 3},
-        {name: 'warrior', description: 'your attacks are stronger', level: 0, maxLevel: 3},
-        {name: 'sneaky', usable: true, description: 'you gain a new ability that allow to set traps. More level in this skill will increase cooldown and trap dammages.', level: 0, maxLevel: 3},
-        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 0},
+        {name: 'tireless', description: TirelessDesc, level: 0, maxLevel: 3},
+        {name: 'tank', description: TankDesc, level: 0, maxLevel: 3},
+        {name: 'alchemist', description: 'Some potions are more efficient on you. More specialization in this path will increase the effects', level: 0, maxLevel: 3},
+        {name: 'monk', description: MonkDesc, level: 0, maxLevel: 5},
+        {name: 'explorer', description: 'You find items more often in the dongeon', level: 0, maxLevel: 3},
+        {name: 'overseer', description: 'Better scope (+1 range)', level: 0, maxLevel: 1},
+        {name: 'snake', description: SnakeDesc, level: 0, maxLevel: 3},
+        {name: 'coward', usable: true, description: CowardDesc, level: 0, maxLevel: 3},
+        {name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3},
+        {name: 'sneaky', usable: true, description: SneakyDesc, level: 0, maxLevel: 3},
+        //{name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 0},
     ];
 
     Cooldowns = {
@@ -55,7 +56,7 @@ export class HeroSkills {
         switch(name) {
             case 'tireless': 
                 this.hero.skillFlags.regenHpOverTime ++;
-                this.hero.health.regenerationRate = 8 - this.hero.skillFlags.regenHpOverTime;
+                this.hero.health.regenerationRate = 9 - this.hero.skillFlags.regenHpOverTime;
                 break;
             case 'tank': 
                 this.hero.skillFlags.gainHpPerLevel ++;

@@ -114,6 +114,7 @@ import { SkillView } from "./skills/skill-view";
               break;
             case 'g':
             case 'Escape':
+              if (this.action === 'pickSkill') return;
               listener.clearCaptures();
               this.scene.resume(SceneName.Game);
               this.scene.stop(SceneName.SkillTreeScene);

@@ -22,7 +22,7 @@ export class HeroSkills {
         {name: 'coward', usable: true, description: CowardDesc, level: 0, maxLevel: 3},
         {name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3},
         {name: 'sneaky', usable: true, description: SneakyDesc, level: 0, maxLevel: 3},
-        //{name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 0},
+        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
     ];
 
     Cooldowns = {
@@ -38,7 +38,11 @@ export class HeroSkills {
     };
 
     usableSkills() {
-        return this.AllSkills.filter(s => s.level > 0 && s.usable);
+        return this.AllSkills
+            .filter(s => s.level > 0 && s.usable)
+            .map(s => {
+                return {... s, cooldown: this.heroCooldowns[s.name as SkillNames] } 
+            });
     }
 
     learnSkill(name: string) {
@@ -80,7 +84,7 @@ export class HeroSkills {
         }
     }
     update() {
-        Object.values(this.heroCooldowns).forEach(v => v --);
+        Object.keys(this.heroCooldowns).forEach(k => this.heroCooldowns[k as SkillNames] -=  1);
     }
     getSkill(name: SkillNames) {
         return this.AllSkills.find(s => s.name === name);

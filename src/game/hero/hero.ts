@@ -14,7 +14,7 @@ import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
 import { gameBus, itemEquiped, enchantChanged } from "../../eventBus/game-bus";
 
-const XP = [0, 30, 70, 115, 200, 300, 450, 700, 900];
+const XP = [0, 1, 30, 70, 115, 200, 300, 450, 700, 900];
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;

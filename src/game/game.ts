@@ -145,6 +145,7 @@ export class Game {
         if (this.isNextTurn(timeSpent)) {
             this.hero.regenHealth();
             this.hero.resolveBuffs();
+            this.hero.heroSkills.update(); // TODO REFACTO
             this.monsters.resolveBuffs();
             this.monsters.play();
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());

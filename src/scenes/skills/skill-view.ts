@@ -2,10 +2,10 @@ import { SkillFont } from "../skilltree.scene";
 
 export class SkillView extends Phaser.GameObjects.Container {
     scroller: any;
-    config: {name: string, description: string; level:number, maxLevel: number}[];
+    config: {name: string, description: string; level:number, maxLevel: number, cooldown?: number}[];
     letters;
-    inputs(args: {viewW: number, viewH: number, config: any}) {
-        const {viewW, viewH, config} = args;
+    inputs(args: {viewW: number, viewH: number, config: any, action: 'useSkill' | 'pickSkill'}) {
+        const {viewW, viewH, config, action} = args;
         this.config = config;
 
         var graphics = this.scene.add.graphics();
@@ -24,12 +24,24 @@ export class SkillView extends Phaser.GameObjects.Container {
         this.letters = {};
         let currLetter = 'a'.charCodeAt(0);
         this.scroller = this.scene.add.group();
-        this.add(this.scene.add.text(viewW / 2, y, 'Congrutalation, you level up ! Choose a specialization wisely', SkillFont).setOrigin(0.5, 0));
+        if (action === 'pickSkill') {
+            this.add(this.scene.add.text(viewW / 2, y, 'Congrutalation, you level up ! Choose a specialization wisely', SkillFont).setOrigin(0.5, 0));
+        }
+        if (action === 'useSkill') {
+            this.add(this.scene.add.text(viewW / 2, y, 'What do you want to do ?', SkillFont).setOrigin(0.5, 0));
+        }
         nextLine();
         nextLine();
         for (const skill of this.config) {
             const letter = String.fromCharCode(currLetter++);
-            const txt = `${letter} - ${skill.name} - ${skill.level} / ${skill.maxLevel}`
+            let txt;
+            if (action === 'pickSkill') {
+                txt = `${letter} - ${skill.name} - ${skill.level} / ${skill.maxLevel}`
+            }
+            if (action === 'useSkill') {
+                txt = `${letter} - ${skill.name} - Turns before next use: ${skill.cooldown}`
+            }
+            
             const skillLine = this.scene.add.text(x, y, txt, SkillFont).setOrigin(0);
             this.add(skillLine);
             this.scroller.add(skillLine);

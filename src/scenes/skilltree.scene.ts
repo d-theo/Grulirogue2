@@ -48,7 +48,7 @@ import { SkillView } from "./skills/skill-view";
       g.fillStyle(0x000000, 0.7);
       g.fillRect(0, 0, this.w, this.h);
       const viewPanel = new SkillView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
-      const {letters} = viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config});
+      const {letters} = viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config, action: this.action});
       this.add.existing(viewPanel);
 
       this.letters = letters;

@@ -388,7 +388,9 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {status} = event.payload;
 			if (status === 'level_up') {
-				this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
+				setTimeout(() => {
+					this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
+				}, 1000);
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {

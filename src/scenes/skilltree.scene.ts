@@ -17,12 +17,13 @@ import { SkillView } from "./skills/skill-view";
     currentSelected: string;
     alreadyLoaded = false;
     currentDescription: Phaser.GameObjects.Text;
-  
+
     w = 23 * 32;
     h = 17 * 32;
     halfw = this.w * 0.9;
     halfh = this.h * 0.9;
   
+    inputOk = false;
     constructor() {
       super({
         key: SceneName.SkillTreeScene,
@@ -30,6 +31,7 @@ import { SkillView } from "./skills/skill-view";
     }
   
     init(config: any) {
+      setTimeout(() => {this.inputOk = true}, 1000);
       this.letters = {};
       this.config = config.data;
       this.action = config.action;
@@ -111,6 +113,7 @@ import { SkillView } from "./skills/skill-view";
               if (this.action === 'pickSkill' && selectedItem.level === selectedItem.maxLevel) return;
               this.scene.stop(SceneName.SkillTreeScene);
               this.scene.resume(SceneName.Game, data);
+              this.inputOk = false;
               break;
             case 'g':
             case 'Escape':
@@ -118,8 +121,19 @@ import { SkillView } from "./skills/skill-view";
               listener.clearCaptures();
               this.scene.resume(SceneName.Game);
               this.scene.stop(SceneName.SkillTreeScene);
+              this.inputOk = false;
               break;
             default:
+              try {
+                selectedItem = this.letters[event.key].item;
+                if (!this.inputOk || !selectedItem) throw new Error('no letter');
+                listener.clearCaptures();
+                const data = {action: this.action, item: selectedItem};
+                if (this.action === 'pickSkill' && selectedItem.level === selectedItem.maxLevel) return;
+                this.scene.stop(SceneName.SkillTreeScene);
+                this.scene.resume(SceneName.Game, data);
+                this.inputOk = false;
+              } catch(e){}
               break;     
         }
       });

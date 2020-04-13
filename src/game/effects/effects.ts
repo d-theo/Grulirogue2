@@ -1,37 +1,56 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, playerHealed, logPublished, playerTookDammage } from "../../eventBus/game-bus";
+import { gameBus, playerHealed, logPublished, playerTookDammage, playerAttackedMonster, effectSet, playerMoved, itemEquiped } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
-import { WorldEffect } from "./effect";
+import { WorldEffect, EffectMaker, Effects, SpellNames } from "./effect";
 import { pickInRange, pickInArray } from "../utils/random";
-/*
-    'blind',
-    'stun',
-    'constitution',
-    'precision',
-    'force',
-    'stupidity',
-    'weakness',
-    'hole',
-    'filling',
-    'invisibility',
-    'fire',
-    'ice',
-    'poison',
-    'teleportation',
-    'swap',
-    'summoning',
-    'haste',
-    'bleed',
-    'experience',
-    'explosive',
-    'weapon_enchant',
-    'armour_enchant'
-    fog
-*/
+import { handleHealthReport } from "../use-cases/health-report";
+import { MapEffect } from "../../map/map-effect";
+import { Coordinate } from "../utils/coordinate";
+import { Armour } from "../entitybase/armour";
+import { Weapon } from "../entitybase/weapon";
+import { Item } from "../entitybase/item";
+
 export interface IEffect {
     type: string[];
     cast: Function;
+}
+
+export class TrapSpell implements IEffect {
+    type = ['ground'];
+    constructor(private readonly world: WorldEffect) {}
+    cast(pos: Coordinate) {
+        const id = this.world.getTilemap().addTileEffects({
+            debuff: EffectMaker.create(Effects.Bleed),
+            pos,
+            durationAfterWalk: 1,
+            type: SpellNames.SpikeTrap
+        });
+        gameBus.publish(effectSet({
+            name: id,
+            type: MapEffect.Spike,
+            pos
+        }));
+    }
+}
+
+export class IdentifiySpell implements IEffect {
+    type = ['ground'];
+    constructor() {}
+    cast(item: Item) {
+        item.reveal();
+    }
+}
+
+export class RogueSpell implements IEffect {
+    type = ['spell'];
+    constructor(private readonly world: WorldEffect) {}
+    cast() {
+        this.world.getHero().weapon.additionnalEffects.push({
+            effect: EffectMaker.create(Effects.Poison),
+            target: 'target'
+        });
+    }
 }
 
 export class HealEffect implements IEffect {
@@ -55,10 +74,12 @@ export class ThicknessEffect implements IEffect {
             start: (t: Hero|Monster) => {
                 t.armour.baseAbsorb += 5;
                 t.speed = t.speed * 2;
+                gameBus.publish(itemEquiped({armour: t.armour}));
             },
             end: (t: Hero|Monster) => {
                 t.armour.baseAbsorb -= 5;
                 t.speed = t.speed / 2;
+                gameBus.publish(itemEquiped({armour: t.armour}));
             },
             turns: 5
         });
@@ -77,9 +98,15 @@ export class DodgeEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            start: (t: Hero|Monster) => t.armour.baseAbsorb += 5,
-            end: (t: Hero|Monster) => t.armour.baseAbsorb -= 5,
-            turns: 5
+            start: (t: Hero|Monster) => {
+                t.enchants.setAgile(true);
+                t.dodge += 0.2
+            },
+            end: (t: Hero|Monster) => {
+                t.dodge -= 0.2
+                t.enchants.setAgile(false);
+            },
+            turns: 15
         });
         gameBus.publish(logPublished({data:`${target.name} feels more agile`}));
     }
@@ -101,8 +128,8 @@ export class StunEffect implements IEffect   {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            start: (t: Hero|Monster) => t.enchants.stuned = true,
-            end: (t: Hero|Monster) => t.enchants.stuned = false,
+            start: (t: Hero|Monster) => t.enchants.setStuned(true),
+            end: (t: Hero|Monster) => t.enchants.setStuned(false),
             turns: 5
         });
         gameBus.publish(logPublished({data: `${target.name} is stuned`}));
@@ -124,8 +151,14 @@ export class AccuratyEffect implements IEffect   {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.addBuff({
-            start: (t: Hero|Monster) => t.weapon.maxRange += 1,
-            end: (t: Hero|Monster) => t.weapon.maxRange -= 1,
+            start: (t: Hero|Monster) => {
+                t.enchants.setConfident(true);
+                t.weapon.maxRange += 1;
+            },
+            end: (t: Hero|Monster) => {
+                t.enchants.setConfident(false);
+                t.weapon.maxRange -= 1
+            },
             turns: 15
         });
         gameBus.publish(logPublished({data: `${target.name} feels more confident`}));
@@ -139,11 +172,11 @@ export class RageEffect implements IEffect   {
         target.addBuff({
             start: (t: Hero|Monster) => {
                 t.armour.baseAbsorb -= rageLevel;
-                t.weapon.baseDamage += rageLevel;
+                t.weapon.additionnalDmg += rageLevel;
             },
             end: (t: Hero|Monster) => {
-                t.armour.baseAbsorb -= rageLevel;
-                t.weapon.baseDamage += rageLevel;
+                t.weapon.additionnalDmg -= rageLevel;
+                t.armour.baseAbsorb += rageLevel;
             },
             turns: 10
         });
@@ -151,8 +184,8 @@ export class RageEffect implements IEffect   {
     }
 }
 
-export class TeleportationEffect implements IEffect  {
-    type = ['monster','hero'];
+export class TeleportationSpell implements IEffect  {
+    type = ['chose_target'];
     constructor(private readonly world: WorldEffect) {}
     cast(target: Hero|Monster) {
         let done = false;
@@ -170,6 +203,29 @@ export class TeleportationEffect implements IEffect  {
         }
     }
 }
+
+export class BlinkSpell implements IEffect  {
+    type = ['chose_location'];
+    constructor(private readonly world: WorldEffect) {}
+    cast(target: Coordinate) {
+        this.world.getHero().pos = target;
+        gameBus.publish(playerMoved({}));
+    }
+}
+
+export class ImproveArmourSpell implements IEffect  {
+    type = ['chose_armour'];
+    cast(target: Armour) {
+        target.baseAbsorb += 1;
+    }
+}
+export class ImproveWeaponSpell implements IEffect  {
+    type = ['chose_weapon'];
+    cast(target: Weapon) {
+        target.additionnalDmg += 1;
+    }
+}
+
 export class BleedEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
@@ -183,13 +239,15 @@ export class BleedEffect implements IEffect  {
                     baseHp: t.health.baseHp,
                     currentHp: t.health.currentHp
                 }));
+            } else if (t instanceof Monster) {
+                handleHealthReport(healthReport, t, dmg);
             }
         }
 
         target.addBuff({
-            start: (t: Hero|Monster) => {t.enchants.bleeding = true; bleed(t)},
+            start: (t: Hero|Monster) => {t.enchants.setBleeding(true); bleed(t)},
             tick: (t: Hero|Monster) => bleed(t),
-            end: (t: Hero|Monster) => t.enchants.bleeding = false,
+            end: (t: Hero|Monster) => t.enchants.setBleeding(false),
             turns: 3
         });
         gameBus.publish(logPublished({data: `${target.name} starts bleeding`}));
@@ -208,29 +266,34 @@ export class PoisonEffect implements IEffect  {
                     baseHp: t.health.baseHp,
                     currentHp: t.health.currentHp
                 }));
+            } else if (t instanceof Monster) {
+                gameBus.publish(logPublished({data: `${t.name} suffers from poisoning`}))
+                handleHealthReport(healthReport, t, dmg);
             }
         }
         target.addBuff({
             start: (t: Hero|Monster) => { 
-                t.enchants.poisoned = true;
+                t.enchants.setPoisoned(true);
                 poison(t);
             },
             tick: (t: Hero|Monster) => poison(t),
-            end: (t: Hero|Monster) => t.enchants.poisoned = false,
+            end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
             turns: 7
         });
     }
 }
+
 export class SpeedEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
+        gameBus.publish(logPublished({data:'you are boosted!'}));
         target.addBuff({
             start: (t: Hero|Monster) => {
-                t.enchants.speed = true;
+                t.enchants.setSpeed(true);
                 t.speed = t.speed/2;
             },
             end: (t: Hero|Monster) => {
-                t.enchants.speed = false;
+                t.enchants.setSpeed(false);
                 t.speed = t.speed * 2;
             },
             turns: 7
@@ -240,9 +303,10 @@ export class SpeedEffect implements IEffect  {
 export class StupidityEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
+        gameBus.publish(logPublished({data:'?????'}));
         target.addBuff({
-            start: (t: Hero|Monster) => t.enchants.stupid = true,
-            end: (t: Hero|Monster) => t.enchants.stupid = false,
+            start: (t: Hero|Monster) => t.enchants.setStupid (true),
+            end: (t: Hero|Monster) => t.enchants.setStupid(false),
             turns: 10
         });
     }
@@ -256,27 +320,3 @@ export class SwapEffect implements IEffect {
         target2.pos = pos;
     }
 }
-
-/*
-export class ConstEffect extends Effect {
-    type = ['monster','hero']
-    cast(target: Hero|Monster) {
-        target.addBuff({
-            tick: (t: Hero|Monster) => t.health.currentHp += target.level * 7,
-            end: (t: Hero|Monster) => t.health.currentHp -= target.level * 7,
-            turns: 15
-        });
-    }
-}
-
-export class InvisibilityEffect extends Effect{
-    type = ['monster','hero'];
-    cast(target: Hero|Monster) {
-        target.addBuff({
-            tick: (t: Hero|Monster) => t.enchants.invisibility = true,
-            end: (t: Hero|Monster) => t.enchants.invisibility = false,
-            turns: 15
-        });
-    }
-}
-*/

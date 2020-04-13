@@ -12,6 +12,7 @@ import { SkillView } from "./skills/skill-view";
   type Skill = {name: string, description: string; level:number, maxLevel: number};
   class SkillTreeScene extends Phaser.Scene {
     config: Skill[];
+    action: 'useSkill' | 'pickSkill';
     letters: any;
     currentSelected: string;
     alreadyLoaded = false;
@@ -30,7 +31,8 @@ import { SkillView } from "./skills/skill-view";
   
     init(config: any) {
       this.letters = {};
-      this.config = config;
+      this.config = config.data;
+      this.action = config.action;
       this.currentSelected = 'a';
       this.input.keyboard.enabled = true;
     }
@@ -105,8 +107,8 @@ import { SkillView } from "./skills/skill-view";
             case 'Enter':
               selectedItem = this.getCurrentItem();
               listener.clearCaptures();
-              const data = {action: 'pickSkill', item: selectedItem};
-              if (selectedItem.level === selectedItem.maxLevel) return;
+              const data = {action: this.action, item: selectedItem};
+              if (this.action === 'pickSkill' && selectedItem.level === selectedItem.maxLevel) return;
               this.scene.stop(SceneName.SkillTreeScene);
               this.scene.resume(SceneName.Game, data);
               break;

@@ -5,7 +5,6 @@ import { Armour } from "../entitybase/armour";
 import { Weapon } from "../entitybase/weapon";
 import { Coordinate } from "../utils/coordinate";
 import { Movable } from "../entitybase/movable";
-import { Monster } from "../monsters/monster";
 import { Buffs } from "../entitybase/buffable";
 import { EnchantTable, Enchantable } from "../entitybase/enchantable";
 import { Inventory } from "./inventory";
@@ -13,8 +12,9 @@ import { BuffDefinition } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
+import { gameBus, itemEquiped, enchantChanged } from "../../eventBus/game-bus";
 
-const XP = [0, 50, 115, 200, 300, 450, 700, 900];
+const XP = [0, 30, 70, 115, 200, 300, 450, 700, 900];
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;
@@ -23,7 +23,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     dodge: number = 0.30;
     weapon: Weapon;
     pos!: Coordinate;
-    enchants: EnchantTable = new EnchantTable();
+    enchants: EnchantTable = new EnchantTable(true);
     xp: number;
     nextXp!: number;
     buffs: Buffs = new Buffs();
@@ -39,8 +39,9 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         additionnalItemPerLevel: 0
     };
     heroSkills: HeroSkills;
+    p:any;
     constructor() {
-        this.name = "grul le brave";
+        this.name = "Grulito le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
         this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
@@ -56,8 +57,8 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     calcNextXp() {
         this.nextXp = XP[this.level] - XP[this.level-1];
     }
-    openBag() {
-        return this.inventory.openBag();
+    openBag(filters?: string[]) {
+        return this.inventory.openBag(filters);
     }
     addToBag(item: Item) {
         this.inventory.add(item);
@@ -74,11 +75,21 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
             }
             this.weapon = item;
         }
+        if (item instanceof Armour) {
+            if (this.armour) {
+                this.inventory.flagUnEquiped(this.armour);
+            }
+            this.armour = item;
+        }
+        gameBus.publish(itemEquiped({
+            weapon: this.weapon,
+            armour: this.armour
+        }));
         this.inventory.flagEquiped(item);
     }
-    gainXP(monster: Monster): {total: number, current: number, status: 'xp_gained' | 'level_up'} {
+    gainXP(amount: number): {total: number, current: number, status: 'xp_gained' | 'level_up'} {
         let status: 'xp_gained' | 'level_up' = 'xp_gained';
-        this.xp += monster.xp;
+        this.xp += amount;
         if (this.nextXp <= this.xp) {
             this.levelUp();
             status = 'level_up';

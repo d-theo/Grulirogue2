@@ -37,7 +37,7 @@ export class MonsterCollection {
     }
     play() {
         for (const m of this.monsters) {
-            if (!m.enchants.stuned)
+            if (!m.enchants.getStuned())
                 m.play();
         }
     }

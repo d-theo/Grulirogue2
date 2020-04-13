@@ -1,7 +1,7 @@
 import { XTable, getInTable } from "../monsters/mob-table"
 import { pickInRange, pickInArray } from "../utils/random";
 import { GameRange } from "../utils/range";
-import { EffectMaker, Effects } from "../effects/effect";
+import { EffectMaker, Effects, SpellNames } from "../effects/effect";
 import { Potion } from "./potion";
 import { Item } from "../entitybase/item";
 import { Weapon } from "../entitybase/weapon";
@@ -89,25 +89,39 @@ export const ArmoursTable: XTable = [
 ];
 
 export const Scrolls = {
-    Fear: {
-
-    },
-    Identification: {
-
-    },
     Blink: {
-
+        name:'Scroll of blink',
+        description: 'Allow you to teleport for a short distance',
+        effect: () => EffectMaker.createSpell(SpellNames.Blink),
     },
     Teleportation: {
-
+        name:'Scroll of teleportation',
+        description: 'Randomly teleport you in the level',
+        effect: () => EffectMaker.createSpell(SpellNames.Teleportation),
     },
+    EnchantWeapon: {
+        name:'Scroll of weapon improvement',
+        description: 'Improve a weapon',
+        effect: () => EffectMaker.createSpell(SpellNames.EnchantWeapon),
+    },
+    EnchantArmour: {
+        name:'Scroll of armour immprovement',
+        description: 'Improve your armour',
+        effect: () => EffectMaker.createSpell(SpellNames.EnchantArmour),
+    },
+    Identification: {
+        name:'Scroll of identification',
+        description: 'Identify an unknow item',
+        effect: () => EffectMaker.createSpell(SpellNames.Identify),
+    }
 }
 
 export const ItemTable: XTable[] = [
-    [{chance: 70, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
-    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
-    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
-    [{chance: 60, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
+    //[{chance: 100, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}, {chance: 0, type: 'armour'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
 ]
 
 export const PotionTable: XTable = [
@@ -124,10 +138,10 @@ export const PotionTable: XTable = [
 ];
 
 export const ScrollTable: XTable = [
-    {chance: 0, type: Scrolls.Identification},
+    {chance: 25, type: Scrolls.Identification},
     {chance: 25, type: Scrolls.Teleportation},
-    {chance: 100, type: Scrolls.Fear},
-    {chance: 0, type: Scrolls.Blink}
+    {chance: 25, type: Scrolls.EnchantWeapon},
+    {chance: 25, type: Scrolls.EnchantArmour}
 ];
 
 export const DmgPerTier = [1,3,5,10,15];
@@ -180,7 +194,7 @@ export const namesPerDamage = [
 ];
 
 export const WeaponEchants: XTable = [
-    {chance: 59, type: 'nothing'},
+    {chance: 44, type: 'nothing'},
     {chance: 15, type: 'plus_one'},
     {chance: 10, type: 'plus_two'},
     {chance: 5, type: 'poisoned'},
@@ -188,6 +202,9 @@ export const WeaponEchants: XTable = [
     {chance: 3, type: 'plus_three'},
     {chance: 2, type: 'plus_four'},
     {chance: 1, type: 'plus_five'},
+    {chance: 5, type: 'minus_one'},
+    {chance: 5, type: 'minus_two'},
+    {chance: 5, type: 'minus_three'},
 ];
 
 const getDmgName = (dmg: number) => {
@@ -230,26 +247,45 @@ export const craftWeapon = (tier: number): Weapon => {
                 break;
             case 'plus_one':
                 w.additionnalDmg += 1;
+                w.identified = false;
+                break;
+            case 'minus_one':
+                w.additionnalDmg -= 1;
+                w.identified = false;
+                break;
+            case 'minus_two':
+                w.additionnalDmg -= 2;
+                w.identified = false;
+                break;
+            case 'minus_three':
+                w.additionnalDmg -= 3;
+                w.identified = false;
                 break;
             case 'plus_two':
                 w.additionnalDmg += 1;
+                w.identified = false;
                 break;
             case 'plus_three':
                 w.additionnalDmg += 1;
+                w.identified = false;
                 break;
             case 'plus_four':
                 w.additionnalDmg += 1;
+                w.identified = false;
                 break;
             case 'plus_five':
                 w.additionnalDmg += 1;
+                w.identified = false;
                 break;
             case 'bleed':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target'});
-                w.description += '\ninflict bleeding';
+                w.additionalDescription.push('inflict bleeding');
+                w.identified = false;
                 break;
             case 'poison':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target'});
-                w.description += '\npoison the target';
+                w.additionalDescription.push('poison the target');
+                w.identified = false;
                 break;
             default:
                 break;
@@ -285,7 +321,11 @@ export function getRandomLoot(level: number): Item {
             break;
         case "scroll": 
             const s = getInTable(ScrollTable);
-            loot = new Scroll(s);
+            loot = new Scroll({
+                name: s.name,
+                description: s.description,
+                effect: s.effect()
+            });
             break;
         case "weapon": 
             const w = craftWeapon(pickInRange(level-1,level+1));

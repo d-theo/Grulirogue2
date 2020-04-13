@@ -20,6 +20,7 @@ class InventoryScene extends Phaser.Scene {
   currentSelected: string;
   alreadyLoaded = false;
   currentScreen: 'list' | 'detail' = 'list';
+  action: 'useItem' | 'pickItem';
 
   w = 23 * 32;
   h = 17 * 32;
@@ -34,7 +35,8 @@ class InventoryScene extends Phaser.Scene {
 
   init(config: any) {
     this.letters = {};
-    this.config = config;
+    this.config = config.config;
+    this.action = config.action;
     this.currentSelected = 'a';
     this.currentScreen = 'list';
     this.input.keyboard.enabled = true;
@@ -103,6 +105,12 @@ class InventoryScene extends Phaser.Scene {
             }
             break;
           case 'Enter':
+            if (this.action === 'pickItem') {
+              const item = this.getCurrentItem();
+              this.scene.stop(SceneName.Inventory);
+              this.scene.resume(SceneName.Game, {action: this.action, item});
+              break;
+            }
             this.currentScreen = 'detail';
             selectedItem = this.letters[this.currentSelected].item;
             panel = new InventoryDescriptionView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));

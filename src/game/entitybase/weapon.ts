@@ -8,6 +8,7 @@ export class Weapon extends Item {
     baseDamage: string;
     additionnalDmg: number = 0;
     additionnalEffects: {effect: IEffect, target: 'attacker' | 'target'}[] = [];
+    additionalDescription: string[]=[];
     maxRange: number;
     constructor(arg: any) { // TODO
         super(arg);
@@ -15,10 +16,28 @@ export class Weapon extends Item {
         this.maxRange = arg.maxRange || 1;
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ield';
-        this.description = `
-kind: ${this.skin}
-dammages: ${this.baseDamage} + ${this.additionnalDmg}
-range: ${this.maxRange}`
+    }
+
+    get description () {
+        if (this.identified) {
+            return `
+            kind: ${this.skin}
+            dammages: ${this.baseDamage} + ${this.additionnalDmg}
+            range: ${this.maxRange}
+            ${this.additionalDescription.join('\n')}`;
+        } else {
+            return `
+            kind: ${this.skin}
+            dammages: ${this.baseDamage}
+            range: ${this.maxRange}`;
+        }
+    }
+    get name() {
+        if (this.identified) {
+            return this._name;
+        } else {
+            return `An unidentified ${this.skin}`;
+        }
     }
 
     deal() {
@@ -29,5 +48,8 @@ range: ${this.maxRange}`
     }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitWeapon(this);
+    }
+    reveal() {
+        this.identified = true;
     }
 }

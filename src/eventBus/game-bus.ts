@@ -5,6 +5,11 @@ import { Coordinate } from "../game/utils/coordinate";
 import { Item } from "../game/entitybase/item";
 import { Hero } from "../game/hero/hero";
 import { MapEffect } from '../map/map-effect';
+import { SkillNames } from "../game/hero/hero-skills";
+import { Scroll } from "../game/items/scroll";
+import { Weapon } from "../game/entitybase/weapon";
+import { Armour } from "../game/entitybase/armour";
+import { EnchantTable } from "../game/entitybase/enchantable";
 
 export const gameBus = new EventBus();
 
@@ -104,5 +109,23 @@ export const effectUnset = createEventDefinition<{
 export const monsterAttacked = createEventDefinition<{
     monster: Monster
 }>()("monsterAttack");
+export const heroGainedXp = createEventDefinition<{amount: number}>()('heroGainedXp');
+export const playerUseSkill = createEventDefinition<{
+    name: SkillNames
+}>()('playerUseSkill');
 
-export const playerSetTrap = createEventDefinition<{}>()('playerSetTrap');
+export const playerReadScroll = createEventDefinition<{
+    item: Scroll,
+    target: any
+}>()('playerReadScroll');
+
+export const itemEquiped = createEventDefinition<{
+    weapon?: Weapon,
+    armour?: Armour
+}>()('itemEquiped');
+export const enchantChanged = createEventDefinition<{
+    report: string
+}>()('enchantChanged');
+export const heroTargetMonster = createEventDefinition<{
+    monster: Monster,
+}>()('heroTargetMonster');

@@ -41,6 +41,7 @@
     "html-webpack-plugin": "^2.30.1",
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
+    "on-change": "^2.0.1",
     "perlin-noise": "0.0.1",
     "phaser": "^3.22.0",
     "raw-loader": "^0.5.1",

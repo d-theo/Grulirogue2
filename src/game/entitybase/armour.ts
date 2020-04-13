@@ -11,10 +11,28 @@ export class Armour extends Item {
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ear';
     }
+    get description(): string {
+        if (this.identified) {
+            return `${this._description} - absorb : ${this.baseAbsorb}`;
+        } else {
+            return `An unidentified ${this.skin}`
+        }
+    }
+    get name() {
+        console.log(this._name);
+        if (this.identified) {
+            return this._name;
+        } else {
+            return `An unidentified ${this.skin}`
+        }
+    }
     use(target: any) {
         target.equip(this);
     }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitArmor(this);
+    }
+    reveal() {
+        this.identified = true;
     }
 }

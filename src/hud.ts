@@ -1,4 +1,4 @@
-import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged } from "./eventBus/game-bus";
+import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged, itemEquiped, enchantChanged } from "./eventBus/game-bus";
 import $ from 'jquery';
 
 export function test() {
@@ -27,6 +27,21 @@ export function test() {
         if (event.payload.status === 'level_up') {
             $('#current-level').text(parseInt($('#current-level').text())+1);
         }
+    });
+
+    gameBus.subscribe(itemEquiped, event => {
+        const {weapon, armour} = event.payload;
+        $('#weapon1').text(weapon.name);
+        $('#armour').text(armour.name);
+    });
+    gameBus.subscribe(itemEquiped, event => {
+        const {weapon, armour} = event.payload;
+        if (weapon) $('#weapon1').text(weapon.name);
+        if (armour) $('#armour').text(armour.baseAbsorb);
+    });
+    gameBus.subscribe(enchantChanged, event => {
+        const e = event.payload.report;
+        $('#enchants').text(e);
     });
     $('#current-xp').width('0%');
     let i =0;

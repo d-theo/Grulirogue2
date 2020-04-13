@@ -1,4 +1,12 @@
 import { Hero } from "./hero";
+import { EffectMaker, SpellNames, Effects } from "../effects/effect";
+import { SpeedEffect, RogueSpell, TrapSpell } from "../effects/effects";
+
+export enum SkillNames {
+    Rogue = 'rogue',
+    Sneaky = 'sneaky',
+    Coward = 'coward',
+}
 
 export class HeroSkills {
     constructor(private hero: Hero) {}
@@ -10,11 +18,27 @@ export class HeroSkills {
         {name: 'explorer', description: 'you find more items', level: 0, maxLevel: 3},
         {name: 'overseer', description: 'you see further', level: 0, maxLevel: 1},
         {name: 'snake', description: 'you avoid hits more often', level: 0, maxLevel: 3},
-        {name: 'coward', description: 'you gain a new ability that allow to run. More level in this skill will decrease the cooldown.', level: 0, maxLevel: 3},
+        {name: 'coward', usable: true, description: 'you gain a new ability that allow to run. More level in this skill will decrease the cooldown.', level: 1, maxLevel: 3},
         {name: 'warrior', description: 'your attacks are stronger', level: 0, maxLevel: 3},
-        {name: 'sneaky', description: 'you gain a new ability that allow to set traps. More level in this skill will increase cooldown and trap dammages.', level: 0, maxLevel: 3},
-        {name: 'rogue', description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
+        {name: 'sneaky', usable: true, description: 'you gain a new ability that allow to set traps. More level in this skill will increase cooldown and trap dammages.', level: 1, maxLevel: 3},
+        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
     ];
+
+    Cooldowns = {
+        [SkillNames.Coward]: [100, 75, 50],
+        [SkillNames.Sneaky]: [100, 75, 50],
+        [SkillNames.Rogue]: [100, 75, 50],
+    };
+
+    heroCooldowns = {
+        [SkillNames.Coward]: -1,
+        [SkillNames.Sneaky]: -1,
+        [SkillNames.Rogue]: -1,
+    };
+
+    usableSkills() {
+        return this.AllSkills.filter(s => s.level > 0 && s.usable);
+    }
 
     learnSkill(name: string) {
         const skill = this.AllSkills.find(s => s.name === name);
@@ -43,9 +67,49 @@ export class HeroSkills {
             case 'overseer': return this.hero.sight++;
             case 'snake': return this.hero.dodge += 0.05;
             case 'warrior': return this.hero.fightModifier.additionnalDmg += 1;
-            case 'coward': return ;
-            case 'sneaky': return ;
-            case 'rogue': return ;
+            case 'coward': 
+                this.heroCooldowns[SkillNames.Coward] = 0;
+                break;
+            case 'sneaky': 
+                this.heroCooldowns[SkillNames.Sneaky] = 0;
+                break;
+            case 'rogue': 
+                this.heroCooldowns[SkillNames.Rogue] = 0;
+                break;
+        }
+    }
+    update() {
+        Object.values(this.heroCooldowns).forEach(v => v --);
+    }
+    getSkill(name: SkillNames) {
+        return this.AllSkills.find(s => s.name === name);
+    }
+    castSkill(name: SkillNames) {
+        const skill = this.getSkill(name);
+        if (!skill) {
+            throw new Error(`${name} does not exists`);
+        }
+        if (skill.level === 0) {
+            throw new Error(`${name} not learnt`);
+        }
+        if (this.heroCooldowns[name] <= 0) {
+            this.heroCooldowns[name] = this.Cooldowns[name][skill.level];
+            switch (name) {
+                case SkillNames.Sneaky: 
+                    const trapSpell = EffectMaker.createSpell(SpellNames.SpikeTrap) as TrapSpell;
+                    trapSpell.cast(this.hero.pos);
+                    break;
+                case SkillNames.Coward: 
+                    const runEffect: SpeedEffect = EffectMaker.create(Effects.Speed) as SpeedEffect;
+                    runEffect.cast(this.hero);
+                    break;
+                case SkillNames.Rogue:
+                    const rogueSpell: RogueSpell = EffectMaker.createSpell(SpellNames.Rogue) as RogueSpell;
+                    rogueSpell.cast();
+                    break;
+                default:
+                    throw new Error('skill not implemented');
+            }
         }
     }
 }

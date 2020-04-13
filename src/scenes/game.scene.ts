@@ -3,13 +3,17 @@ import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
 import { TilemapItems } from '../map/tilemap-items';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, playerSetTrap, effectSet, effectUnset } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
 import { PotionColors } from '../game/items/potion';
 import { Hero } from '../game/hero/hero';
 import { UIEffect } from '../UIEntities/ui-effect';
+import { SkillNames } from '../game/hero/hero-skills';
+import { Scroll } from '../game/items/scroll';
+import { line } from '../game/tilemap/sight';
+import { Monster } from '../game/monsters/monster';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -26,12 +30,11 @@ class GameScene extends Phaser.Scene {
 	tilemapVisibility: TilemapVisibility;
 	tilemapItems: TilemapItems;
 	tilemapFloor: TilemapItems;
-	range: any;
 
 	mode:'play' | 'select' = 'play';
-	currentAction: 'fire' | null = null;
+	currentAction: 'fire' | 'scroll_chose_location' | 'scroll_chose_target' | 'scroll_chose_item' | null = null;
 	actionContext: any;
-
+	range;
 	subs:any = [];
 	constructor() {
     super({
@@ -62,6 +65,7 @@ class GameScene extends Phaser.Scene {
 		for (const c of PotionColors) {
 			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
 		}
+		this.load.image('scroll', '/assets/sprites/scroll-empty.png');
 	}
 
 	reInit() {
@@ -108,17 +112,6 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}, 50);
-
-		/*this.events.on('resume', (sys, data:{action: 'useItem', key: string, item: Item} | undefined) => {
-			if (data) {
-				gameBus.publish(playerUseItem({
-					item: data.item,
-					target: this.hero.subject as Hero,
-					action: data.key,
-					owner: this.hero.subject as Hero
-				}));
-			}
-		});*/
 	}
 
 	create() {
@@ -160,7 +153,35 @@ class GameScene extends Phaser.Scene {
 
 		this.input.keyboard.on('keyup', (event) => {
 			switch (event.key) {
-				case 'i': return this.scene.pause().launch(SceneName.Inventory, this.gameEngine.hero.openBag());
+				case 'ArrowUp': 
+					if (this.mode === 'select') this.target.y -= 32;
+					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+						x:this.target.x/32,
+						y:this.target.y/32
+					});
+					break;
+				case 'ArrowDown': 
+					if (this.mode === 'select') this.target.y += 32;
+					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+						x:this.target.x/32,
+						y:this.target.y/32
+					});
+					break;
+				case 'ArrowLeft': 
+					if (this.mode === 'select') this.target.x -= 32;
+					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+						x:this.target.x/32,
+						y:this.target.y/32
+					});
+					break;
+				case 'ArrowRight': 
+					if (this.mode === 'select') this.target.x += 32;
+					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+						x:this.target.x/32,
+						y:this.target.y/32
+					});
+					break;
+				case 'i': return this.scene.pause().launch(SceneName.Inventory, {config:this.gameEngine.hero.openBag(), action: 'useItem'});
 				case 'f': 
 					if (this.mode === 'play') {
 						const mobs = this.gameEngine.getNearestAttackables();
@@ -175,8 +196,10 @@ class GameScene extends Phaser.Scene {
 							this.mode = 'select';
 							this.currentAction = 'fire';
 							this.actionContext = mobs;
+							this.showRange(this.gameEngine.hero, mob.pos);
 						}
 					} else if (this.mode === 'select') {
+						this.hideRange();
 						const mob = this.gameEngine.getAttackable({
 							x:this.target.x/32,
 							y:this.target.y/32
@@ -190,6 +213,41 @@ class GameScene extends Phaser.Scene {
 						this.actionContext = null;
 					}
 					break;
+				case 'Enter': {
+					const pos = {
+						x:this.target.x/32,
+						y:this.target.y/32
+					}
+					if (this.mode === 'select' && this.currentAction === 'scroll_chose_location') {
+						const t = this.gameEngine.tilemap.getAt(pos);
+						if (!t.isWalkable()) return;
+						gameBus.publish(playerReadScroll({
+							item: this.actionContext as Scroll,
+							target: pos,
+						}));
+					}
+					else if (this.mode === 'select' && this.currentAction === 'scroll_chose_target') {
+						let t;
+						if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
+							t = this.gameEngine.hero;
+						} else {
+							t = this.gameEngine.getAttackable(pos);
+							if (!t) return;
+						}
+						this.mode = 'play';
+						this.target.alpha = 0;
+						gameBus.publish(playerReadScroll({
+							item: this.actionContext as Scroll,
+							target: t,
+						}));
+					}
+					break;
+				}
+				case 'g': {
+					if (this.mode === 'play') {
+						this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.usableSkills(), action: 'useSkill'});
+					}
+				}	
 				case 'z': {
 					if (this.mode === 'select' && this.currentAction === 'fire') {
 						const last = this.actionContext.shift();
@@ -198,6 +256,7 @@ class GameScene extends Phaser.Scene {
 						this.target.alpha = 1;
 						this.target.x = mob.pos.x * 32;
 						this.target.y = mob.pos.y * 32;
+						this.showRange(this.gameEngine.hero, mob);
 					}
 					break;
 				}
@@ -205,6 +264,7 @@ class GameScene extends Phaser.Scene {
 					gameBus.publish(logPublished({data:'forget that'}));
 					this.mode = 'play';
 					this.currentAction = null;
+					this.hideRange();
 					break;
 				}
 				case 'w' : {
@@ -219,9 +279,52 @@ class GameScene extends Phaser.Scene {
 					break;
 			}
 		});
-		this.events.on('resume', (sys, data:{action: 'pickSkill'|'useItem', key: string, item: Item} | undefined) => {
-			console.log(data);
+		this.events.on('resume', (sys, data:{action: 'useSkill'|'pickSkill'|'useItem'|'pickItem', key: string, item: Item} | undefined) => {
+			if (data && data.action === 'pickItem') {
+				if (this.currentAction === 'scroll_chose_item') {
+					gameBus.publish(playerReadScroll({
+						item: this.actionContext as Scroll,
+						target: this.gameEngine.hero.getItem(data.item)
+					}));
+				}
+			}
 			if (data && data.action === 'useItem') {
+				if (data.key === 'r') {
+					const scroll = data.item as Scroll;
+					const type = scroll.effect.type[0];
+					if (type === 'chose_location') {
+						gameBus.publish(logPublished({data:'what do you want to target ?'}));
+						this.mode = 'select';
+						this.currentAction = 'scroll_chose_location';
+						this.actionContext = scroll;
+						this.target.alpha = 1;
+						this.target.x = this.hero.subject.pos.x * 32;
+						this.target.y = this.hero.subject.pos.y * 32;
+					} else if (type === 'chose_target') {
+						gameBus.publish(logPublished({data:'who do you want to target ?'}));
+						this.mode = 'select';
+						this.currentAction = 'scroll_chose_target';
+						this.actionContext = scroll;
+						this.target.alpha = 1;
+						this.target.x = this.hero.subject.pos.x * 32;
+						this.target.y = this.hero.subject.pos.y * 32;
+					} else if (type === 'chose_armour') {
+						gameBus.publish(logPublished({data:'Select an item'}));
+						this.currentAction = 'scroll_chose_item';
+						this.actionContext = scroll;
+						setTimeout(() => {
+							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Armours']), action: 'pickItem'});
+						},500);
+					} else if (type === 'chose_weapon') {
+						gameBus.publish(logPublished({data:'Select an item'}));
+						this.currentAction = 'scroll_chose_item';
+						this.actionContext = scroll;
+						setTimeout(() => {
+							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons']), action: 'pickItem'});
+						},500);
+					}
+					return;
+				}
 				gameBus.publish(playerUseItem({
 					item: data.item,
 					target: this.hero.subject as Hero,
@@ -231,6 +334,10 @@ class GameScene extends Phaser.Scene {
 			} else if (data && data.action === 'pickSkill') {
 				gameBus.publish(playerChoseSkill({
 					name: data.item.name
+				}));
+			} else if (data && data.action === 'useSkill') {
+				gameBus.publish(playerUseSkill({
+					name: data.item.name as SkillNames
 				}));
 			}
 		});
@@ -272,7 +379,7 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {status} = event.payload;
 			if (status === 'level_up') {
-				this.scene.pause().launch(SceneName.SkillTreeScene, this.gameEngine.hero.heroSkills.AllSkills);
+				this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {
@@ -340,19 +447,20 @@ class GameScene extends Phaser.Scene {
 		const mob = this.gameEngine.getAttackable({x:tile.x, y:tile.y});
 		if (mob) {
 			console.log(mob);
-			gameBus.publish(playerAttemptAttackMonster({monster: mob}));
-		}
-		if (!mob) {
-			gameBus.publish(playerSetTrap({}));
-			//const t = this.gameEngine.tilemap.getAt({x:tile.x, y:tile.y});
-			/*gameBus.publish(playerUseItem({
-				item: this.gameItems[k].subject,
-				target: this.hero.subject as Hero
-			}));*/
 		}
 	}
 
 	moveTo(pos) {
+		if (this.gameEngine.hero.enchants.getStupid()) {
+			if (pos === 'left')
+				pos = 'right;'
+			if (pos === 'right')
+				pos = 'left';
+			if (pos ==='up')
+				pos = 'down';
+			if (pos === 'down')
+				pos = 'up';
+		}
 		let newPos: Coordinate = {x:-1, y:-1};
 		let heroPos = this.gameEngine.hero.pos;
 		switch(pos){
@@ -396,18 +504,6 @@ class GameScene extends Phaser.Scene {
 			if (isDownDown)  return this.moveTo('down');
 			if (isLeftDown)  return this.moveTo('left');
 			if (isRightDown) return this.moveTo('right');
-			
-			Object.values(this.gameMonsters).forEach(v => v.move());
-
-			const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
-			const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-			this.target.x = tile.x * 32;
-			this.target.y = tile.y * 32;
-			if (this.gameEngine.getAttackable({x:tile.x, y:tile.y})) {
-				this.showRange();
-			} else {
-				this.hideRange();
-			}
 		}
 	}
 
@@ -417,12 +513,12 @@ class GameScene extends Phaser.Scene {
 		this.range = null;
 	}
 
-	showRange() {
-		if (this.range) return;
-		this.range = this.gameEngine.tilemap.getSightAround({
-			from : this.gameEngine.hero.pos,
-			range: this.gameEngine.hero.weapon.maxRange
-		});
+	showRange(hero: Hero, pos: Coordinate) {
+		this.range = line({from: hero.pos, to: pos})
+			.filter(p => 
+				Math.max(Math.abs(hero.pos.x - p.x), Math.abs(hero.pos.y - p.y)) <= hero.weapon.maxRange
+			);
+		this.range.shift();
 		this.tilemapVisibility.showRange(this.range);
 	}
 }

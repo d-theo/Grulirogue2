@@ -8,15 +8,14 @@ import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, playerSetTrap, effectSet} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
-import { EffectMaker, Effects } from "./effects/effect";
+import { EffectMaker } from "./effects/effect";
 import { itemSpawn } from "./items/item-spawn";
-import { Item } from "./entitybase/item";
 import { Monster } from "./monsters/monster";
-import { MapEffect } from "../map/map-effect";
+import { Scroll } from "./items/scroll";
 
 export class Game {
     static Engine: Game;
@@ -113,19 +112,21 @@ export class Game {
             const {name} = event.payload;
             this.hero.heroSkills.learnSkill(name);
         });
-        gameBus.subscribe(playerSetTrap, event => {
-            const pos = this.hero.pos;
-            const id = this.tilemap.addTileEffects({
-                debuff: EffectMaker.create(Effects.Bleed),
-                pos,
-                durationAfterWalk: 1,
-                type: 'TrapBleed'
-            });
-            gameBus.publish(effectSet({
-                name: id,
-                type: MapEffect.Spike,
-                pos
-            }));
+        gameBus.subscribe(heroGainedXp, event => {
+            const report = this.hero.gainXP(event.payload.amount);
+            gameBus.publish(xpHasChanged(report));
+        })
+        gameBus.subscribe(playerUseSkill, event => {
+            const {name} = event.payload;
+            this.nextTurn(1);
+            this.hero.heroSkills.castSkill(name);
+        });
+        gameBus.subscribe(playerReadScroll, event => {
+            const {item, target} = event.payload;
+            const scroll = this.hero.getItem(item) as Scroll;
+            scroll.setTarget(target).use();
+            this.hero.consumeItem(scroll);
+            this.nextTurn(1);
         });
     }
     canGoToNextLevel() {
@@ -149,7 +150,7 @@ export class Game {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
         }
 
-        if (this.hero.enchants.stuned) {
+        if (this.hero.enchants.getStuned()) {
             this.nextTurn(1);
         }
     }

@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, TeleportationEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -18,7 +18,6 @@ export enum Effects {
     Const = 'Const',
     Invisibility = 'Invisibility',
     Swap = 'Swap',
-    Teleportation = 'Teleportation',
     Thick = 'Thick',
     Cleaning = 'Cleaning',
     Dodge = 'Dodge',
@@ -32,13 +31,24 @@ export enum Effects {
     Accuraty = 'Accuraty',
 }
 
+export enum SpellNames {
+    SpikeTrap = 'SpikeTrap',
+    Rogue = "Rogue",
+    Teleportation = "Teleportation",
+    EnchantWeapon = "EnchantWeapon",
+    EnchantArmour = "EnchantArmour",
+    Blink = "Blink",
+    Identify = "Identify",
+}
+
 let tilemap: TileMap;
 let hero: Hero;
 let monsters: MonsterCollection;
 let effect: WorldEffect;
 export const EffectMaker = {
     set: initEffects,
-    create: createEffect
+    create: createEffect,
+    createSpell: createSpell
 };
 
 function initEffects(args: {tilemap : TileMap, hero: Hero, monsters: MonsterCollection}) {
@@ -48,6 +58,26 @@ function initEffects(args: {tilemap : TileMap, hero: Hero, monsters: MonsterColl
     effect = new WorldEffect(tilemap, hero, monsters);
 }
 
+function createSpell(name: SpellNames) {
+    microValidator([tilemap, hero, monsters], 'createEffect failure: null');
+    switch(name) {
+        case SpellNames.SpikeTrap: 
+            return new TrapSpell(effect);
+        case SpellNames.Rogue:
+            return new RogueSpell(effect);
+        case SpellNames.Teleportation:
+            return new TeleportationSpell(effect);
+        case SpellNames.EnchantArmour:
+            return new ImproveArmourSpell();
+        case SpellNames.EnchantWeapon:
+            return new ImproveWeaponSpell();
+        case SpellNames.Blink:
+            return new BlinkSpell(effect);
+        case SpellNames.Identify:
+            return new IdentifiySpell();
+    }
+}
+
 function createEffect(name: Effects) {
     microValidator([tilemap, hero, monsters], 'createEffect failure: null');
     switch(name) {
@@ -55,8 +85,6 @@ function createEffect(name: Effects) {
             return new HealEffect();
         case Effects.Thick:
             return new ThicknessEffect();
-        case Effects.Teleportation:
-            return new TeleportationEffect(effect);
         case Effects.Cleaning:
             return new CleaningEffect();
         case Effects.Stun:
@@ -81,8 +109,6 @@ function createEffect(name: Effects) {
             return new AccuratyEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
-        /*case Effects.Teleportation:
-            return new TeleportationEffect(tilemap, hero, monsters);*/
     }
 }
 
@@ -113,5 +139,8 @@ export class WorldEffect {
     }
     map() {
         return this.tilemap.tiles;
+    }
+    getTilemap() {
+        return this.tilemap;
     }
 }

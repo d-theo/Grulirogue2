@@ -43,20 +43,17 @@
                 </div>
             </div>
             <div class="hud-line">
-                <span>Weapon 1 : </span><span>-</span>
+                <span>Weapon : </span><span id="weapon1">-</span>
             </div>
             <div class="hud-line">
-                <span>Ammo 1 : </span><span>-</span>
+                <span>AC: </span><span id="armour">-</span>
             </div>
             <div class="hud-line">
-                <span>Weapon 2 : </span><span>-</span>
-            </div>
-            <div class="hud-line">
-                <span>Ammo 2 : </span><span>-</span>
+                <p class="multiline" id="enchants"></p>
             </div>
         </div>
     </div>
-    <div style="display: none;" id="log" class="log">
+    <div style="display: none;" id="log" class="log multiline">
         <p id="log-txt">
             Welcome back to the Grulirogue ! Find your cat in the dungeon or die trying... 
         </p>
@@ -77,6 +74,8 @@
         width: 1006px;
         border-top: yellow solid 1px;
         overflow-y: scroll;
+    }
+    .multiline {
         white-space: pre-line;
     }
     .log::-webkit-scrollbar {

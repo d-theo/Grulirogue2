@@ -1,14 +1,108 @@
 import { Buffs } from "./buffable";
+import { gameBus, enchantChanged } from "../../eventBus/game-bus";
+import { timingSafeEqual } from "crypto";
 
 export interface Enchantable {
     buffs: Buffs;
     enchants: EnchantTable
 }
 export class EnchantTable {
-    stuned = false;
-    bleeding = false;
-    invisibility = false;
-    poisoned = false;
-    stupid=false;
-    speed=false;
+    private stuned = false;
+    private bleeding = false;
+    private invisibility = false;
+    private poisoned = false;
+    private stupid=false;
+    private speed=false;
+    private agile = false;
+    private confident = false;
+    constructor(private readonly notif: boolean = false) {}
+    setStuned(x: boolean) {
+        this.stuned = x;
+        this.update();
+    }
+    setBleeding(x: boolean) {
+        this.bleeding = x;
+        this.update();
+    }
+    setInvisitility(x: boolean) {
+        this.invisibility = x;
+        this.update();
+    }
+    setPoisoned(x: boolean) {
+        this.poisoned = x;
+        this.update();
+    }
+    setStupid(x: boolean) {
+        this.stupid = x;
+        this.update();
+    }
+    setSpeed(x: boolean) {
+        this.speed = x;
+        this.update();
+    }
+    setAgile(x: boolean) {
+        this.agile = x;
+        this.update();
+    }
+    setConfident(x: boolean) {
+        this.confident = x;
+        this.update();
+    }
+    getStuned() {
+        return this.stuned;
+    }
+    getBleeding() {
+        return this.bleeding;
+    }
+    getInvisitility() {
+        return this.invisibility;
+    }
+    getPoisoned() {
+        return this.poisoned ;
+    }
+    getStupid() {
+        return this.stupid;
+    }
+    getSpeed() {
+        return this.speed ;
+    }
+    getAgile() {
+        return this.agile;
+    }
+    getConfident() {
+        return this.confident;
+    }
+
+    report() {
+        let r = [];
+        if (this.stuned) {
+            r.push('Stuned');
+        }
+        if (this.bleeding) {
+            r.push('Bleeding');
+        }
+        if (this.invisibility) {
+            r.push('Invisible');
+        }
+        if (this.poisoned) {
+            r.push('Poisoned');
+        }
+        if (this.stupid) {
+            r.push('Intel-');
+        }
+        if (this.speed) {
+            r.push('Movement+');
+        }
+        if (this.agile) {
+            r.push('Dodge+')
+        }
+        if(this.confident) {
+            r.push('Range+')
+        }
+        return r;
+    }
+    update() {
+        if (this.notif === false) return;
+        gameBus.publish(enchantChanged({report: this.report().join("\n")}));
+    }
 }

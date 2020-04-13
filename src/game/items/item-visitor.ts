@@ -26,7 +26,7 @@ export class ItemVisitor {
     }
     visitArmor(armor: Armour) {
         return {
-            kind: 'Armor',
+            kind: 'Armours',
             item: armor,
         }
     }

@@ -35,20 +35,16 @@ export class TilemapVisibility {
         m.sprite.alpha = alphas[tiles[y][x].visibility];
       });
     }
-    showRange(tiles: Tile[][]) {
-      for (let line of tiles) {
-        for (let t of line) {
-          const tile = this.shadowLayer.getTileAt(t.pos.x, t.pos.y);
-          tile.alpha = tile.alpha === 0 ? 0.1 : tile.alpha;
-        }
+    showRange(positions: Coordinate[]) {
+      for (let t of positions) {
+        const tile = this.shadowLayer.getTileAt(t.x, t.y);
+        tile.alpha = 0.1;
       }
     }
-    hideRange(tiles: Tile[][]) {
-      for (let line of tiles) {
-        for (let t of line) {
-          const tile = this.shadowLayer.getTileAt(t.pos.x, t.pos.y);
-          tile.alpha = tile.alpha === 0.1 ? 0 : tile.alpha;
-        }
+    hideRange(positions: Coordinate[]) {
+      for (let t of positions) {
+        const tile = this.shadowLayer.getTileAt(t.x, t.y);
+        tile.alpha = 0;
       }
     }
   }

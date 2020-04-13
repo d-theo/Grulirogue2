@@ -15,7 +15,8 @@ export class Inventory {
         this.equiped.add(item.id);
     }
     getItem(item: Item) {
-        return this.bag.find(i => i.id === item.id);
+         const i = this.bag.find(i => i.id === item.id);
+         return i;
     }
     flagUnEquiped(item: Item) {
         this.equiped.delete(item.id);
@@ -40,13 +41,12 @@ export class Inventory {
     remove(item: Item) {
         this.bag = this.bag.filter(i => i.id !== item.id);
     }
-    openBag() {
+    openBag(filters?: string[]) {
         const itemVisitor = new ItemVisitor();
         let inventory = _(this.bag)
             .map((item: Item) => item.visit(itemVisitor))
             .groupBy('kind')
             .value();
-        
         const sections = Object.keys(inventory);
         inventory.sections = sections;
         for (let k of sections) {
@@ -59,16 +59,21 @@ export class Inventory {
                         if (found) {
                             found.count++;
                         } else {
+                            console.log('log',val.item.name);
                             acc.push(val);
                         }
                     } else {
+                        console.log('log',val.item.name);
                         acc.push(val);
                     }
                     return acc;
                 }, [])
-                .map((i: any) => ({...i.item, count: i.count, equiped: this.equiped.has(i.item.id)}))
+                .map((i: any) => ({...i.item, name: i.item.name, description: i.item.description, count: i.count, equiped: this.equiped.has(i.item.id)}))
         }
 
+        if (filters) {
+            inventory.sections = inventory.sections.filter(s => filters.indexOf(s) > -1);
+        }
         return inventory;
     }
 }

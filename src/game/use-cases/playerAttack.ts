@@ -9,6 +9,7 @@ import { Movable } from "../entitybase/movable";
 import { Log } from "../log/log";
 import { gameBus, playerAttackedMonster, monsterDead, xpHasChanged } from "../../eventBus/game-bus";
 import { Monster } from "../monsters/monster";
+import { handleHealthReport } from "./health-report";
 
 export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 
@@ -39,20 +40,7 @@ export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|nul
     const damages = new Attack(hero, attacked).do();
     const healthReport = attacked.health.take(damages);
 
-    gameBus.publish(playerAttackedMonster({
-        amount: damages,
-        monster: attacked as any as Monster,
-        currentHp: attacked.health.currentHp,
-        baseHp: attacked.health.baseHp
-    }));
-    
-    if (healthReport.status === HealthStatus.Dead) {
-        const report = hero.gainXP(attacked as any as Monster);
-        gameBus.publish(xpHasChanged(report));
-        gameBus.publish(monsterDead({
-            monster: attacked as any as Monster,
-        }));
-    }
+    handleHealthReport(healthReport, attacked as Monster, damages);
     
     return {
         timeSpent: 1,

@@ -20,24 +20,46 @@ export class Potion extends Item {
     effect: IEffect;
     static colors: string[] = _.shuffle(_.cloneDeep(PotionColors));
     static mystery: any = {};
+    static identified: any = {};
     constructor(args: any) {
         super(args);
         this.effect = args.effect;
-        if (!Potion.mystery[this.name]) {
-            Potion.mystery[this.name] = this.randomColor();
+        if (!Potion.mystery[this._name]) {
+            Potion.mystery[this._name] = this.randomColor();
         }
-        this.skin = Potion.mystery[this.name];
+        this.skin = Potion.mystery[this._name];
         this.keyMapping['q'] = this.use.bind(this);
         this.keyDescription['q'] = '(q)uaff';
+    }
+    get description () {
+        if (! Potion.identified[this.getColor()]) {
+            return `Drink this ${this.getColor()} potion to see what it does`;
+        } else {
+            return this._description;
+        }
+    }
+    get name () {
+        if (! Potion.identified[this.getColor()]) {
+            return `${this.getColor()} potion`;
+        } else {
+            return this._name;
+        }
+    }
+    getColor() {
+        return this.skin.split('-')[1];
     }
     randomColor() {
         return 'potion-'+Potion.colors.pop();
     }
     use(target: any) {
+        Potion.identified[this.getColor()] = true;
         this.effect.cast(target);
         this.isUsed = true;
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitPotion(this);
+    }
+    reveal() {
+        Potion.identified[this.getColor()] = true;
     }
 }

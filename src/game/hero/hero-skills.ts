@@ -22,7 +22,7 @@ export class HeroSkills {
         {name: 'coward', usable: true, description: CowardDesc, level: 0, maxLevel: 3},
         {name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3},
         {name: 'sneaky', usable: true, description: SneakyDesc, level: 0, maxLevel: 3},
-        {name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
+        //{name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
     ];
 
     Cooldowns = {

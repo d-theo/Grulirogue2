@@ -125,6 +125,13 @@ class InventoryScene extends Phaser.Scene {
             this.scene.stop(SceneName.Inventory);
             break;
           default:
+            try {
+              this.currentScreen = 'detail';
+              selectedItem = this.letters[event.key].item;
+              panel = new InventoryDescriptionView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
+              panel.inputs({viewW: this.halfw, viewH: this.halfh, selectedItem: selectedItem, selectedLetter: this.currentSelected});
+              this.add.existing(panel);
+            } catch(e){}
             break;  
         }
       } else if (this.currentScreen === 'detail') {

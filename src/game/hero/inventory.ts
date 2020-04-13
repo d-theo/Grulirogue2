@@ -59,11 +59,9 @@ export class Inventory {
                         if (found) {
                             found.count++;
                         } else {
-                            console.log('log',val.item.name);
                             acc.push(val);
                         }
                     } else {
-                        console.log('log',val.item.name);
                         acc.push(val);
                     }
                     return acc;

@@ -13,7 +13,6 @@ import { UIEffect } from '../UIEntities/ui-effect';
 import { SkillNames } from '../game/hero/hero-skills';
 import { Scroll } from '../game/items/scroll';
 import { line } from '../game/tilemap/sight';
-import { Monster } from '../game/monsters/monster';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -53,6 +52,10 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Snake', '/assets/sprites/snake.png');
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
+		this.load.image('Bat', '/assets/sprites/bat.png');
+		this.load.image('Rat', '/assets/sprites/rat.png');
+
+
 		this.load.image('target', '/assets/sprites/target.png');
 
 		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
@@ -80,7 +83,7 @@ class GameScene extends Phaser.Scene {
 		this.gameItems = {};
 
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
-		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
+		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2, 0);
 		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 
 		this.layer = layer;

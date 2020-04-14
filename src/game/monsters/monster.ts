@@ -54,6 +54,10 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.name = n;
         return this;
     }
+    setDodge(n: number) {
+        this.dodge = n;
+        return this;
+    }
     setBehavior(f: Behavior) {
         this.behavior = f;
         return this;
@@ -65,7 +69,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.behavior(this);
     }
     static makeMonster(arg: any) : Monster {
-        const {kind, danger, hp, damage, range, pos} = arg;
+        const {kind, danger, hp, damage, range, pos, dodge} = arg;
         microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');
         
         const monster = new Monster();
@@ -75,6 +79,7 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
             .setXp(danger)
             .setName(kind)
             .setPos(pos)
+            .setDodge(dodge)
             .setBehavior(AIBehavior.Default());
     }
 }

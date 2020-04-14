@@ -52,8 +52,9 @@ class GameScene extends Phaser.Scene {
 		this.load.image('Snake', '/assets/sprites/snake.png');
 		this.load.image('Boar', '/assets/sprites/boar.png');
 		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
-		this.load.image('Bat', '/assets/sprites/bat.png');
+		this.load.image('Bat', '/assets/sprites/cavebat.png');
 		this.load.image('Rat', '/assets/sprites/rat.png');
+		this.load.image('Snake King', '/assets/sprites/snakeking.png');
 
 
 		this.load.image('target', '/assets/sprites/target.png');
@@ -393,7 +394,7 @@ class GameScene extends Phaser.Scene {
 			if (status === 'level_up') {
 				setTimeout(() => {
 					this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
-				}, 1000);
+				}, 500);
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {

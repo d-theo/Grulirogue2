@@ -127,9 +127,9 @@ import { SkillView } from "./skills/skill-view";
               try {
                 selectedItem = this.letters[event.key].item;
                 if (!this.inputOk || !selectedItem) throw new Error('no letter');
-                listener.clearCaptures();
                 const data = {action: this.action, item: selectedItem};
                 if (this.action === 'pickSkill' && selectedItem.level === selectedItem.maxLevel) return;
+                listener.clearCaptures();
                 this.scene.stop(SceneName.SkillTreeScene);
                 this.scene.resume(SceneName.Game, data);
                 this.inputOk = false;

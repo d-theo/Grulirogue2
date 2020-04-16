@@ -4,6 +4,9 @@ import { MapParamCreation } from "../map/map-generator";
 import {Terrain} from '../map/terrain';
 import { randomIn } from "../game/utils/rectangle";
 import { generateOlMap } from "./map_generation_ol";
+import { torchPainter } from "./painters/torch-painter";
+import { decoPainter } from "./painters/decoration-painter";
+import { greeceDeco } from "./painters/greece-deco-painter";
 
 export function createTileMap(params: MapParamCreation) {
     const MapTerrain: Terrain = params.Terrain;
@@ -59,23 +62,7 @@ export function createTileMap(params: MapParamCreation) {
         tilemap[points.C.y][points.C.x] = MapTerrain.CornerSE;
         tilemap[points.D.y][points.D.x] = MapTerrain.CornerSW;
     }
-    
-    function lineTile(A, B, tilemap, type) {
-        var x0 = A.x, y0 = A.y, x1 = B.x, y1 = B.y;
-        var dx = Math.abs(x1 - x0);
-        var dy = Math.abs(y1 - y0);
-        var sx = (x0 < x1) ? 1 : -1;
-        var sy = (y0 < y1) ? 1 : -1;
-        var err = dx - dy;
-     
-        while(true) {
-           tilemap[y0][x0] = type;
-           if (Math.abs(x0-x1) < 0.0001 && Math.abs(y0-y1) < 0.0001 ) break;
-           var e2 = 2*err;
-           if (e2 > -dy) { err -= dy; x0  += sx; }
-           if (e2 < dx) { err += dx; y0  += sy; }
-        }
-     }
+
      function makeExit(rooms, tilemap) {
         for (let room of rooms) {
             if (room.isExit) {
@@ -84,4 +71,54 @@ export function createTileMap(params: MapParamCreation) {
             }
         }
     }
+
+    function tileLayers(rooms, terrain: Terrain) {
+        const tilemap2 = Array(params.canvasHeight).fill(MapTerrain.Void).map(()=>Array(params.canvasWidth).fill(MapTerrain.Void));
+        const tilemap3 = Array(params.canvasHeight).fill(MapTerrain.Void).map(()=>Array(params.canvasWidth).fill(MapTerrain.Void));
+        for (const r of rooms) {
+            const rand = Math.random();
+            if (rand >= 0.90) {
+                paintStandard(r, tilemap2, tilemap3, terrain);
+            } else if (rand >= 0.80) {
+                paintWater(r, tilemap2, tilemap3, terrain);
+            } else {
+                paintFloral(r, tilemap2, tilemap3, terrain);
+            }
+        }
+    }
+
+    function paintStandard(room, tilemap2, tilemap3, terrain) {
+        torchPainter(room, tilemap2, terrain);
+        decoPainter(room, tilemap3, terrain);
+        greeceDeco(room, tilemap2, terrain);
+    }
+    function paintWater(room, tilemap2, tilemap3, terrain) {
+
+    }
+    function paintFloral(room, tilemap2, tilemap3, terrain) {
+
+    }
 }
+
+export function lineTile(A, B, tilemap, type, atRate?: number) { // 0-1
+    var x0 = A.x, y0 = A.y, x1 = B.x, y1 = B.y;
+    var dx = Math.abs(x1 - x0);
+    var dy = Math.abs(y1 - y0);
+    var sx = (x0 < x1) ? 1 : -1;
+    var sy = (y0 < y1) ? 1 : -1;
+    var err = dx - dy;
+ 
+    while(true) {
+        if (atRate && Math.random() <= atRate ) {
+            tilemap[y0][x0] = type;
+        }
+        if (!atRate) {
+            tilemap[y0][x0] = type;
+        }
+       
+       if (Math.abs(x0-x1) < 0.0001 && Math.abs(y0-y1) < 0.0001 ) break;
+       var e2 = 2*err;
+       if (e2 > -dy) { err -= dy; x0  += sx; }
+       if (e2 < dx) { err += dx; y0  += sy; }
+    }
+ }

@@ -10,7 +10,7 @@ export enum TileVisibility {
 export class Tile {
     pos: Coordinate;
     visibility: TileVisibility;
-    type: number;
+    type: number[];
     viewed = false;
     isSolidFct: (n:number) => boolean;
     isWalkableFct: (n:number) => boolean;
@@ -20,18 +20,21 @@ export class Tile {
     constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: number, isSolidFct: (n:number) => boolean, isWalkableFct: (n:number) => boolean}) {
         this.pos = {x: arg.x, y: arg.y}
         this.visibility = arg.visibility || TileVisibility.Hidden;
-        this.type = arg.type || -1;
+        this.type = [];
         this.isSolidFct = arg.isSolidFct;
         this.isWalkableFct = arg.isWalkableFct;
     }
+    isType(tileType: number) {
+        return this.type.some(t => t === tileType);
+    }
     isSolid() {
-        return this.isSolidFct(this.type);
+        return this.type.some(t => this.isSolidFct(t));
     }
     isWalkable() {
-        return this.isWalkableFct(this.type);
+        return this.type.every(t => this.isWalkableFct(t));
     }
     isEmpty() {
-        return this.isWalkableFct(this.type);
+        return this.type.every(t => this.isWalkableFct(t));
     }
     isOpenDoor() {
         return 

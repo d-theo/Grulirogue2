@@ -1,7 +1,6 @@
-import { Terrain } from "./terrain";
-
-export const terrainGreece: Terrain = {
+export const Terrain = {
     Void: 9,
+    Transparent: 29,
     DoorOpen: 10,
     DoorOpened: 21,
     DoorLocked: 11,
@@ -26,6 +25,31 @@ export const terrainGreece: Terrain = {
     Deco3: 14,
     Deco4: [15,16],
     Deco5: 17,
+    Torch: 26,
+    VegetalWall: 27,
+    VegetalFloor: 28,
+    CarpetNW: 30,
+    CarpetN: 31,
+    CarpetNE: 32,
+    CarpetW:  33,
+    Carpet: 34,
+    CarpetE:  35,
+    CarpetSW:  36,
+    CarpetS:  37,
+    CarpetSE:  38,
+    SwordDeco:  39,
+    PiedestalNW: 40,
+    PiedestalN: 41,
+    PiedestalNE: 42,
+    PiedestalW:  43,
+    Piedestal: 44,
+    PiedestalE:  45,
+    PiedestalSW:  46,
+    PiedestalS:  47,
+    PiedestalSE:  48,
+    WallRift: 49,
+    WaterFloor:  50,
+    WaterWall:  51,
 };
 export const GreeceCreationParams = {
     Area: 250, // min area of a room
@@ -36,7 +60,6 @@ export const GreeceCreationParams = {
     MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
     canvasWidth: 100,
     canvasHeight: 100,
-    Terrain: terrainGreece,
     Algo: 'rogue',
     Locks: false,
     Danger: [50, 70, 70, 80],

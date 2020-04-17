@@ -1,32 +1,34 @@
-import {Terrain} from '../../map/terrain';
+import { Terrain } from "../../map/terrain.greece";
 
-export function tilePropertiesForTerrain(t: Terrain) {
+export function tilePropertiesForTerrain() {
     return {
         isSolid,
         isWalkable
     }
     function isSolid(type: number) {
         return [
-            t.CornerNW,
-            t.CornerNE,
-            t.CornerSE,
-            t.CornerSW,
-            t.DoorLocked,
-            t.DoorOpen,
-            t.Void,
-            t.WallW,
-            t.WallS,
-            t.WallE,
-            t.WallN,
+            Terrain.CornerNW,
+            Terrain.CornerNE,
+            Terrain.CornerSE,
+            Terrain.CornerSW,
+            Terrain.DoorLocked,
+            Terrain.DoorOpen,
+            Terrain.Void,
+            Terrain.WallW,
+            Terrain.WallS,
+            Terrain.WallE,
+            Terrain.WallN,
         ].indexOf(type) > -1;
     }
     function isWalkable(type: number) {
+        if (isSolid(type)) return false;
         return [
-            t.Floor,
-            t.DoorOpened,
-            t.Stair,
-            t.ButtonPushed,
-            t.Button
-        ].indexOf(type) > -1;
+            Terrain.Deco,
+            Terrain.Deco1,
+            Terrain.Deco2,
+            Terrain.Deco3,
+            Terrain.Deco4[0],Terrain.Deco4[1],
+            Terrain.Deco5,
+        ].indexOf(type) < 0;
     }
 }

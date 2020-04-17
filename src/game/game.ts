@@ -6,7 +6,6 @@ import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
-import { Terrain } from "../map/terrain";
 import { monstersSpawn } from "./monsters/monster-spawn";
 import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll} from '../eventBus/game-bus';
 import { Log } from "./log/log";
@@ -132,10 +131,6 @@ export class Game {
     canGoToNextLevel() {
         return this.tilemap.getAt(this.hero.pos).isExit;
     }
-    currentTerrain(): Terrain {
-        return GreeceCreationParams.Terrain;
-    }
-
     adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
         gameBus.publish(sightUpdated({}));

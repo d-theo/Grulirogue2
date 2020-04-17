@@ -9,7 +9,7 @@
     "start": "webpack",
     "dev": "webpack",
     "deploy": "webpack --config webpack.production.config.js",
-    "extrude": "tile-extruder --tileWidth 32 --tileHeight 32 --input ./assets/tilemaps/greece.png --output ./assets/tilemaps/greece2.png"
+    "extrude": "tile-extruder --tileWidth 32 --tileHeight 32 --input ./assets/tilemaps/tilemap.png --output ./assets/tilemaps/tilemap2.png"
   },
   "repository": {
     "type": "git",

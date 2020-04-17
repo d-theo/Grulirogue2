@@ -6,12 +6,12 @@ import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
 import { matrixForEach, matrixFilter } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
-import { Terrain } from "../../map/terrain";
 import * as _ from 'lodash';
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { IEffect } from "../effects/effects";
 import { gameBus, effectUnset } from "../../eventBus/game-bus";
+import { Terrain } from "../../map/terrain.greece";
 let short = require('short-uuid');
 
 type DebuffDuration = {id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -20,20 +20,20 @@ export class TileMap {
     graph!: MapGraph;
     tiles!: Tile[][];
     tilemap!: number[][];
+    additionalLayer!: number[][];
     
     width!: number;
     height!: number;
     heightM1!: number;
     widthM1!: number;
-    terrain!: Terrain;
 
     debuffDurations: DebuffDuration[] = [];
     constructor() {}
     init(params: MapParamCreation) {
-        const {isSolid, isWalkable} = tilePropertiesForTerrain(params.Terrain);
-        this.terrain = params.Terrain;
-        const {tilemap, mapObject} = createMap(params);
+        const {isSolid, isWalkable} = tilePropertiesForTerrain();
+        const {tilemap, tilemap2, mapObject} = createMap(params);
         this.tilemap = tilemap;
+        this.additionalLayer = tilemap2;
         this.graph = mapObject;
 
         this.height = tilemap.length;
@@ -44,8 +44,11 @@ export class TileMap {
         for (let lineNb = 0; lineNb < this.height; lineNb++) {
             for (let colNb = 0; colNb < this.width; colNb++) {
                 const tile = new Tile({x:colNb, y:lineNb, isSolidFct: isSolid, isWalkableFct: isWalkable});
-                tile.type = tilemap[lineNb][colNb];
-                if (tile.type === this.terrain.Stair) {
+                const backgroundType = tilemap[lineNb][colNb];
+                const foregroundType = tilemap2[lineNb][colNb];
+                tile.type.push(backgroundType);
+                tile.type.push(foregroundType);
+                if (backgroundType === Terrain.Stair) {
                     tile.isExit = true;
                 }
                 lines.push(tile);

@@ -31,7 +31,6 @@ import {
     }
   
     create() {
-      console.log('end');
       this.cameras.main.setViewport(0, 0, this.w, this.h);
       this.cameras.main.setPosition(0, 0);
       let g = this.add.graphics();

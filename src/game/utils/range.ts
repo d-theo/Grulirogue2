@@ -4,7 +4,11 @@ export class GameRange {
     range: number[];
     // INCLUSIVE RANGE
     constructor(start: number, end: number) {
-        this.range = _.range(start, end+1, 1);
+        if (start > end) {
+            this.range = _.range(end, start+1, 1);    
+        } else {
+            this.range = _.range(start, end+1, 1);
+        }
     }
     pick(): number {
         const r = _.sample(this.range);

@@ -6,6 +6,7 @@ import { TileMap } from "../tilemap/tilemap";
 import { Coordinate } from "../utils/coordinate";
 import { gameBus, doorOpened, itemPickedUp } from "../../eventBus/game-bus";
 import { ItemCollection } from "../items/item-collection";
+import { Terrain } from "../../map/terrain.greece";
 
 export function playerMove(args: {
     pos: Coordinate,
@@ -40,8 +41,8 @@ export function playerMove(args: {
 
 function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     const tile = tilemap.getAt(pos);
-    if (tilemap.terrain.DoorOpen === tile.type) {
-        tile.type = tilemap.terrain.DoorOpened;
+    if (tile.isType(Terrain.DoorOpen)) {
+        tile.type[0] = Terrain.DoorOpened;
         gameBus.publish(doorOpened({pos}));
         return true;
     }

@@ -19,7 +19,6 @@ export class Armour extends Item {
         }
     }
     get name() {
-        console.log(this._name);
         if (this.identified) {
             return this._name;
         } else {

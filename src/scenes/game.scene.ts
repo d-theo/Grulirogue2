@@ -2,7 +2,6 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
-import { TilemapItems } from '../map/tilemap-items';
 import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
@@ -13,27 +12,31 @@ import { UIEffect } from '../UIEntities/ui-effect';
 import { SkillNames } from '../game/hero/hero-skills';
 import { Scroll } from '../game/items/scroll';
 import { line } from '../game/tilemap/sight';
+import { Terrain } from '../map/terrain.greece';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
-	target: any;
+	target: Phaser.GameObjects.Sprite;
 	gameMonsters: { [id: string]:  UIEntity} = {};
 	gameItems: { [id: string]:  UIItem} = {};
 	gameEffects: { [id: string]:  UIEffect} = {};
+	
 	cursors: any;
 	tilemap;
 	layer;
-	delta;
+	layer2;
+
+	delta: number;
 	moveAllowed = true;
+
 	gameEngine: GameEngine;
 	tilemapVisibility: TilemapVisibility;
-	tilemapItems: TilemapItems;
-	tilemapFloor: TilemapItems;
 
 	mode:'play' | 'select' = 'play';
 	currentAction: 'fire' | 'scroll_chose_location' | 'scroll_chose_target' | 'scroll_chose_item' | null = null;
 	actionContext: any;
 	range;
+
 	subs:any = [];
 	constructor() {
     super({
@@ -44,8 +47,7 @@ class GameScene extends Phaser.Scene {
 	preload() {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
-		this.load.image('terrain', '/assets/tilemaps/greece.png');
-		this.load.image('terrain2', '/assets/tilemaps/greece2.png');
+		this.load.image('terrain2', '/assets/tilemaps/tilemap2.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
 		this.load.image('health', '/assets/sprites/health.png');
 		this.load.image('healthfull', '/assets/sprites/healthfull.png');
@@ -85,17 +87,15 @@ class GameScene extends Phaser.Scene {
 
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2, 0);
-		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
+		this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
+		this.layer2 = map.createBlankDynamicLayer('additions', tileset);
+		this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
+		map.convertLayerToStatic(this.layer2);
 
-		this.layer = layer;
-		this.tilemapFloor = new TilemapItems(this.layer, this.gameEngine.tilemap.graph.rooms);
-
-		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
-		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
-		this.addDecorations();
 		this.placeMonsters();
 		this.placeItems();
-		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
+
+		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 		
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
@@ -123,17 +123,15 @@ class GameScene extends Phaser.Scene {
 	create() {
 		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
 		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
-		var layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
+		this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
+		this.layer2 = map.createBlankDynamicLayer('additions', tileset);
+		this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
+		map.convertLayerToStatic(this.layer2);
 
-		this.layer = layer;
-		this.tilemapFloor = new TilemapItems(this.layer, this.gameEngine.tilemap.graph.rooms);
-
-		const itemLayer = map.createBlankDynamicLayer("Items", tileset, undefined, undefined, undefined, undefined).fill(-1);
-		this.tilemapItems = new TilemapItems(itemLayer, this.gameEngine.tilemap.graph.rooms);
-		this.addDecorations();
 		this.placeMonsters();
 		this.placeItems();
-		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(this.gameEngine.currentTerrain().Void);
+
+		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 		
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
@@ -372,7 +370,7 @@ class GameScene extends Phaser.Scene {
 		}));
 		this.subs.push(gameBus.subscribe(doorOpened, event => {
 			const {pos} = event.payload;
-			this.layer.putTileAt(this.gameEngine.currentTerrain().DoorOpened, pos.x, pos.y);
+			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
 		}));
 		this.subs.push(gameBus.subscribe(playerAttackedMonster, event => {
 			const {monster} = event.payload;
@@ -431,30 +429,6 @@ class GameScene extends Phaser.Scene {
 			const item = new UIItem(this, i, i.skin);
 			this.gameItems[i.id] = item;
 		}
-	}
-
-	addDecorations() {
-		this.tilemapItems.placeItems(this.gameEngine.currentTerrain().Deco4, (pos) => {
-			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
-		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco5, 0.7 ,(pos) => {
-			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
-		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco3, 0.7 ,(pos) => {
-			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
-		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco2, 0.7 ,(pos) => {
-			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
-		});
-		this.tilemapItems.placeItem(this.gameEngine.currentTerrain().Deco1, 0.7 ,(pos) => {
-			this.gameEngine.tilemap.getAt(pos).type = this.gameEngine.currentTerrain().Deco;
-		});
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt1, 1,null);
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt1, 1,null);
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt2, 1,null);
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt2, 1,null);
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt3, 1,null);
-		this.tilemapFloor.placeItem(this.gameEngine.currentTerrain().FloorAlt3, 1,null);
 	}
 
 	handleMouseClick() {

@@ -10,6 +10,8 @@ import { Coordinate } from "../utils/coordinate";
 import { Armour } from "../entitybase/armour";
 import { Weapon } from "../entitybase/weapon";
 import { Item } from "../entitybase/item";
+import { matrixForEach } from "../utils/matrix";
+import { Tile } from "../tilemap/tile";
 
 export interface IEffect {
     type: string[];
@@ -40,7 +42,15 @@ export class IdentifiySpell implements IEffect {
     constructor() {}
     cast(item: Item) {
         item.reveal();
-        gameBus.publish(logPublished({data: `You identify a ${item.name}`}));
+        gameBus.publish(logPublished({level: 'success', data: `You identify a ${item.name}`}));
+    }
+}
+
+export class KnowledgeSpell implements IEffect {
+    type = [];
+    constructor(private readonly world: WorldEffect){}
+    cast() {
+        matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => t.viewed = true);
     }
 }
 
@@ -85,14 +95,14 @@ export class ThicknessEffect implements IEffect {
             },
             turns: 5
         });
-        gameBus.publish(logPublished({data:'Your skin seems thicker'}));
+        gameBus.publish(logPublished({level: 'success', data:'Your skin seems thicker'}));
     }
 }
 export class CleaningEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.buffs.cleanBuff();
-        gameBus.publish(logPublished({data:`${target.name} looks purified`}));
+        gameBus.publish(logPublished({level: 'success', data:`${target.name} looks purified`}));
     }
 }
 
@@ -110,7 +120,7 @@ export class DodgeEffect implements IEffect {
             },
             turns: 15
         });
-        gameBus.publish(logPublished({data:`${target.name} feels more agile`}));
+        gameBus.publish(logPublished({level: 'success', data:`${target.name} feels more agile`}));
     }
 }
 
@@ -119,7 +129,7 @@ export class XPEffect implements IEffect {
     cast(target: Hero | Monster) {
         if (target.xp) {
             (target as Hero).levelUp();
-            gameBus.publish(logPublished({data:'you are wiser !'}));
+            gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
         } else {
             gameBus.publish(logPublished({data:'noting happens'}));
         }
@@ -134,7 +144,7 @@ export class StunEffect implements IEffect   {
             end: (t: Hero|Monster) => t.enchants.setStuned(false),
             turns: 5
         });
-        gameBus.publish(logPublished({data: `${target.name} is stuned`}));
+        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`}));
     }
 }
 export class BlindEffect implements IEffect   {
@@ -145,7 +155,18 @@ export class BlindEffect implements IEffect   {
             end: (t: Hero|Monster) => t.sight += 6,
             turns: 15
         });
-        gameBus.publish(logPublished({data: `${target.name} sees nothing !`}));
+        gameBus.publish(logPublished({level: 'warning', data: `${target.name} sees nothing !`}));
+    }
+}
+
+export class WetEffect implements IEffect {
+    type = [];
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => t.enchants.setWet(true),
+            end: (t: Hero|Monster) => t.enchants.setWet(false),
+            turns: 3
+        });
     }
 }
 
@@ -163,7 +184,7 @@ export class AccuratyEffect implements IEffect   {
             },
             turns: 15
         });
-        gameBus.publish(logPublished({data: `${target.name} feels more confident`}));
+        gameBus.publish(logPublished({level: 'success', data: `${target.name} feels more confident`}));
     }
 }
 
@@ -182,7 +203,7 @@ export class RageEffect implements IEffect   {
             },
             turns: 10
         });
-        gameBus.publish(logPublished({data: `${target.name} is getting mad !`}));
+        gameBus.publish(logPublished({level: 'danger', data: `${target.name} is getting mad !`}));
     }
 }
 
@@ -217,16 +238,20 @@ export class BlinkSpell implements IEffect  {
 
 export class ImproveArmourSpell implements IEffect  {
     type = ['chose_armour'];
+    constructor(private world: WorldEffect){}
     cast(target: Armour) {
         target.baseAbsorb += 1;
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
+        gameBus.publish(itemEquiped({armour: this.world.getHero().armour}))
     }
 }
 export class ImproveWeaponSpell implements IEffect  {
     type = ['chose_weapon'];
+    constructor(private world: WorldEffect){}
     cast(target: Weapon) {
         target.additionnalDmg += 1;
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
+        gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}))
     }
 }
 
@@ -254,7 +279,7 @@ export class BleedEffect implements IEffect  {
             end: (t: Hero|Monster) => t.enchants.setBleeding(false),
             turns: 3
         });
-        gameBus.publish(logPublished({data: `${target.name} starts bleeding`}));
+        gameBus.publish(logPublished({level: 'danger', data: `${target.name} starts bleeding`}));
     }
 }
 export class PoisonEffect implements IEffect  {
@@ -271,7 +296,7 @@ export class PoisonEffect implements IEffect  {
                     currentHp: t.health.currentHp
                 }));
             } else if (t instanceof Monster) {
-                gameBus.publish(logPublished({data: `${t.name} suffers from poisoning`}))
+                gameBus.publish(logPublished({level: 'danger', data: `${t.name} suffers from poisoning`}))
                 handleHealthReport(healthReport, t, dmg);
             }
         }
@@ -290,7 +315,7 @@ export class PoisonEffect implements IEffect  {
 export class SpeedEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
-        gameBus.publish(logPublished({data:'you are boosted!'}));
+        gameBus.publish(logPublished({level: 'success', data:'you are boosted!'}));
         target.addBuff({
             start: (t: Hero|Monster) => {
                 t.enchants.setSpeed(true);
@@ -307,7 +332,7 @@ export class SpeedEffect implements IEffect  {
 export class StupidityEffect implements IEffect  {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
-        gameBus.publish(logPublished({data:'?????'}));
+        gameBus.publish(logPublished({level: 'warning', data:'?????'}));
         target.addBuff({
             start: (t: Hero|Monster) => t.enchants.setStupid (true),
             end: (t: Hero|Monster) => t.enchants.setStupid(false),

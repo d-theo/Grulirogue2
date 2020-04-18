@@ -83,9 +83,10 @@ export const Armours = {
     }
 }
 
-export const ArmoursTable: XTable = [
-    {chance: 75, type: Armours.Classic},
-    {chance: 25, type: Armours.Heavy},
+export const ArmoursTable: XTable[] = [
+    [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
+    [{chance: 75, type: Armours.Classic}, {chance: 25, type: Armours.Heavy}],
+    [{chance: 75, type: Armours.Classic}, {chance: 25, type: Armours.Heavy}],
 ];
 
 export const Scrolls = {
@@ -113,11 +114,16 @@ export const Scrolls = {
         name:'Scroll of identification',
         description: 'Identify an unknow item',
         effect: () => EffectMaker.createSpell(SpellNames.Identify),
+    },
+    Knowledge: {
+        name:'Scroll of knowledge',
+        description: 'Reveal the stage',
+        effect: () => EffectMaker.createSpell(SpellNames.Knowledge),
     }
 }
 
 export const ItemTable: XTable[] = [
-    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 15, type: 'armour'}],
+    [{chance: 55, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}],
     //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 100, type: 'weapon'}, {chance: 0, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
@@ -133,15 +139,17 @@ export const PotionTable: XTable = [
     {chance: 12, type: Potions.Dodge},
     {chance: 5, type: Potions.Immobilisation},
     {chance: 5, type: Potions.Rage},
-    {chance: 4, type: Potions.Stupidity},
-    {chance: 1, type: Potions.XP},
+    {chance: 3, type: Potions.Stupidity},
+    {chance: 2, type: Potions.XP},
 ];
 
 export const ScrollTable: XTable = [
     {chance: 25, type: Scrolls.Identification},
     {chance: 25, type: Scrolls.Teleportation},
-    {chance: 25, type: Scrolls.EnchantWeapon},
-    {chance: 25, type: Scrolls.EnchantArmour}
+    {chance: 15, type: Scrolls.EnchantWeapon},
+    {chance: 15, type: Scrolls.EnchantArmour},
+    {chance: 10, type: Scrolls.Knowledge},
+    {chance: 10, type: Scrolls.Blink},
 ];
 
 export const DmgPerTier = [1,3,5,10,15];
@@ -331,7 +339,7 @@ export function getRandomLoot(level: number): Item {
             loot = w;
             break;
         case 'armour':
-            const armour = getInTable(ArmoursTable);
+            const armour = getInTable(ArmoursTable[level-1]);
             const a = new Armour({
                 name: armour.name,
                 baseAbsorb: pickInRange(armour.absorb),

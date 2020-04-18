@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -29,6 +29,7 @@ export enum Effects {
     Speed = 'Speed',
     Rage = 'Rage',
     Accuraty = 'Accuraty',
+    Wet = 'Wet',
 }
 
 export enum SpellNames {
@@ -39,6 +40,7 @@ export enum SpellNames {
     EnchantArmour = "EnchantArmour",
     Blink = "Blink",
     Identify = "Identify",
+    Knowledge= "Knowledge",
 }
 
 let tilemap: TileMap;
@@ -59,7 +61,7 @@ function initEffects(args: {tilemap : TileMap, hero: Hero, monsters: MonsterColl
 }
 
 function createSpell(name: SpellNames) {
-    microValidator([tilemap, hero, monsters], 'createEffect failure: null');
+    microValidator([tilemap, hero, monsters], 'createSpell failure: null');
     switch(name) {
         case SpellNames.SpikeTrap: 
             return new TrapSpell(effect);
@@ -68,18 +70,20 @@ function createSpell(name: SpellNames) {
         case SpellNames.Teleportation:
             return new TeleportationSpell(effect);
         case SpellNames.EnchantArmour:
-            return new ImproveArmourSpell();
+            return new ImproveArmourSpell(effect);
         case SpellNames.EnchantWeapon:
-            return new ImproveWeaponSpell();
+            return new ImproveWeaponSpell(effect);
         case SpellNames.Blink:
             return new BlinkSpell(effect);
         case SpellNames.Identify:
             return new IdentifiySpell();
+        case SpellNames.Knowledge :
+            return new KnowledgeSpell(effect);
     }
 }
 
 function createEffect(name: Effects) {
-    microValidator([tilemap, hero, monsters], 'createEffect failure: null');
+    //microValidator([tilemap, hero, monsters], 'createEffect failure: null');
     switch(name) {
         case Effects.Heal:
             return new HealEffect();
@@ -107,6 +111,8 @@ function createEffect(name: Effects) {
             return new RageEffect();
         case Effects.Accuraty:
             return new AccuratyEffect();
+        case Effects.Wet:
+            return new WetEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
     }

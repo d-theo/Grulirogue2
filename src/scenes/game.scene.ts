@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -365,6 +365,11 @@ class GameScene extends Phaser.Scene {
 			this.hero.updateHp(true);
 			m.move();
 		}));
+		this.subs.push(gameBus.subscribe(monsterDead, event => {
+			const {monster} = event.payload;
+			const m = this.gameMonsters[monster.id];
+			m.updateHp();
+		}));
 		this.subs.push(gameBus.subscribe(playerMoved, event => {
 			this.hero.move();
 		}));
@@ -390,9 +395,7 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {status} = event.payload;
 			if (status === 'level_up') {
-				setTimeout(() => {
-					this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
-				}, 500);
+				this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {

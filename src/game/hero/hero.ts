@@ -113,9 +113,7 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         this.level ++;
         this.calcNextXp();
         this.xp = 0;
-        if (this.skillFlags.gainHpPerLevel > 0) {
-            this.health.getStronger(this.skillFlags.gainHpPerLevel);
-        }
+        this.health.getStronger(this.skillFlags.gainHpPerLevel);
     }
     consumeItem(item: Item) {
         if (item.isUsed) {
@@ -123,8 +121,6 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         }
     }
     regenHealth() {
-        if (this.skillFlags.regenHpOverTime > 0) {
-            this.health.regenHealth();
-        }
+        this.health.regenHealth();
     }
 }

@@ -3,7 +3,7 @@ import { pickInRange } from "../utils/random";
 
 export class Health {
     currentHp: number;
-    regenerationRate = 0;
+    regenerationRate = 15;
     nextRegen = 0;
     constructor(public baseHp: number) {
         this.currentHp = baseHp;
@@ -23,9 +23,10 @@ export class Health {
         }
     }
     getStronger(level: number) {
-        const lvlup = pickInRange('5-10') * level;
-        this.currentHp += lvlup;
-        this.baseHp += lvlup;
+        let moreHp = pickInRange('2-4');
+        moreHp += pickInRange('1-2')*level;
+        this.currentHp += moreHp;
+        this.baseHp += moreHp;
         gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
     take(hp: number): HealthReport {

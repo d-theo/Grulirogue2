@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import { Terrain } from "../map/terrain.greece";
 import { vegetalPainter } from "./painters/vegetal-painter";
 import { waterPainter } from "./painters/water-painter";
+import { snakeBossPainter } from "./painters/snakeboss-painter";
 
 export function createTileMap(params: MapParamCreation) {
     let map;
@@ -77,6 +78,7 @@ export function createTileMap(params: MapParamCreation) {
     function tileLayers(rooms, tilemap1) {
         const tilemap2 = Array(params.canvasHeight).fill(Terrain.Void).map(()=>Array(params.canvasWidth).fill(Terrain.Transparent));
         for (const r of rooms) {
+            if (r.isExit) continue;
             const rand = Math.random();
             if (rand >= 0.90) {
                 paintFloral(r, tilemap1, tilemap2);
@@ -88,7 +90,10 @@ export function createTileMap(params: MapParamCreation) {
         }
         return tilemap2;
     }
-
+    function snakeBossPainter(room, tilemap1, tilemap2) {
+        torchPainter(room, tilemap1, tilemap2);
+        snakeBossPainter(room, tilemap1, tilemap2);
+    }
     function paintStandard(room, tilemap1, tilemap2) {
         torchPainter(room, tilemap1, tilemap2);
         greeceDeco(room, tilemap1, tilemap2);
@@ -142,4 +147,21 @@ export function lineTile(A, B, tilemap, type, atRate?: Function) { // 0-1
         propagate({x: pos.x, y: pos.y+1}, tilemap, factor*propagationEntropy, propagationEntropy, biome, predicate, marked);
         propagate({x: pos.x, y: pos.y-1}, tilemap, factor*propagationEntropy, propagationEntropy, biome, predicate, marked);
     }
+}
+export function makeRoomTile(rect, tilemap, config:{floor, walln, walls, walle,wallw,wallne,wallnw,wallse,wallsw}) {
+    for (let x = rect.x; x < rect.x+rect.width; x++) {
+        for (let y = rect.y; y < rect.y+rect.height; y++) {
+            tilemap[y][x] = config.floor;
+        }
+    }
+    const points = pointsOfRect(rect);
+    lineTile(points.A, points.B, tilemap, config.walln);
+    lineTile(points.C, points.B, tilemap, config.walle);
+    lineTile(points.C, points.D, tilemap, config.walls);
+    lineTile(points.A, points.D, tilemap, config.wallw);
+
+    tilemap[points.A.y][points.A.x] = config.wallnw;
+    tilemap[points.B.y][points.B.x] = config.wallne;
+    tilemap[points.C.y][points.C.x] = config.wallse;
+    tilemap[points.D.y][points.D.x] = config.wallsw;
 }

@@ -37,6 +37,7 @@ export const doorOpened = createEventDefinition<{
 
 export const logPublished = createEventDefinition<{
     data: string;
+    level?: 'warning'|'danger'|'neutral'|'success';
 }>()('logPublished');
 
 export const sightUpdated = createEventDefinition<{

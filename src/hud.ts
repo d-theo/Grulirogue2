@@ -5,10 +5,12 @@ export function test() {
     gameBus.subscribe(gameStarted, event => {
         $('#hud').show();
         $('#log').show();
+        $('#howto').show();
     });
     gameBus.subscribe(logPublished, event => {
-        const txt = $('#log-txt').text();
-        $('#log-txt').text(event.payload.data+'\n\n'+txt);
+        const {data, level} = event.payload;
+        const logLevel = level ? level : 'neutral';
+        $('#log-txt').prepend(`<span class=${logLevel}>${data}</span>`);
     });
     gameBus.subscribe(playerTookDammage, event => {
         const curr = event.payload.currentHp * 100 / event.payload.baseHp;
@@ -29,11 +31,6 @@ export function test() {
         }
     });
 
-    gameBus.subscribe(itemEquiped, event => {
-        const {weapon, armour} = event.payload;
-        $('#weapon1').text(weapon.name);
-        $('#armour').text(armour.name);
-    });
     gameBus.subscribe(itemEquiped, event => {
         const {weapon, armour} = event.payload;
         if (weapon) $('#weapon1').text(weapon.name);

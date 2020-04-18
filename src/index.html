@@ -52,7 +52,7 @@
                 <p class="multiline" id="enchants"></p>
             </div>
         </div>
-        <div class="howtoplay">
+        <div style="display: none;" #id="howto" class="howtoplay">
             <div>Welcome adventurer, your cat has wandered off and fallen into a space vortex!!! You must summon all your courage for he needs you! Travel through time, defeat obstacles and bring kitty home safely.
                 But beware for a false move and kitty will be lost for good.</div>
             <div class="manual">How to play: </div>
@@ -65,9 +65,9 @@
         </div>
     </div>
     <div style="display: none;" id="log" class="log multiline">
-        <p id="log-txt">
+        <div id="log-txt">
             Welcome back to the Grulirogue ! Find your cat in Ancien Greece or die trying... 
-        </p>
+        </div>
     </div>
 
 <style>
@@ -137,6 +137,23 @@
         bottom: 23px;
         position: relative;
         text-align: center;
+    }
+    .warning {
+        color: orange;
+    }
+    .danger {
+        color: tomato;
+    }
+    .neutral {
+        color: yellow;
+    }
+    .success {
+        color: green;
+    }
+    #log-txt {
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
     }
     #log-txt::-webkit-scrollbar {
         display: none;

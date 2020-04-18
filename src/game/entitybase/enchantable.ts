@@ -17,6 +17,8 @@ export class EnchantTable {
     private confident = false;
     private moreDamage = false;
     private moreVulnerable = false;
+    private wet = false;
+    private blind = false;
     constructor(private readonly notif: boolean = false) {}
     setStuned(x: boolean) {
         this.stuned = x;
@@ -56,6 +58,14 @@ export class EnchantTable {
     }
     setMoreVulnerable(x: boolean) {
         this.moreVulnerable = x;
+        this.update();
+    }
+    setBlind(x: boolean) {
+        this.blind = x;
+        this.update();
+    }
+    setWet(x: boolean) {
+        this.wet = x;
         this.update();
     }
     getStuned() {
@@ -114,6 +124,8 @@ export class EnchantTable {
         if (this.moreDamage) {
             r.push('Dmg+');
         }
+        if (this.blind) r.push('Sight-');
+        if (this.wet) r.push('Wet');
         return r;
     }
     update() {

@@ -12,6 +12,7 @@ import { Hero } from "../hero/hero";
 import { IEffect } from "../effects/effects";
 import { gameBus, effectUnset } from "../../eventBus/game-bus";
 import { Terrain } from "../../map/terrain.greece";
+import { EffectMaker, Effects } from "../effects/effect";
 let short = require('short-uuid');
 
 type DebuffDuration = {id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -51,6 +52,7 @@ export class TileMap {
                 if (backgroundType === Terrain.Stair) {
                     tile.isExit = true;
                 }
+                this.setFgEffect(tile);
                 lines.push(tile);
             }
             tiles.push(lines);
@@ -68,6 +70,16 @@ export class TileMap {
             height: this.height
         }
     }
+    setFgEffect(tile: Tile) {
+        if (tile.type[1] === Terrain.WaterFloor) {
+            this.addTileEffects2({
+                debuff: EffectMaker.create(Effects.Wet),
+                tile,
+                durationAfterWalk: Infinity,
+                type: 'wet'
+            });
+        }
+    }
     getAt(pos: Coordinate): Tile {
         return this.tiles[pos.y][pos.x];
     }
@@ -77,6 +89,13 @@ export class TileMap {
         const id = short.generate();
         this.getAt(pos).addDebuff({id, debuff: debuff});
         this.debuffDurations.push({id, duration: durationAfterWalk, triggered: false, pos});
+        return id;
+    }
+    addTileEffects2(args: {tile: Tile, debuff: IEffect, durationAfterWalk: number, type: string}) {
+        const {tile, debuff, durationAfterWalk, type} = args;
+        const id = short.generate();
+        tile.addDebuff({id, debuff: debuff});
+        this.debuffDurations.push({id, duration: durationAfterWalk, triggered: false, pos:tile.pos});
         return id;
     }
     playTileEffectsOn(hero: Hero, monsters: Monster[]) {

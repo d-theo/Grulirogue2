@@ -15,6 +15,8 @@ import { EffectMaker } from "./effects/effect";
 import { itemSpawn } from "./items/item-spawn";
 import { Monster } from "./monsters/monster";
 import { Scroll } from "./items/scroll";
+import { ThingToPlace } from "../generation/map_tiling";
+import { makeThings } from "./special/additionnal-things";
 
 export class Game {
     static Engine: Game;
@@ -49,15 +51,17 @@ export class Game {
     }
 
     reInitLevel() {
+        let additionalThingsToPlace: ThingToPlace[] = [];
         if (this.level < 4) {
             GreeceCreationParams.Algo = this.level % 2 == 0 ? 'dig' : 'rogue';
-            this.tilemap.init(GreeceCreationParams);
+            additionalThingsToPlace = this.tilemap.init(GreeceCreationParams);
         }
         this.startingPosition();
         this.adjustSight();
-        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph.rooms, this.level, GreeceCreationParams.Danger[this.level-1]));
+        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, GreeceCreationParams.Danger[this.level-1]));
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
-        this.items.setItems(itemSpawn(this.tilemap.graph.rooms, this.level, this.hero.skillFlags.additionnalItemPerLevel + GreeceCreationParams.Loots[this.level-1]));
+        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + GreeceCreationParams.Loots[this.level-1]));
+        makeThings(additionalThingsToPlace, this.monsters, this.items);
         if (this.level > 1) {
             gameBus.publish(nextLevelCreated({level: this.level}));
         }
@@ -129,7 +133,8 @@ export class Game {
         });
     }
     canGoToNextLevel() {
-        return this.tilemap.getAt(this.hero.pos).isExit;
+        return true; // TODO
+        //return this.tilemap.getAt(this.hero.pos).isExit;
     }
     adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});

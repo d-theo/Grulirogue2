@@ -10,6 +10,13 @@ import { Terrain } from "../map/terrain.greece";
 import { vegetalPainter } from "./painters/vegetal-painter";
 import { waterPainter } from "./painters/water-painter";
 import { snakeBossPainter } from "./painters/snakeboss-painter";
+import { MapGraph } from "./map_definition";
+import { Coordinate } from "../game/utils/coordinate";
+
+export interface ThingToPlace {
+    pos: Coordinate,
+    type: 'snakeBoss'|'potion'|'scroll'|'item-good'|'item'|'monster';
+}
 
 export function createTileMap(params: MapParamCreation) {
     let map;
@@ -20,8 +27,11 @@ export function createTileMap(params: MapParamCreation) {
     }
     
     const tilemap = tile(map, params);
-    const tilemap2 = tileLayers(map.rooms, tilemap);
-    return {tilemap, tilemap2, mapObject: map};
+
+    const thingsToPlace: ThingToPlace[] = [];
+    const tilemap2 = tileLayers(map, tilemap);
+
+    return {tilemap, tilemap2, mapObject: map, thingsToPlace};
     
     function tile(map, params: MapParamCreation) {
         const tilemap = Array(params.canvasHeight).fill(Terrain.Void).map(()=>Array(params.canvasWidth).fill(Terrain.Void));
@@ -75,10 +85,47 @@ export function createTileMap(params: MapParamCreation) {
         }
     }
 
-    function tileLayers(rooms, tilemap1) {
+    function tileLayers(map: MapGraph, tilemap1) {
+        const rooms = map.rooms;
         const tilemap2 = Array(params.canvasHeight).fill(Terrain.Void).map(()=>Array(params.canvasWidth).fill(Terrain.Transparent));
         for (const r of rooms) {
             if (r.isExit) continue;
+            if (map.bossRoom && r.roomId === map.bossRoom /*&& Math.random() > 0.85*/) {
+                console.log('there is a boss');
+                paintSnakeBoss(r, tilemap1, tilemap2);
+                thingsToPlace.push({
+                    pos: {x: Math.floor(r.rect.x + r.rect.width/2), y: Math.floor(r.rect.y + r.rect.height/2)},
+                    type: 'snakeBoss'
+                });
+                thingsToPlace.push({
+                    pos: {x: Math.floor(r.rect.x + r.rect.width/2)+1, y: Math.floor(r.rect.y + r.rect.height/2)},
+                    type: 'item-good'
+                });
+                console.log('there is a boss END');
+                continue;
+            }
+            if (map.specialRoom && r.roomId === map.specialRoom && Math.random() > 0.85) {
+
+                continue;
+            }
+            if (map.miniRoom && r.roomId === map.miniRoom /*&& Math.random() > 0.85*/) {
+                console.log('there is a stash');
+                const c = r.rect.width * r.rect.height;
+                for (let x = 0; x < Math.max(15, c); x++) {
+                    if (Math.random() > 0.5) {
+                        thingsToPlace.push({
+                            pos: randomIn(r.rect),
+                            type: 'monster'
+                        });
+                    } else {
+                        thingsToPlace.push({
+                            pos: randomIn(r.rect),
+                            type: 'potion'
+                        });
+                    }
+                }
+                continue;
+            }
             const rand = Math.random();
             if (rand >= 0.90) {
                 paintFloral(r, tilemap1, tilemap2);
@@ -90,7 +137,7 @@ export function createTileMap(params: MapParamCreation) {
         }
         return tilemap2;
     }
-    function snakeBossPainter(room, tilemap1, tilemap2) {
+    function paintSnakeBoss(room, tilemap1, tilemap2) {
         torchPainter(room, tilemap1, tilemap2);
         snakeBossPainter(room, tilemap1, tilemap2);
     }

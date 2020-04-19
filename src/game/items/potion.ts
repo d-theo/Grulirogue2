@@ -2,6 +2,8 @@ import { Item } from "../entitybase/item";
 import * as _ from 'lodash';
 import { IEffect } from "../effects/effects";
 import { ItemVisitor } from "./item-visitor";
+import { Hero } from "../hero/hero";
+import { SkillNames } from "../hero/hero-skills";
 
 export const PotionColors = [
     'blue',
@@ -52,6 +54,11 @@ export class Potion extends Item {
         return 'potion-'+Potion.colors.pop();
     }
     use(target: any) {
+        if (target instanceof Hero && target.heroSkills.getSkillLevel(SkillNames.Alchemist) > 0) {
+            if (this.effect.turns) {
+                this.effect.turns += 5 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
+            }
+        }
         Potion.identified[this.getColor()] = true;
         this.effect.cast(target);
         this.isUsed = true;

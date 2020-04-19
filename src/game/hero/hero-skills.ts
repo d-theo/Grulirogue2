@@ -7,6 +7,7 @@ export enum SkillNames {
     Rogue = 'rogue',
     Sneaky = 'sneaky',
     Coward = 'coward',
+    Alchemist = 'alchemist',
 }
 
 export class HeroSkills {
@@ -14,7 +15,7 @@ export class HeroSkills {
     AllSkills = [
         {name: 'tireless', description: TirelessDesc, level: 0, maxLevel: 3},
         {name: 'tank', description: TankDesc, level: 0, maxLevel: 3},
-        {name: 'alchemist', description: 'Some potions are more efficient on you. More specialization in this path will increase the effects', level: 0, maxLevel: 3},
+        {name: 'alchemist', description: 'Health effect are more powerfull and potions are more efficient on you. More specialization in this path will increase the duration', level: 0, maxLevel: 3},
         {name: 'monk', description: MonkDesc, level: 0, maxLevel: 5},
         {name: 'explorer', description: 'You find items more often in the dongeon', level: 0, maxLevel: 3},
         {name: 'overseer', description: 'Better scope (+1 range)', level: 0, maxLevel: 1},
@@ -29,12 +30,14 @@ export class HeroSkills {
         [SkillNames.Coward]: [100, 75, 50],
         [SkillNames.Sneaky]: [100, 75, 50],
         [SkillNames.Rogue]: [100, 75, 50],
+        [SkillNames.Alchemist]: [Infinity],
     };
 
     heroCooldowns = {
         [SkillNames.Coward]: -1,
         [SkillNames.Sneaky]: -1,
         [SkillNames.Rogue]: -1,
+        [SkillNames.Alchemist]: Infinity,
     };
 
     usableSkills() {
@@ -88,6 +91,9 @@ export class HeroSkills {
     }
     getSkill(name: SkillNames) {
         return this.AllSkills.find(s => s.name === name);
+    }
+    getSkillLevel(name: SkillNames) {
+        return this.AllSkills.find(s => s.name === name)?.level || 0;
     }
     castSkill(name: SkillNames) {
         const skill = this.getSkill(name);

@@ -12,7 +12,7 @@ export const Bestiaire = {
             kind: "Snake King",
             danger: 30,
             hp: '15-20',
-            damage: '3-4',
+            damage: '6-10',
             range: 1,
             dodge: 0.20,
         },

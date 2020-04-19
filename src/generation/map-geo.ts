@@ -7,14 +7,22 @@ export function pointsOfRect(rect) {
     }
 }
 
-export function randomSizeRect(x:number, y: number, width: number, height: number, fuzz: number) {
+export function randomSizeRect(x:number, y: number, width: number, height: number, fuzz: number, maxSizeW?: number, maxSizeH?: number) {
     const rw = Math.floor(width * rand(-fuzz, fuzz));
     const rh = Math.floor(height * rand(-fuzz, fuzz));
+    let w = width + rw;
+    let h = height + rh;
+    if (maxSizeH) {
+        h = Math.min(h, maxSizeH);
+    }
+    if (maxSizeW) {
+        w = Math.min(w, maxSizeW);
+    }
     return {
         x,
         y,
-        width: width + rw,
-        height: height + rh
+        width: w,
+        height: h
     };
 }
 

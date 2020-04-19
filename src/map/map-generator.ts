@@ -1,4 +1,4 @@
-import { createTileMap } from "../generation/map_tiling";
+import { createTileMap, ThingToPlace } from "../generation/map_tiling";
 import {MapGraph} from '../generation/map_definition';
 
 /*export type MapParamCreation = {
@@ -23,10 +23,11 @@ export type MapParamCreation = {
     Algo: string;
     Locks: boolean;
 }
-export function createMap(param: MapParamCreation): {tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
-    const {tilemap, tilemap2, mapObject} = createTileMap(param);
+export function createMap(param: MapParamCreation): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
+    const {tilemap, tilemap2, mapObject, thingsToPlace} = createTileMap(param);
     return {
         tilemap: tilemap,
         tilemap2: tilemap2,
+        thingsToPlace: thingsToPlace,
         mapObject: (mapObject as any as MapGraph)};
 }

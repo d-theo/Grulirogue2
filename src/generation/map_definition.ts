@@ -26,7 +26,11 @@ export interface MapGraph {
     links : {
         from: Coordinate, 
         to: Coordinate
-    }[]
+    }[],
+    connexions?: any;
+    bossRoom?: number;
+    miniRoom?: number;
+    specialRoom?: number;
 }
 
 

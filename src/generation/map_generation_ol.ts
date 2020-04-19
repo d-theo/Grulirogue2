@@ -13,38 +13,50 @@ export function generateOlMap(params: MapParamCreation) {
     const graph = createMapOlDefinition();
     const size = Math.floor(Math.sqrt(params.Area)/2);
     const rooms = [];
-    const randRect = (x,y) => randomSizeRect(x,y, 10, 10, 0.4);
-    rooms.push(randRect(rand(0, params.Width), rand(0, params.Height)));
+    const randRect = (x,y) => randomSizeRect(x,y, 10, 10, 0.4, rand(9,11), rand(9,12));
+    
+    rooms.push({
+        roomId: rand(0, 99099),
+        groupId: rand(0, 999),
+        rect: randRect(rand(0, params.Width), rand(0, params.Height)),
+        isEntry: false,
+        isExit: false
+    });
+
     let area = 0;
     let maxArea = params.Width * params.Height;
     let x = 0;
     while (true) {
         x++;
         if (x > 1000 || area/maxArea > 0.90) {break;} 
-        const startingRoom = _.sample(rooms);
+        const _startingRoom = _.sample(rooms);
+        const startingRoom = _startingRoom.rect;
         const door = randomPointOfEdge(startingRoom);
         const adjRoom = randRect(door.pos.x, door.pos.y);
         translateRoom(adjRoom, startingRoom, door.direction);
-        if (fits(adjRoom, startingRoom, rooms, params)) {
-            rooms.push(adjRoom);
+        if (fits(adjRoom, startingRoom, rooms.map(r => r.rect), params)) {
+            const newRoom = {
+                roomId: rand(0, 99999),
+                groupId: rand(0, 999),
+                rect: adjRoom,
+                isEntry: false,
+                isExit: false
+            };
+            rooms.push(newRoom);
             area += adjRoom.width * adjRoom.height;
 
             graph.addDoor({
-                roomId: rand(0, 999),
+                roomId: newRoom.roomId,
                 position: door.pos,
                 isLocked: false,
                 zoneId: rand(0, 999),
             });
+
+            graph.connect(_startingRoom.roomId, newRoom.roomId);
         }
     }
     rooms.forEach(r => {
-        graph.addRoom({
-            roomId: rand(0, 999),
-            groupId: rand(0, 999),
-            rect: r,
-            isEntry: false,
-            isExit: false
-        });
+        graph.addRoom(r);
     });
     return graph.generate();
 }
@@ -87,6 +99,12 @@ function createMapOlDefinition() {
     const vertices = [];
     const rooms = [];
     const links = [];
+    const graph: {[s: number]: number[]} = {};
+
+    function connect(rid1: number, rid2: number) {
+        graph[rid1] = graph[rid1] ? graph[rid1].concat([rid2]) : [rid2];
+        graph[rid2] = graph[rid2] ? graph[rid2].concat([rid1]) : [rid1];
+    }
 
     function addDoor(arg: {
         roomId: number,
@@ -107,6 +125,14 @@ function createMapOlDefinition() {
     }) {
         vertices.push(arg);
     }
+
+    function getRoom(id: number) {
+        for (const r of rooms) {
+            if (r.roomId === id) {
+                return r;
+            }
+        }
+    }
     function addRoom(arg:{
         roomId: number,
         groupId: number,
@@ -125,18 +151,40 @@ function createMapOlDefinition() {
     function generate(): MapGraph {
         _.sample(rooms).isEntry = true;
         _.sample(rooms).isExit = true;
-        return {
+
+        let res: MapGraph = {
             doors,
             vertices,
             rooms,
             links,
+            connexions: graph,
         }
+
+        for (const k of Object.keys(graph)) {
+            const v = graph[k];
+            if (v.length === 1) {
+                const r = getRoom(+k);
+                if (r.isExit || r.isEntry) continue;
+                if (r.rect.width * r.rect.height > 30) {
+                    if (!res.bossRoom) {
+                        res.bossRoom = r.roomId;
+                    } else {
+                        res.specialRoom = r.roomId;
+                    }
+                } else {
+                    res.miniRoom = r.roomId;
+                }
+            }
+        }
+
+        return res;
     }
     return {
         addDoor,
         addLink,
         addRoom,
         addVertice,
+        connect,
         generate
     }
 }

@@ -29,10 +29,11 @@ export class TileMap {
     widthM1!: number;
 
     debuffDurations: DebuffDuration[] = [];
+
     constructor() {}
     init(params: MapParamCreation) {
         const {isSolid, isWalkable} = tilePropertiesForTerrain();
-        const {tilemap, tilemap2, mapObject} = createMap(params);
+        const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(params);
         this.tilemap = tilemap;
         this.additionalLayer = tilemap2;
         this.graph = mapObject;
@@ -61,6 +62,8 @@ export class TileMap {
         this.tiles = tiles;
         this.heightM1 = this.height - 1;
         this.widthM1 = this.width - 1;
+
+        return thingsToPlace;
     }
     getBorders(): Rect {
         return {

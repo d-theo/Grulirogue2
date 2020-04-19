@@ -11,11 +11,14 @@ import { Armour } from "../entitybase/armour";
 import { Weapon } from "../entitybase/weapon";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
-import { Tile } from "../tilemap/tile";
+import { Tile, TileVisibility } from "../tilemap/tile";
+import { SkillNames } from "../hero/hero-skills";
+import { Terrain } from "../../map/terrain.greece";
 
 export interface IEffect {
     type: string[];
     cast: Function;
+    turns?: number;
 }
 
 export class TrapSpell implements IEffect {
@@ -50,7 +53,11 @@ export class KnowledgeSpell implements IEffect {
     type = [];
     constructor(private readonly world: WorldEffect){}
     cast() {
-        matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => t.viewed = true);
+        matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => {
+            if (t.visibility === TileVisibility.Hidden && !t.isType(Terrain.Void)) {
+                t.visibility = TileVisibility.Far;
+            }
+        });
     }
 }
 
@@ -69,9 +76,7 @@ export class HealEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero) {
         let bonus = pickInRange('10-20');
-        if (target.skillFlags.improvedPotionEffect > 0) {
-            bonus += 10 * target.skillFlags.improvedPotionEffect;
-        }
+        bonus += 10 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
         target.health.take(-bonus);
         gameBus.publish(playerHealed({
             baseHp: target.health.baseHp,
@@ -80,7 +85,8 @@ export class HealEffect implements IEffect {
     }
 }
 export class ThicknessEffect implements IEffect {
-    type = ['monster','hero']
+    type = ['monster','hero'];
+    turns = 5
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => {
@@ -93,7 +99,7 @@ export class ThicknessEffect implements IEffect {
                 t.speed = t.speed / 2;
                 gameBus.publish(itemEquiped({armour: t.armour}));
             },
-            turns: 5
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'success', data:'Your skin seems thicker'}));
     }
@@ -108,6 +114,7 @@ export class CleaningEffect implements IEffect {
 
 export class DodgeEffect implements IEffect {
     type = ['monster','hero']
+    turns = 15;
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => {
@@ -118,7 +125,7 @@ export class DodgeEffect implements IEffect {
                 t.dodge -= 0.2
                 t.enchants.setAgile(false);
             },
-            turns: 15
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'success', data:`${target.name} feels more agile`}));
     }
@@ -138,22 +145,25 @@ export class XPEffect implements IEffect {
 
 export class StunEffect implements IEffect   {
     type = ['monster','hero']
+    turns = 5;
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => t.enchants.setStuned(true),
+            tick: (t: Hero|Monster) => gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`})),
             end: (t: Hero|Monster) => t.enchants.setStuned(false),
-            turns: 5
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`}));
     }
 }
 export class BlindEffect implements IEffect   {
     type = ['monster','hero']
+    turns = 10;
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => t.sight -= 6,
             end: (t: Hero|Monster) => t.sight += 6,
-            turns: 15
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'warning', data: `${target.name} sees nothing !`}));
     }
@@ -161,17 +171,19 @@ export class BlindEffect implements IEffect   {
 
 export class WetEffect implements IEffect {
     type = [];
+    turns = 3;
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => t.enchants.setWet(true),
             end: (t: Hero|Monster) => t.enchants.setWet(false),
-            turns: 3
+            turns: this.turns
         });
     }
 }
 
 export class AccuratyEffect implements IEffect   {
     type = ['monster','hero']
+    turns = 15;
     cast(target: Hero|Monster) {
         target.addBuff({
             start: (t: Hero|Monster) => {
@@ -182,7 +194,7 @@ export class AccuratyEffect implements IEffect   {
                 t.enchants.setConfident(false);
                 t.weapon.maxRange -= 1
             },
-            turns: 15
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'success', data: `${target.name} feels more confident`}));
     }
@@ -190,6 +202,7 @@ export class AccuratyEffect implements IEffect   {
 
 export class RageEffect implements IEffect   {
     type = ['monster','hero']
+    turns = 10;
     cast(target: Hero|Monster) {
         const rageLevel = pickInRange('3-5');
         target.addBuff({
@@ -201,7 +214,7 @@ export class RageEffect implements IEffect   {
                 t.weapon.additionnalDmg -= rageLevel;
                 t.armour.baseAbsorb += rageLevel;
             },
-            turns: 10
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'danger', data: `${target.name} is getting mad !`}));
     }
@@ -257,6 +270,7 @@ export class ImproveWeaponSpell implements IEffect  {
 
 export class BleedEffect implements IEffect  {
     type = ['monster','hero']
+    turns = 3;
     cast(target: Hero|Monster) {
         const bleed = (t: Hero | Monster) => {
             const dmg = pickInRange('4-6');
@@ -277,13 +291,14 @@ export class BleedEffect implements IEffect  {
             start: (t: Hero|Monster) => {t.enchants.setBleeding(true); bleed(t)},
             tick: (t: Hero|Monster) => bleed(t),
             end: (t: Hero|Monster) => t.enchants.setBleeding(false),
-            turns: 3
+            turns: this.turns
         });
         gameBus.publish(logPublished({level: 'danger', data: `${target.name} starts bleeding`}));
     }
 }
 export class PoisonEffect implements IEffect  {
     type = ['monster','hero']
+    turns = 7;
     cast(target: Hero|Monster) {
         const poison = (t: Hero | Monster) => {
             const dmg = pickInRange('1-3');
@@ -307,13 +322,14 @@ export class PoisonEffect implements IEffect  {
             },
             tick: (t: Hero|Monster) => poison(t),
             end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
-            turns: 7
+            turns: this.turns
         });
     }
 }
 
 export class SpeedEffect implements IEffect  {
     type = ['monster','hero']
+    turns = 8;
     cast(target: Hero|Monster) {
         gameBus.publish(logPublished({level: 'success', data:'you are boosted!'}));
         target.addBuff({
@@ -325,18 +341,19 @@ export class SpeedEffect implements IEffect  {
                 t.enchants.setSpeed(false);
                 t.speed = t.speed * 2;
             },
-            turns: 7
+            turns: this.turns
         });
     }
 }
 export class StupidityEffect implements IEffect  {
     type = ['monster','hero']
+    turns = 10;
     cast(target: Hero|Monster) {
         gameBus.publish(logPublished({level: 'warning', data:'?????'}));
         target.addBuff({
             start: (t: Hero|Monster) => t.enchants.setStupid (true),
             end: (t: Hero|Monster) => t.enchants.setStupid(false),
-            turns: 10
+            turns: this.turns
         });
     }
 }

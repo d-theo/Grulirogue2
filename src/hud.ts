@@ -10,7 +10,7 @@ export function test() {
     gameBus.subscribe(logPublished, event => {
         const {data, level} = event.payload;
         const logLevel = level ? level : 'neutral';
-        $('#log-txt').prepend(`<span class=${logLevel}>${data}</span>`);
+        $('#log-txt').prepend(`<span class="${logLevel} mb-sm">${data}</span>`);
     });
     gameBus.subscribe(playerTookDammage, event => {
         const curr = event.payload.currentHp * 100 / event.payload.baseHp;

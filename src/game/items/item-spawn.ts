@@ -2,13 +2,17 @@ import { distribute, pickInArray } from "../utils/random";
 import { randomIn } from "../utils/rectangle";
 import { getRandomLoot } from "./loot-table";
 import { Item } from "../entitybase/item";
+import { MapGraph } from "../../generation/map_definition";
+import { isSpecialRoom } from "../monsters/monster-spawn";
 
-export function itemSpawn(rooms: any[], level: number, nbLoot: number) {
+export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
+    const rooms = graph.rooms;
     const zones = distribute(rooms.length-1, nbLoot);
     const items: Item[] = [];
     for (let i = 0; i < rooms.length; i++) {
         const nb = zones[i];
         const room = rooms[i];
+        if (isSpecialRoom(room, graph)) continue;
         let total = 0;
         while(total < nb) {
             let item: Item = getRandomLoot(level);

@@ -8,7 +8,7 @@ level 3 : 1HP every 6 turns
 
 export const TankDesc = 
 `Each time you level up, you will be granted extra permanent Health Points
-Each level grants you a random extra HP according to the forumula: random(5,10) * level in Tank
+Each level grants you a random extra HP according to the forumula: random(1,2) * level in Tank
 `;
 
 export const MonkDesc = 

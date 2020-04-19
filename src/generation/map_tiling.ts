@@ -39,7 +39,7 @@ export function createTileMap(params: MapParamCreation) {
         for (var x = 0; x < rooms.length; x++) {
             makeRoomTile(rooms[x].rect, tilemap);
         }
-        makeExit(rooms, tilemap);
+        makeExit(rooms, tilemap, params.LastLevel);
 
         const vertices = map.vertices;
         for (let vertex of vertices) {
@@ -76,11 +76,11 @@ export function createTileMap(params: MapParamCreation) {
         tilemap[points.D.y][points.D.x] = Terrain.CornerSW;
     }
 
-     function makeExit(rooms, tilemap) {
+     function makeExit(rooms, tilemap, isLastLevel) {
         for (let room of rooms) {
             if (room.isExit) {
                 const pos = randomIn(room.rect);
-                tilemap[pos.y][pos.x] = Terrain.Stair;
+                tilemap[pos.y][pos.x] = isLastLevel ? Terrain.Archer : Terrain.Stair;
             }
         }
     }

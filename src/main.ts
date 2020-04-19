@@ -5,6 +5,7 @@ import {test} from './hud';
 import InventoryScene from './scenes/inventory.scene';
 import SkillTreeScene from './scenes/skilltree.scene';
 import GameOverScene from './scenes/gameover.scene';
+import GameFinishedScene from './scenes/game-finished.scene';
 
 export const CellSize = 32;
 export const W = CellSize*23;
@@ -23,6 +24,7 @@ export const config = {
       InventoryScene,
       SkillTreeScene,
       GameOverScene,
+      GameFinishedScene
     ],
     physics: {
       default: 'arcade',

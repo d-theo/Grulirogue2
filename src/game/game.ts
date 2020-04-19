@@ -7,7 +7,7 @@ import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll, logPublished} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll, logPublished, gameFinished} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -51,9 +51,12 @@ export class Game {
     }
 
     reInitLevel() {
+        if (this.level === 4) gameBus.publish(gameFinished({}));
+        
         let additionalThingsToPlace: ThingToPlace[] = [];
         if (this.level < 4) {
             GreeceCreationParams.Algo = this.level % 2 == 0 ? 'dig' : 'rogue';
+            GreeceCreationParams.LastLevel = this.level === 3;
             additionalThingsToPlace = this.tilemap.init(GreeceCreationParams);
         }
         this.startingPosition();

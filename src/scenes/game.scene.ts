@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead, itemEquiped } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead, itemEquiped, gameFinished } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -13,6 +13,7 @@ import { SkillNames } from '../game/hero/hero-skills';
 import { Scroll } from '../game/items/scroll';
 import { line } from '../game/tilemap/sight';
 import { Terrain } from '../map/terrain.greece';
+import { MapEffect } from '../map/map-effect';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -49,8 +50,9 @@ class GameScene extends Phaser.Scene {
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain2', '/assets/tilemaps/tilemap2.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
-		this.load.image('hero-light', '/assets/sprites/hero-heavy.png');
-		this.load.image('hero-heavy', '/assets/sprites/hero-light.png');
+		this.load.image('hero-heavy', '/assets/sprites/hero-heavy.png');
+		this.load.image('hero-light', '/assets/sprites/hero-light.png');
+		this.load.image('archer', '/assets/sprites/archer.png');
 		this.load.image('health', '/assets/sprites/health.png');
 		this.load.image('healthfull', '/assets/sprites/healthfull.png');
 		this.load.image('Snake', '/assets/sprites/snake.png');
@@ -64,6 +66,7 @@ class GameScene extends Phaser.Scene {
 		this.load.image('target', '/assets/sprites/target.png');
 
 		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
+		this.load.image('rock', '/assets/sprites/rock.png');
 		this.load.image('Fist', '/assets/sprites/blowpipe.png');
 		this.load.image('Slingshot', '/assets/sprites/slingshot.png');
 		this.load.image('Short bow', '/assets/sprites/shortbow.png');
@@ -71,6 +74,7 @@ class GameScene extends Phaser.Scene {
 
 		this.load.image('armour-light', '/assets/sprites/armour-light.png');
 		this.load.image('armour-heavy', '/assets/sprites/armour-heavy.png');
+
 		this.load.image('Spikes', '/assets/sprites/spikes.png');
 		for (const c of PotionColors) {
 			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
@@ -408,8 +412,14 @@ class GameScene extends Phaser.Scene {
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {
-			const {name, type, pos} = event.payload;
-			this.gameEffects[name] = new UIEffect(this, {name, pos}, type);
+			switch (event.payload.type) {
+				case MapEffect.Spike:
+					return this.gameEffects[name] = new UIEffect(this, {name: event.payload.name, pos: event.payload.pos}, event.payload.type);
+				case MapEffect.Projectile:
+					const p = new UIEffect(this, {name: event.payload.name, pos: event.payload.from}, event.payload.name);
+					p.throwProjectile(event.payload.to);
+					break;
+			}
 		}));
 		this.subs.push(gameBus.subscribe(effectUnset, event => {
 			const {name} = event.payload;
@@ -419,10 +429,13 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);
 		}));
+		this.subs.push(gameBus.subscribe(gameFinished, event => {
+			this.scene.pause().launch(SceneName.GameFinished);
+		}));
 		this.subs.push(gameBus.subscribe(itemEquiped, event => {
-			const {weapon, armour} = event.payload;
+			const {armour} = event.payload;
 			if (armour) {
-				this.hero.updateHeroSprite();
+				this.hero.updateHeroSprite(armour);
 			}
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {
@@ -496,7 +509,6 @@ class GameScene extends Phaser.Scene {
 	}
 
 	update(time: number, delta:number) {
-		this.hero.sprite.setVelocity(0,0);
 		if (!this.moveAllowed) {
 			this.delta += delta;
 			if (this.delta > 200) {

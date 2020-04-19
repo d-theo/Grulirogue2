@@ -7,6 +7,9 @@ import { Movable } from "../entitybase/movable";
 import { Log } from "../log/log";
 import { Monster } from "../monsters/monster";
 import { handleHealthReport } from "./health-report";
+import { distance } from "../utils/coordinate";
+import { gameBus, effectSet } from "../../eventBus/game-bus";
+import { MapEffect } from "../../map/map-effect";
 
 export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 
@@ -33,6 +36,15 @@ export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|nul
             timeSpent: 0,
             status: MessageResponseStatus.NotAllowed,
         };
+    } else {
+        if (distance(attacked.pos, hero.pos) > 1) {
+            gameBus.publish(effectSet({
+                name: 'rock',
+                type: MapEffect.Projectile,
+                from: hero.pos,
+                to: attacked.pos
+            }));
+        }
     }
     const damages = new Attack(hero, attacked).do();
     const healthReport = attacked.health.take(damages);

@@ -1,3 +1,4 @@
 export enum MapEffect {
-    Spike = 'Spikes'
+    Spike = 'Spikes',
+    Projectile = 'Projectile',
 }

@@ -2,5 +2,6 @@ export enum SceneName {
     Game = 'GameScene',
     Inventory = 'InventoryScene',
     SkillTreeScene = 'SkillTreeScene',
-    GameOver = "GameOverScene"
+    GameOver = "GameOverScene",
+    GameFinished = "GameFinishedScene"
 }

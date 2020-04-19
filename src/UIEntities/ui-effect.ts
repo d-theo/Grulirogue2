@@ -16,4 +16,19 @@ export class UIEffect {
 	destroy() {
 		this.sprite.destroy();
 	}
+
+	throwProjectile(to: Coordinate) {
+		this.parentScene.tweens.add({
+			targets: this.sprite,
+			ease: 'Linear',
+			duration: 80,
+			repeat: 0,
+			yoyo: false,
+			x: { from: this.sprite.x, to: toPix(to.x) },
+			y: { from: this.sprite.y, to: toPix(to.y) }
+		});
+		setTimeout(() => {
+			this.destroy();
+		},100);
+	}
 }

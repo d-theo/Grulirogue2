@@ -50,7 +50,7 @@ export const Terrain = {
     WallRift: 49,
     WaterFloor:  50,
     WaterWall:  51,
-    Black: 52,
+    Archer: 52,
 };
 export const GreeceCreationParams = {
     Area: 250, // min area of a room
@@ -64,5 +64,6 @@ export const GreeceCreationParams = {
     Algo: 'rogue',
     Locks: false,
     Danger: [50, 70, 70, 80],
-    Loots: [10, 6, 4, 4]
+    Loots: [10, 6, 4, 4],
+    LastLevel: false,
 };

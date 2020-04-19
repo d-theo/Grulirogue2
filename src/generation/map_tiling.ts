@@ -90,7 +90,7 @@ export function createTileMap(params: MapParamCreation) {
         const tilemap2 = Array(params.canvasHeight).fill(Terrain.Void).map(()=>Array(params.canvasWidth).fill(Terrain.Transparent));
         for (const r of rooms) {
             if (r.isExit) continue;
-            if (map.bossRoom && r.roomId === map.bossRoom /*&& Math.random() > 0.85*/) {
+            if (map.bossRoom && r.roomId === map.bossRoom && Math.random() > 0.7) {
                 console.log('there is a boss');
                 paintSnakeBoss(r, tilemap1, tilemap2);
                 thingsToPlace.push({
@@ -101,17 +101,15 @@ export function createTileMap(params: MapParamCreation) {
                     pos: {x: Math.floor(r.rect.x + r.rect.width/2)+1, y: Math.floor(r.rect.y + r.rect.height/2)},
                     type: 'item-good'
                 });
-                console.log('there is a boss END');
                 continue;
             }
             if (map.specialRoom && r.roomId === map.specialRoom && Math.random() > 0.85) {
-
                 continue;
             }
-            if (map.miniRoom && r.roomId === map.miniRoom /*&& Math.random() > 0.85*/) {
+            if (map.miniRoom && r.roomId === map.miniRoom && Math.random() > 0.9) {
                 console.log('there is a stash');
                 const c = r.rect.width * r.rect.height;
-                for (let x = 0; x < Math.max(15, c); x++) {
+                for (let x = 0; x < Math.min(12, c); x++) {
                     if (Math.random() > 0.5) {
                         thingsToPlace.push({
                             pos: randomIn(r.rect),

@@ -37,6 +37,7 @@ export function makeThings(
             case 'item-good':
                 let item: Weapon = craftWeapon(3);
                 item.pos = add.pos;
+                itemCollection.itemsArray().push(item);
                 break;
             default:
                 console.log('add this stuff not impl'+add.type);

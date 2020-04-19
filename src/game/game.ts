@@ -133,8 +133,7 @@ export class Game {
         });
     }
     canGoToNextLevel() {
-        return true; // TODO
-        //return this.tilemap.getAt(this.hero.pos).isExit;
+        return this.tilemap.getAt(this.hero.pos).isExit;
     }
     adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});

@@ -62,6 +62,10 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.behavior = f;
         return this;
     }
+    setSpeed(speed: number){
+        this.speed = speed;
+        return this;
+    }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
@@ -69,11 +73,16 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
         this.behavior(this);
     }
     static makeMonster(arg: any) : Monster {
-        const {kind, danger, hp, damage, range, pos, dodge} = arg;
+        const {speed, kind, danger, hp, damage, range, pos, dodge, onHit} = arg;
         microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');
         
         const monster = new Monster();
-        return monster
+
+        if (speed) {
+            monster.setSpeed(speed);
+        }
+
+        monster
             .setHealth(new Health(pickInRange(hp)))
             .setWeapon(new Weapon({baseDamage: damage, maxRange: range}))
             .setXp(danger)
@@ -81,5 +90,10 @@ export class Monster implements Movable, Killable, Fighter, Enchantable {
             .setPos(pos)
             .setDodge(dodge)
             .setBehavior(AIBehavior.Default());
+
+        if (onHit) {
+            monster.weapon.additionnalEffects.push(onHit);
+        }
+        return monster;
     }
 }

@@ -14,7 +14,7 @@ import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
 import { gameBus, itemEquiped, enchantChanged } from "../../eventBus/game-bus";
 
-const XP = [0, 1, 30, 70, 115, 200, 300, 450, 700, 900];
+const XP = [0, 30, 70, 115, 200, 300, 450, 700, 900];
 
 export class Hero implements Movable, Killable, Fighter, Enchantable {
     name: string;
@@ -42,9 +42,9 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
     p:any;
     constructor() {
         this.name = "Grulito le brave";
-        this.health = new Health(150);
+        this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
-        this.weapon = new Weapon({baseDamage: '2-400', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
+        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
         this.xp = 0;
         this.calcNextXp();
         this.sight = 8;

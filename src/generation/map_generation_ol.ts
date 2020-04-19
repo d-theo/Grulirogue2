@@ -13,7 +13,7 @@ export function generateOlMap(params: MapParamCreation) {
     const graph = createMapOlDefinition();
     const size = Math.floor(Math.sqrt(params.Area)/2);
     const rooms = [];
-    const randRect = (x,y) => randomSizeRect(x,y, 10, 10, 0.4, rand(9,11), rand(9,12));
+    const randRect = (x,y) => randomSizeRect(x,y, 10, 10, 0.4, rand(9,12), rand(9,12));
     
     rooms.push({
         roomId: rand(0, 99099),
@@ -165,7 +165,7 @@ function createMapOlDefinition() {
             if (v.length === 1) {
                 const r = getRoom(+k);
                 if (r.isExit || r.isEntry) continue;
-                if (r.rect.width * r.rect.height > 30) {
+                if (r.rect.width * r.rect.height > 40) {
                     if (!res.bossRoom) {
                         res.bossRoom = r.roomId;
                     } else {

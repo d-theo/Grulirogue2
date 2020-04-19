@@ -1,13 +1,10 @@
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
 import { Attack } from "../fight/fight";
-import { HealthStatus } from "../entitybase/health";
-import { InternalEventType } from "../events/events";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Killable } from "../entitybase/killable";
 import { Movable } from "../entitybase/movable";
 import { Log } from "../log/log";
-import { gameBus, playerAttackedMonster, monsterDead, xpHasChanged } from "../../eventBus/game-bus";
 import { Monster } from "../monsters/monster";
 import { handleHealthReport } from "./health-report";
 

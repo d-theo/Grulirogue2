@@ -124,7 +124,6 @@ export const Scrolls = {
 
 export const ItemTable: XTable[] = [
     [{chance: 55, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}],
-    //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 100, type: 'weapon'}, {chance: 0, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
@@ -285,12 +284,12 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.identified = false;
                 break;
             case 'bleed':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target'});
+                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target', chance: 0.1});
                 w.additionalDescription.push('inflict bleeding');
                 w.identified = false;
                 break;
             case 'poison':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target'});
+                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target', chance: 0.5});
                 w.additionalDescription.push('poison the target');
                 w.identified = false;
                 break;

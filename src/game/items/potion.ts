@@ -68,5 +68,6 @@ export class Potion extends Item {
     }
     reveal() {
         Potion.identified[this.getColor()] = true;
+        this.identified = true;
     }
 }

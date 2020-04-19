@@ -1,6 +1,6 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, playerHealed, logPublished, playerTookDammage, playerAttackedMonster, effectSet, playerMoved, itemEquiped } from "../../eventBus/game-bus";
+import { gameBus, playerHealed, logPublished, playerTookDammage, playerAttackedMonster, effectSet, playerMoved, itemEquiped, sightUpdated, xpHasChanged, heroGainedXp } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect, EffectMaker, Effects, SpellNames } from "./effect";
 import { pickInRange, pickInArray } from "../utils/random";
@@ -54,10 +54,11 @@ export class KnowledgeSpell implements IEffect {
     constructor(private readonly world: WorldEffect){}
     cast() {
         matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => {
-            if (t.visibility === TileVisibility.Hidden && !t.isType(Terrain.Void)) {
-                t.visibility = TileVisibility.Far;
-            }
+            t.viewed = true;
+            if (t.visibility !== TileVisibility.OnSight) t.setObscurity();
         });
+        gameBus.publish(logPublished({level: 'success', data:'Yee see everything !'}));
+        gameBus.publish(sightUpdated({}));
     }
 }
 
@@ -134,8 +135,10 @@ export class DodgeEffect implements IEffect {
 export class XPEffect implements IEffect {
     type = ['hero','monster']
     cast(target: Hero | Monster) {
-        if (target.xp) {
-            (target as Hero).levelUp();
+        if (target instanceof Hero) {
+            gameBus.publish(heroGainedXp({
+                amount: 999999
+            }));
             gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
         } else {
             gameBus.publish(logPublished({data:'noting happens'}));

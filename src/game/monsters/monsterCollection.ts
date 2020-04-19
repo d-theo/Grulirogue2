@@ -37,8 +37,11 @@ export class MonsterCollection {
     }
     play() {
         for (const m of this.monsters) {
-            if (!m.enchants.getStuned())
-                m.play();
+            if (!m.enchants.getStuned()) {
+                for(let i = 0; i < m.speed; i++) {
+                    m.play();
+                }
+            }
         }
     }
 }

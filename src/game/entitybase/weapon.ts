@@ -7,10 +7,10 @@ import { IEffect } from "../effects/effects";
 export class Weapon extends Item {
     baseDamage: string;
     additionnalDmg: number = 0;
-    additionnalEffects: {effect: IEffect, target: 'attacker' | 'target'}[] = [];
+    additionnalEffects: {chance: number, effect: IEffect, target: 'attacker' | 'target'}[] = [];
     additionalDescription: string[]=[];
     maxRange: number;
-    constructor(arg: any) { // TODO
+    constructor(arg: any) { // FIXME
         super(arg);
         this.baseDamage = arg.baseDamage;
         this.maxRange = arg.maxRange || 1;

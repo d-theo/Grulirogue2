@@ -229,6 +229,8 @@ class GameScene extends Phaser.Scene {
 							item: this.actionContext as Scroll,
 							target: pos,
 						}));
+						this.mode = 'play';
+						this.target.alpha = 0;
 					}
 					else if (this.mode === 'select' && this.currentAction === 'scroll_chose_target') {
 						let t;
@@ -297,7 +299,7 @@ class GameScene extends Phaser.Scene {
 					const scroll = data.item as Scroll;
 					const type = scroll.effect.type[0];
 					if (type === 'chose_location') {
-						gameBus.publish(logPublished({data:'what do you want to target ?'}));
+						gameBus.publish(logPublished({data:'where do you want to target ?'}));
 						this.mode = 'select';
 						this.currentAction = 'scroll_chose_location';
 						this.actionContext = scroll;
@@ -333,6 +335,11 @@ class GameScene extends Phaser.Scene {
 						setTimeout(() => {
 							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']), action: 'pickItem'});
 						},500);
+					} else {
+						gameBus.publish(playerReadScroll({
+							item: scroll as Scroll,
+							target: null,
+						}));
 					}
 					return;
 				}

@@ -20,7 +20,7 @@ export class Attack {
         const armour = this.target.armour;
         let dealt = weapon.deal();
         for (const addition of weapon.additionnalEffects) {
-            if (addition.target === 'target' && (this.target as any).addBuff) {
+            if (addition.target === 'target' && (this.target as any).addBuff && Math.random() <= addition.chance) {
                 addition.effect.cast(this.target);
             }
         }

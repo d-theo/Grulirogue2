@@ -179,7 +179,7 @@ export const namesPerRange = [
 
 export const namesPerDamage = [
     {
-        names: ['Weak', 'Broken', 'Tiny', ''],
+        names: ['Weak', 'Broken', 'Tiny', 'Unreliable'],
         lessThan: 3
     },
     {

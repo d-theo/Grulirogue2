@@ -67,7 +67,7 @@ class GameScene extends Phaser.Scene {
 
 		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
 		this.load.image('rock', '/assets/sprites/rock.png');
-		this.load.image('Fist', '/assets/sprites/blowpipe.png');
+		this.load.image('Fist', '/assets/sprites/fist.png');
 		this.load.image('Slingshot', '/assets/sprites/slingshot.png');
 		this.load.image('Short bow', '/assets/sprites/shortbow.png');
 		this.load.image('Crossbow', '/assets/sprites/crossbow.png');

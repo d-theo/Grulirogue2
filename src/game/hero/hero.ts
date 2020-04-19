@@ -39,12 +39,11 @@ export class Hero implements Movable, Killable, Fighter, Enchantable {
         additionnalItemPerLevel: 0
     };
     heroSkills: HeroSkills;
-    p:any;
     constructor() {
         this.name = "Grulito le brave";
         this.health = new Health(15);
-        this.armour = new Armour({baseAbsorb: 0, name: 'pyjama', description: 'your favorite pyjama for spleeping'});
-        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'fist', description: 'your fists are not prepared for this'});
+        this.armour = new Armour({baseAbsorb: 0, name: 'Pyjamas', description: 'Your favorite pair of pyjamas for spleeping'});
+        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this'});
         this.xp = 0;
         this.calcNextXp();
         this.sight = 8;

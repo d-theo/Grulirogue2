@@ -68,7 +68,8 @@ export class RogueSpell implements IEffect {
     cast() {
         this.world.getHero().weapon.additionnalEffects.push({
             effect: EffectMaker.create(Effects.Poison),
-            target: 'target'
+            target: 'target',
+            chance: 1
         });
     }
 }

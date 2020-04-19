@@ -35,6 +35,7 @@ export function test() {
         const {weapon, armour} = event.payload;
         if (weapon) $('#weapon1').text(weapon.name);
         if (armour) $('#armour').text(armour.baseAbsorb);
+        if (armour) $('#armour-name').text(armour.name);
     });
     gameBus.subscribe(enchantChanged, event => {
         const e = event.payload.report;

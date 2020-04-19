@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead, itemEquiped } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -49,6 +49,8 @@ class GameScene extends Phaser.Scene {
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.load.image('terrain2', '/assets/tilemaps/tilemap2.png');
 		this.load.image('hero', '/assets/sprites/hero.png');
+		this.load.image('hero-light', '/assets/sprites/hero-heavy.png');
+		this.load.image('hero-heavy', '/assets/sprites/hero-light.png');
 		this.load.image('health', '/assets/sprites/health.png');
 		this.load.image('healthfull', '/assets/sprites/healthfull.png');
 		this.load.image('Snake', '/assets/sprites/snake.png');
@@ -416,6 +418,12 @@ class GameScene extends Phaser.Scene {
 		}));
 		this.subs.push(gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);
+		}));
+		this.subs.push(gameBus.subscribe(itemEquiped, event => {
+			const {weapon, armour} = event.payload;
+			if (armour) {
+				this.hero.updateHeroSprite();
+			}
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {
 			this.reInit();

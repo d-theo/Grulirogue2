@@ -50,6 +50,7 @@ export const Terrain = {
     WallRift: 49,
     WaterFloor:  50,
     WaterWall:  51,
+    Black: 52,
 };
 export const GreeceCreationParams = {
     Area: 250, // min area of a room

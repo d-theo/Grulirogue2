@@ -127,6 +127,7 @@ class InventoryScene extends Phaser.Scene {
           default:
             try {
               this.currentScreen = 'detail';
+              this.currentSelected = event.key;
               selectedItem = this.letters[event.key].item;
               panel = new InventoryDescriptionView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
               panel.inputs({viewW: this.halfw, viewH: this.halfh, selectedItem: selectedItem, selectedLetter: this.currentSelected});
@@ -146,6 +147,7 @@ class InventoryScene extends Phaser.Scene {
             break;
           default:
             const action = this.getCurrentItem().keyMapping[event.key];
+            debugger;
             if (action) {
               this.scene.stop(SceneName.Inventory);
               this.scene.resume(SceneName.Game, {action: 'useItem', key: event.key, item: this.getCurrentItem()});

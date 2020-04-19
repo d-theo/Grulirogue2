@@ -4,9 +4,10 @@ import { Coordinate } from "../game/utils/coordinate";
 import { Movable } from "../game/entitybase/movable";
 import { Killable } from "../game/entitybase/killable";
 import { gameBus, gameOver } from "../eventBus/game-bus";
+import { Armour } from "../game/entitybase/armour";
 
 export class UIEntity {
-    sprite: any;
+    sprite: Phaser.GameObjects.Sprite;
     healthBar: Phaser.GameObjects.Sprite;
     healthBarFull: Phaser.GameObjects.Sprite;
 	healthSize = 28;
@@ -88,5 +89,13 @@ export class UIEntity {
 		} else {
 			return null;
 		}
+	}
+
+	updateHeroSprite(armour: Armour) {
+		const skin = {
+			'armour-light': 'hero-light',
+			'armour-heavy': 'hero-heavy'
+		}
+		this.sprite.setTexture(skin[armour.skin] ?? 'hero');
 	}
 }

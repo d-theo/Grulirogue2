@@ -7,7 +7,7 @@ import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll, logPublished} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -62,6 +62,9 @@ export class Game {
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
         this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + GreeceCreationParams.Loots[this.level-1]));
         makeThings(additionalThingsToPlace, this.monsters, this.items);
+        if (this.tilemap.graph.bossRoom && this.level == 2) {
+            gameBus.publish(logPublished({level: 'warning', data:'You hear a distinct hissing...'}));
+        }
         if (this.level > 1) {
             gameBus.publish(nextLevelCreated({level: this.level}));
         }

@@ -4,6 +4,7 @@ import { IEffect } from "../effects/effects";
 import { ItemVisitor } from "./item-visitor";
 import { Hero } from "../hero/hero";
 import { SkillNames } from "../hero/hero-skills";
+import { gameBus, logPublished } from "../../eventBus/game-bus";
 
 export const PotionColors = [
     'blue',
@@ -59,7 +60,10 @@ export class Potion extends Item {
                 this.effect.turns += 5 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
             }
         }
-        Potion.identified[this.getColor()] = true;
+        if(! Potion.identified[this.getColor()]) {
+            Potion.identified[this.getColor()] = true;
+            gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
+        }
         this.effect.cast(target);
         this.isUsed = true;
     }

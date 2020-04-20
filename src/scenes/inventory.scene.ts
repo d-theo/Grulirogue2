@@ -119,31 +119,28 @@ class InventoryScene extends Phaser.Scene {
             this.add.existing(panel);
             break;
           case 'Escape':
-          case 'i':
             listener.clearCaptures();
             this.scene.resume(SceneName.Game);
             this.scene.stop(SceneName.Inventory);
             break;
           default:
             try {
-              this.currentScreen = 'detail';
-              this.currentSelected = event.key;
-              selectedItem = this.letters[event.key].item;
-              panel = new InventoryDescriptionView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
-              panel.inputs({viewW: this.halfw, viewH: this.halfh, selectedItem: selectedItem, selectedLetter: this.currentSelected});
-              this.add.existing(panel);
+              if (this.letters[event.key]) {
+                this.currentScreen = 'detail';
+                this.currentSelected = event.key;
+                selectedItem = this.letters[event.key].item;
+                panel = new InventoryDescriptionView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
+                panel.inputs({viewW: this.halfw, viewH: this.halfh, selectedItem: selectedItem, selectedLetter: this.currentSelected});
+                this.add.existing(panel);
+              }
             } catch(e){}
-            break;  
+            break;
         }
       } else if (this.currentScreen === 'detail') {
         switch (event.key) {
           case 'Escape':
             this.currentScreen = 'list';
             panel.destroy();
-            break;
-          case 'i':
-            this.scene.stop(SceneName.Inventory);
-            this.scene.resume(SceneName.Game);
             break;
           default:
             const action = this.getCurrentItem().keyMapping[event.key];

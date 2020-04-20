@@ -128,6 +128,21 @@ export class EnchantTable {
         if (this.wet) r.push('Wet');
         return r;
     }
+    clean() {
+        this.stuned = false;
+        this.bleeding = false;
+        this.invisibility = false;
+        this.poisoned = false;
+        this.stupid=false;
+        this.speed=false;
+        this.agile = false;
+        this.confident = false;
+        this.moreDamage = false;
+        this.moreVulnerable = false;
+        this.wet = false;
+        this.blind = false;
+        this.update();
+    }
     update() {
         if (this.notif === false) return;
         gameBus.publish(enchantChanged({report: this.report().join("\n")}));

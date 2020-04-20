@@ -110,6 +110,7 @@ export class CleaningEffect implements IEffect {
     type = ['monster','hero']
     cast(target: Hero|Monster) {
         target.buffs.cleanBuff();
+        target.enchants.clean();
         gameBus.publish(logPublished({level: 'success', data:`${target.name} looks purified`}));
     }
 }
@@ -213,8 +214,12 @@ export class RageEffect implements IEffect   {
             start: (t: Hero|Monster) => {
                 t.armour.baseAbsorb -= rageLevel;
                 t.weapon.additionnalDmg += rageLevel;
+                t.enchants.setMoreDamage(true);
+                t.enchants.setMoreVulnerable(true);
             },
             end: (t: Hero|Monster) => {
+                t.enchants.setMoreDamage(false);
+                t.enchants.setMoreVulnerable(false);
                 t.weapon.additionnalDmg -= rageLevel;
                 t.armour.baseAbsorb += rageLevel;
             },
@@ -302,10 +307,10 @@ export class BleedEffect implements IEffect  {
 }
 export class PoisonEffect implements IEffect  {
     type = ['monster','hero']
-    turns = 7;
+    turns = 5;
     cast(target: Hero|Monster) {
         const poison = (t: Hero | Monster) => {
-            const dmg = pickInRange('1-3');
+            const dmg = pickInRange('1-2');
             const healthReport = t.health.take(dmg);
             if (t instanceof Hero) {
                 gameBus.publish(playerTookDammage({

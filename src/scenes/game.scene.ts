@@ -48,38 +48,6 @@ class GameScene extends Phaser.Scene {
 	preload() {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
-		this.load.image('terrain2', '/assets/tilemaps/tilemap2.png');
-		this.load.image('hero', '/assets/sprites/hero.png');
-		this.load.image('hero-heavy', '/assets/sprites/hero-heavy.png');
-		this.load.image('hero-light', '/assets/sprites/hero-light.png');
-		this.load.image('archer', '/assets/sprites/archer.png');
-		this.load.image('health', '/assets/sprites/health.png');
-		this.load.image('healthfull', '/assets/sprites/healthfull.png');
-		this.load.image('Snake', '/assets/sprites/snake.png');
-		this.load.image('Boar', '/assets/sprites/boar.png');
-		this.load.image('Centaurus', '/assets/sprites/centaurus.png');
-		this.load.image('Bat', '/assets/sprites/cavebat.png');
-		this.load.image('Rat', '/assets/sprites/rat.png');
-		this.load.image('Snake King', '/assets/sprites/snakeking.png');
-
-
-		this.load.image('target', '/assets/sprites/target.png');
-
-		this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
-		this.load.image('rock', '/assets/sprites/rock.png');
-		this.load.image('Fist', '/assets/sprites/fist.png');
-		this.load.image('Slingshot', '/assets/sprites/slingshot.png');
-		this.load.image('Short bow', '/assets/sprites/shortbow.png');
-		this.load.image('Crossbow', '/assets/sprites/crossbow.png');
-
-		this.load.image('armour-light', '/assets/sprites/armour-light.png');
-		this.load.image('armour-heavy', '/assets/sprites/armour-heavy.png');
-
-		this.load.image('Spikes', '/assets/sprites/spikes.png');
-		for (const c of PotionColors) {
-			this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
-		}
-		this.load.image('scroll', '/assets/sprites/scroll-empty.png');
 	}
 
 	reInit() {
@@ -107,12 +75,6 @@ class GameScene extends Phaser.Scene {
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
 		this.target = this.physics.add.sprite(0, 0, 'target');
 		this.target.setOrigin(0,0);
-		this.input.on('pointermove', () => {
-			this.target.setAlpha(0.9);
-		});
-		this.input.on('pointerup', this.handleMouseClick.bind(this));
-
-		this.cursors = this.input.keyboard.createCursorKeys();
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero.sprite, false);
 
@@ -127,40 +89,13 @@ class GameScene extends Phaser.Scene {
 	}
 
 	create() {
-		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
-		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2);
-		this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
-		this.layer2 = map.createBlankDynamicLayer('additions', tileset);
-		this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
-		map.convertLayerToStatic(this.layer2);
-
-		this.placeMonsters();
-		this.placeItems();
-
-		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
-		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
-		
-		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
-		this.target = this.physics.add.sprite(0, 0, 'target');
-		this.target.setOrigin(0,0);
-		this.input.on('pointermove', () => {
+		this.reInit();
+		/*this.input.on('pointermove', () => {
 			this.target.setAlpha(0.9);
-		});
+		});*/
 		this.input.on('pointerup', this.handleMouseClick.bind(this));
 
 		this.cursors = this.input.keyboard.createCursorKeys();
-		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-		this.cameras.main.startFollow(this.hero.sprite, false);
-
-		this.initGameEvents();
-
-		// hack ! 
-		setTimeout(() => {
-			gameBus.publish(gameStarted({}));
-			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
-			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
-		}, 50);
-
 		this.input.keyboard.on('keyup', (event) => {
 			switch (event.key) {
 				case 'ArrowUp': 

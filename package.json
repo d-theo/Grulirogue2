@@ -46,6 +46,7 @@
     "phaser": "^3.22.0",
     "raw-loader": "^0.5.1",
     "rectangle-overlap": "^2.0.0",
+    "s3": "^4.4.0",
     "short-uuid": "^3.1.1",
     "shortid": "^2.2.15",
     "tile-extruder": "^2.0.3",

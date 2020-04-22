@@ -139,6 +139,7 @@ export class Game {
         });
     }
     canGoToNextLevel() {
+        return true;
         return this.tilemap.getAt(this.hero.pos).isExit;
     }
     adjustSight() {

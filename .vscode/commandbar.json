@@ -1,0 +1,43 @@
+{
+  "skipTerminateQuickPick": true,
+  "skipSwitchToOutput": false,
+  "skipErrorMessage": true,
+  "commands": [
+    {
+      "text": "Serve",
+      "tooltip": "Run dev",
+      "color": "white",
+      "command": "npm start",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": 0
+    },
+    {
+      "text": "Rebuild image",
+      "tooltip": "Rebuild image",
+      "color": "white",
+      "command": "npm run extrude",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": 0
+    },
+    {
+      "text": "build prod",
+      "tooltip": "Rebuild image",
+      "color": "white",
+      "command": "npm run deploy",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": 0
+    },
+    {
+      "text": "upload s3",
+      "tooltip": "upload s3",
+      "color": "white",
+      "command": "npm version major && node ./s3deploy.js",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": 0
+    }
+  ]
+}

@@ -6,7 +6,6 @@ import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doo
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
-import { PotionColors } from '../game/items/potion';
 import { Hero } from '../game/hero/hero';
 import { UIEffect } from '../UIEntities/ui-effect';
 import { SkillNames } from '../game/hero/hero-skills';

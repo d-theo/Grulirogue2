@@ -9,7 +9,8 @@
     "start": "webpack",
     "dev": "webpack",
     "deploy": "webpack --config webpack.production.config.js",
-    "extrude": "tile-extruder --tileWidth 32 --tileHeight 32 --input ./assets/tilemaps/tilemap.png --output ./assets/tilemaps/tilemap2.png"
+    "extrude": "tile-extruder --tileWidth 32 --tileHeight 32 --input ./assets/tilemaps/tilemap.png --output ./assets/tilemaps/tilemap2.png",
+    "bump-patch": "npm-bump patch"
   },
   "repository": {
     "type": "git",
@@ -39,8 +40,10 @@
     "browser-sync": "^2.18.13",
     "browser-sync-webpack-plugin": "^1.2.0",
     "html-webpack-plugin": "^2.30.1",
+    "husky": "^4.2.5",
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
+    "npm-bump": "0.0.30",
     "on-change": "^2.0.1",
     "perlin-noise": "0.0.1",
     "phaser": "^3.22.0",

@@ -5,12 +5,15 @@ import { Movable } from "../game/entitybase/movable";
 import { Killable } from "../game/entitybase/killable";
 import { gameBus, gameOver } from "../eventBus/game-bus";
 import { Armour } from "../game/entitybase/armour";
+import { pickInRange } from "../game/utils/random";
+import { Monster } from "../game/monsters/monster";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
     healthBar: Phaser.GameObjects.Sprite;
     healthBarFull: Phaser.GameObjects.Sprite;
 	healthSize = 28;
+	isDead = false;
 	constructor(private readonly parentScene: Scene,
 				 public subject: Movable & Killable,
 				 private imageKey) {
@@ -22,23 +25,35 @@ export class UIEntity {
 		this.healthBar.setOrigin(0,0);
 		this.healthBar.setAlpha(0);
 		this.healthBarFull.setAlpha(0);
+		this.sprite.setZ(1);
 	}
     
     move() {
-        const delta = this.adjustSpriteAndLogicPosition();
+		const delta = this.adjustSpriteAndLogicPosition();
         delta && this.animateToSynchronize(delta);
 	}
-	destroy(isHero = false) {
-		if (!isHero)this.sprite.destroy();
+
+	destroy() {
+		this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
 	}
+
 	updateHp(isHero = false) {
-		if (this.subject.health.currentHp <= 0) {
+		if (this.subject.health.currentHp <= 0 && !this.isDead) {
+			this.isDead = true;
 			if (isHero) {
 				gameBus.publish(gameOver({}));
+			} else {
+				if (pickInRange('0-1')) {
+					this.sprite.setTexture('blood');
+					this.healthBarFull.destroy();
+					this.healthBar.destroy();
+					this.sprite.setZ(0);
+				} else {
+					this.destroy();
+				}
 			}
-			this.destroy(isHero);
 		}
 		if (this.subject.health.currentHp === this.subject.health.baseHp) {
 			this.healthBar.setAlpha(0);
@@ -61,6 +76,7 @@ export class UIEntity {
 			x: { from: this.sprite.x, to: this.sprite.x + delta.x },
 			y: { from: this.sprite.y, to: this.sprite.y + delta.y }
 		});
+
 		this.parentScene.tweens.add({
 			targets: this.healthBar,
 			ease: 'Linear',

@@ -311,6 +311,7 @@ class GameScene extends Phaser.Scene {
 			const m = this.gameMonsters[monster.id];
 			this.hero.updateHp(true);
 			m.move();
+			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}));
 		this.subs.push(gameBus.subscribe(monsterDead, event => {
 			const {monster} = event.payload;
@@ -348,7 +349,7 @@ class GameScene extends Phaser.Scene {
 		this.subs.push(gameBus.subscribe(effectSet, event => {
 			switch (event.payload.type) {
 				case MapEffect.Spike:
-					return this.gameEffects[name] = new UIEffect(this, {name: event.payload.name, pos: event.payload.pos}, event.payload.type);
+					return this.gameEffects[event.payload.name] = new UIEffect(this, {name: event.payload.name, pos: event.payload.pos}, event.payload.type);
 				case MapEffect.Projectile:
 					const p = new UIEffect(this, {name: event.payload.name, pos: event.payload.from}, event.payload.name);
 					p.throwProjectile(event.payload.to);

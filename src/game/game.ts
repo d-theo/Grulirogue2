@@ -108,6 +108,13 @@ export class Game {
             }
             this.nextTurn(1);
         });
+        gameBus.subscribe(playerReadScroll, event => {
+            const {item, target} = event.payload;
+            const scroll = this.hero.getItem(item) as Scroll;
+            scroll.setTarget(target).use();
+            this.hero.consumeItem(scroll);
+            this.nextTurn(1);
+        });
         gameBus.subscribe(waitATurn, event => {
             this.nextTurn(1);
         });
@@ -129,13 +136,6 @@ export class Game {
             const {name} = event.payload;
             this.nextTurn(1);
             this.hero.heroSkills.castSkill(name);
-        });
-        gameBus.subscribe(playerReadScroll, event => {
-            const {item, target} = event.payload;
-            const scroll = this.hero.getItem(item) as Scroll;
-            scroll.setTarget(target).use();
-            this.hero.consumeItem(scroll);
-            this.nextTurn(1);
         });
     }
     canGoToNextLevel() {

@@ -7,7 +7,7 @@ import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
 import { monstersSpawn } from "./monsters/monster-spawn";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, playerReadScroll, logPublished, gameFinished} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -100,19 +100,12 @@ export class Game {
             }
         });
         gameBus.subscribe(playerUseItem, event => {
-            const {owner, target, item, action} = event.payload;
-            const usedItem = owner.getItem(item);
+            const {target, item, action} = event.payload;
+            const usedItem = this.hero.getItem(item);
             if (usedItem !== undefined) {
                 usedItem.keyMapping[action](target);
                 this.hero.consumeItem(usedItem);
             }
-            this.nextTurn(1);
-        });
-        gameBus.subscribe(playerReadScroll, event => {
-            const {item, target} = event.payload;
-            const scroll = this.hero.getItem(item) as Scroll;
-            scroll.setTarget(target).use();
-            this.hero.consumeItem(scroll);
             this.nextTurn(1);
         });
         gameBus.subscribe(waitATurn, event => {

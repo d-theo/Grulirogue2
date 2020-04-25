@@ -1,10 +1,10 @@
-import { Item } from "./item";
+import { Item, ItemArgument } from "./item";
 import { GameRange } from "../utils/range";
 import { pickInRange } from "../utils/random";
 import { ItemVisitor } from "../items/item-visitor";
-import { IEffect } from "../effects/effects";
+import { IEffect, EffectTarget } from "../effects/effects";
 
-export class Weapon extends Item {
+export class Weapon extends Item implements ItemArgument {
     baseDamage: string;
     additionnalDmg: number = 0;
     additionnalEffects: {chance: number, effect: IEffect, target: 'attacker' | 'target'}[] = [];
@@ -51,5 +51,8 @@ export class Weapon extends Item {
     }
     reveal() {
         this.identified = true;
+    }
+    getArgumentForKey(key: string) {
+        return EffectTarget.Hero;
     }
 }

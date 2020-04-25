@@ -15,14 +15,24 @@ import { Tile, TileVisibility } from "../tilemap/tile";
 import { SkillNames } from "../hero/hero-skills";
 import { Terrain } from "../../map/terrain.greece";
 
+export enum EffectTarget { 
+    Location = 'location',
+    Armour =  'armour',
+    Item = 'item',
+    Weapon = 'weapon',
+    Movable = 'movable',
+    Hero = 'hero',
+    None = '',
+};
+
 export interface IEffect {
-    type: string[];
+    type: EffectTarget;
     cast: Function;
     turns?: number;
 }
 
 export class TrapSpell implements IEffect {
-    type = ['ground'];
+    type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
         const id = this.world.getTilemap().addTileEffects({
@@ -41,7 +51,7 @@ export class TrapSpell implements IEffect {
 }
 
 export class IdentifiySpell implements IEffect {
-    type = ['chose_item'];
+    type = EffectTarget.Item;
     constructor() {}
     cast(item: Item) {
         item.reveal();
@@ -50,7 +60,7 @@ export class IdentifiySpell implements IEffect {
 }
 
 export class KnowledgeSpell implements IEffect {
-    type = [];
+    type = EffectTarget.None;
     constructor(private readonly world: WorldEffect){}
     cast() {
         matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => {
@@ -63,7 +73,7 @@ export class KnowledgeSpell implements IEffect {
 }
 
 export class RogueSpell implements IEffect {
-    type = ['spell'];
+    type = EffectTarget.None;
     constructor(private readonly world: WorldEffect) {}
     cast() {
         this.world.getHero().weapon.additionnalEffects.push({
@@ -75,7 +85,7 @@ export class RogueSpell implements IEffect {
 }
 
 export class HealEffect implements IEffect {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     cast(target: Hero) {
         let bonus = pickInRange('10-20');
         bonus += 10 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
@@ -87,7 +97,7 @@ export class HealEffect implements IEffect {
     }
 }
 export class ThicknessEffect implements IEffect {
-    type = ['monster','hero'];
+    type = EffectTarget.Movable;
     turns = 5
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -107,7 +117,7 @@ export class ThicknessEffect implements IEffect {
     }
 }
 export class CleaningEffect implements IEffect {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     cast(target: Hero|Monster) {
         target.buffs.cleanBuff();
         target.enchants.clean();
@@ -116,7 +126,7 @@ export class CleaningEffect implements IEffect {
 }
 
 export class DodgeEffect implements IEffect {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 15;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -135,7 +145,7 @@ export class DodgeEffect implements IEffect {
 }
 
 export class XPEffect implements IEffect {
-    type = ['hero','monster']
+    type = EffectTarget.Movable;
     cast(target: Hero | Monster) {
         if (target instanceof Hero) {
             gameBus.publish(heroGainedXp({
@@ -149,7 +159,7 @@ export class XPEffect implements IEffect {
 }
 
 export class StunEffect implements IEffect   {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 5;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -162,7 +172,7 @@ export class StunEffect implements IEffect   {
     }
 }
 export class BlindEffect implements IEffect   {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 10;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -175,7 +185,7 @@ export class BlindEffect implements IEffect   {
 }
 
 export class WetEffect implements IEffect {
-    type = [];
+    type = EffectTarget.None;
     turns = 3;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -187,7 +197,7 @@ export class WetEffect implements IEffect {
 }
 
 export class AccuratyEffect implements IEffect   {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 15;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -206,7 +216,7 @@ export class AccuratyEffect implements IEffect   {
 }
 
 export class RageEffect implements IEffect   {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 10;
     cast(target: Hero|Monster) {
         const rageLevel = pickInRange('3-5');
@@ -230,7 +240,7 @@ export class RageEffect implements IEffect   {
 }
 
 export class TeleportationSpell implements IEffect  {
-    type = ['chose_target'];
+    type = EffectTarget.Movable;
     constructor(private readonly world: WorldEffect) {}
     cast(target: Hero|Monster) {
         let done = false;
@@ -250,7 +260,7 @@ export class TeleportationSpell implements IEffect  {
 }
 
 export class BlinkSpell implements IEffect  {
-    type = ['chose_location'];
+    type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
     cast(target: Coordinate) {
         this.world.getHero().pos = target;
@@ -259,7 +269,7 @@ export class BlinkSpell implements IEffect  {
 }
 
 export class ImproveArmourSpell implements IEffect  {
-    type = ['chose_armour'];
+    type = EffectTarget.Armour;
     constructor(private world: WorldEffect){}
     cast(target: Armour) {
         target.baseAbsorb += 1;
@@ -268,7 +278,7 @@ export class ImproveArmourSpell implements IEffect  {
     }
 }
 export class ImproveWeaponSpell implements IEffect  {
-    type = ['chose_weapon'];
+    type = EffectTarget.Weapon;
     constructor(private world: WorldEffect){}
     cast(target: Weapon) {
         target.additionnalDmg += 1;
@@ -278,7 +288,7 @@ export class ImproveWeaponSpell implements IEffect  {
 }
 
 export class BleedEffect implements IEffect  {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 3;
     cast(target: Hero|Monster) {
         const bleed = (t: Hero | Monster) => {
@@ -306,7 +316,7 @@ export class BleedEffect implements IEffect  {
     }
 }
 export class PoisonEffect implements IEffect  {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 5;
     cast(target: Hero|Monster) {
         const poison = (t: Hero | Monster) => {
@@ -337,7 +347,7 @@ export class PoisonEffect implements IEffect  {
 }
 
 export class SpeedEffect implements IEffect  {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 8;
     cast(target: Hero|Monster) {
         gameBus.publish(logPublished({level: 'success', data:'you are boosted!'}));
@@ -355,7 +365,7 @@ export class SpeedEffect implements IEffect  {
     }
 }
 export class StupidityEffect implements IEffect  {
-    type = ['monster','hero']
+    type = EffectTarget.Movable;
     turns = 10;
     cast(target: Hero|Monster) {
         gameBus.publish(logPublished({level: 'warning', data:'?????'}));
@@ -364,14 +374,5 @@ export class StupidityEffect implements IEffect  {
             end: (t: Hero|Monster) => t.enchants.setStupid(false),
             turns: this.turns
         });
-    }
-}
-
-export class SwapEffect implements IEffect {
-    type = ['monster','hero'];
-    cast(target1: Hero|Monster, target2: Hero|Monster) {
-        const pos = target1.pos;
-        target1.pos = target2.pos;
-        target2.pos = pos;
     }
 }

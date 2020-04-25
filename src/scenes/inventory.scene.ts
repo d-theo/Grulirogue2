@@ -109,7 +109,7 @@ class InventoryScene extends Phaser.Scene {
             if (this.action === 'pickItem') {
               const item = this.getCurrentItem();
               this.scene.stop(SceneName.Inventory);
-              this.scene.resume(SceneName.Game, {action: this.action, item});
+              this.scene.resume(SceneName.Game, {action: 'pickItem', item});
               break;
             }
             this.currentScreen = 'detail';
@@ -144,7 +144,6 @@ class InventoryScene extends Phaser.Scene {
             break;
           default:
             const action = this.getCurrentItem().keyMapping[event.key];
-            debugger;
             if (action) {
               this.scene.stop(SceneName.Inventory);
               this.scene.resume(SceneName.Game, {action: 'useItem', key: event.key, item: this.getCurrentItem()});

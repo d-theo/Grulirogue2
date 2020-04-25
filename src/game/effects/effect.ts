@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SwapEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -17,7 +17,6 @@ export enum Effects {
     Bleed = 'Bleed',
     Const = 'Const',
     Invisibility = 'Invisibility',
-    Swap = 'Swap',
     Thick = 'Thick',
     Cleaning = 'Cleaning',
     Dodge = 'Dodge',
@@ -103,8 +102,6 @@ function createEffect(name: Effects) {
             return new PoisonEffect();
         case Effects.Stupid:
             return new StupidityEffect();
-        case Effects.Swap:
-            return new SwapEffect();
         case Effects.Speed:
             return new SpeedEffect();
         case Effects.Rage:

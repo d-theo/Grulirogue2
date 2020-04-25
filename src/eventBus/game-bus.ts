@@ -6,10 +6,8 @@ import { Item } from "../game/entitybase/item";
 import { Hero } from "../game/hero/hero";
 import { MapEffect } from '../map/map-effect';
 import { SkillNames } from "../game/hero/hero-skills";
-import { Scroll } from "../game/items/scroll";
 import { Weapon } from "../game/entitybase/weapon";
 import { Armour } from "../game/entitybase/armour";
-import { EnchantTable } from "../game/entitybase/enchantable";
 
 export const gameBus = new EventBus();
 
@@ -52,8 +50,7 @@ export const playerMoved = createEventDefinition<{
 
 export const playerUseItem = createEventDefinition<{
     item: Item,
-    owner: Hero,
-    target: Monster | Hero,
+    target: Monster | Hero | Coordinate | Item,
     action: string,
 }>()('playerUseItem');
 
@@ -110,12 +107,6 @@ export const heroGainedXp = createEventDefinition<{amount: number}>()('heroGaine
 export const playerUseSkill = createEventDefinition<{
     name: SkillNames
 }>()('playerUseSkill');
-
-export const playerReadScroll = createEventDefinition<{
-    item: Scroll,
-    target: any
-}>()('playerReadScroll');
-
 export const itemEquiped = createEventDefinition<{
     weapon?: Weapon,
     armour?: Armour

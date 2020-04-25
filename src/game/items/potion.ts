@@ -1,6 +1,6 @@
-import { Item } from "../entitybase/item";
+import { Item, ItemArgument } from "../entitybase/item";
 import * as _ from 'lodash';
-import { IEffect } from "../effects/effects";
+import { IEffect, EffectTarget } from "../effects/effects";
 import { ItemVisitor } from "./item-visitor";
 import { Hero } from "../hero/hero";
 import { SkillNames } from "../hero/hero-skills";
@@ -19,7 +19,7 @@ export const PotionColors = [
     'white'
 ];
 
-export class Potion extends Item {
+export class Potion extends Item implements ItemArgument {
     effect: IEffect;
     static colors: string[] = _.shuffle(_.cloneDeep(PotionColors));
     static mystery: any = {};
@@ -33,6 +33,7 @@ export class Potion extends Item {
         this.skin = Potion.mystery[this._name];
         this.keyMapping['q'] = this.use.bind(this);
         this.keyDescription['q'] = '(q)uaff';
+        this.keyDescription['t'] = '(t)hrow';
     }
     get description () {
         if (! Potion.identified[this.getColor()]) {
@@ -73,5 +74,13 @@ export class Potion extends Item {
     reveal() {
         Potion.identified[this.getColor()] = true;
         this.identified = true;
+    }
+    getArgumentForKey(key: string) {
+        switch(key) {
+            case 'q': return EffectTarget.Hero;
+            case 't': return this.effect.type;
+            case 'd': 
+            default : return EffectTarget.None;
+        }
     }
 }

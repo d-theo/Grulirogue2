@@ -1,7 +1,8 @@
-import { Item } from "./item";
+import { Item, ItemArgument } from "./item";
 import { ItemVisitor } from "../items/item-visitor";
+import { EffectTarget } from "../effects/effects";
 
-export class Armour extends Item {
+export class Armour extends Item implements ItemArgument{
     public baseAbsorb: number;
     public bulky: number;
     constructor(arg: any) { // Todo
@@ -33,5 +34,8 @@ export class Armour extends Item {
     }
     reveal() {
         this.identified = true;
+    }
+    getArgumentForKey(key: string) {
+        return EffectTarget.Hero;
     }
 }

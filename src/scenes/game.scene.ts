@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import { Coordinate } from '../game/utils/coordinate';
 import { TilemapVisibility } from '../map/TilemapVisibility';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, playerReadScroll, heroGainedXp, gameOver, monsterDead, itemEquiped, gameFinished } from '../eventBus/game-bus';
+import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, gameOver, monsterDead, itemEquiped, gameFinished } from '../eventBus/game-bus';
 import { UIEntity } from '../UIEntities/ui-entity';
 import { Item } from '../game/entitybase/item';
 import { UIItem } from '../UIEntities/ui-item';
@@ -13,6 +13,8 @@ import { Scroll } from '../game/items/scroll';
 import { line } from '../game/tilemap/sight';
 import { Terrain } from '../map/terrain.greece';
 import { MapEffect } from '../map/map-effect';
+import { EffectTarget } from '../game/effects/effects';
+import { Monster } from '../game/monsters/monster';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -33,8 +35,10 @@ class GameScene extends Phaser.Scene {
 	tilemapVisibility: TilemapVisibility;
 
 	mode:'play' | 'select' = 'play';
-	currentAction: 'fire' | 'scroll_chose_location' | 'scroll_chose_target' | 'scroll_chose_item' | null = null;
-	actionContext: any;
+	actionContext: 
+		{target: 'basic_attack', mobs: Monster[]} 
+		| {action: 'useSkill'|'pickSkill'|'useItem'|'pickItem', key: string, item: Item, target: EffectTarget}
+		| null ;
 	range;
 
 	subs:any = [];
@@ -99,33 +103,38 @@ class GameScene extends Phaser.Scene {
 			switch (event.key) {
 				case 'ArrowUp': 
 					if (this.mode === 'select') this.target.y -= 32;
-					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
-						x:this.target.x/32,
-						y:this.target.y/32
-					});
+					if (this.actionContext && this.actionContext.target === 'basic_attack') {
+						this.showRange(this.gameEngine.hero, {
+							x:this.target.x/32,
+							y:this.target.y/32
+						});
+					}
 					break;
 				case 'ArrowDown': 
 					if (this.mode === 'select') this.target.y += 32;
-					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
 						x:this.target.x/32,
 						y:this.target.y/32
 					});
 					break;
 				case 'ArrowLeft': 
 					if (this.mode === 'select') this.target.x -= 32;
-					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
 						x:this.target.x/32,
 						y:this.target.y/32
 					});
 					break;
 				case 'ArrowRight': 
 					if (this.mode === 'select') this.target.x += 32;
-					if (this.currentAction === 'fire') this.showRange(this.gameEngine.hero, {
+					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
 						x:this.target.x/32,
 						y:this.target.y/32
 					});
 					break;
-				case 'i': return this.scene.pause().launch(SceneName.Inventory, {config:this.gameEngine.hero.openBag(), action: 'useItem'});
+				case 'i': 
+					return this.scene
+					.pause()
+					.launch(SceneName.Inventory, {config:this.gameEngine.hero.openBag(), action: 'useItem'});
 				case 'f': 
 					if (this.mode === 'play') {
 						const mobs = this.gameEngine.getNearestAttackables();
@@ -138,8 +147,7 @@ class GameScene extends Phaser.Scene {
 							this.target.x = mob.pos.x * 32;
 							this.target.y = mob.pos.y * 32;
 							this.mode = 'select';
-							this.currentAction = 'fire';
-							this.actionContext = mobs;
+							this.actionContext = {target: 'basic_attack', mobs:mobs };
 							this.showRange(this.gameEngine.hero, mob.pos);
 						}
 					} else if (this.mode === 'select') {
@@ -153,7 +161,6 @@ class GameScene extends Phaser.Scene {
 						}
 						this.target.alpha = 0;
 						this.mode = 'play';
-						this.currentAction = null;
 						this.actionContext = null;
 					}
 					break;
@@ -162,17 +169,18 @@ class GameScene extends Phaser.Scene {
 						x:this.target.x/32,
 						y:this.target.y/32
 					}
-					if (this.mode === 'select' && this.currentAction === 'scroll_chose_location') {
+					if (this.mode === 'select' && this.actionContext && this.actionContext.target === EffectTarget.Location) {
 						const t = this.gameEngine.tilemap.getAt(pos);
 						if (!t.isWalkable()) return;
-						gameBus.publish(playerReadScroll({
-							item: this.actionContext as Scroll,
+						gameBus.publish(playerUseItem({
+							item: this.actionContext.item,
 							target: pos,
+							action: this.actionContext.key
 						}));
 						this.mode = 'play';
 						this.target.alpha = 0;
 					}
-					else if (this.mode === 'select' && this.currentAction === 'scroll_chose_target') {
+					else if (this.mode === 'select' && this.actionContext && this.actionContext.target === EffectTarget.Movable) {
 						let t;
 						if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
 							t = this.gameEngine.hero;
@@ -182,9 +190,10 @@ class GameScene extends Phaser.Scene {
 						}
 						this.mode = 'play';
 						this.target.alpha = 0;
-						gameBus.publish(playerReadScroll({
-							item: this.actionContext as Scroll,
+						gameBus.publish(playerUseItem({
+							item: this.actionContext.item,
 							target: t,
+							action: this.actionContext.key
 						}));
 					}
 					break;
@@ -195,21 +204,20 @@ class GameScene extends Phaser.Scene {
 					}
 				}	
 				case 'z': {
-					if (this.mode === 'select' && this.currentAction === 'fire') {
-						const last = this.actionContext.shift();
-						this.actionContext.push(last);
-						const mob = this.actionContext[0];
+					if (this.mode === 'select' && this.actionContext && this.actionContext.target === 'basic_attack') {
+						const last = this.actionContext.mobs.shift();
+						this.actionContext.mobs.push(last);
+						const mob = this.actionContext.mobs[0];
 						this.target.alpha = 1;
 						this.target.x = mob.pos.x * 32;
 						this.target.y = mob.pos.y * 32;
-						this.showRange(this.gameEngine.hero, mob);
+						this.showRange(this.gameEngine.hero, mob.pos);
 					}
 					break;
 				}
 				case 'Escape' : {
 					gameBus.publish(logPublished({data:'forget that'}));
 					this.mode = 'play';
-					this.currentAction = null;
 					this.hideRange();
 					break;
 				}
@@ -227,68 +235,76 @@ class GameScene extends Phaser.Scene {
 		});
 		this.events.on('resume', (sys, data:{action: 'useSkill'|'pickSkill'|'useItem'|'pickItem', key: string, item: Item} | undefined) => {
 			if (data && data.action === 'pickItem') {
-				if (this.currentAction === 'scroll_chose_item') {
-					gameBus.publish(playerReadScroll({
-						item: this.actionContext as Scroll,
-						target: this.gameEngine.hero.getItem(data.item)
+				if (this.actionContext.target === EffectTarget.Item){
+					gameBus.publish(playerUseItem({
+						item: this.actionContext.item,
+						target: data.item,
+						action: this.actionContext.key
 					}));
 				}
 			}
-			if (data && data.action === 'useItem') {
-				if (data.key === 'r') {
-					const scroll = data.item as Scroll;
-					const type = scroll.effect.type[0];
-					if (type === 'chose_location') {
+			else if (data && data.action === 'useItem') {
+				const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
+				switch(itemNeedsTarget) {
+					case EffectTarget.Location:
+						this.putTargetOnHero();
+						this.actionContext = {...data, target: itemNeedsTarget};
+						this.mode = 'select';
 						gameBus.publish(logPublished({data:'where do you want to target ?'}));
+						break;
+					case EffectTarget.Movable:
+						this.putTargetOnHero();
+						this.actionContext = {...data, target: itemNeedsTarget};
 						this.mode = 'select';
-						this.currentAction = 'scroll_chose_location';
-						this.actionContext = scroll;
-						this.target.alpha = 1;
-						this.target.x = this.hero.subject.pos.x * 32;
-						this.target.y = this.hero.subject.pos.y * 32;
-					} else if (type === 'chose_target') {
 						gameBus.publish(logPublished({data:'who do you want to target ?'}));
-						this.mode = 'select';
-						this.currentAction = 'scroll_chose_target';
-						this.actionContext = scroll;
-						this.target.alpha = 1;
-						this.target.x = this.hero.subject.pos.x * 32;
-						this.target.y = this.hero.subject.pos.y * 32;
-					} else if (type === 'chose_armour') {
+						break;
+					case EffectTarget.Item:
 						gameBus.publish(logPublished({data:'Select an item'}));
-						this.currentAction = 'scroll_chose_item';
-						this.actionContext = scroll;
-						setTimeout(() => {
-							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Armours']), action: 'pickItem'});
-						},500);
-					} else if (type === 'chose_weapon') {
-						gameBus.publish(logPublished({data:'Select a weapon'}));
-						this.currentAction = 'scroll_chose_item';
-						this.actionContext = scroll;
-						setTimeout(() => {
-							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons']), action: 'pickItem'});
-						},500);
-					} else if (type === 'chose_item') {
-						gameBus.publish(logPublished({data:'Select an item'}));
-						this.currentAction = 'scroll_chose_item';
-						this.actionContext = scroll;
+						this.actionContext = {...data, target: itemNeedsTarget};
 						setTimeout(() => {
 							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']), action: 'pickItem'});
 						},500);
-					} else {
-						gameBus.publish(playerReadScroll({
-							item: scroll as Scroll,
-							target: null,
+						break;
+					case EffectTarget.Weapon:
+						this.actionContext = {...data, target: itemNeedsTarget};
+						setTimeout(() => {
+							this.scene
+								.pause()
+								.launch(
+									SceneName.Inventory,
+									{config: this.gameEngine.hero.openBag(['Weapons']), action: 'pickItem'}
+								);
+						},500);
+						gameBus.publish(logPublished({data:'Select a weapon'}));
+						break;
+					case EffectTarget.Armour:
+						gameBus.publish(logPublished({data:'Select an item'}));
+						this.actionContext = {...data, target: itemNeedsTarget};
+						setTimeout(() => {
+							this.scene
+								.pause()
+								.launch(SceneName.Inventory, {
+									config: this.gameEngine.hero.openBag(['Armours']),
+									action: 'pickItem'
+								});
+						},500);
+						break;
+					case EffectTarget.Hero:
+						gameBus.publish(playerUseItem({
+							item: data.item,
+							target: this.hero.subject as Hero,
+							action: data.key,
 						}));
-					}
-					return;
+						break;
+					case EffectTarget.None:
+						gameBus.publish(playerUseItem({
+							item: data.item,
+							target: this.hero.subject as Hero,
+							action: data.key,
+						}));
+						break;
+					default : throw new Error (`Not implemented [${itemNeedsTarget}]`)
 				}
-				gameBus.publish(playerUseItem({
-					item: data.item,
-					target: this.hero.subject as Hero,
-					action: data.key,
-					owner: this.hero.subject as Hero
-				}));
 			} else if (data && data.action === 'pickSkill') {
 				gameBus.publish(playerChoseSkill({
 					name: data.item.name
@@ -301,6 +317,11 @@ class GameScene extends Phaser.Scene {
 		});
 	}
 
+	putTargetOnHero() {
+		this.target.alpha = 1;
+		this.target.x = this.hero.subject.pos.x * 32;
+		this.target.y = this.hero.subject.pos.y * 32;
+	}
 	initGameEvents() {
 		this.subs.push(gameBus.subscribe(sightUpdated, event => {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);

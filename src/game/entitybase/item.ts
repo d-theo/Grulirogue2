@@ -2,8 +2,14 @@ import { Coordinate } from "../utils/coordinate";
 import { ItemVisitor } from "../items/item-visitor";
 import { gameBus, itemDropped } from "../../eventBus/game-bus";
 import { Hero } from "../hero/hero";
+import { EffectTarget } from "../effects/effects";
 let short = require('short-uuid');
-export abstract class Item {
+
+export interface ItemArgument {
+    getArgumentForKey(key: string): EffectTarget;
+}
+
+export abstract class Item implements ItemArgument {
     id = short.generate();
     _name: string;
     _description: string;
@@ -36,4 +42,7 @@ export abstract class Item {
         return this._name;
     }
     abstract reveal(): void;
+    getArgumentForKey(key: string) {
+        return EffectTarget.None;
+    }
 }

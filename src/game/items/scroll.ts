@@ -1,6 +1,6 @@
-import { Item } from "../entitybase/item";
+import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "./item-visitor";
-import { IEffect } from "../effects/effects";
+import { IEffect, EffectTarget } from "../effects/effects";
 import * as _ from 'lodash';
 import { gameBus, logPublished } from "../../eventBus/game-bus";
 
@@ -15,7 +15,7 @@ export const ScrollType = [
     'DFGBIKN',
 ];
 
-export class Scroll extends Item {
+export class Scroll extends Item implements ItemArgument {
     effect: IEffect
     target: any;
     static scrollType: string[] = _.shuffle(_.cloneDeep(ScrollType));
@@ -57,13 +57,13 @@ export class Scroll extends Item {
     randomFormula() {
         return 'scroll-'+Scroll.scrollType.pop();
     }
-    use() {
+    use(target: any) {
         if (!Scroll.identified[this.getFormula()]) {
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
             this.reveal();
         }
         this.isUsed = true;
-        this.effect.cast(this.target);
+        this.effect.cast(target);
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitScroll(this);
@@ -71,5 +71,13 @@ export class Scroll extends Item {
     reveal() {
         Scroll.identified[this.getFormula()] = true;
         this.identified = true;
+    }
+
+    getArgumentForKey(key: string) {
+        switch(key) {
+            case 'r': return this.effect.type
+            case 'd': 
+            default : return EffectTarget.None;
+        }
     }
 }

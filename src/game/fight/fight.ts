@@ -1,9 +1,8 @@
-import { Fighter } from "../entitybase/fighter";
-import { Killable } from "../entitybase/killable";
 import { Hero } from "../hero/hero";
+import { Entity } from "../entitybase/entity";
 
 export class Attack {
-    constructor(private attacker: Fighter, private target: Killable) {}
+    constructor(private attacker: Entity, private target: Entity) {}
     do() {
         let dodge = this.target.dodge;
         if ((this.target as any).level) {

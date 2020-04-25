@@ -1,6 +1,6 @@
-import { Item, ItemArgument } from "./item";
 import { ItemVisitor } from "../items/item-visitor";
 import { EffectTarget } from "../effects/effects";
+import { Item, ItemArgument } from "../entitybase/item";
 
 export class Armour extends Item implements ItemArgument{
     public baseAbsorb: number;

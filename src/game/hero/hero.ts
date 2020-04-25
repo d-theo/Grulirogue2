@@ -1,22 +1,20 @@
-import { Killable } from "../entitybase/killable";
-import { Fighter } from "../entitybase/fighter";
 import { Health } from "../entitybase/health";
-import { Armour } from "../entitybase/armour";
-import { Weapon } from "../entitybase/weapon";
 import { Coordinate } from "../utils/coordinate";
-import { Movable } from "../entitybase/movable";
 import { Buffs } from "../entitybase/buffable";
-import { EnchantTable, Enchantable } from "../entitybase/enchantable";
+import { EnchantTable } from "../entitybase/enchantable";
 import { Inventory } from "./inventory";
 import { BuffDefinition } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
-import { gameBus, itemEquiped, enchantChanged } from "../../eventBus/game-bus";
+import { gameBus, itemEquiped } from "../../eventBus/game-bus";
+import { Armour } from "../items/armour";
+import { Weapon } from "../items/weapon";
+import { Entity } from "../entitybase/entity";
 
 const XP = [0, 30, 70, 115, 200, 300, 450, 700, 900];
 
-export class Hero implements Movable, Killable, Fighter, Enchantable {
+export class Hero implements Entity {
     name: string;
     health: Health;
     armour: Armour;

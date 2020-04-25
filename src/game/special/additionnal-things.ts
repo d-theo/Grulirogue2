@@ -4,9 +4,10 @@ import { ItemCollection } from "../items/item-collection";
 import { Bestiaire } from "../monsters/bestiaire";
 import { Monster } from "../monsters/monster";
 import { getInTable } from "../monsters/mob-table";
-import { PotionTable, craftWeapon } from "../items/loot-table";
 import { Potion } from "../items/potion";
-import { Weapon } from "../entitybase/weapon";
+import { PotionTable } from "../loot/loot-table";
+import { Weapon } from "../items/weapon";
+import { craftWeapon } from "../loot/loot-weapons";
 
 export function makeThings(
     additional: ThingToPlace[],

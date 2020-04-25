@@ -6,8 +6,8 @@ import { Item } from "../game/entitybase/item";
 import { Hero } from "../game/hero/hero";
 import { MapEffect } from '../map/map-effect';
 import { SkillNames } from "../game/hero/hero-skills";
-import { Weapon } from "../game/entitybase/weapon";
-import { Armour } from "../game/entitybase/armour";
+import { Weapon } from "../game/items/weapon";
+import { Armour } from "../game/items/armour";
 
 export const gameBus = new EventBus();
 

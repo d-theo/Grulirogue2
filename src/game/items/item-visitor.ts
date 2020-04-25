@@ -1,7 +1,7 @@
-import { Weapon } from "../entitybase/weapon";
 import { Scroll } from "./scroll";
 import { Potion } from "./potion";
-import { Armour } from "../entitybase/armour";
+import { Weapon } from "./weapon";
+import { Armour } from "./armour";
 
 export class ItemVisitor {
     visitPotion(potion: Potion) {

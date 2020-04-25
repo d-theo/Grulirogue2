@@ -2,10 +2,6 @@ import { Buffs } from "./buffable";
 import { gameBus, enchantChanged } from "../../eventBus/game-bus";
 import { timingSafeEqual } from "crypto";
 
-export interface Enchantable {
-    buffs: Buffs;
-    enchants: EnchantTable
-}
 export class EnchantTable {
     private stuned = false;
     private bleeding = false;

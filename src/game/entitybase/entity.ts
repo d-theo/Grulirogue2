@@ -1,11 +1,21 @@
 import { Coordinate } from "../utils/coordinate";
-import {Movable} from './movable';
+import { Health } from "./health";
+import { Armour } from "../items/armour";
+import { Weapon } from "../items/weapon";
+import { Buffs } from "./buffable";
+import { EnchantTable } from "./enchantable";
 
-export class Entity implements Movable {
+export interface Entity {
+    health: Health;
+    armour: Armour;
+    dodge: number;
+
     pos: Coordinate;
     sight: number;
-    constructor(x:number = 0, y:number=0) {
-        this.pos = {x,y};
-        this.sight = 6;
-    }
+
+    weapon: Weapon;
+    level: number;
+
+    buffs: Buffs;
+    enchants: EnchantTable;
 }

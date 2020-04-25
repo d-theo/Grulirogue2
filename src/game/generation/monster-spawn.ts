@@ -1,8 +1,8 @@
-import { distribute, pickInArray } from "../utils/random";
-import { randomMobForLevel } from "./mob-table";
-import { Monster } from "./monster";
+import { distribute } from "../utils/random";
 import { randomIn } from "../utils/rectangle";
 import { MapGraph } from "../../generation/map_definition";
+import { Monster } from "../monsters/monster";
+import { randomMobForLevel } from "../monsters/mob-table";
 
 export function monstersSpawn(mapGraph: MapGraph, level: number, dangerLevel: number) {
     const rooms = mapGraph.rooms;

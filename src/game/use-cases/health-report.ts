@@ -1,7 +1,6 @@
 import { HealthReport, HealthStatus } from "../entitybase/health";
 import { Monster } from "../monsters/monster";
 import { gameBus, heroGainedXp, monsterDead, playerAttackedMonster } from "../../eventBus/game-bus";
-import { Hero } from "../hero/hero";
 
 export function handleHealthReport(
     healthReport: HealthReport,

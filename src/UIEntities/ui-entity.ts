@@ -1,12 +1,10 @@
 import { Scene } from "phaser";
 import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
-import { Movable } from "../game/entitybase/movable";
-import { Killable } from "../game/entitybase/killable";
 import { gameBus, gameOver } from "../eventBus/game-bus";
-import { Armour } from "../game/entitybase/armour";
 import { pickInRange } from "../game/utils/random";
-import { Monster } from "../game/monsters/monster";
+import { Armour } from "../game/items/armour";
+import { Entity } from "../game/entitybase/entity";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
@@ -15,7 +13,7 @@ export class UIEntity {
 	healthSize = 28;
 	isDead = false;
 	constructor(private readonly parentScene: Scene,
-				 public subject: Movable & Killable,
+				 public subject: Entity,
 				 private imageKey) {
 		this.sprite = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), imageKey);
 		this.sprite.setOrigin(0,0);

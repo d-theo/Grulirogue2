@@ -1,7 +1,5 @@
 import { BuffDefinition } from "../effects/effect";
 
-const shortid = require('shortid');
-
 export class Buffs {
     buffs: BuffDefinition[] = [];
     addBuff(buff: BuffDefinition) {

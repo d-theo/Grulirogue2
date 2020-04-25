@@ -1,7 +1,5 @@
 import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
-import { Behavior } from './ai';
-import { monstersSpawn } from './monster-spawn';
 import { gameBus, monsterDead } from '../../eventBus/game-bus';
 
 export class MonsterCollection {

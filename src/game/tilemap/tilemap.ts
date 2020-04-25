@@ -4,7 +4,7 @@ import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
 import {createMap, MapParamCreation} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
-import { matrixForEach, matrixFilter } from "../utils/matrix";
+import { matrixForEach } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import * as _ from 'lodash';
 import { Monster } from "../monsters/monster";

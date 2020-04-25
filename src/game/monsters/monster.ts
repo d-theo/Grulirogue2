@@ -1,19 +1,17 @@
-import { Killable } from "../entitybase/killable";
 import { Health } from "../entitybase/health";
-import { Weapon } from "../entitybase/weapon";
-import { Armour } from "../entitybase/armour";
-import { Fighter } from "../entitybase/fighter";
-import { Movable } from "../entitybase/movable";
 import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
-import { Enchantable, EnchantTable } from "../entitybase/enchantable";
+import { EnchantTable } from "../entitybase/enchantable";
 import { Behavior, AIBehavior } from "./ai";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
 import { BuffDefinition } from "../effects/effect";
+import { Armour } from "../items/armour";
+import { Weapon } from "../items/weapon";
+import { Entity } from "../entitybase/entity";
 let short = require('short-uuid');
  
-export class Monster implements Movable, Killable, Fighter, Enchantable {
+export class Monster implements Entity {
     id = short.generate();
     health!: Health;
     armour: Armour = new Armour({absorbBase: 0});

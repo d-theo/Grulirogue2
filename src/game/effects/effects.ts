@@ -1,19 +1,18 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, playerHealed, logPublished, playerTookDammage, playerAttackedMonster, effectSet, playerMoved, itemEquiped, sightUpdated, xpHasChanged, heroGainedXp } from "../../eventBus/game-bus";
+import { gameBus, playerHealed, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect, EffectMaker, Effects, SpellNames } from "./effect";
-import { pickInRange, pickInArray } from "../utils/random";
+import { pickInRange,  } from "../utils/random";
 import { handleHealthReport } from "../use-cases/health-report";
 import { MapEffect } from "../../map/map-effect";
 import { Coordinate } from "../utils/coordinate";
-import { Armour } from "../entitybase/armour";
-import { Weapon } from "../entitybase/weapon";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
 import { Tile, TileVisibility } from "../tilemap/tile";
 import { SkillNames } from "../hero/hero-skills";
-import { Terrain } from "../../map/terrain.greece";
+import { Armour } from "../items/armour";
+import { Weapon } from "../items/weapon";
 
 export enum EffectTarget { 
     Location = 'location',

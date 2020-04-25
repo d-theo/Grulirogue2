@@ -1,7 +1,6 @@
 import {
     SceneName
   } from "./scenes.constants";
-  import { Item } from "../game/entitybase/item";
 import { SkillView } from "./skills/skill-view";
   
   export const SkillFont = {

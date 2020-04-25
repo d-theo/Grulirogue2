@@ -6,17 +6,16 @@ import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import {GreeceCreationParams} from '../map/terrain.greece';
-import { monstersSpawn } from "./monsters/monster-spawn";
 import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
-import { itemSpawn } from "./items/item-spawn";
 import { Monster } from "./monsters/monster";
-import { Scroll } from "./items/scroll";
 import { ThingToPlace } from "../generation/map_tiling";
 import { makeThings } from "./special/additionnal-things";
+import { monstersSpawn } from "./generation/monster-spawn";
+import { itemSpawn } from "./generation/item-spawn";
 
 export class Game {
     static Engine: Game;

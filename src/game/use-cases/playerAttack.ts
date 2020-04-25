@@ -2,8 +2,6 @@ import { MessageResponse, MessageResponseStatus } from "../utils/types";
 import { Attack } from "../fight/fight";
 import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
-import { Killable } from "../entitybase/killable";
-import { Movable } from "../entitybase/movable";
 import { Log } from "../log/log";
 import { Monster } from "../monsters/monster";
 import { handleHealthReport } from "./health-report";
@@ -11,7 +9,7 @@ import { distance } from "../utils/coordinate";
 import { gameBus, effectSet } from "../../eventBus/game-bus";
 import { MapEffect } from "../../map/map-effect";
 
-export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|null, tilemap: TileMap}): MessageResponse {
+export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 
     if (attacked === null) {
         return {
@@ -20,7 +18,7 @@ export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|nul
         };
     }
     if (!tilemap.hasVisibility({from: hero.pos, to: attacked.pos})) {
-        Log.log(`You can't see the ${(attacked as any).name}`);
+        Log.log(`You can't see the ${(attacked.name)}`);
         return {
             timeSpent: 0,
             status: MessageResponseStatus.NotAllowed,
@@ -49,7 +47,7 @@ export function playerAttack(args: {hero: Hero, attacked: (Killable&Movable)|nul
     const damages = new Attack(hero, attacked).do();
     const healthReport = attacked.health.take(damages);
 
-    handleHealthReport(healthReport, attacked as Monster, damages);
+    handleHealthReport(healthReport, attacked, damages);
     
     return {
         timeSpent: 1,

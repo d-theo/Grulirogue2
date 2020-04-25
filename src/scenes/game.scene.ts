@@ -1,28 +1,60 @@
 import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
-import { Coordinate } from '../game/utils/coordinate';
-import { TilemapVisibility } from '../map/TilemapVisibility';
-import { gameBus, sightUpdated, monsterMoved, playerMoved, playerActionMove, doorOpened, gameStarted, playerAttackedMonster, playerAttemptAttackMonster, itemPickedUp, playerHealed, playerUseItem, itemDropped, logPublished, waitATurn, nextLevel, nextLevelCreated, xpHasChanged, playerChoseSkill, effectSet, effectUnset, playerUseSkill, gameOver, monsterDead, itemEquiped, gameFinished } from '../eventBus/game-bus';
-import { UIEntity } from '../UIEntities/ui-entity';
-import { Item } from '../game/entitybase/item';
-import { UIItem } from '../UIEntities/ui-item';
-import { Hero } from '../game/hero/hero';
-import { UIEffect } from '../UIEntities/ui-effect';
-import { SkillNames } from '../game/hero/hero-skills';
-import { Scroll } from '../game/items/scroll';
-import { line } from '../game/tilemap/sight';
-import { Terrain } from '../map/terrain.greece';
-import { MapEffect } from '../map/map-effect';
-import { EffectTarget } from '../game/effects/effects';
-import { Monster } from '../game/monsters/monster';
+import {Coordinate} from '../game/utils/coordinate';
+import {TilemapVisibility} from '../map/TilemapVisibility';
+import {
+	gameBus,
+	sightUpdated,
+	monsterMoved,
+	playerMoved,
+	playerActionMove,
+	doorOpened,
+	gameStarted,
+	playerAttackedMonster,
+	playerAttemptAttackMonster,
+	itemPickedUp,
+	playerHealed,
+	playerUseItem,
+	itemDropped,
+	logPublished,
+	waitATurn,
+	nextLevel,
+	nextLevelCreated,
+	xpHasChanged,
+	playerChoseSkill,
+	effectSet,
+	effectUnset,
+	playerUseSkill,
+	gameOver,
+	monsterDead,
+	itemEquiped,
+	gameFinished
+} from '../eventBus/game-bus';
+import {UIEntity} from '../UIEntities/ui-entity';
+import {Item} from '../game/entitybase/item';
+import {UIItem} from '../UIEntities/ui-item';
+import {Hero} from '../game/hero/hero';
+import {UIEffect} from '../UIEntities/ui-effect';
+import {SkillNames} from '../game/hero/hero-skills';
+import {line} from '../game/tilemap/sight';
+import {Terrain} from '../map/terrain.greece';
+import {MapEffect}from '../map/map-effect';
+import {EffectTarget} from '../game/effects/effects';
+import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState } from '../eventBus/states';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
 	target: Phaser.GameObjects.Sprite;
-	gameMonsters: { [id: string]:  UIEntity} = {};
-	gameItems: { [id: string]:  UIItem} = {};
-	gameEffects: { [id: string]:  UIEffect} = {};
-	
+	gameMonsters: {
+		[id: string]: UIEntity
+	} = {};
+	gameItems: {
+		[id: string]: UIItem
+	} = {};
+	gameEffects: {
+		[id: string]: UIEffect
+	} = {};
+
 	cursors: any;
 	tilemap;
 	layer;
@@ -34,23 +66,33 @@ class GameScene extends Phaser.Scene {
 	gameEngine: GameEngine;
 	tilemapVisibility: TilemapVisibility;
 
-	mode:'play' | 'select' = 'play';
-	actionContext: 
-		{target: 'basic_attack', mobs: Monster[]} 
-		| {action: 'useSkill'|'pickSkill'|'useItem'|'pickItem', key: string, item: Item, target: EffectTarget}
-		| null ;
+	mode: 'play' | 'select' = 'play';
+	actionContext: {
+		target: 'basic_attack',
+		mobs: Monster[]
+	} |
+	{
+		action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
+		key: string,
+		item: Item,
+		target: EffectTarget
+	} |
+	null | any;
 	range;
 
-	subs:any = [];
+	subs: any = [];
+
+	gameContext: GameContext;
 	constructor() {
-    super({
+		super({
 			key: SceneName.Game
 		});
 	}
-	
+
 	preload() {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
+		this.gameContext = new GameContext(this);
 	}
 
 	reInit() {
@@ -62,8 +104,11 @@ class GameScene extends Phaser.Scene {
 		this.gameMonsters = {};
 		this.gameItems = {};
 
-		var map:Phaser.Tilemaps.Tilemap = this.make.tilemap({data: this.tilemap, key: 'map'});
-		var tileset:Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32,32, 1, 2, 0);
+		var map: Phaser.Tilemaps.Tilemap = this.make.tilemap({
+			data: this.tilemap,
+			key: 'map'
+		});
+		var tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32, 32, 1, 2, 0);
 		this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 		this.layer2 = map.createBlankDynamicLayer('additions', tileset);
 		this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
@@ -74,10 +119,10 @@ class GameScene extends Phaser.Scene {
 
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
-		
+
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
 		this.target = this.physics.add.sprite(0, 0, 'target');
-		this.target.setOrigin(0,0);
+		this.target.setOrigin(0, 0);
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero.sprite, false);
 
@@ -91,6 +136,141 @@ class GameScene extends Phaser.Scene {
 		}, 50);
 	}
 
+	selectFire() {
+		const mobs = this.gameEngine.getNearestAttackables();
+		if (mobs.length === 0) {
+			gameBus.publish(logPublished({
+				data: 'noting to attack'
+			}));
+			return false;
+		} else {
+			gameBus.publish(logPublished({
+				data: 'who do you want to attack ?'
+			}));
+			const mob = mobs[0];
+			this.target.alpha = 1;
+			this.target.x = mob.pos.x * 32;
+			this.target.y = mob.pos.y * 32;
+			this.mode = 'select';
+			this.actionContext = {
+				target: 'basic_attack',
+				mobs: mobs
+			};
+			this.showRange(this.gameEngine.hero, mob.pos);
+			return true;
+		}
+	}
+	nextTarget() {
+		const last = this.actionContext.mobs.shift();
+		this.actionContext.mobs.push(last);
+		const mob = this.actionContext.mobs[0];
+		this.target.alpha = 1;
+		this.target.x = mob.pos.x * 32;
+		this.target.y = mob.pos.y * 32;
+		this.showRange(this.gameEngine.hero, mob.pos);
+	}
+	fire() {
+		this.hideRange();
+		const mob = this.gameEngine.getAttackable({
+			x: this.target.x / 32,
+			y: this.target.y / 32
+		});
+		if (mob) {
+			gameBus.publish(playerAttemptAttackMonster({
+				monster: mob
+			}));
+		}
+		this.target.alpha = 0;
+		this.mode = 'play';
+		this.actionContext = null;
+	}
+	enterLocation() {
+		const pos = {
+			x: this.target.x / 32,
+			y: this.target.y / 32
+		}
+		const t = this.gameEngine.tilemap.getAt(pos);
+		if (!t.isWalkable()) return;
+		gameBus.publish(playerUseItem({
+			item: this.actionContext.item,
+			target: pos,
+			action: this.actionContext.key
+		}));
+		this.mode = 'play';
+		this.target.alpha = 0;
+	}
+
+	enterMovable() {
+		const pos = {
+			x: this.target.x / 32,
+			y: this.target.y / 32
+		}
+		let t;
+		if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
+			t = this.gameEngine.hero;
+		} else {
+			t = this.gameEngine.getAttackable(pos);
+			if (!t) return;
+		}
+		this.mode = 'play';
+		this.target.alpha = 0;
+		gameBus.publish(playerUseItem({
+			item: this.actionContext.item,
+			target: t,
+			action: this.actionContext.key
+		}));
+	}
+
+	displayInventory() {
+		this.scene.pause()
+			.launch(SceneName.Inventory, {
+				config: this.gameEngine.hero.openBag(),
+				action: 'useItem'
+			});
+	}
+
+	displaySkill() {
+		if (this.gameEngine.hero.heroSkills.usableSkills().length > 0) {
+			this.scene.pause().launch(SceneName.SkillTreeScene, {
+				data: this.gameEngine.hero.heroSkills.usableSkills(),
+				action: 'useSkill'
+			});
+		}
+	}
+
+	escape() {
+		gameBus.publish(logPublished({
+			data: 'forget that'
+		}));
+		this.mode = 'play';
+		this.hideRange();
+	}
+
+	tryStairs() {
+		if (this.gameEngine.canGoToNextLevel()) {
+			this.subs.forEach(s => s());
+			gameBus.publish(nextLevel({}));
+		}
+	}
+	waitATurn() {
+		gameBus.publish(waitATurn({}));
+	}
+	moveTarget(direction: string) {
+		if (direction === 'ArrowUp') this.target.y -= 32;
+		if (direction === 'ArrowDown') this.target.y += 32;
+		if (direction === 'ArrowLeft') this.target.x -= 32;
+		if (direction === 'ArrowRight') this.target.x += 32;
+	}
+
+	moveTargetToAttack(direction: string) {
+		this.hideRange();
+		this.moveTarget(direction);
+		this.showRange(this.gameEngine.hero, {
+			x: this.target.x / 32,
+			y: this.target.y / 32
+		});
+	}
+
 	create() {
 		this.reInit();
 		/*this.input.on('pointermove', () => {
@@ -101,185 +281,107 @@ class GameScene extends Phaser.Scene {
 		this.cursors = this.input.keyboard.createCursorKeys();
 		this.input.keyboard.on('keyup', (event) => {
 			switch (event.key) {
-				case 'ArrowUp': 
-					if (this.mode === 'select') this.target.y -= 32;
-					if (this.actionContext && this.actionContext.target === 'basic_attack') {
-						this.showRange(this.gameEngine.hero, {
-							x:this.target.x/32,
-							y:this.target.y/32
-						});
-					}
-					break;
-				case 'ArrowDown': 
-					if (this.mode === 'select') this.target.y += 32;
-					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
-						x:this.target.x/32,
-						y:this.target.y/32
-					});
-					break;
-				case 'ArrowLeft': 
-					if (this.mode === 'select') this.target.x -= 32;
-					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
-						x:this.target.x/32,
-						y:this.target.y/32
-					});
-					break;
-				case 'ArrowRight': 
-					if (this.mode === 'select') this.target.x += 32;
-					if (this.actionContext && this.actionContext.target === 'basic_attack') this.showRange(this.gameEngine.hero, {
-						x:this.target.x/32,
-						y:this.target.y/32
-					});
-					break;
-				case 'i': 
-					return this.scene
-					.pause()
-					.launch(SceneName.Inventory, {config:this.gameEngine.hero.openBag(), action: 'useItem'});
-				case 'f': 
-					if (this.mode === 'play') {
-						const mobs = this.gameEngine.getNearestAttackables();
-						if (mobs.length === 0) {
-							gameBus.publish(logPublished({data:'noting to attack'}));
-						} else {
-							gameBus.publish(logPublished({data:'who do you want to attack ?'}));
-							const mob = mobs[0];
-							this.target.alpha = 1;
-							this.target.x = mob.pos.x * 32;
-							this.target.y = mob.pos.y * 32;
-							this.mode = 'select';
-							this.actionContext = {target: 'basic_attack', mobs:mobs };
-							this.showRange(this.gameEngine.hero, mob.pos);
-						}
-					} else if (this.mode === 'select') {
-						this.hideRange();
-						const mob = this.gameEngine.getAttackable({
-							x:this.target.x/32,
-							y:this.target.y/32
-						});
-						if (mob) {
-							gameBus.publish(playerAttemptAttackMonster({monster: mob}));
-						}
-						this.target.alpha = 0;
-						this.mode = 'play';
-						this.actionContext = null;
-					}
-					break;
-				case 'Enter': {
-					const pos = {
-						x:this.target.x/32,
-						y:this.target.y/32
-					}
-					if (this.mode === 'select' && this.actionContext && this.actionContext.target === EffectTarget.Location) {
-						const t = this.gameEngine.tilemap.getAt(pos);
-						if (!t.isWalkable()) return;
-						gameBus.publish(playerUseItem({
-							item: this.actionContext.item,
-							target: pos,
-							action: this.actionContext.key
-						}));
-						this.mode = 'play';
-						this.target.alpha = 0;
-					}
-					else if (this.mode === 'select' && this.actionContext && this.actionContext.target === EffectTarget.Movable) {
-						let t;
-						if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
-							t = this.gameEngine.hero;
-						} else {
-							t = this.gameEngine.getAttackable(pos);
-							if (!t) return;
-						}
-						this.mode = 'play';
-						this.target.alpha = 0;
-						gameBus.publish(playerUseItem({
-							item: this.actionContext.item,
-							target: t,
-							action: this.actionContext.key
-						}));
-					}
-					break;
-				}
-				case 'g': {
-					if (this.mode === 'play' && this.gameEngine.hero.heroSkills.usableSkills().length > 0) {
-						this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.usableSkills(), action: 'useSkill'});
-					}
-				}	
-				case 'z': {
-					if (this.mode === 'select' && this.actionContext && this.actionContext.target === 'basic_attack') {
-						const last = this.actionContext.mobs.shift();
-						this.actionContext.mobs.push(last);
-						const mob = this.actionContext.mobs[0];
-						this.target.alpha = 1;
-						this.target.x = mob.pos.x * 32;
-						this.target.y = mob.pos.y * 32;
-						this.showRange(this.gameEngine.hero, mob.pos);
-					}
-					break;
-				}
-				case 'Escape' : {
-					gameBus.publish(logPublished({data:'forget that'}));
-					this.mode = 'play';
-					this.hideRange();
-					break;
-				}
-				case 'w' : {
-					gameBus.publish(waitATurn({}));
-					break;
-				}
+				case 'ArrowUp':
+				case 'ArrowDown':
+				case 'ArrowLeft':
+				case 'ArrowRight':
+					return this.gameContext.arrow(event.key);
+				case 'i':
+					return this.gameContext.i();
+				case 'f':
+					return this.gameContext.f();
+				case 'Enter':
+					return this.gameContext.enter();
+				case 'g': 
+					return this.gameContext.g();
+				case 'z': 
+					return this.gameContext.z();
+				case 'Escape':
+					return this.gameContext.esc();
+				case 'w': 
+					return this.gameContext.w();
 				case '>':
-					if (this.gameEngine.canGoToNextLevel()) {
-						this.subs.forEach(s => s());
-						gameBus.publish(nextLevel({}));
-					}
-					break;
+					return this.gameContext.stair();
 			}
 		});
-		this.events.on('resume', (sys, data:{action: 'useSkill'|'pickSkill'|'useItem'|'pickItem', key: string, item: Item} | undefined) => {
+		this.events.on('resume', (sys, data: {
+			action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
+			key: string,
+			item: Item
+		} | undefined) => {
 			if (data && data.action === 'pickItem') {
-				if (this.actionContext.target === EffectTarget.Item){
-					gameBus.publish(playerUseItem({
-						item: this.actionContext.item,
-						target: data.item,
-						action: this.actionContext.key
-					}));
-				}
-			}
-			else if (data && data.action === 'useItem') {
+				gameBus.publish(playerUseItem({
+					item: this.actionContext.item,
+					target: data.item,
+					action: this.actionContext.key
+				}));
+			} else if (data && data.action === 'useItem') {
 				const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
-				switch(itemNeedsTarget) {
+				switch (itemNeedsTarget) {
 					case EffectTarget.Location:
 						this.putTargetOnHero();
-						this.actionContext = {...data, target: itemNeedsTarget};
-						this.mode = 'select';
-						gameBus.publish(logPublished({data:'where do you want to target ?'}));
+						this.actionContext = {
+							...data,
+							target: itemNeedsTarget
+						};
+						gameBus.publish(logPublished({
+							data: 'where do you want to target ?'
+						}));
+						this.gameContext.transitionTo(new SelectLocationState());
 						break;
 					case EffectTarget.Movable:
 						this.putTargetOnHero();
-						this.actionContext = {...data, target: itemNeedsTarget};
-						this.mode = 'select';
-						gameBus.publish(logPublished({data:'who do you want to target ?'}));
+						this.actionContext = {
+							...data,
+							target: itemNeedsTarget
+						};
+						gameBus.publish(logPublished({
+							data: 'who do you want to target ?'
+						}));
+						this.gameContext.transitionTo(new SelectMovableState());
 						break;
 					case EffectTarget.Item:
-						gameBus.publish(logPublished({data:'Select an item'}));
-						this.actionContext = {...data, target: itemNeedsTarget};
+						gameBus.publish(logPublished({
+							data: 'Select an item'
+						}));
+						this.actionContext = {
+							...data,
+							target: itemNeedsTarget
+						};
 						setTimeout(() => {
-							this.scene.pause().launch(SceneName.Inventory, {config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']), action: 'pickItem'});
-						},500);
+							this.scene.pause().launch(SceneName.Inventory, {
+								config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']),
+								action: 'pickItem'
+							});
+						}, 500);
 						break;
 					case EffectTarget.Weapon:
-						this.actionContext = {...data, target: itemNeedsTarget};
+						this.actionContext = {
+							...data,
+							target: itemNeedsTarget
+						};
 						setTimeout(() => {
 							this.scene
 								.pause()
 								.launch(
-									SceneName.Inventory,
-									{config: this.gameEngine.hero.openBag(['Weapons']), action: 'pickItem'}
+									SceneName.Inventory, {
+										config: this.gameEngine.hero.openBag(['Weapons']),
+										action: 'pickItem'
+									}
 								);
-						},500);
-						gameBus.publish(logPublished({data:'Select a weapon'}));
+						}, 500);
+						gameBus.publish(logPublished({
+							data: 'Select a weapon'
+						}));
 						break;
 					case EffectTarget.Armour:
-						gameBus.publish(logPublished({data:'Select an item'}));
-						this.actionContext = {...data, target: itemNeedsTarget};
+						gameBus.publish(logPublished({
+							data: 'Select an item'
+						}));
+						this.actionContext = {
+							...data,
+							target: itemNeedsTarget
+						};
 						setTimeout(() => {
 							this.scene
 								.pause()
@@ -287,7 +389,7 @@ class GameScene extends Phaser.Scene {
 									config: this.gameEngine.hero.openBag(['Armours']),
 									action: 'pickItem'
 								});
-						},500);
+						}, 500);
 						break;
 					case EffectTarget.Hero:
 						gameBus.publish(playerUseItem({
@@ -303,7 +405,8 @@ class GameScene extends Phaser.Scene {
 							action: data.key,
 						}));
 						break;
-					default : throw new Error (`Not implemented [${itemNeedsTarget}]`)
+					default:
+						throw new Error(`Not implemented [${itemNeedsTarget}]`)
 				}
 			} else if (data && data.action === 'pickSkill') {
 				gameBus.publish(playerChoseSkill({
@@ -328,14 +431,18 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}));
 		this.subs.push(gameBus.subscribe(monsterMoved, event => {
-			const {monster} = event.payload;
+			const {
+				monster
+			} = event.payload;
 			const m = this.gameMonsters[monster.id];
 			this.hero.updateHp(true);
 			m.move();
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		}));
 		this.subs.push(gameBus.subscribe(monsterDead, event => {
-			const {monster} = event.payload;
+			const {
+				monster
+			} = event.payload;
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
 		}));
@@ -343,42 +450,63 @@ class GameScene extends Phaser.Scene {
 			this.hero.move();
 		}));
 		this.subs.push(gameBus.subscribe(doorOpened, event => {
-			const {pos} = event.payload;
+			const {
+				pos
+			} = event.payload;
 			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
 		}));
 		this.subs.push(gameBus.subscribe(playerAttackedMonster, event => {
-			const {monster} = event.payload;
+			const {
+				monster
+			} = event.payload;
 			this.gameMonsters[monster.id].updateHp();
 		}));
 		this.subs.push(gameBus.subscribe(itemPickedUp, event => {
-			const {item} = event.payload;
+			const {
+				item
+			} = event.payload;
 			this.gameItems[item.id].pickedUp();
 		}));
 		this.subs.push(gameBus.subscribe(playerHealed, event => {
 			this.hero.updateHp();
 		}));
 		this.subs.push(gameBus.subscribe(itemDropped, event => {
-			const {item} = event.payload;
+			const {
+				item
+			} = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
 		}));
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
-			const {status} = event.payload;
+			const {
+				status
+			} = event.payload;
 			if (status === 'level_up') {
-				this.scene.pause().launch(SceneName.SkillTreeScene, {data: this.gameEngine.hero.heroSkills.AllSkills, action: 'pickSkill'});
+				this.scene.pause().launch(SceneName.SkillTreeScene, {
+					data: this.gameEngine.hero.heroSkills.AllSkills,
+					action: 'pickSkill'
+				});
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {
 			switch (event.payload.type) {
 				case MapEffect.Spike:
-					return this.gameEffects[event.payload.name] = new UIEffect(this, {name: event.payload.name, pos: event.payload.pos}, event.payload.type);
+					return this.gameEffects[event.payload.name] = new UIEffect(this, {
+						name: event.payload.name,
+						pos: event.payload.pos
+					}, event.payload.type);
 				case MapEffect.Projectile:
-					const p = new UIEffect(this, {name: event.payload.name, pos: event.payload.from}, event.payload.name);
+					const p = new UIEffect(this, {
+						name: event.payload.name,
+						pos: event.payload.from
+					}, event.payload.name);
 					p.throwProjectile(event.payload.to);
 					break;
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectUnset, event => {
-			const {name} = event.payload;
+			const {
+				name
+			} = event.payload;
 			this.gameEffects[name].destroy();
 			this.gameEffects[name] = undefined;
 		}));
@@ -389,7 +517,9 @@ class GameScene extends Phaser.Scene {
 			this.scene.pause().launch(SceneName.GameFinished);
 		}));
 		this.subs.push(gameBus.subscribe(itemEquiped, event => {
-			const {armour} = event.payload;
+			const {
+				armour
+			} = event.payload;
 			if (armour) {
 				this.hero.updateHeroSprite(armour);
 			}
@@ -406,11 +536,11 @@ class GameScene extends Phaser.Scene {
 			this.gameMonsters[mob.id] = monster;
 		}
 	}
-	
+
 	placeItems() {
 		const itemsToPlace: Item[] = this.gameEngine.items.itemsArray();
 		for (const i of itemsToPlace) {
-			if (! this.gameEngine.tilemap.getAt(i.pos).isWalkable()) continue;
+			if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) continue;
 			if (this.gameEngine.tilemap.getAt(i.pos).isEntry) continue;
 			if (this.gameEngine.tilemap.getAt(i.pos).isExit) continue;
 			const item = new UIItem(this, i, i.skin);
@@ -423,7 +553,10 @@ class GameScene extends Phaser.Scene {
 		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
 		this.target.x = tile.x * 32;
 		this.target.y = tile.y * 32;
-		const mob = this.gameEngine.getAttackable({x:tile.x, y:tile.y});
+		const mob = this.gameEngine.getAttackable({
+			x: tile.x,
+			y: tile.y
+		});
 		if (mob) {
 			console.log(mob);
 		}
@@ -431,29 +564,37 @@ class GameScene extends Phaser.Scene {
 
 	moveTo(pos) {
 		if (this.gameEngine.hero.enchants.getStupid()) {
-			if (pos === 'left')
-				pos = 'right;'
-			if (pos === 'right')
-				pos = 'left';
-			if (pos ==='up')
-				pos = 'down';
-			if (pos === 'down')
-				pos = 'up';
+			if (pos === 'left')	pos = 'right;'
+			if (pos === 'right')pos = 'left';
+			if (pos === 'up')	pos = 'down';
+			if (pos === 'down')	pos = 'up';
 		}
-		let newPos: Coordinate = {x:-1, y:-1};
+		let newPos: Coordinate = {x: -1,y: -1};
 		let heroPos = this.gameEngine.hero.pos;
-		switch(pos){
-			case 'left': 
-				newPos = {x: heroPos.x-1, y: heroPos.y}
+		switch (pos) {
+			case 'left':
+				newPos = {
+					x: heroPos.x - 1,
+					y: heroPos.y
+				}
 				break;
-			case'right':
-				newPos = {x: heroPos.x+1, y: heroPos.y}
+			case 'right':
+				newPos = {
+					x: heroPos.x + 1,
+					y: heroPos.y
+				}
 				break;
 			case 'down':
-				newPos = {x: heroPos.x, y: heroPos.y+1}
+				newPos = {
+					x: heroPos.x,
+					y: heroPos.y + 1
+				}
 				break;
 			case 'up':
-				newPos = {x: heroPos.x, y: heroPos.y-1}
+				newPos = {
+					x: heroPos.x,
+					y: heroPos.y - 1
+				}
 				break;
 		}
 		this.moveAllowed = false;
@@ -464,7 +605,7 @@ class GameScene extends Phaser.Scene {
 		}));
 	}
 
-	update(time: number, delta:number) {
+	update(time: number, delta: number) {
 		if (!this.moveAllowed) {
 			this.delta += delta;
 			if (this.delta > 200) {
@@ -478,9 +619,9 @@ class GameScene extends Phaser.Scene {
 			var isDownDown = this.cursors.down.isDown;
 			var isLeftDown = this.cursors.left.isDown;
 			var isRightDown = this.cursors.right.isDown;
-			if (isUpDown) 	 return this.moveTo('up');
-			if (isDownDown)  return this.moveTo('down');
-			if (isLeftDown)  return this.moveTo('left');
+			if (isUpDown) return this.moveTo('up');
+			if (isDownDown) return this.moveTo('down');
+			if (isLeftDown) return this.moveTo('left');
 			if (isRightDown) return this.moveTo('right');
 		}
 	}
@@ -492,8 +633,11 @@ class GameScene extends Phaser.Scene {
 	}
 
 	showRange(hero: Hero, pos: Coordinate) {
-		this.range = line({from: hero.pos, to: pos})
-			.filter(p => 
+		this.range = line({
+				from: hero.pos,
+				to: pos
+			})
+			.filter(p =>
 				Math.max(Math.abs(hero.pos.x - p.x), Math.abs(hero.pos.y - p.y)) <= hero.weapon.maxRange
 			);
 		this.range.shift();

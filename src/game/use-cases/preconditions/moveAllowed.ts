@@ -1,9 +1,9 @@
 import { TileMap } from "../../tilemap/tilemap";
 import { Coordinate } from "../../utils/coordinate";
-import { Movable } from "../../entitybase/movable";
 import { Rect } from "../../utils/rectangle";
+import { Entity } from "../../entitybase/entity";
 
-export function isTileEmpty(pos: Coordinate, movables: Movable[]):boolean {
+export function isTileEmpty(pos: Coordinate, movables: Entity[]):boolean {
     for (let m of movables) {
         if(m.pos.x === pos.x && m.pos.y === pos.y) {
             return false;

@@ -1,9 +1,9 @@
-import { distribute, pickInArray } from "../utils/random";
+import { distribute } from "../utils/random";
 import { randomIn } from "../utils/rectangle";
-import { getRandomLoot } from "./loot-table";
 import { Item } from "../entitybase/item";
 import { MapGraph } from "../../generation/map_definition";
-import { isSpecialRoom } from "../monsters/monster-spawn";
+import { isSpecialRoom } from "./monster-spawn";
+import { getRandomLoot } from "../loot/loot-table";
 
 export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
     const rooms = graph.rooms;

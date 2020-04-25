@@ -1,8 +1,7 @@
-import { Item, ItemArgument } from "./item";
-import { GameRange } from "../utils/range";
 import { pickInRange } from "../utils/random";
 import { ItemVisitor } from "../items/item-visitor";
 import { IEffect, EffectTarget } from "../effects/effects";
+import { Item, ItemArgument } from "../entitybase/item";
 
 export class Weapon extends Item implements ItemArgument {
     baseDamage: string;

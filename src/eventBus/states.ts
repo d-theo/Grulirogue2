@@ -52,7 +52,9 @@ export class GameContext {
     w() {
         this.state.w();
     }
-    stair(){}
+    stair(){
+        this.state.stair();
+    }
 }
 export class PlayState extends State {
     f() {

@@ -2,34 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {
-	gameBus,
-	sightUpdated,
-	monsterMoved,
-	playerMoved,
-	playerActionMove,
-	doorOpened,
-	gameStarted,
-	playerAttackedMonster,
-	playerAttemptAttackMonster,
-	itemPickedUp,
-	playerHealed,
-	playerUseItem,
-	itemDropped,
-	logPublished,
-	waitATurn,
-	nextLevel,
-	nextLevelCreated,
-	xpHasChanged,
-	playerChoseSkill,
-	effectSet,
-	effectUnset,
-	playerUseSkill,
-	gameOver,
-	monsterDead,
-	itemEquiped,
-	gameFinished
-} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -45,15 +18,9 @@ import {Monster} from '../game/monsters/monster';import { GameContext, SelectLoc
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
 	target: Phaser.GameObjects.Sprite;
-	gameMonsters: {
-		[id: string]: UIEntity
-	} = {};
-	gameItems: {
-		[id: string]: UIItem
-	} = {};
-	gameEffects: {
-		[id: string]: UIEffect
-	} = {};
+	gameMonsters: {[id: string]: UIEntity} = {};
+	gameItems: {[id: string]: UIItem} = {};
+	gameEffects: {[id: string]: UIEffect} = {};
 
 	cursors: any;
 	tilemap;
@@ -67,19 +34,13 @@ class GameScene extends Phaser.Scene {
 	tilemapVisibility: TilemapVisibility;
 
 	mode: 'play' | 'select' = 'play';
-	actionContext: {
-		target: 'basic_attack',
-		mobs: Monster[]
-	} |
-	{
-		action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
-		key: string,
-		item: Item,
-		target: EffectTarget
-	} |
-	null | any;
-	range;
+	actionContext: 
+	{target: 'basic_attack',mobs: Monster[]} 
+	| {action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem', key: string, item: Item, target: EffectTarget}
+	| null
+	| any;
 
+	range;
 	subs: any = [];
 
 	gameContext: GameContext;
@@ -148,9 +109,7 @@ class GameScene extends Phaser.Scene {
 				data: 'who do you want to attack ?'
 			}));
 			const mob = mobs[0];
-			this.target.alpha = 1;
-			this.target.x = mob.pos.x * 32;
-			this.target.y = mob.pos.y * 32;
+			this.setTargetAtPos(mob.pos);
 			this.mode = 'select';
 			this.actionContext = {
 				target: 'basic_attack',
@@ -164,31 +123,24 @@ class GameScene extends Phaser.Scene {
 		const last = this.actionContext.mobs.shift();
 		this.actionContext.mobs.push(last);
 		const mob = this.actionContext.mobs[0];
-		this.target.alpha = 1;
-		this.target.x = mob.pos.x * 32;
-		this.target.y = mob.pos.y * 32;
+		this.setTargetAtPos(mob.pos);
 		this.showRange(this.gameEngine.hero, mob.pos);
 	}
 	fire() {
 		this.hideRange();
-		const mob = this.gameEngine.getAttackable({
-			x: this.target.x / 32,
-			y: this.target.y / 32
-		});
+		const mob = this.gameEngine.getAttackable(this.getTargetPos());
 		if (mob) {
 			gameBus.publish(playerAttemptAttackMonster({
 				monster: mob
 			}));
 		}
-		this.target.alpha = 0;
+		this.hideTarget();
 		this.mode = 'play';
 		this.actionContext = null;
 	}
 	enterLocation() {
-		const pos = {
-			x: this.target.x / 32,
-			y: this.target.y / 32
-		}
+		const pos = this.getTargetPos();
+		this.hideTarget();
 		const t = this.gameEngine.tilemap.getAt(pos);
 		if (!t.isWalkable()) return;
 		gameBus.publish(playerUseItem({
@@ -197,14 +149,11 @@ class GameScene extends Phaser.Scene {
 			action: this.actionContext.key
 		}));
 		this.mode = 'play';
-		this.target.alpha = 0;
 	}
 
 	enterMovable() {
-		const pos = {
-			x: this.target.x / 32,
-			y: this.target.y / 32
-		}
+		const pos = this.getTargetPos();
+		this.hideTarget();
 		let t;
 		if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
 			t = this.gameEngine.hero;
@@ -213,7 +162,6 @@ class GameScene extends Phaser.Scene {
 			if (!t) return;
 		}
 		this.mode = 'play';
-		this.target.alpha = 0;
 		gameBus.publish(playerUseItem({
 			item: this.actionContext.item,
 			target: t,
@@ -265,10 +213,7 @@ class GameScene extends Phaser.Scene {
 	moveTargetToAttack(direction: string) {
 		this.hideRange();
 		this.moveTarget(direction);
-		this.showRange(this.gameEngine.hero, {
-			x: this.target.x / 32,
-			y: this.target.y / 32
-		});
+		this.showRange(this.gameEngine.hero, this.getTargetPos());
 	}
 
 	create() {
@@ -420,11 +365,6 @@ class GameScene extends Phaser.Scene {
 		});
 	}
 
-	putTargetOnHero() {
-		this.target.alpha = 1;
-		this.target.x = this.hero.subject.pos.x * 32;
-		this.target.y = this.hero.subject.pos.y * 32;
-	}
 	initGameEvents() {
 		this.subs.push(gameBus.subscribe(sightUpdated, event => {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
@@ -548,20 +488,6 @@ class GameScene extends Phaser.Scene {
 		}
 	}
 
-	handleMouseClick() {
-		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
-		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-		this.target.x = tile.x * 32;
-		this.target.y = tile.y * 32;
-		const mob = this.gameEngine.getAttackable({
-			x: tile.x,
-			y: tile.y
-		});
-		if (mob) {
-			console.log(mob);
-		}
-	}
-
 	moveTo(pos) {
 		if (this.gameEngine.hero.enchants.getStupid()) {
 			if (pos === 'left')	pos = 'right;'
@@ -642,6 +568,42 @@ class GameScene extends Phaser.Scene {
 			);
 		this.range.shift();
 		this.tilemapVisibility.showRange(this.range);
+	}
+
+	getTargetPosPix() {
+		return {x: this.target.x, y: this.target.y};
+	}
+	getTargetPos() {
+		return {x: this.target.x / 32, y: this.target.y/32};
+	}
+	setTargetAtPos(pos: Coordinate) {
+		this.showTarget();
+		this.target.x = pos.x * 32;
+		this.target.y = pos.y * 32;
+	}
+	putTargetOnHero() {
+		this.showTarget();
+		this.setTargetAtPos(this.hero.subject.pos);
+	}
+	showTarget() {
+		this.target.alpha = 0.9;
+	}
+	hideTarget() {
+		this.target.alpha = 0;
+	}
+
+	handleMouseClick() {
+		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
+		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
+		this.target.x = tile.x * 32;
+		this.target.y = tile.y * 32;
+		const mob = this.gameEngine.getAttackable({
+			x: tile.x,
+			y: tile.y
+		});
+		if (mob) {
+			console.log(mob);
+		}
 	}
 }
 

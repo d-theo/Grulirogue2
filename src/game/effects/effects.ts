@@ -41,12 +41,14 @@ export class TrapSpell implements IEffect {
             duration: 1,
             stayOnWalk: false
         });
-        gameBus.publish(effectSet({
-            animation: 'static',
-            id: id,
-            type: MapEffect.Spike,
-            pos
-        }));
+        if (id !== null) {
+            gameBus.publish(effectSet({
+                animation: 'static',
+                id: id,
+                type: MapEffect.Spike,
+                pos
+            }));
+        }
         gameBus.publish(logPublished({data: `trap has been set`}));
     }
 }
@@ -56,19 +58,21 @@ export class WildFireSpell implements IEffect {
     area = 1;
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
-        around(pos).forEach(p => {
+        around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
                 debuff: EffectMaker.create(Effects.RawDamage),
                 pos: p,
-                duration: 5,
+                duration: 10,
                 stayOnWalk: true
             });
-            gameBus.publish(effectSet({
-                id: id,
-                type: MapEffect.Fire,
-                pos: p,
-                animation: 'static'
-            }));
+            if (id !== null) {
+                gameBus.publish(effectSet({
+                    id: id,
+                    type: MapEffect.Fire,
+                    pos: p,
+                    animation: 'static'
+                }));
+            }
         });
     }
 }
@@ -78,19 +82,21 @@ export class ShadowSpell implements IEffect {
     area = 2;
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
-        around(pos).forEach(p => {
+        around(pos, 2).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
                 debuff: EffectMaker.create(Effects.Shadow),
                 pos: p,
                 duration: 40,
                 stayOnWalk: true
             });
-            gameBus.publish(effectSet({
-                id: id,
-                type: MapEffect.Shadow,
-                pos: p,
-                animation: 'static'
-            }));
+            if (id !== null) {
+                gameBus.publish(effectSet({
+                    id: id,
+                    type: MapEffect.Shadow,
+                    pos: p,
+                    animation: 'static'
+                }));
+            }
         });
     }
 }
@@ -429,9 +435,21 @@ export class StupidityEffect implements IEffect  {
 }
 export class RawDamageEffet implements IEffect {
     type = EffectTarget.Movable;
-    turns = 0;
+    chanceOfDodge = 0.4;
     cast(target: Hero|Monster) {
-        target.health.take(10-15);
+        if (this.chanceOfDodge > Math.random()) return;
+        const dmg = pickInRange('5-10');
+        const r = target.health.take(dmg);
+        if (target instanceof Hero) {
+            gameBus.publish(playerTookDammage({
+                amount: r.amount,
+                source: 'burning',
+                baseHp: target.health.baseHp,
+                currentHp: target.health.currentHp
+            }));
+        } else if (target instanceof Monster) {
+            handleHealthReport(r, target, dmg);
+        }
     }
 }
 export class ShadowEffet implements IEffect {

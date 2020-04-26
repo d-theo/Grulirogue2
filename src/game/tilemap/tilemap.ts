@@ -90,12 +90,14 @@ export class TileMap {
     addTileEffects(args: {pos: Coordinate, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
         const {pos, debuff, duration, stayOnWalk} = args;
         const id = short.generate();
+        if (this.getAt(pos).isSolid()) return null;
         this.getAt(pos).addDebuff({id, debuff: debuff});
         this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos});
         return id;
     }
     addTileEffects2(args: {tile: Tile, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
         const {tile, debuff, duration, stayOnWalk} = args;
+        if (tile.isSolid()) return null;
         const id = short.generate();
         tile.addDebuff({id, debuff: debuff});
         this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos:tile.pos});

@@ -41,7 +41,7 @@ export const AI = (game: Game) => {
         const dy = Math.abs(monster.pos.y - game.hero.pos.y);
         const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: game.hero.pos});
         const distance = Math.max(dx,dy);
-        if (distance > monster.sight + 3) {
+        if (distance > monster.sight + 2) {
             monster.asSeenHero = false;
             monster.currentAI = 'random';
             return randomAI(monster);

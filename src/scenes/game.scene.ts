@@ -142,7 +142,14 @@ class GameScene extends Phaser.Scene {
 		const pos = this.getTargetPos();
 		this.hideTarget();
 		const t = this.gameEngine.tilemap.getAt(pos);
-		if (!t.isWalkable()) return;
+		if (!t.isWalkable()) {
+			gameBus.publish(logPublished({data: 'You cannot do that'}));
+			return;
+		}
+		if(! this.gameEngine.tilemap.hasVisibility({from: this.hero.subject.pos, to: pos}) {
+			gameBus.publish(logPublished({data: 'You cannot see that far !'}));
+			return;
+		}
 		gameBus.publish(playerUseItem({
 			item: this.actionContext.item,
 			target: pos,

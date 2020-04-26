@@ -140,12 +140,12 @@ export class Game {
 
     nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
+            this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
             this.hero.regenHealth();
             this.hero.resolveBuffs();
             this.hero.heroSkills.update(); // TODO REFACTO
             this.monsters.resolveBuffs();
             this.monsters.play();
-            this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
         }
 
         if (this.hero.enchants.getStuned()) {

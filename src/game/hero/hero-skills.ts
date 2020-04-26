@@ -72,7 +72,7 @@ export class HeroSkills {
             case 'alchemist': return this.hero.skillFlags.improvedPotionEffect ++;
             case 'monk': return this.hero.fightModifier.fistAdditionnalDmg += 3;
             case 'explorer': return this.hero.skillFlags.additionnalItemPerLevel ++;
-            case 'overseer': return this.hero.sight++;
+            case 'overseer': return this.hero.sight ++;
             case 'snake': return this.hero.dodge += 0.05;
             case 'warrior': return this.hero.fightModifier.additionnalDmg += 1;
             case 'coward': 

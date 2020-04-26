@@ -15,6 +15,8 @@ export class EnchantTable {
     private moreVulnerable = false;
     private wet = false;
     private blind = false;
+
+    private sightModifier = 0;
     constructor(private readonly notif: boolean = false) {}
     setStuned(x: boolean) {
         this.stuned = x;
@@ -87,6 +89,9 @@ export class EnchantTable {
     }
     getConfident() {
         return this.confident;
+    }
+    getWet() {
+        return this.wet;
     }
     report() {
         let r = [];

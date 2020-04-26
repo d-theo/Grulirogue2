@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -29,6 +29,8 @@ export enum Effects {
     Rage = 'Rage',
     Accuraty = 'Accuraty',
     Wet = 'Wet',
+    RawDamage = 'RawDamage',
+    Shadow = 'Shadow'
 }
 
 export enum SpellNames {
@@ -40,6 +42,8 @@ export enum SpellNames {
     Blink = "Blink",
     Identify = "Identify",
     Knowledge= "Knowledge",
+    WildFire = 'WildFire',
+    Shadow = "Shadow"
 }
 
 let tilemap: TileMap;
@@ -78,6 +82,10 @@ function createSpell(name: SpellNames) {
             return new IdentifiySpell();
         case SpellNames.Knowledge :
             return new KnowledgeSpell(effect);
+        case SpellNames.WildFire:
+            return new WildFireSpell(effect);
+        case SpellNames.Shadow:
+            return new ShadowSpell(effect);
     }
 }
 
@@ -110,6 +118,10 @@ function createEffect(name: Effects) {
             return new AccuratyEffect();
         case Effects.Wet:
             return new WetEffect();
+        case Effects.Shadow:
+            return new ShadowEffet();
+        case Effects.RawDamage:
+            return new RawDamageEffet();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
     }

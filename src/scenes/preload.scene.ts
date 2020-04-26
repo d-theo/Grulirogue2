@@ -45,6 +45,12 @@ import { PotionColors } from "../game/items/potion";
         this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
       }
       this.load.image('scroll', '/assets/sprites/scroll-empty.png');
+
+      this.load.image('wildfire_bottle', '/assets/sprites/wildfire-bottle.png');
+      this.load.image('sphere_of_shadows', '/assets/sprites/sphere-of-shadows.png');
+      this.load.image('Fire', '/assets/sprites/fire.png');
+      this.load.image('Shadow', '/assets/sprites/shadow.png');
+      
     }
   
     create() {

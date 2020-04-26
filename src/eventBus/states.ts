@@ -1,5 +1,12 @@
 import GameScene from "../scenes/game.scene";
 
+export enum Modes {
+    Play = 'Play',
+    SelectFire = 'SelectFire',
+    SelectLocation = 'SelectLocation',
+    SelectMovable = 'SelectMovable'
+}
+
 export abstract class State {
     protected gameContext: GameContext
 
@@ -18,14 +25,26 @@ export abstract class State {
     }
 }
 export class GameContext {
+    allStates = {
+        [Modes.Play]: new PlayState(),
+        [Modes.SelectFire]:  new SelectFireState(),
+        [Modes.SelectLocation]:  new SelectLocationState(),
+        [Modes.SelectMovable]: new SelectMovableState(),
+    }
     private state: State;
+    private currentStateName: Modes;
+
     gameScene: GameScene;
     constructor(gameScene: GameScene) {
         this.gameScene = gameScene;
-        this.transitionTo(new PlayState());
+        this.transitionTo(Modes.Play);
     }
-    transitionTo(state: State) {
-        this.state = state;
+    isOnState(stateName: Modes) {
+        return this.currentStateName == stateName;
+    }
+    transitionTo(state: Modes) {
+        this.state = this.allStates[state];
+        this.currentStateName = state;
         this.state.setContext(this);
     }
     f() {
@@ -60,7 +79,7 @@ export class PlayState extends State {
     f() {
         const ok = this.gameContext.gameScene.selectFire();
         if (ok)
-            this.gameContext.transitionTo(new SelectFireState());
+            this.gameContext.transitionTo(Modes.SelectFire);
     }
     esc() {
         this.gameContext.gameScene.escape();
@@ -84,11 +103,11 @@ export class PlayState extends State {
 export class SelectFireState extends State {
     f() {
         this.gameContext.gameScene.fire();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
     esc() {
         this.gameContext.gameScene.escape();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
     z() {
         this.gameContext.gameScene.nextTarget();
@@ -106,11 +125,11 @@ export class SelectFireState extends State {
 export class SelectLocationState extends State {
     esc() {
         this.gameContext.gameScene.escape();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
     enter() {
         this.gameContext.gameScene.enterLocation();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
     arrow(direction: string) {
         this.gameContext.gameScene.moveTarget(direction);
@@ -127,14 +146,14 @@ export class SelectLocationState extends State {
 export class SelectMovableState extends State {
     esc() {
         this.gameContext.gameScene.escape();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
     arrow(direction: string) {
         this.gameContext.gameScene.moveTarget(direction);
     }
     enter() {
         this.gameContext.gameScene.enterMovable();
-        this.gameContext.transitionTo(new PlayState());
+        this.gameContext.transitionTo(Modes.Play);
     }
 
     f() {}

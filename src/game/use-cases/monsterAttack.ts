@@ -14,7 +14,7 @@ export function monsterAttack(args: {hero: Hero, monster: Monster}): MessageResp
     const healthReport = hero.health.take(damages);
     if (distance(monster.pos, hero.pos) > 1) {
         gameBus.publish(effectSet({
-            name: 'rock',
+            animation: 'throw',
             type: MapEffect.Projectile,
             from: monster.pos,
             to: hero.pos

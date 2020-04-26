@@ -13,3 +13,18 @@ export function distance(c: Coordinate, c2: Coordinate) {
     const v = Math.abs(c.y - c2.y);
     return Math.max(v,h);
 }
+
+export function around (pos: Coordinate) {
+    const {x,y} = pos;
+    return [
+        {x: x-1, y:y-1},
+        {x: x, y: y-1},
+        {x: x+1, y: y-1},
+        {x: x+1, y: y},
+        {x: x+1, y:y+1},
+        {x: x, y:y+1},
+        {x: x-1, y:y+1},
+        {x: x, y:y},
+        {x: x-1, y:y},
+    ];
+}

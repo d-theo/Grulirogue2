@@ -37,7 +37,7 @@ export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilem
     } else {
         if (distance(attacked.pos, hero.pos) > 1) {
             gameBus.publish(effectSet({
-                name: 'rock',
+                animation: 'throw',
                 type: MapEffect.Projectile,
                 from: hero.pos,
                 to: attacked.pos

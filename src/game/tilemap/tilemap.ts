@@ -78,8 +78,8 @@ export class TileMap {
             this.addTileEffects2({
                 debuff: EffectMaker.create(Effects.Wet),
                 tile,
-                durationAfterWalk: Infinity,
-                type: 'wet'
+                duration: Infinity,
+                stayOnWalk: true
             });
         }
     }
@@ -87,18 +87,18 @@ export class TileMap {
         return this.tiles[pos.y][pos.x];
     }
 
-    addTileEffects(args: {pos: Coordinate, debuff: IEffect, durationAfterWalk: number, type: string}) {
-        const {pos, debuff, durationAfterWalk, type} = args;
+    addTileEffects(args: {pos: Coordinate, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
+        const {pos, debuff, duration, stayOnWalk} = args;
         const id = short.generate();
         this.getAt(pos).addDebuff({id, debuff: debuff});
-        this.debuffDurations.push({id, duration: durationAfterWalk, triggered: false, pos});
+        this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos});
         return id;
     }
-    addTileEffects2(args: {tile: Tile, debuff: IEffect, durationAfterWalk: number, type: string}) {
-        const {tile, debuff, durationAfterWalk, type} = args;
+    addTileEffects2(args: {tile: Tile, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
+        const {tile, debuff, duration, stayOnWalk} = args;
         const id = short.generate();
         tile.addDebuff({id, debuff: debuff});
-        this.debuffDurations.push({id, duration: durationAfterWalk, triggered: false, pos:tile.pos});
+        this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos:tile.pos});
         return id;
     }
     playTileEffectsOn(hero: Hero, monsters: Monster[]) {
@@ -116,7 +116,7 @@ export class TileMap {
             if (timer.duration === 0) {
                 const tile = this.getAt(timer.pos);
                 tile.removeDebuff(timer.id);
-                gameBus.publish(effectUnset({name: timer.id}));
+                gameBus.publish(effectUnset({id: timer.id}));
             }
         }
     }

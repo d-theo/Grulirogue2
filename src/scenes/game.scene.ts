@@ -13,7 +13,7 @@ import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
 import {MapEffect}from '../map/map-effect';
 import {EffectTarget} from '../game/effects/effects';
-import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState } from '../eventBus/states';
+import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState, Modes } from '../eventBus/states';
 
 class GameScene extends Phaser.Scene {
 	hero: UIEntity;
@@ -263,6 +263,7 @@ class GameScene extends Phaser.Scene {
 			} else if (data && data.action === 'useItem') {
 				const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
 				switch (itemNeedsTarget) {
+					case EffectTarget.AoE:
 					case EffectTarget.Location:
 						this.putTargetOnHero();
 						this.actionContext = {
@@ -272,7 +273,7 @@ class GameScene extends Phaser.Scene {
 						gameBus.publish(logPublished({
 							data: 'where do you want to target ?'
 						}));
-						this.gameContext.transitionTo(new SelectLocationState());
+						this.gameContext.transitionTo(Modes.SelectLocation);
 						break;
 					case EffectTarget.Movable:
 						this.putTargetOnHero();
@@ -283,7 +284,7 @@ class GameScene extends Phaser.Scene {
 						gameBus.publish(logPublished({
 							data: 'who do you want to target ?'
 						}));
-						this.gameContext.transitionTo(new SelectMovableState());
+						this.gameContext.transitionTo(Modes.SelectMovable);
 						break;
 					case EffectTarget.Item:
 						gameBus.publish(logPublished({
@@ -428,27 +429,27 @@ class GameScene extends Phaser.Scene {
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectSet, event => {
-			switch (event.payload.type) {
-				case MapEffect.Spike:
-					return this.gameEffects[event.payload.name] = new UIEffect(this, {
-						name: event.payload.name,
+			switch (event.payload.animation) {
+				case 'static':
+					return this.gameEffects[event.payload.id] = new UIEffect(this, {
+						name: event.payload.type,
 						pos: event.payload.pos
 					}, event.payload.type);
-				case MapEffect.Projectile:
+				case 'throw':
 					const p = new UIEffect(this, {
-						name: event.payload.name,
+						name: event.payload.type,
 						pos: event.payload.from
-					}, event.payload.name);
+					}, event.payload.type);
 					p.throwProjectile(event.payload.to);
 					break;
 			}
 		}));
 		this.subs.push(gameBus.subscribe(effectUnset, event => {
 			const {
-				name
+				id
 			} = event.payload;
-			this.gameEffects[name].destroy();
-			this.gameEffects[name] = undefined;
+			this.gameEffects[id].destroy();
+			this.gameEffects[id] = undefined;
 		}));
 		this.subs.push(gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);
@@ -540,7 +541,7 @@ class GameScene extends Phaser.Scene {
 			return;
 		}
 
-		if (this.mode === 'play') {
+		if (this.gameContext.isOnState(Modes.Play)) {
 			var isUpDown = this.cursors.up.isDown;
 			var isDownDown = this.cursors.down.isDown;
 			var isLeftDown = this.cursors.left.isDown;

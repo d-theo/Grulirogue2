@@ -2,8 +2,16 @@ import { Scroll } from "./scroll";
 import { Potion } from "./potion";
 import { Weapon } from "./weapon";
 import { Armour } from "./armour";
+import { Item } from "../entitybase/item";
 
 export class ItemVisitor {
+    visitMisc(misc: Item) {
+        return {
+            kind: 'Consumables',
+            item: misc,
+            count: 1
+        }
+    }
     visitPotion(potion: Potion) {
         return {
             kind: 'Consumables',

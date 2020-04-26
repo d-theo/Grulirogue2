@@ -6,7 +6,7 @@ import { WorldEffect, EffectMaker, Effects, SpellNames } from "./effect";
 import { pickInRange,  } from "../utils/random";
 import { handleHealthReport } from "../use-cases/health-report";
 import { MapEffect } from "../../map/map-effect";
-import { Coordinate } from "../utils/coordinate";
+import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
 import { Tile, TileVisibility } from "../tilemap/tile";
@@ -16,6 +16,7 @@ import { Weapon } from "../items/weapon";
 
 export enum EffectTarget { 
     Location = 'location',
+    AoE = 'AoE',
     Armour =  'armour',
     Item = 'item',
     Weapon = 'weapon',
@@ -37,15 +38,60 @@ export class TrapSpell implements IEffect {
         const id = this.world.getTilemap().addTileEffects({
             debuff: EffectMaker.create(Effects.Bleed),
             pos,
-            durationAfterWalk: 1,
-            type: SpellNames.SpikeTrap
+            duration: 1,
+            stayOnWalk: false
         });
         gameBus.publish(effectSet({
-            name: id,
+            animation: 'static',
+            id: id,
             type: MapEffect.Spike,
             pos
         }));
         gameBus.publish(logPublished({data: `trap has been set`}));
+    }
+}
+
+export class WildFireSpell implements IEffect {
+    type = EffectTarget.Location;
+    area = 1;
+    constructor(private readonly world: WorldEffect) {}
+    cast(pos: Coordinate) {
+        around(pos).forEach(p => {
+            const id = this.world.getTilemap().addTileEffects({
+                debuff: EffectMaker.create(Effects.RawDamage),
+                pos: p,
+                duration: 5,
+                stayOnWalk: true
+            });
+            gameBus.publish(effectSet({
+                id: id,
+                type: MapEffect.Fire,
+                pos: p,
+                animation: 'static'
+            }));
+        });
+    }
+}
+
+export class ShadowSpell implements IEffect {
+    type = EffectTarget.Location;
+    area = 2;
+    constructor(private readonly world: WorldEffect) {}
+    cast(pos: Coordinate) {
+        around(pos).forEach(p => {
+            const id = this.world.getTilemap().addTileEffects({
+                debuff: EffectMaker.create(Effects.Shadow),
+                pos: p,
+                duration: 40,
+                stayOnWalk: true
+            });
+            gameBus.publish(effectSet({
+                id: id,
+                type: MapEffect.Shadow,
+                pos: p,
+                animation: 'static'
+            }));
+        });
     }
 }
 
@@ -175,8 +221,14 @@ export class BlindEffect implements IEffect   {
     turns = 10;
     cast(target: Hero|Monster) {
         target.addBuff({
-            start: (t: Hero|Monster) => t.sight -= 6,
-            end: (t: Hero|Monster) => t.sight += 6,
+            start: (t: Hero|Monster) => {
+                t.enchants.setBlind(true);
+                t.sight -=6;
+            },
+            end: (t: Hero|Monster) => { 
+                t.enchants.setBlind(false);
+                t.sight +=6;
+            },
             turns: this.turns
         });
         gameBus.publish(logPublished({level: 'warning', data: `${target.name} sees nothing !`}));
@@ -371,6 +423,30 @@ export class StupidityEffect implements IEffect  {
         target.addBuff({
             start: (t: Hero|Monster) => t.enchants.setStupid (true),
             end: (t: Hero|Monster) => t.enchants.setStupid(false),
+            turns: this.turns
+        });
+    }
+}
+export class RawDamageEffet implements IEffect {
+    type = EffectTarget.Movable;
+    turns = 0;
+    cast(target: Hero|Monster) {
+        target.health.take(10-15);
+    }
+}
+export class ShadowEffet implements IEffect {
+    type = EffectTarget.Movable;
+    turns = 1;
+    cast(target: Hero|Monster) {
+        target.addBuff({
+            start: (t: Hero|Monster) => {
+                t.enchants.setBlind(true);
+                t.sight -= 7;
+            },
+            end: (t: Hero|Monster) => {
+                t.enchants.setBlind(false);
+                t.sight += 7;
+            },
             turns: this.turns
         });
     }

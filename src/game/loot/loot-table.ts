@@ -8,6 +8,7 @@ import { craftWeapon } from "./loot-weapons";
 import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
+import { SphereOfShadows, WildfireBottle, createWildFireBottle, createSphereOfShadow } from "./loot-mics";
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -16,11 +17,17 @@ export const ArmoursTable: XTable[] = [
 ];
 
 export const ItemTable: XTable[] = [
-    [{chance: 55, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 20, type: 'weapon'}, {chance: 20, type: 'armour'}],
+    [{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}, {chance: 0, type: 'armour'}, {chance: 100, type: 'misc'}],
+    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
 ]
+
+export const MiscTable: XTable = [
+    {chance: 50, type: () => createWildFireBottle()},
+    {chance: 50, type: () => createSphereOfShadow()},
+];
 
 export const PotionTable: XTable = [
     {chance: 25, type: Potions.Health},
@@ -77,7 +84,9 @@ export function getRandomLoot(level: number): Item {
                 description: armour.description,
                 skin: armour.skin
             });
-            loot = a;   
+        case 'misc':
+            const item = getInTable(MiscTable)();
+            loot = item;
             break;
         default:
             throw new Error(`Not implemented loot type : ${itemKind}`);

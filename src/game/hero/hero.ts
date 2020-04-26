@@ -27,7 +27,7 @@ export class Hero implements Entity {
     buffs: Buffs = new Buffs();
     level: number = 1;
     private inventory = new Inventory();
-    sight: number;
+    public sight: number;
     speed: number = 1;
     fightModifier = new FightModifier();
     skillFlags = {

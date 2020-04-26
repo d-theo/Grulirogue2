@@ -97,7 +97,7 @@ export const monsterDead = createEventDefinition<{
 
 export const effectSet = createEventDefinition<MapEffects>()('effectSet');
 export const effectUnset = createEventDefinition<{
-    name: string;
+    id: string;
 }>()('effectUnset');
 
 export const monsterAttacked = createEventDefinition<{
@@ -121,15 +121,16 @@ export const gameOver = createEventDefinition<{}>()('gameOver');
 export const gameFinished = createEventDefinition<{}>()('gameFinished');
 
 type StaticEffet = {
-    name: string;
+    id: string,
+    animation: 'static';
     pos: Coordinate;
-    type: MapEffect.Spike;
+    type: MapEffect;
 }
 type ThrowEffet = {
-    name: string;
+    animation: 'throw';
     from: Coordinate;
     to: Coordinate;
-    type: MapEffect.Projectile;
+    type: MapEffect;
 }
 
 type MapEffects = StaticEffet | ThrowEffet;

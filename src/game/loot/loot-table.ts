@@ -8,7 +8,7 @@ import { craftWeapon } from "./loot-weapons";
 import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
-import { SphereOfShadows, WildfireBottle, createWildFireBottle, createSphereOfShadow } from "./loot-mics";
+import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal } from "./loot-mics";
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -22,11 +22,16 @@ export const ItemTable: XTable[] = [
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
     [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
-]
+];
 
 export const MiscTable: XTable = [
-    {chance: 50, type: () => createWildFireBottle()},
-    {chance: 50, type: () => createSphereOfShadow()},
+    {chance: 15, type: () => createWildFireBottle()},
+    {chance: 15, type: () => createSphereOfShadow()},
+    {chance: 15, type: () => createTomeOfRain()},
+    {chance: 10, type: () => createSmallTorch()},
+    {chance: 15, type: () => createSmellyBottle()},
+    {chance: 10, type: () => createSphereOfLighting()},
+    {chance: 10, type: () => createColdCrystal()},
 ];
 
 export const PotionTable: XTable = [

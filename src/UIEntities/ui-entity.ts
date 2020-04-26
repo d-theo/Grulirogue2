@@ -23,7 +23,7 @@ export class UIEntity {
 		this.healthBar.setOrigin(0,0);
 		this.healthBar.setAlpha(0);
 		this.healthBarFull.setAlpha(0);
-		this.sprite.setZ(1);
+		this.sprite.setDepth(3);
 	}
     
     move() {
@@ -47,7 +47,7 @@ export class UIEntity {
 					this.sprite.setTexture('blood');
 					this.healthBarFull.destroy();
 					this.healthBar.destroy();
-					this.sprite.setZ(0);
+					this.sprite.setDepth(0);
 				} else {
 					this.destroy();
 				}

@@ -17,7 +17,7 @@ export abstract class Item implements ItemArgument {
     skin: string;
     keyMapping: any = {};
     keyDescription: any = {};
-    isUsed = false;
+    isConsumable = true;
     identified = true;
     constructor(arg: {x?:number, y?: number, name?: string, description?: string, skin?: string}) {
         this.pos = {

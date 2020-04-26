@@ -25,9 +25,15 @@ import { PotionColors } from "../game/items/potion";
       this.load.image('Rat', '/assets/sprites/rat.png');
       this.load.image('Snake King', '/assets/sprites/snakeking.png');
       this.load.image('blood', '/assets/sprites/blood.png');
-      this.load.image('shadow', '/assets/sprites/blood.png');
-      this.load.image('fire', '/assets/sprites/fire.png');
-  
+
+      this.load.image('Fire', '/assets/sprites/fire.png');
+      this.load.image('Cold', '/assets/sprites/cold.png');
+      this.load.image('Shadow', '/assets/sprites/shadow.png');
+      this.load.image('Poison', '/assets/sprites/poison.png');
+      this.load.image('Root', '/assets/sprites/root.png');
+      this.load.image('Water', '/assets/sprites/water.png');
+      this.load.image('Light', '/assets/sprites/light.png');
+
       this.load.image('target', '/assets/sprites/target.png');
   
       this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
@@ -48,11 +54,14 @@ import { PotionColors } from "../game/items/potion";
 
       this.load.image('wildfire_bottle', '/assets/sprites/wildfire-bottle.png');
       this.load.image('sphere_of_shadows', '/assets/sprites/sphere-of-shadows.png');
-      this.load.image('Fire', '/assets/sprites/fire.png');
-      this.load.image('Shadow', '/assets/sprites/shadow.png');
+      this.load.image('smelly_bottle', '/assets/sprites/poison-bottle.png');
+      this.load.image('cold_crystal', '/assets/sprites/crystal.png');
+      this.load.image('tome_of_rain', '/assets/sprites/tome-rain.png');
+      this.load.image('small_torch', '/assets/sprites/small-torch.png');
+      this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
       
     }
-  
+    
     create() {
       this.scene.stop().launch(SceneName.Game);
     }

@@ -11,6 +11,7 @@ export class Weapon extends Item implements ItemArgument {
     maxRange: number;
     constructor(arg: any) { // FIXME
         super(arg);
+        this.isConsumable = false;
         this.baseDamage = arg.baseDamage;
         this.maxRange = arg.maxRange || 1;
         this.keyMapping['w'] = this.use.bind(this);

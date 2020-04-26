@@ -66,7 +66,6 @@ export class Potion extends Item implements ItemArgument {
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
         }
         this.effect.cast(target);
-        this.isUsed = true;
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitPotion(this);

@@ -7,6 +7,7 @@ export class Armour extends Item implements ItemArgument{
     public bulky: number;
     constructor(arg: any) { // Todo
         super(arg);
+        this.isConsumable = false;
         this.baseAbsorb = arg.baseAbsorb || 0;
         this.bulky = arg.bulky || 0;
         this.keyMapping['w'] = this.use.bind(this);

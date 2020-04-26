@@ -1,6 +1,11 @@
 export enum MapEffect {
     Spike = 'Spikes',
-    Projectile = 'Projectile',
+    Projectile = 'rock',
     Fire = 'Fire',
-    Shadow = 'Shadow'
+    Shadow = 'Shadow',
+    Root = 'Root',
+    Poison = 'Poison',
+    Cold = 'Cold',
+    Water = 'Water',
+    Light = 'Light'
 }

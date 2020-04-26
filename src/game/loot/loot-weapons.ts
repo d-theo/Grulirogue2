@@ -54,11 +54,12 @@ export const namesPerDamage = [
 ];
 
 export const WeaponEchants: XTable = [
-    {chance: 44, type: 'nothing'},
+    {chance: 39, type: 'nothing'},
     {chance: 15, type: 'plus_one'},
     {chance: 10, type: 'plus_two'},
     {chance: 5, type: 'poisoned'},
     {chance: 5, type: 'bleed'},
+    {chance: 5, type: 'shock'},
     {chance: 3, type: 'plus_three'},
     {chance: 2, type: 'plus_four'},
     {chance: 1, type: 'plus_five'},
@@ -144,6 +145,11 @@ export const craftWeapon = (tier: number): Weapon => {
             case 'poison':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target', chance: 0.5});
                 w.additionalDescription.push('poison the target');
+                w.identified = false;
+                break;
+            case 'shock':
+                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Shock), target: 'target', chance: 0.5});
+                w.additionalDescription.push('Can shock the target. If the target is wet, it also adds a bonus dammage');
                 w.identified = false;
                 break;
             default:

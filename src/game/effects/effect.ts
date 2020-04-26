@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -30,7 +30,10 @@ export enum Effects {
     Accuraty = 'Accuraty',
     Wet = 'Wet',
     RawDamage = 'RawDamage',
-    Shadow = 'Shadow'
+    Shadow = 'Shadow',
+    Shock = 'Shock',
+    Fire = 'Fire',
+    Cold = 'Cold',
 }
 
 export enum SpellNames {
@@ -43,7 +46,14 @@ export enum SpellNames {
     Identify = "Identify",
     Knowledge= "Knowledge",
     WildFire = 'WildFire',
-    Shadow = "Shadow"
+    Shadow = "Shadow",
+    RootTrap = 'RootTrap',
+    PoisonTrap = 'PoisonTrap',
+    PoisonCloud = 'PoisonCloud',
+    ColdCloud = 'ColdCloud',
+    RainCloud = 'RainCloud',
+    FireCloud = 'FireCloud',
+    LightningCloud = 'LightningCloud'
 }
 
 let tilemap: TileMap;
@@ -86,6 +96,18 @@ function createSpell(name: SpellNames) {
             return new WildFireSpell(effect);
         case SpellNames.Shadow:
             return new ShadowSpell(effect);
+        case SpellNames.RootTrap:
+            return new RootTrapSpell(effect);
+        case SpellNames.ColdCloud:
+            return new ColdCloudSpell(effect);
+        case SpellNames.FireCloud:
+            return new FireCloudSpell(effect);
+        case SpellNames.RainCloud:
+            return new RainCloudSpell(effect);
+        case SpellNames.PoisonCloud:
+            return new PoisonCloudSpell(effect);
+        case SpellNames.LightningCloud:
+            return new LightningSpell(effect);
     }
 }
 
@@ -122,6 +144,12 @@ function createEffect(name: Effects) {
             return new ShadowEffet();
         case Effects.RawDamage:
             return new RawDamageEffet();
+        case Effects.Shock:
+            return new ShockEffect();
+        case Effects.Fire:
+            return new FireEffect();
+        case Effects.Cold:
+            return new ColdEffect();
         default:
             throw new Error(`createEffect ${name} is not implemented`);
     }

@@ -113,7 +113,7 @@ export class Hero implements Entity {
         this.health.getStronger(this.skillFlags.gainHpPerLevel);
     }
     consumeItem(item: Item) {
-        if (item.isUsed) {
+        if (item.isConsumable) {
             this.inventory.remove(item);
         }
     }

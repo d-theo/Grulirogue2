@@ -1,40 +1,11 @@
-lootTypeTable [
-    'armour_cloth',
-    'armour_leather',
-    'armour_iron',
-    'ring',
-    'belt',
-    'earing',
-    'bracelet',
-    'necklace',
-    'hemlet',
-    'knife',
-    'boots',
-    'pants',
-    'dynamite',
-]
+accuracy
+maladroit
 
-effects [
-    'blind',
-    'stun',
-    'constitution',
-    'precision',
-    'force',
-    'stupidity',
-    'weakness',
-    'hole',
-    'filling',
-    'invisibility',
-    'fire',
-    'ice',
-    'poison',
-    'teleportation',
-    'swap',
-    'summoning',
-    'haste',
-    'bleed',
-    'experience',
-    'explosive',
-    'weapon_enchant',
-    'armour_enchant'
-]
+
+Smelly bottle : poison
+Sphere of storms => stun + damage if wet
+Root trap
+
+Cold Crystal : cold => dmg + Freeze (stun) if wet
+Torch : fire => dmg + bleeding if poison
+Tome of rain

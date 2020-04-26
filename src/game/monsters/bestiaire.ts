@@ -14,7 +14,7 @@ export const Bestiaire = {
         SnakeKing: {
             kind: "Snake King",
             danger: 30,
-            hp: '17-23',
+            hp: '25-30',
             damage: '6-10',
             range: 1,
             dodge: 0.20,
@@ -40,7 +40,7 @@ export const Bestiaire = {
         Boar: {
             kind: "Boar",
             danger: 15,
-            hp: '10-12',
+            hp: '15-20',
             damage: '2-4',
             range: 1,
             dodge: 0.20
@@ -49,9 +49,9 @@ export const Bestiaire = {
             kind: "Centaurus",
             danger: 20,
             hp: '10-15',
-            damage: '3-5',
+            damage: '5-7',
             range: 6,
-            dodge: 0.05
+            dodge: 0.10
         }
     }
 }

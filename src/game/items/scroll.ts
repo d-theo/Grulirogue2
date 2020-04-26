@@ -23,7 +23,6 @@ export class Scroll extends Item implements ItemArgument {
     static identified: any = {};
     constructor(args: any) {
         super(args);
-
         if (!Scroll.mystery[this._name]) {
             Scroll.mystery[this._name] = this.randomFormula();
         }
@@ -62,7 +61,6 @@ export class Scroll extends Item implements ItemArgument {
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
             this.reveal();
         }
-        this.isUsed = true;
         this.effect.cast(target);
     }
     visit(visitor: ItemVisitor) {

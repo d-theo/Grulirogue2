@@ -10,6 +10,7 @@ export class UIEffect {
 		this.sprite = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), imageKey);
 		this.sprite.setOrigin(0,0);
 		this.sprite.alpha = 0.8;
+		this.sprite.setDepth(1);
 	}
 	pickedUp() {
 		this.sprite.destroy();

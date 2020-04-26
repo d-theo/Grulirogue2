@@ -146,7 +146,7 @@ class GameScene extends Phaser.Scene {
 			gameBus.publish(logPublished({data: 'You cannot do that'}));
 			return;
 		}
-		if(! this.gameEngine.tilemap.hasVisibility({from: this.hero.subject.pos, to: pos}) {
+		if(! this.gameEngine.tilemap.hasVisibility({from: this.hero.subject.pos, to: pos})) {
 			gameBus.publish(logPublished({data: 'You cannot see that far !'}));
 			return;
 		}

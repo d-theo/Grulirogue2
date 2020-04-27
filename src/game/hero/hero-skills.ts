@@ -1,13 +1,14 @@
 import { Hero } from "./hero";
 import { EffectMaker, SpellNames, Effects } from "../effects/effect";
-import { SpeedEffect, RogueSpell, TrapSpell } from "../effects/effects";
-import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc } from "./skill-desc";
+import { SpeedEffect, RogueSpell, TrapSpell, RootTrapSpell } from "../effects/effects";
+import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc, HunterDesc, RogueDesc } from "./skill-desc";
 
 export enum SkillNames {
     Rogue = 'rogue',
     Sneaky = 'sneaky',
     Coward = 'coward',
     Alchemist = 'alchemist',
+    Hunter = 'alchemist',
 }
 
 export class HeroSkills {
@@ -23,13 +24,15 @@ export class HeroSkills {
         {name: 'coward', usable: true, description: CowardDesc, level: 0, maxLevel: 3},
         {name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3},
         {name: 'sneaky', usable: true, description: SneakyDesc, level: 0, maxLevel: 3},
-        //{name: 'rogue', usable: true, description: 'you gain a new ability that allow to put poison on you weapon', level: 0, maxLevel: 1},
+        {name: 'hunter', usable: true, description: HunterDesc, level: 0, maxLevel: 3},
+        {name: 'rogue', usable: true, description: RogueDesc, level: 0, maxLevel: 1},
     ];
 
     Cooldowns = {
         [SkillNames.Coward]: [100, 75, 50],
         [SkillNames.Sneaky]: [100, 75, 50],
         [SkillNames.Rogue]: [100, 75, 50],
+        [SkillNames.Hunter]: [100, 75, 50],
         [SkillNames.Alchemist]: [Infinity],
     };
 
@@ -83,11 +86,16 @@ export class HeroSkills {
                 break;
             case 'rogue': 
                 this.heroCooldowns[SkillNames.Rogue] = 0;
+            case 'hunter': 
+                this.heroCooldowns[SkillNames.Hunter] = 0;
                 break;
         }
     }
     update() {
-        Object.keys(this.heroCooldowns).forEach(k => this.heroCooldowns[k as SkillNames] -=  1);
+        Object.keys(this.heroCooldowns).forEach(k => {
+            let cd = this.heroCooldowns[k as SkillNames];
+            if (cd > 0) this.heroCooldowns[k as SkillNames] -=  1;
+        });
     }
     getSkill(name: SkillNames) {
         return this.AllSkills.find(s => s.name === name);
@@ -117,6 +125,10 @@ export class HeroSkills {
                 case SkillNames.Rogue:
                     const rogueSpell: RogueSpell = EffectMaker.createSpell(SpellNames.Rogue) as RogueSpell;
                     rogueSpell.cast();
+                    break;
+                case SkillNames.Hunter:
+                    const root: RootTrapSpell = EffectMaker.createSpell(SpellNames.RootTrap) as RootTrapSpell;
+                    root.cast();
                     break;
                 default:
                     throw new Error('skill not implemented');

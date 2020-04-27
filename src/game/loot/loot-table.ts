@@ -18,10 +18,10 @@ export const ArmoursTable: XTable[] = [
 
 export const ItemTable: XTable[] = [
     //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}, {chance: 0, type: 'armour'}, {chance: 100, type: 'misc'}],
-    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
 ];
 
 export const MiscTable: XTable = [

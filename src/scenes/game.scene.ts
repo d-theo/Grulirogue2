@@ -60,8 +60,12 @@ class GameScene extends Phaser.Scene {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.subs = [];
-		Object.values(this.gameMonsters).forEach(v => v.destroy())
-		Object.values(this.gameItems).forEach(v => v.destroy())
+		Object.values(this.gameMonsters).forEach(v => v.destroy());
+		Object.values(this.gameItems).forEach(v => v.destroy());
+		Object.values(this.gameEffects).forEach(v => v.destroy());
+		this.hero && this.hero.destroy();
+
+		this.hero = null;
 		this.gameMonsters = {};
 		this.gameItems = {};
 
@@ -264,7 +268,7 @@ class GameScene extends Phaser.Scene {
 			if (data && data.action === 'pickItem') {
 				gameBus.publish(playerUseItem({
 					item: this.actionContext.item,
-					target: data.item,
+					target: this.gameEngine.hero.getItem(data.item),
 					action: this.actionContext.key
 				}));
 			} else if (data && data.action === 'useItem') {
@@ -455,8 +459,11 @@ class GameScene extends Phaser.Scene {
 			const {
 				id
 			} = event.payload;
+			if (! this.gameEffects[id]) {
+				console.log('there is a problem with id');
+			}
 			this.gameEffects[id].destroy();
-			this.gameEffects[id] = undefined;
+			delete this.gameEffects[id];
 		}));
 		this.subs.push(gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);

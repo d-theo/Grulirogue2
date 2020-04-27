@@ -32,6 +32,7 @@ export class TileMap {
 
     constructor() {}
     init(params: MapParamCreation) {
+        this.debuffDurations = [];
         const {isSolid, isWalkable} = tilePropertiesForTerrain();
         const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(params);
         this.tilemap = tilemap;

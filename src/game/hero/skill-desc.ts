@@ -44,7 +44,23 @@ level 3 : +3 dmg
 `;
 
 export const SneakyDesc = 
-`You gain a new ability that allows you to set traps. More expertise in this path will decrease the cooldown and trap damages.
+`You gain a new ability that allows you to set spikes traps. More expertise in this path will decrease the cooldown.
+
+level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
+level 2 : Spike trap that inflicts bleed damage. Cooldown : 75
+level 3 : Spike trap that inflicts bleed damage. Cooldown : 50
+`;
+
+export const HunterDesc = 
+`You gain a new ability that allows you to set root traps. More expertise in this path will decrease the cooldown.
+
+level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
+level 2 : Spike trap that inflicts bleed damage. Cooldown : 75
+level 3 : Spike trap that inflicts bleed damage. Cooldown : 50
+`;
+
+export const RogueDesc = 
+`You gain a new ability that allows you to set poisonous traps. More expertise in this path will decrease the cooldown.
 
 level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
 level 2 : Spike trap that inflicts bleed damage. Cooldown : 75

@@ -101,7 +101,7 @@ export const craftWeapon = (tier: number): Weapon => {
         maxRange: weaponRange,
         skin: getRangeName(weaponRange)
     });
-    const enchants = enchantsForWeapon();
+    const enchants = Array.from(new Set(enchantsForWeapon()));
     for (const e of enchants) {
         switch(e) {
             case 'nothing':
@@ -141,21 +141,25 @@ export const craftWeapon = (tier: number): Weapon => {
             case 'bleed':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target', chance: 0.1});
                 w.additionalDescription.push('inflict bleeding');
+                w.additionalName.push('Bleeding');
                 w.identified = false;
                 break;
             case 'poison':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target', chance: 0.5});
                 w.additionalDescription.push('poison the target');
+                w.additionalName.push('Poison');
                 w.identified = false;
                 break;
             case 'shock':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Shock), target: 'target', chance: 0.5});
                 w.additionalDescription.push('Can shock the target. If the target is wet, it also adds a bonus dammage');
+                w.additionalName.push('Lightning');
                 w.identified = false;
                 break;
             case 'cold':
                 w.additionnalEffects.push({effect: EffectMaker.create(Effects.Cold), target: 'target', chance: 0.5});
                 w.additionalDescription.push('Deals additionnal cold damages. If the target is wet, it also freeze it');
+                w.additionalName.push('Cold');
                 w.identified = false;
                 break;
             default:

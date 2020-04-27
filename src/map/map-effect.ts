@@ -4,7 +4,7 @@ export enum MapEffect {
     Fire = 'Fire',
     Shadow = 'Shadow',
     Root = 'Root',
-    Poison = 'Poison',
+    Poison = 'Poison_Trap',
     Cold = 'Cold',
     Water = 'Water',
     Light = 'Light'

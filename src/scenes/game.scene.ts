@@ -88,6 +88,7 @@ class GameScene extends Phaser.Scene {
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
 		this.target = this.physics.add.sprite(0, 0, 'target');
 		this.target.setOrigin(0, 0);
+		this.target.setDepth(5);
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero.sprite, false);
 
@@ -203,6 +204,7 @@ class GameScene extends Phaser.Scene {
 		}));
 		this.mode = 'play';
 		this.hideRange();
+		this.hideTarget();
 	}
 
 	tryStairs() {
@@ -461,6 +463,8 @@ class GameScene extends Phaser.Scene {
 			} = event.payload;
 			if (! this.gameEffects[id]) {
 				console.log('there is a problem with id');
+				console.log(JSON.stringify(this.gameEngine.tilemap.debuffDurations));
+				return ;
 			}
 			this.gameEffects[id].destroy();
 			delete this.gameEffects[id];
@@ -537,6 +541,30 @@ class GameScene extends Phaser.Scene {
 					y: heroPos.y - 1
 				}
 				break;
+			case 'upleft':
+				newPos = {
+					x: heroPos.x - 1,
+					y: heroPos.y - 1
+				}
+				break;
+			case 'upright':
+				newPos = {
+					x: heroPos.x + 1,
+					y: heroPos.y - 1
+				}
+				break;
+			case 'downright':
+				newPos = {
+					x: heroPos.x + 1,
+					y: heroPos.y + 1
+				}
+				break;
+			case 'downleft':
+				newPos = {
+					x: heroPos.x - 1,
+					y: heroPos.y + 1
+				}
+				break;
 		}
 		this.moveAllowed = false;
 		this.delta = 0;
@@ -560,6 +588,10 @@ class GameScene extends Phaser.Scene {
 			var isDownDown = this.cursors.down.isDown;
 			var isLeftDown = this.cursors.left.isDown;
 			var isRightDown = this.cursors.right.isDown;
+			if (isUpDown && isLeftDown) return this.moveTo('upleft');
+			if (isUpDown && isRightDown) return this.moveTo('upright');
+			if (isLeftDown && isDownDown) return this.moveTo('downleft');
+			if (isRightDown && isDownDown) return this.moveTo('downright');
 			if (isUpDown) return this.moveTo('up');
 			if (isDownDown) return this.moveTo('down');
 			if (isLeftDown) return this.moveTo('left');

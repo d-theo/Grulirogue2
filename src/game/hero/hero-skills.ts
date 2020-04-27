@@ -1,6 +1,6 @@
 import { Hero } from "./hero";
 import { EffectMaker, SpellNames, Effects } from "../effects/effect";
-import { SpeedEffect, RogueSpell, TrapSpell, RootTrapSpell } from "../effects/effects";
+import { SpeedEffect, RogueSpell, TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/effects";
 import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc, HunterDesc, RogueDesc } from "./skill-desc";
 
 export enum SkillNames {
@@ -8,7 +8,7 @@ export enum SkillNames {
     Sneaky = 'sneaky',
     Coward = 'coward',
     Alchemist = 'alchemist',
-    Hunter = 'alchemist',
+    Hunter = 'hunter',
 }
 
 export class HeroSkills {
@@ -25,7 +25,7 @@ export class HeroSkills {
         {name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3},
         {name: 'sneaky', usable: true, description: SneakyDesc, level: 0, maxLevel: 3},
         {name: 'hunter', usable: true, description: HunterDesc, level: 0, maxLevel: 3},
-        {name: 'rogue', usable: true, description: RogueDesc, level: 0, maxLevel: 1},
+        {name: 'rogue', usable: true, description: RogueDesc, level: 0, maxLevel: 3},
     ];
 
     Cooldowns = {
@@ -40,6 +40,7 @@ export class HeroSkills {
         [SkillNames.Coward]: -1,
         [SkillNames.Sneaky]: -1,
         [SkillNames.Rogue]: -1,
+        [SkillNames.Hunter]: -1,
         [SkillNames.Alchemist]: Infinity,
     };
 
@@ -62,7 +63,6 @@ export class HeroSkills {
                 throw new Error(`skill ${name} is already maxed out`);
             }
         }
-
         switch(name) {
             case 'tireless': 
                 this.hero.skillFlags.regenHpOverTime ++;
@@ -123,7 +123,7 @@ export class HeroSkills {
                     runEffect.cast(this.hero);
                     break;
                 case SkillNames.Rogue:
-                    const rogueSpell: RogueSpell = EffectMaker.createSpell(SpellNames.Rogue) as RogueSpell;
+                    const rogueSpell: PoisonTrapSpell = EffectMaker.createSpell(SpellNames.PoisonTrap) as PoisonTrapSpell;
                     rogueSpell.cast();
                     break;
                 case SkillNames.Hunter:

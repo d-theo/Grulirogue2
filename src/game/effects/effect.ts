@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell, PoisonTrapSpell } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -108,6 +108,10 @@ function createSpell(name: SpellNames) {
             return new PoisonCloudSpell(effect);
         case SpellNames.LightningCloud:
             return new LightningSpell(effect);
+        case SpellNames.PoisonTrap:
+            return new PoisonTrapSpell(effect);
+        default:
+            throw new Error(`${name} spell not impl`);
     }
 }
 

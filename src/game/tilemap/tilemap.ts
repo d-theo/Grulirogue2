@@ -109,6 +109,8 @@ export class TileMap {
         monsters.forEach(m => {
             ids = ids.concat(this.playTileEffectOnWalker(m));
         });
+        ids = Array.from(new Set(ids));
+        let toDelete: string[] = [];
         for (let timer of this.debuffDurations) {
             if (ids.indexOf(timer.id) > -1) {
                 timer.triggered = true;
@@ -119,9 +121,11 @@ export class TileMap {
             if (timer.duration === 0) {
                 const tile = this.getAt(timer.pos);
                 tile.removeDebuff(timer.id);
+                toDelete.push(timer.id);
                 gameBus.publish(effectUnset({id: timer.id}));
             }
         }
+        this.debuffDurations = this.debuffDurations.filter(dd => toDelete.indexOf(dd.id) < 0);
     }
     private playTileEffectOnWalker(walker: Hero | Monster) {
         const tile = this.getAt(walker.pos);

@@ -8,6 +8,7 @@ export class Weapon extends Item implements ItemArgument {
     additionnalDmg: number = 0;
     additionnalEffects: {chance: number, effect: IEffect, target: 'attacker' | 'target'}[] = [];
     additionalDescription: string[]=[];
+    additionalName: string[]=[];
     maxRange: number;
     constructor(arg: any) { // FIXME
         super(arg);
@@ -19,22 +20,41 @@ export class Weapon extends Item implements ItemArgument {
     }
 
     get description () {
+        let str = '';
         if (this.identified) {
-            return `
-            kind: ${this.skin}
-            dammages: ${this.baseDamage} + ${this.additionnalDmg}
-            range: ${this.maxRange}
-            ${this.additionalDescription.join('\n')}`;
+            str += "\n";
+            str += "kind: "+this.skin;
+            str += "\n";
+            str += `damages: ${this.baseDamage} + ${this.additionnalDmg}`;
+            str += "\n";
+            str += `range: ${this.maxRange}`;
+            str += "\n";
+            str += "\n";
+            this.additionalDescription.forEach(d => {
+                str += '* '+d;
+                str += "\n";
+                str += "\n";
+            });
         } else {
-            return `
-            kind: ${this.skin}
-            dammages: ${this.baseDamage}
-            range: ${this.maxRange}`;
+            str += "\n";
+            str += "kind: "+this.skin;
+            str += "\n";
+            str += `damages: ${this.baseDamage}`;
+            str += "\n";
+            str += `range: ${this.maxRange}`;
+            str += "\n";
         }
+        return str;
     }
     get name() {
         if (this.identified) {
-            return this._name;
+            let str = this._name;
+            if (this.additionalName.length > 0) {
+                str += ' of ';
+                str += this.additionalName.join(' and ');
+                str += ' + ' + this.additionnalDmg;
+            }
+            return str;
         } else {
             return `${this.skin} (unidentified)`;
         }

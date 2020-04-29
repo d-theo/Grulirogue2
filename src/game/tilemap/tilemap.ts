@@ -2,7 +2,7 @@ import { Tile } from "./tile";
 import { Rect, randomIn } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
-import {createMap, MapParamCreation} from '../../map/map-generator';
+import {createMap} from '../../map/map-generator';
 import { MapGraph } from "../../generation/map_definition";
 import { matrixForEach } from "../utils/matrix";
 import { tilePropertiesForTerrain } from "./tile-type-metadata";
@@ -31,10 +31,10 @@ export class TileMap {
     debuffDurations: DebuffDuration[] = [];
 
     constructor() {}
-    init(params: MapParamCreation) {
+    init(level: number) {
         this.debuffDurations = [];
         const {isSolid, isWalkable} = tilePropertiesForTerrain();
-        const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(params);
+        const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(level);
         this.tilemap = tilemap;
         this.additionalLayer = tilemap2;
         this.graph = mapObject;

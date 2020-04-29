@@ -1,4 +1,4 @@
-import { makeRoomTile } from "../map_tiling";
+import { makeRoomTile } from "../map_tiling_utils";
 import { Terrain } from "../../map/terrain.greece";
 
 export function snakeBossPainter(room, tilemapBg, tilemap) {

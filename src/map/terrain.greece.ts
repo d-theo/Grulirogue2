@@ -52,18 +52,3 @@ export const Terrain = {
     WaterWall:  51,
     Archer: 52,
 };
-export const GreeceCreationParams = {
-    Area: 250, // min area of a room
-    Fuzz: 0.25, // room size variation +-
-    MinClusterSize: 5, // minimal cluster of room
-    Width: 60,
-    Height: 40,
-    MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
-    canvasWidth: 100,
-    canvasHeight: 100,
-    Algo: 'rogue',
-    Locks: false,
-    Danger: [50, 70, 70, 80],
-    Loots: [10, 6, 4, 4],
-    LastLevel: false,
-};

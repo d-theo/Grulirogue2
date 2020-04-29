@@ -1,4 +1,4 @@
-import { ThingToPlace } from "../../generation/map_tiling";
+import { ThingToPlace } from "../../generation/map_tiling_utils";
 import { MonsterCollection } from "../monsters/monsterCollection";
 import { ItemCollection } from "../items/item-collection";
 import { Bestiaire } from "../monsters/bestiaire";

@@ -56,21 +56,22 @@ export class TrapSpell implements IEffect {
 export class RootTrapSpell implements IEffect {
     type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
+    cast() {
+        const root = EffectMaker.create(Effects.Stun) as StunEffect;
+        root.stunKind = 'rooted';
         const id = this.world.getTilemap().addTileEffects({
-            debuff: EffectMaker.create(Effects.Stun),
-            pos,
+            debuff: root,
+            pos: this.world.getHero().pos,
             duration: 1,
             stayOnWalk: false
         });
-        if (id !== null) {
-            gameBus.publish(effectSet({
-                animation: 'static',
-                id: id,
-                type: MapEffect.Root,
-                pos
-            }));
-        }
+        gameBus.publish(effectSet({
+            animation: 'static',
+            id: id,
+            type: MapEffect.Root,
+            pos: this.world.getHero().pos
+        }));
+        
         gameBus.publish(logPublished({data: `trap has been set`}));
     }
 }
@@ -78,21 +79,21 @@ export class RootTrapSpell implements IEffect {
 export class PoisonTrapSpell implements IEffect {
     type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
+    cast() {
+        const pos = this.world.getHero().pos;
         const id = this.world.getTilemap().addTileEffects({
             debuff: EffectMaker.create(Effects.Poison),
             pos,
             duration: 1,
             stayOnWalk: false
         });
-        if (id !== null) {
-            gameBus.publish(effectSet({
-                animation: 'static',
-                id: id,
-                type: MapEffect.Poison,
-                pos
-            }));
-        }
+        gameBus.publish(effectSet({
+            animation: 'static',
+            id: id,
+            type: MapEffect.Poison,
+            pos
+        }));
+        
         gameBus.publish(logPublished({data: `trap has been set`}));
     }
 }
@@ -375,6 +376,7 @@ export class XPEffect implements IEffect {
 
 export class StunEffect implements IEffect   {
     type = EffectTarget.Movable;
+    stunKind = 'stuned';
     turns = 5;
     cast(target: Hero|Monster) {
         target.addBuff({
@@ -383,7 +385,7 @@ export class StunEffect implements IEffect   {
             end: (t: Hero|Monster) => t.enchants.setStuned(false),
             turns: this.turns
         });
-        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`}));
+        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is ${this.stunKind}`}));
     }
 }
 export class BlindEffect implements IEffect   {
@@ -533,6 +535,11 @@ export class PoisonEffect implements IEffect  {
         const poison = (t: Hero | Monster) => {
             const dmg = pickInRange('1-2');
             doDamages(dmg, target, 'poisoning');
+            if (target.enchants.getBurned()) {
+                const bleed = EffectMaker.create(Effects.Bleed) as BleedEffect;
+                bleed.turns = 2;
+                bleed.cast(target);
+            }
         }
         target.addBuff({
             start: (t: Hero|Monster) => { 
@@ -607,22 +614,14 @@ export class ShockEffect implements IEffect {
     type = EffectTarget.Movable;
     turns = 1;
     cast(target: Hero|Monster) {
-        target.addBuff({
-            start: (t: Hero|Monster) => {
-                t.enchants.setStuned(true);
-                if (t.enchants.getWet()) {
-                    doDamages(pickInRange('5-10'), target, 'shock');
-                }
-            },
-            tick: (t: Hero|Monster) => {
-                gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`}));
-            },
-            end: (t: Hero|Monster) => { 
-                t.enchants.setStuned(false);
-            },
-            turns: this.turns
-        });
-        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stuned`}));
+        if (target.enchants.getWet()) {
+            doDamages(pickInRange('5-10'), target, 'shock');
+        }
+        const shock: StunEffect = EffectMaker.create(Effects.Stun) as StunEffect;
+        shock.turns = 1;
+        shock.stunKind = 'shocked';
+        shock.cast(target);
+        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stricken by a lightning bolt`}));
     }
 }
 
@@ -634,6 +633,7 @@ export class ColdEffect implements IEffect {
         if (target.enchants.getWet()) {
             const stunEffect = EffectMaker.create(Effects.Stun) as StunEffect;
             stunEffect.turns = 3;
+            stunEffect.stunKind = 'frozen';
             stunEffect.cast(target);
         }
 
@@ -643,16 +643,39 @@ export class ColdEffect implements IEffect {
 
 export class FireEffect implements IEffect {
     type = EffectTarget.Movable;
-    turns = 5;
-    cast(target: Hero|Monster) {
-        doDamages(pickInRange('1-1'), target, 'burning');
-        if (target.enchants.getPoisoned()) {
-            const bleed = EffectMaker.create(Effects.Bleed) as BleedEffect;
-            bleed.turns = 2;
-            bleed.cast(target);
+    turns = 3;
+    cast(t: Hero|Monster) {
+        const burn = (target: Hero|Monster) => {
+            if (target.enchants.getBurned()) {
+                doDamages(pickInRange('1-1'), target, 'burning');
+                if (target.enchants.getPoisoned() && !target.enchants.getBleeding()) {
+                    const bleed = EffectMaker.create(Effects.Bleed) as BleedEffect;
+                    bleed.turns = 2;
+                    bleed.cast(target);
+                }
+            }
         }
-
-        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is burning`}));
+        const wet = (target: Hero|Monster) => {
+            if (target.enchants.getWet()) {
+                target.enchants.setBurned(false);
+                gameBus.publish(logPublished({level: 'warning', data: `${t.name} stops the burn`}));
+            }
+        }
+        t.addBuff({
+            start: (t: Hero|Monster) => {
+                t.enchants.setBurned(true);
+                wet(t);
+            },
+            tick: (t: Hero|Monster) => {
+                wet(t);
+                burn(t);
+            },
+            end: (t: Hero|Monster) => { 
+                t.enchants.setBurned(false);
+            },
+            turns: this.turns
+        });
+        gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
     }
 }
 

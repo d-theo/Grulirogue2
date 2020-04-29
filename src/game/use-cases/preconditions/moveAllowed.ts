@@ -17,7 +17,7 @@ export function isSurroundingClear (pos: Coordinate, map: TileMap):boolean {
 export function isMovingOnlyOneCase(a: Coordinate, b: Coordinate) :boolean{
     const xd = Math.abs(a.x - b.x);
     const xy = Math.abs(a.y - b.y);
-    return ( (xd+xy) === 1);
+    return Math.max(xd, xy) === 1;
 }
 export function isInsideMapBorder(pos: Coordinate, rect: Rect) {
     if (pos.x < rect.x) return false;

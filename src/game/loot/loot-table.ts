@@ -17,11 +17,11 @@ export const ArmoursTable: XTable[] = [
 ];
 
 export const ItemTable: XTable[] = [
-    //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 0, type: 'weapon'}, {chance: 0, type: 'armour'}, {chance: 100, type: 'misc'}],
-    [{chance: 50, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
-    [{chance: 40, type: 'potion'}, {chance: 20, type: 'scroll'}, {chance: 15, type: 'weapon'}, {chance: 20, type: 'armour'}, {chance: 5, type: 'misc'}],
+    //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 100, type: 'weapon'}, {chance: 0, type: 'armour'}, {chance: 0, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
+    [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
 ];
 
 export const MiscTable: XTable = [
@@ -30,8 +30,8 @@ export const MiscTable: XTable = [
     {chance: 15, type: () => createTomeOfRain()},
     {chance: 10, type: () => createSmallTorch()},
     {chance: 15, type: () => createSmellyBottle()},
-    {chance: 10, type: () => createSphereOfLighting()},
     {chance: 10, type: () => createColdCrystal()},
+    {chance: 100, type: () => createSphereOfLighting()},
 ];
 
 export const PotionTable: XTable = [
@@ -42,8 +42,8 @@ export const PotionTable: XTable = [
     {chance: 12, type: Potions.Curring},
     {chance: 12, type: Potions.Dodge},
     {chance: 5, type: Potions.Immobilisation},
-    {chance: 5, type: Potions.Rage},
-    {chance: 3, type: Potions.Stupidity},
+    {chance: 8, type: Potions.Rage},
+    //{chance: 3, type: Potions.Stupidity},
     {chance: 2, type: Potions.XP},
 ];
 

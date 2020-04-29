@@ -15,8 +15,8 @@ export class EnchantTable {
     private moreVulnerable = false;
     private wet = false;
     private blind = false;
+    private burned = false;
 
-    private sightModifier = 0;
     constructor(private readonly notif: boolean = false) {}
     setStuned(x: boolean) {
         this.stuned = x;
@@ -66,6 +66,10 @@ export class EnchantTable {
         this.wet = x;
         this.update();
     }
+    setBurned(x: boolean) {
+        this.burned = x;
+        this.update();
+    }
     getStuned() {
         return this.stuned;
     }
@@ -92,6 +96,9 @@ export class EnchantTable {
     }
     getWet() {
         return this.wet;
+    }
+    getBurned() {
+        return this.burned;
     }
     report() {
         let r = [];
@@ -127,6 +134,7 @@ export class EnchantTable {
         }
         if (this.blind) r.push('Sight-');
         if (this.wet) r.push('Wet');
+        if (this.burned) r.push('Burned');
         return r;
     }
     clean() {
@@ -142,6 +150,7 @@ export class EnchantTable {
         this.moreVulnerable = false;
         this.wet = false;
         this.blind = false;
+        this.burned = false;
         this.update();
     }
     update() {

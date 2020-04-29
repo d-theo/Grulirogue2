@@ -1,6 +1,15 @@
-import { rand, insideRect, middleOfRect, getMiddlesOfRect, pointInRect, lineIntersectRect, distanceBetween, reduceMin } from "./map-geo";
+import { rand, insideRect, middleOfRect, getMiddlesOfRect, pointInRect, lineIntersectRect, distanceBetween, reduceMin } from "../map-geo";
 
-export function generateRLMap(Params) {
+const Params = {
+    Area: 250, // min area of a room
+    Fuzz: 0.25, // room size variation +-
+    MinClusterSize: 5, // minimal cluster of room
+    Width: 60,
+    Height: 40,
+    MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
+};
+
+export function generateRLMap() {
     let G = createGraph();
     let ROOM_IDX = 0;
     generate();

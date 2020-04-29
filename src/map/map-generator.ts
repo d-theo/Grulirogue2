@@ -1,24 +1,30 @@
-import { createTileMap, ThingToPlace } from "../generation/map_tiling";
 import {MapGraph} from '../generation/map_definition';
+import { greeeceMap } from "../generation/levels/greece-map";
+import { ThingToPlace } from '../generation/map_tiling_utils';
+import { generateRLMap } from '../generation/map-generators/map_generation_rogue';
+import { generateOlMap } from '../generation/map-generators/map_generation_ol';
 
-export type MapParamCreation = {
-    Area: number, // min area of a room
-    Fuzz:number, // room size variation +-
-    MinClusterSize: number, // minimal cluster of room
-    Width: number,
-    Height: number,
-    MinSubSize: number, // subdivise into subcluster if cluster is bigger than MinSubSize
-    canvasWidth: number,
-    canvasHeight: number,
-    Algo: string;
-    Locks: boolean;
-    LastLevel: boolean;
-}
-export function createMap(param: MapParamCreation): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
-    const {tilemap, tilemap2, mapObject, thingsToPlace} = createTileMap(param);
+export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
+    let painterFn;
+    let mapGeneratorFn;
+    switch(name) {
+        case 1:
+            painterFn = greeeceMap;
+            mapGeneratorFn = generateRLMap;
+            break;
+        case 2: 
+            painterFn = greeeceMap;
+            mapGeneratorFn = generateOlMap;
+            break;
+        case 3:
+            painterFn = greeeceMap;
+            mapGeneratorFn = generateRLMap;
+            break;
+    }
+    const {tilemapBG, tilemapFG, mapObject, thingsToPlace} = painterFn(mapGeneratorFn, []);
     return {
-        tilemap: tilemap,
-        tilemap2: tilemap2,
+        tilemap: tilemapBG,
+        tilemap2: tilemapFG,
         thingsToPlace: thingsToPlace,
         mapObject: (mapObject as any as MapGraph)};
 }

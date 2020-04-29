@@ -5,17 +5,16 @@ import { playerMove } from "./use-cases/playerMove";
 import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {GreeceCreationParams} from '../map/terrain.greece';
 import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { Monster } from "./monsters/monster";
-import { ThingToPlace } from "../generation/map_tiling";
 import { makeThings } from "./special/additionnal-things";
 import { monstersSpawn } from "./generation/monster-spawn";
 import { itemSpawn } from "./generation/item-spawn";
+import { ThingToPlace } from "../generation/map_tiling_utils";
 
 export class Game {
     static Engine: Game;
@@ -26,6 +25,8 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     level = 1;
+    Danger = [50, 70, 70, 80];
+    Loots = [10, 6, 4, 4];
     constructor() {
         Log.init();
         this.tilemap = new TileMap();
@@ -53,16 +54,12 @@ export class Game {
         if (this.level === 4) gameBus.publish(gameFinished({}));
         
         let additionalThingsToPlace: ThingToPlace[] = [];
-        if (this.level < 4) {
-            GreeceCreationParams.Algo = this.level % 2 == 0 ? 'dig' : 'rogue';
-            GreeceCreationParams.LastLevel = this.level === 3;
-            additionalThingsToPlace = this.tilemap.init(GreeceCreationParams);
-        }
+        additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
         this.adjustSight();
-        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, GreeceCreationParams.Danger[this.level-1]));
+        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level-1]));
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
-        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + GreeceCreationParams.Loots[this.level-1]));
+        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level-1]));
         makeThings(additionalThingsToPlace, this.monsters, this.items);
         if (this.tilemap.graph.bossRoom && this.level == 2) {
             gameBus.publish(logPublished({level: 'warning', data:'You hear a distinct hissing...'}));

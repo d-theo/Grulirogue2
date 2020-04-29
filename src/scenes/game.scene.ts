@@ -60,8 +60,12 @@ class GameScene extends Phaser.Scene {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
 		this.subs = [];
-		Object.values(this.gameMonsters).forEach(v => v.destroy())
-		Object.values(this.gameItems).forEach(v => v.destroy())
+		Object.values(this.gameMonsters).forEach(v => v.destroy());
+		Object.values(this.gameItems).forEach(v => v.destroy());
+		Object.values(this.gameEffects).forEach(v => v.destroy());
+		this.hero && this.hero.destroy();
+
+		this.hero = null;
 		this.gameMonsters = {};
 		this.gameItems = {};
 
@@ -84,6 +88,7 @@ class GameScene extends Phaser.Scene {
 		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
 		this.target = this.physics.add.sprite(0, 0, 'target');
 		this.target.setOrigin(0, 0);
+		this.target.setDepth(5);
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero.sprite, false);
 
@@ -199,6 +204,7 @@ class GameScene extends Phaser.Scene {
 		}));
 		this.mode = 'play';
 		this.hideRange();
+		this.hideTarget();
 	}
 
 	tryStairs() {
@@ -264,7 +270,7 @@ class GameScene extends Phaser.Scene {
 			if (data && data.action === 'pickItem') {
 				gameBus.publish(playerUseItem({
 					item: this.actionContext.item,
-					target: data.item,
+					target: this.gameEngine.hero.getItem(data.item),
 					action: this.actionContext.key
 				}));
 			} else if (data && data.action === 'useItem') {
@@ -455,8 +461,13 @@ class GameScene extends Phaser.Scene {
 			const {
 				id
 			} = event.payload;
+			if (! this.gameEffects[id]) {
+				console.log('there is a problem with id');
+				console.log(JSON.stringify(this.gameEngine.tilemap.debuffDurations));
+				return ;
+			}
 			this.gameEffects[id].destroy();
-			this.gameEffects[id] = undefined;
+			delete this.gameEffects[id];
 		}));
 		this.subs.push(gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);
@@ -530,6 +541,30 @@ class GameScene extends Phaser.Scene {
 					y: heroPos.y - 1
 				}
 				break;
+			case 'upleft':
+				newPos = {
+					x: heroPos.x - 1,
+					y: heroPos.y - 1
+				}
+				break;
+			case 'upright':
+				newPos = {
+					x: heroPos.x + 1,
+					y: heroPos.y - 1
+				}
+				break;
+			case 'downright':
+				newPos = {
+					x: heroPos.x + 1,
+					y: heroPos.y + 1
+				}
+				break;
+			case 'downleft':
+				newPos = {
+					x: heroPos.x - 1,
+					y: heroPos.y + 1
+				}
+				break;
 		}
 		this.moveAllowed = false;
 		this.delta = 0;
@@ -553,6 +588,10 @@ class GameScene extends Phaser.Scene {
 			var isDownDown = this.cursors.down.isDown;
 			var isLeftDown = this.cursors.left.isDown;
 			var isRightDown = this.cursors.right.isDown;
+			if (isUpDown && isLeftDown) return this.moveTo('upleft');
+			if (isUpDown && isRightDown) return this.moveTo('upright');
+			if (isLeftDown && isDownDown) return this.moveTo('downleft');
+			if (isRightDown && isDownDown) return this.moveTo('downright');
 			if (isUpDown) return this.moveTo('up');
 			if (isDownDown) return this.moveTo('down');
 			if (isLeftDown) return this.moveTo('left');

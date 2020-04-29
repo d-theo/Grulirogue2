@@ -30,23 +30,24 @@ export function greeceDeco(room, tilemapBg, tilemap) {
 
     // 
     if (Math.random() > 0.7) {
-        const pos = randomIn(room.rect, 2);
+        const pos = randomIn(room.rect, 1);
         assign(pos, Terrain.Deco1);
     }
     if (Math.random() > 0.7) {
-        const pos = randomIn(room.rect, 2);
+        const pos = randomIn(room.rect, 1);
         assign(pos, Terrain.Deco2);
     }
     if (Math.random() > 0.7) {
-        const pos = randomIn(room.rect, 2);
+        const pos = randomIn(room.rect, 1);
         assign(pos, Terrain.Deco3);
     }
     if (Math.random() > 0.7) {
-        const pos = randomIn(room.rect, 2);
-        assign(pos, Terrain.Deco4);
+        const pos = randomIn(room.rect, 1);
+        assign(pos, Terrain.Deco4[0]);
+        assign({x:pos.x+1, y: pos.y}, Terrain.Deco4[1]);
     }
     if (Math.random() > 0.7) {
-        const pos = randomIn(room.rect, 2);
+        const pos = randomIn(room.rect, 1);
         assign(pos, Terrain.Deco5);
     }
 }

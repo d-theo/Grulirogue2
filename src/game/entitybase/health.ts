@@ -24,7 +24,7 @@ export class Health {
     }
     getStronger(level: number) {
         let moreHp = pickInRange('2-4');
-        moreHp += pickInRange('1-2')*level;
+        moreHp += pickInRange('1-2')+level;
         this.currentHp += moreHp;
         this.baseHp += moreHp;
         gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));

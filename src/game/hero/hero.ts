@@ -12,7 +12,7 @@ import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 
-const XP = [0, 30, 70, 115, 200, 300, 450, 700, 900];
+const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
 export class Hero implements Entity {
     name: string;

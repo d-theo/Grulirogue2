@@ -90,7 +90,7 @@ export const craftWeapon = (tier: number): Weapon => {
     const rangeIdx = pickInRange(`${tier-1}-${tier+1}`);
     const weaponRange = rangePerTier[rangeIdx];
 
-    const rand = new GameRange(DmgPerTier[dmgIdx-1], DmgPerTier[dmgIdx]);
+    const rand = new GameRange(DmgPerTier[dmgIdx-1], DmgPerTier[dmgIdx]); // fixme
     const dmg = [rand.pick(), rand.pick()].sort();
     const weaponDmg = dmg.join('-');
 

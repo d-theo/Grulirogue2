@@ -12,6 +12,7 @@ import { waterPainter } from "./painters/water-painter";
 import { snakeBossPainter } from "./painters/snakeboss-painter";
 import { MapGraph } from "./map_definition";
 import { Coordinate } from "../game/utils/coordinate";
+import { generatePirateMap } from "./graph-definition";
 
 export interface ThingToPlace {
     pos: Coordinate,
@@ -21,7 +22,8 @@ export interface ThingToPlace {
 export function createTileMap(params: MapParamCreation) {
     let map;
     if (params.Algo === 'rogue') {
-        map = generateRLMap(params);
+        //map = generateRLMap(params);
+        map = generatePirateMap(params);
     } else {
         map = generateOlMap(params);
     }

@@ -39,7 +39,8 @@ export class TrapSpell implements IEffect {
             debuff: EffectMaker.create(Effects.Bleed),
             pos,
             duration: 1,
-            stayOnWalk: false
+            stayOnWalk: false,
+            debugId: "TrapSpell",
         });
         if (id !== null) {
             gameBus.publish(effectSet({
@@ -63,7 +64,8 @@ export class RootTrapSpell implements IEffect {
             debuff: root,
             pos: this.world.getHero().pos,
             duration: 1,
-            stayOnWalk: false
+            stayOnWalk: false,
+            debugId: "RootTrapSpell",
         });
         gameBus.publish(effectSet({
             animation: 'static',
@@ -85,7 +87,8 @@ export class PoisonTrapSpell implements IEffect {
             debuff: EffectMaker.create(Effects.Poison),
             pos,
             duration: 1,
-            stayOnWalk: false
+            stayOnWalk: false,
+            debugId: "PoisonTrapSpell",
         });
         gameBus.publish(effectSet({
             animation: 'static',
@@ -108,7 +111,8 @@ export class WildFireSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.RawDamage),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "WildFireSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -132,7 +136,8 @@ export class LightningSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Shock),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "LightningSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -156,7 +161,8 @@ export class PoisonCloudSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Poison),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "PoisonCloudSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -180,7 +186,8 @@ export class ColdCloudSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Cold),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "ColdCloudSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -204,7 +211,8 @@ export class RainCloudSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Wet),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "RainCloudSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -228,7 +236,8 @@ export class FireCloudSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Fire),
                 pos: p,
                 duration: 10,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "FireCloudSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({
@@ -252,7 +261,8 @@ export class ShadowSpell implements IEffect {
                 debuff: EffectMaker.create(Effects.Shadow),
                 pos: p,
                 duration: 40,
-                stayOnWalk: true
+                stayOnWalk: true,
+                debugId: "ShadowSpell"
             });
             if (id !== null) {
                 gameBus.publish(effectSet({

@@ -11,11 +11,8 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
     let mapGeneratorFn;
     switch(name) {
         case 1:
-            /*painterFn = greeeceMap;
+            painterFn = greeeceMap;
             mapGeneratorFn = generateRLMap;
-            break;*/
-            painterFn = pirateMap;
-            mapGeneratorFn = generatePirateMap;
             break;
         case 2: 
             painterFn = greeeceMap;
@@ -24,6 +21,14 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
         case 3:
             painterFn = greeeceMap;
             mapGeneratorFn = generateRLMap;
+            break;
+        case 4:
+            painterFn = pirateMap;
+            mapGeneratorFn = generatePirateMap;
+            break;
+        case 5:
+            painterFn = pirateMap;
+            mapGeneratorFn = generatePirateMap;
             break;
     }
     const {tilemapBG, tilemapFG, mapObject, thingsToPlace} = painterFn(mapGeneratorFn, []);

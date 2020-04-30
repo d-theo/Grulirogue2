@@ -4,7 +4,10 @@ import { pickInRange } from '../utils/random';
 export const MobTable: XTable[] = [
     [{chance: 40, type: Bestiaire.Greece.Bat}, {chance: 60, type: Bestiaire.Greece.Rat}],
     [{chance: 40, type: Bestiaire.Greece.Snake}, {chance: 25, type: Bestiaire.Greece.Bat}, {chance: 25, type: Bestiaire.Greece.Rat}, {chance: 10, type: Bestiaire.Greece.Boar}],
-    [{chance: 50, type: Bestiaire.Greece.Snake}, {chance: 40, type: Bestiaire.Greece.Boar}, {chance: 10, type: Bestiaire.Greece.Centaurus}],
+    [{chance: 30, type: Bestiaire.Greece.Snake}, {chance: 40, type: Bestiaire.Greece.Boar}, {chance: 30, type: Bestiaire.Greece.Centaurus}],
+    [{chance: 50, type: Bestiaire.Pirate.Rat}, {chance: 40, type: Bestiaire.Pirate.Crab}, {chance: 10, type: Bestiaire.Pirate.Sailor}, {chance: 0, type: Bestiaire.Pirate.Pirate}],
+    [{chance: 20, type: Bestiaire.Pirate.Rat}, {chance: 30, type: Bestiaire.Pirate.Crab}, {chance: 30, type: Bestiaire.Pirate.Sailor}, {chance: 20, type: Bestiaire.Pirate.Pirate}],
+    [{chance: 20, type: Bestiaire.Pirate.Rat}, {chance: 30, type: Bestiaire.Pirate.Crab}, {chance: 30, type: Bestiaire.Pirate.Sailor}, {chance: 20, type: Bestiaire.Pirate.Pirate}],
 ]
 
 export function randomMobForLevel(level: number) {

@@ -86,8 +86,8 @@ const getRangeName = (range: number) => {
 
 export const craftWeapon = (tier: number): Weapon => {
     if (tier <= 0) tier = 1;
-    const dmgIdx = pickInRange(`${tier-1}-${tier+1}`);
-    const rangeIdx = pickInRange(`${tier-1}-${tier+1}`);
+    const dmgIdx = pickInRange(`${1}-${tier+1}`);
+    const rangeIdx = pickInRange(`${0}-${tier+1}`);
     const weaponRange = rangePerTier[rangeIdx];
 
     const rand = new GameRange(DmgPerTier[dmgIdx-1], DmgPerTier[dmgIdx]); // fixme

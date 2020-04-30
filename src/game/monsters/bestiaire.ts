@@ -53,5 +53,40 @@ export const Bestiaire = {
             range: 6,
             dodge: 0.10
         }
+    },
+    Pirate: {
+        Rat:{
+            kind: "Rat",
+            danger: 10,
+            hp: '5-10',
+            damage: '3-4',
+            range: 1,
+            dodge: 0.05
+        },
+        Crab: {
+            kind: "Crab",
+            danger: 15,
+            damage: '7-8',
+            hp: '10-15',
+            dodge: 0.05
+        },
+        Sailor:{
+            kind: "Sailor",
+            danger: 20,
+            hp: '30-35',
+            damage: '9-14',
+            range: 1,
+            dodge: 0.0,
+            onHit: {chance: 0.5, target: 'target', effect: EffectMaker.create(Effects.Stun)}
+        },
+        Pirate:{
+            kind: "Pirate",
+            danger: 30,
+            hp: '25-30',
+            damage: '6-10',
+            range: 1,
+            dodge: 0.20,
+            onHit: {chance: 0.2, target: 'target', effect: EffectMaker.create(Effects.Bleed)}
+        }
     }
 }

@@ -15,7 +15,7 @@ import { Terrain } from "../../map/terrain.greece";
 import { EffectMaker, Effects } from "../effects/effect";
 let short = require('short-uuid');
 
-type DebuffDuration = {id: string, duration: number, triggered: boolean, pos: Coordinate};
+type DebuffDuration = {debugId?: string, id: string, duration: number, triggered: boolean, pos: Coordinate};
 
 export class TileMap {
     graph!: MapGraph;
@@ -88,12 +88,12 @@ export class TileMap {
         return this.tiles[pos.y][pos.x];
     }
 
-    addTileEffects(args: {pos: Coordinate, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
-        const {pos, debuff, duration, stayOnWalk} = args;
+    addTileEffects(args: {debugId?: string, pos: Coordinate, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
+        const {pos, debuff, duration, stayOnWalk, debugId} = args;
         const id = short.generate();
         if (this.getAt(pos).isSolid()) return null;
         this.getAt(pos).addDebuff({id, debuff: debuff});
-        this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos});
+        this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos, debugId});
         return id;
     }
     addTileEffects2(args: {tile: Tile, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
@@ -123,6 +123,9 @@ export class TileMap {
                 tile.removeDebuff(timer.id);
                 toDelete.push(timer.id);
                 gameBus.publish(effectUnset({id: timer.id}));
+            }
+            if (timer.duration == null) {
+                console.log('WTF', timer);
             }
         }
         this.debuffDurations = this.debuffDurations.filter(dd => toDelete.indexOf(dd.id) < 0);

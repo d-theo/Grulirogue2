@@ -462,8 +462,14 @@ class GameScene extends Phaser.Scene {
 				id
 			} = event.payload;
 			if (! this.gameEffects[id]) {
-				console.log('there is a problem with id');
+				console.log('there is a problem with id' + id);
 				console.log(JSON.stringify(this.gameEngine.tilemap.debuffDurations));
+				console.log(JSON.stringify(Object.keys(this.gameEffects)));
+				// fixme
+				/*
+				[{"id":"gecBWZsoRuaQQMe6cspbuc","duration":null,"triggered":true,"pos":{"x":25,"y":42}},{"id":"rMWFeQsBgoRDoWygRd8SMM","duration":null,"triggered":true,"pos":{"x":26,"y":43}},{"id":"uU54Gw23Kui9PdJGURHQdb","duration":0,"triggered":true,"pos":{"x":52,"y":23}}]
+				*/
+
 				return ;
 			}
 			this.gameEffects[id].destroy();

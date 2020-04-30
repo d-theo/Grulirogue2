@@ -1,6 +1,6 @@
 import { Hero } from "./hero";
 import { EffectMaker, SpellNames, Effects } from "../effects/effect";
-import { SpeedEffect, RogueSpell, TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/effects";
+import { SpeedEffect, TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/effects";
 import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc, HunterDesc, RogueDesc } from "./skill-desc";
 
 export enum SkillNames {

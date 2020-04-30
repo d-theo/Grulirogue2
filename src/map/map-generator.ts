@@ -3,14 +3,19 @@ import { greeeceMap } from "../generation/levels/greece-map";
 import { ThingToPlace } from '../generation/map_tiling_utils';
 import { generateRLMap } from '../generation/map-generators/map_generation_rogue';
 import { generateOlMap } from '../generation/map-generators/map_generation_ol';
+import { pirateMap } from '../generation/levels/pirate-map';
+import { generatePirateMap } from '../generation/map-generators/map_generation_pirate1';
 
 export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
     let painterFn;
     let mapGeneratorFn;
     switch(name) {
         case 1:
-            painterFn = greeeceMap;
+            /*painterFn = greeeceMap;
             mapGeneratorFn = generateRLMap;
+            break;*/
+            painterFn = pirateMap;
+            mapGeneratorFn = generatePirateMap;
             break;
         case 2: 
             painterFn = greeeceMap;

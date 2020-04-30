@@ -18,6 +18,10 @@ export function tilePropertiesForTerrain() {
             Terrain.WallS,
             Terrain.WallE,
             Terrain.WallN,
+            Terrain.PirateWallN,
+            Terrain.PirateWallS,
+            Terrain.PirateWallE,
+            Terrain.PirateWallW,
         ].indexOf(type) > -1;
     }
     function isWalkable(type: number) {
@@ -29,6 +33,8 @@ export function tilePropertiesForTerrain() {
             Terrain.Deco3,
             Terrain.Deco4[0],Terrain.Deco4[1],
             Terrain.Deco5,
+            Terrain.FloorRope,
+            Terrain.Barrel
         ].indexOf(type) < 0;
     }
 }

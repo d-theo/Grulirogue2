@@ -90,7 +90,7 @@ export class PoisonTrapSpell implements IEffect {
         gameBus.publish(effectSet({
             animation: 'static',
             id: id,
-            type: MapEffect.Poison,
+            type: MapEffect.PoisonTrap,
             pos
         }));
         
@@ -285,18 +285,6 @@ export class KnowledgeSpell implements IEffect {
         });
         gameBus.publish(logPublished({level: 'success', data:'Yee see everything !'}));
         gameBus.publish(sightUpdated({}));
-    }
-}
-
-export class RogueSpell implements IEffect {
-    type = EffectTarget.None;
-    constructor(private readonly world: WorldEffect) {}
-    cast() {
-        this.world.getHero().weapon.additionnalEffects.push({
-            effect: EffectMaker.create(Effects.Poison),
-            target: 'target',
-            chance: 1
-        });
     }
 }
 

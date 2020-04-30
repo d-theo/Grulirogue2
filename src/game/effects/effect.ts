@@ -2,7 +2,7 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, RogueSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell, PoisonTrapSpell } from './effects';
+import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell, PoisonTrapSpell } from './effects';
 import { microValidator } from '../utils/micro-validator';
 
 export type BuffDefinition = {
@@ -38,7 +38,6 @@ export enum Effects {
 
 export enum SpellNames {
     SpikeTrap = 'SpikeTrap',
-    Rogue = "Rogue",
     Teleportation = "Teleportation",
     EnchantWeapon = "EnchantWeapon",
     EnchantArmour = "EnchantArmour",
@@ -78,8 +77,6 @@ function createSpell(name: SpellNames) {
     switch(name) {
         case SpellNames.SpikeTrap: 
             return new TrapSpell(effect);
-        case SpellNames.Rogue:
-            return new RogueSpell(effect);
         case SpellNames.Teleportation:
             return new TeleportationSpell(effect);
         case SpellNames.EnchantArmour:

@@ -25,8 +25,8 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     level = 1;
-    Danger = [50, 70, 70, 90, 120, 160];
-    Loots = [10, 6, 5, 5, 5, 5];
+    Danger = [50, 70, 80, 90, 120, 160];
+    Loots = [10, 7, 5, 5, 5, 5];
     constructor() {
         Log.init();
         this.tilemap = new TileMap();

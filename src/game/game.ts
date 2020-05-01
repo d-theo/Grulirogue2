@@ -24,7 +24,7 @@ export class Game {
     items: ItemCollection;
     loopNb: number;
     currentTurn: number;
-    level = 4;
+    level = 1;
     Danger = [50, 70, 70, 90, 120, 160];
     Loots = [10, 6, 5, 5, 5, 5];
     constructor() {
@@ -51,7 +51,7 @@ export class Game {
     }
 
     reInitLevel() {
-        if (this.level === 6) gameBus.publish(gameFinished({}));
+        if (this.level === 5) gameBus.publish(gameFinished({}));
         
         let additionalThingsToPlace: ThingToPlace[] = [];
         additionalThingsToPlace = this.tilemap.init(this.level);

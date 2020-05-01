@@ -30,9 +30,9 @@ export class HeroSkills {
 
     Cooldowns = {
         [SkillNames.Coward]: [100, 75, 50],
-        [SkillNames.Sneaky]: [100, 75, 50],
-        [SkillNames.Rogue]: [100, 75, 50],
-        [SkillNames.Hunter]: [100, 75, 50],
+        [SkillNames.Sneaky]: [400, 300, 200],
+        [SkillNames.Rogue]: [300, 150, 100],
+        [SkillNames.Hunter]: [200, 100, 75],
         [SkillNames.Alchemist]: [Infinity],
     };
 

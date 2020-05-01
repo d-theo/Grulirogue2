@@ -14,8 +14,11 @@ import {Terrain} from '../map/terrain.greece';
 import {MapEffect}from '../map/map-effect';
 import {EffectTarget} from '../game/effects/effects';
 import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState, Modes } from '../eventBus/states';
+import { Keyboard } from '../phaser-addition/keyboard';
 
 class GameScene extends Phaser.Scene {
+	keyboard: Keyboard;
+
 	hero: UIEntity;
 	target: Phaser.GameObjects.Sprite;
 	gameMonsters: {[id: string]: UIEntity} = {};
@@ -59,7 +62,6 @@ class GameScene extends Phaser.Scene {
 	reInit() {
 		this.gameEngine = GameEngine.getInstance();
 		this.tilemap = this.gameEngine.tilemap.tilemap;
-		this.subs = [];
 		Object.values(this.gameMonsters).forEach(v => v.destroy());
 		Object.values(this.gameItems).forEach(v => v.destroy());
 		Object.values(this.gameEffects).forEach(v => v.destroy());
@@ -68,6 +70,7 @@ class GameScene extends Phaser.Scene {
 		this.hero = null;
 		this.gameMonsters = {};
 		this.gameItems = {};
+		this.gameEffects = {};
 
 		var map: Phaser.Tilemaps.Tilemap = this.make.tilemap({
 			data: this.tilemap,
@@ -91,8 +94,6 @@ class GameScene extends Phaser.Scene {
 		this.target.setDepth(5);
 		this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 		this.cameras.main.startFollow(this.hero.sprite, false);
-
-		this.initGameEvents();
 
 		// hack ! 
 		setTimeout(() => {
@@ -182,6 +183,7 @@ class GameScene extends Phaser.Scene {
 	}
 
 	displayInventory() {
+		this.keyboard.pause();
 		this.scene.pause()
 			.launch(SceneName.Inventory, {
 				config: this.gameEngine.hero.openBag(),
@@ -191,6 +193,7 @@ class GameScene extends Phaser.Scene {
 
 	displaySkill() {
 		if (this.gameEngine.hero.heroSkills.usableSkills().length > 0) {
+			this.keyboard.pause();
 			this.scene.pause().launch(SceneName.SkillTreeScene, {
 				data: this.gameEngine.hero.heroSkills.usableSkills(),
 				action: 'useSkill'
@@ -209,7 +212,6 @@ class GameScene extends Phaser.Scene {
 
 	tryStairs() {
 		if (this.gameEngine.canGoToNextLevel()) {
-			this.subs.forEach(s => s());
 			gameBus.publish(nextLevel({}));
 		}
 	}
@@ -234,15 +236,21 @@ class GameScene extends Phaser.Scene {
 		/*this.input.on('pointermove', () => {
 			this.target.setAlpha(0.9);
 		});*/
+		this.keyboard = new Keyboard();
 		this.input.on('pointerup', this.handleMouseClick.bind(this));
-
-		this.cursors = this.input.keyboard.createCursorKeys();
+		this.initGameEvents();
+		// this.cursors = this.input.keyboard.createCursorKeys();
+		this.input.keyboard.on('keydown-' + 'UP', (e) => this.keyboard.keyPressed(e.key));
+		this.input.keyboard.on('keydown-' + 'DOWN',(e) => this.keyboard.keyPressed(e.key));
+		this.input.keyboard.on('keydown-' + 'LEFT', (e) => this.keyboard.keyPressed(e.key));
+		this.input.keyboard.on('keydown-' + 'RIGHT', (e) => this.keyboard.keyPressed(e.key));
 		this.input.keyboard.on('keyup', (event) => {
 			switch (event.key) {
 				case 'ArrowUp':
 				case 'ArrowDown':
 				case 'ArrowLeft':
 				case 'ArrowRight':
+					this.keyboard.keyReleased(event.key);
 					return this.gameContext.arrow(event.key);
 				case 'i':
 					return this.gameContext.i();
@@ -267,6 +275,7 @@ class GameScene extends Phaser.Scene {
 			key: string,
 			item: Item
 		} | undefined) => {
+			this.keyboard.resume();
 			if (data && data.action === 'pickItem') {
 				gameBus.publish(playerUseItem({
 					item: this.actionContext.item,
@@ -307,6 +316,7 @@ class GameScene extends Phaser.Scene {
 							...data,
 							target: itemNeedsTarget
 						};
+						this.keyboard.pause();
 						setTimeout(() => {
 							this.scene.pause().launch(SceneName.Inventory, {
 								config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']),
@@ -319,6 +329,7 @@ class GameScene extends Phaser.Scene {
 							...data,
 							target: itemNeedsTarget
 						};
+						this.keyboard.pause();
 						setTimeout(() => {
 							this.scene
 								.pause()
@@ -341,6 +352,7 @@ class GameScene extends Phaser.Scene {
 							...data,
 							target: itemNeedsTarget
 						};
+
 						setTimeout(() => {
 							this.scene
 								.pause()
@@ -380,6 +392,7 @@ class GameScene extends Phaser.Scene {
 	}
 
 	initGameEvents() {
+		this.subs = [];
 		this.subs.push(gameBus.subscribe(sightUpdated, event => {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
@@ -435,6 +448,7 @@ class GameScene extends Phaser.Scene {
 				status
 			} = event.payload;
 			if (status === 'level_up') {
+				this.keyboard.pause();
 				this.scene.pause().launch(SceneName.SkillTreeScene, {
 					data: this.gameEngine.hero.heroSkills.AllSkills,
 					action: 'pickSkill'
@@ -465,11 +479,6 @@ class GameScene extends Phaser.Scene {
 				console.log('there is a problem with id' + id);
 				console.log(JSON.stringify(this.gameEngine.tilemap.debuffDurations));
 				console.log(JSON.stringify(Object.keys(this.gameEffects)));
-				// fixme
-				/*
-				[{"id":"gecBWZsoRuaQQMe6cspbuc","duration":null,"triggered":true,"pos":{"x":25,"y":42}},{"id":"rMWFeQsBgoRDoWygRd8SMM","duration":null,"triggered":true,"pos":{"x":26,"y":43}},{"id":"uU54Gw23Kui9PdJGURHQdb","duration":0,"triggered":true,"pos":{"x":52,"y":23}}]
-				*/
-
 				return ;
 			}
 			this.gameEffects[id].destroy();
@@ -590,10 +599,14 @@ class GameScene extends Phaser.Scene {
 		}
 
 		if (this.gameContext.isOnState(Modes.Play)) {
-			var isUpDown = this.cursors.up.isDown;
+			/*var isUpDown = this.cursors.up.isDown;
 			var isDownDown = this.cursors.down.isDown;
 			var isLeftDown = this.cursors.left.isDown;
-			var isRightDown = this.cursors.right.isDown;
+			var isRightDown = this.cursors.right.isDown;*/
+			var isUpDown = this.keyboard.pressed.up;
+			var isDownDown = this.keyboard.pressed.down;
+			var isLeftDown = this.keyboard.pressed.left;
+			var isRightDown = this.keyboard.pressed.right;
 			if (isUpDown && isLeftDown) return this.moveTo('upleft');
 			if (isUpDown && isRightDown) return this.moveTo('upright');
 			if (isLeftDown && isDownDown) return this.moveTo('downleft');

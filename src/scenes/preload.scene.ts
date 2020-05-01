@@ -24,6 +24,12 @@ import { PotionColors } from "../game/items/potion";
       this.load.image('Bat', '/assets/sprites/cavebat.png');
       this.load.image('Rat', '/assets/sprites/rat.png');
       this.load.image('Snake King', '/assets/sprites/snakeking.png');
+      this.load.image('Crab', '/assets/sprites/crab-red.png');
+      this.load.image('Crab King', '/assets/sprites/crab-green.png');
+      this.load.image('Pirate', '/assets/sprites/pirate.png');
+      this.load.image('Sailor', '/assets/sprites/sailor.png');
+
+
       this.load.image('blood', '/assets/sprites/blood.png');
 
       this.load.image('Fire', '/assets/sprites/fire.png');

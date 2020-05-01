@@ -9,7 +9,7 @@ export class Buffs {
         
     }
     cleanBuff() {
-        this.buffs = [];
+        this.buffs.forEach(buf => buf.turns = 0);
     }
     apply(target: any) {
         const nextTurn: BuffDefinition[] = []

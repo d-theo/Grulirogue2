@@ -8,7 +8,7 @@ level 3 : 1HP every 6 turns
 
 export const TankDesc = 
 `Each time you level up, you will be granted extra permanent Health Points
-Each level grants you a random extra HP according to the forumula: random(1,2) * level in Tank
+Each level grants you a random extra HP according to the forumula: random(1,2) + level in Tank
 `;
 
 export const MonkDesc = 
@@ -46,23 +46,23 @@ level 3 : +3 dmg
 export const SneakyDesc = 
 `You gain a new ability that allows you to set spikes traps. More expertise in this path will decrease the cooldown.
 
-level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
-level 2 : Spike trap that inflicts bleed damage. Cooldown : 75
-level 3 : Spike trap that inflicts bleed damage. Cooldown : 50
+level 1 : Spike trap that inflicts bleed damage. Cooldown : 400
+level 2 : Spike trap that inflicts bleed damage. Cooldown : 300
+level 3 : Spike trap that inflicts bleed damage. Cooldown : 200
 `;
 
 export const HunterDesc = 
 `You gain a new ability that allows you to set root traps. More expertise in this path will decrease the cooldown.
 
-level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
-level 2 : Spike trap that inflicts bleed damage. Cooldown : 75
-level 3 : Spike trap that inflicts bleed damage. Cooldown : 50
+level 1 : Spike trap that inflicts bleed damage. Cooldown : 200
+level 2 : Spike trap that inflicts bleed damage. Cooldown : 100
+level 3 : Spike trap that inflicts bleed damage. Cooldown : 75
 `;
 
 export const RogueDesc = 
 `You gain a new ability that allows you to set poisonous traps. More expertise in this path will decrease the cooldown.
 
-level 1 : Spike trap that inflicts bleed damage. Cooldown : 100
-level 2 : Spike trap that inflicts bleed damage. Cooldown : 75
-level 3 : Spike trap that inflicts bleed damage. Cooldown : 50
+level 1 : Spike trap that inflicts bleed damage. Cooldown : 300
+level 2 : Spike trap that inflicts bleed damage. Cooldown : 150
+level 3 : Spike trap that inflicts bleed damage. Cooldown : 100
 `;

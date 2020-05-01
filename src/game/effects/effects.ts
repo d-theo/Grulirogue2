@@ -231,7 +231,7 @@ export class FireCloudSpell implements IEffect {
     area = 1;
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
-        around(pos, 2).forEach(p => {
+        around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
                 debuff: EffectMaker.create(Effects.Fire),
                 pos: p,

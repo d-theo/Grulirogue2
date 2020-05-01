@@ -49,7 +49,7 @@ export const Bestiaire = {
             kind: "Centaurus",
             danger: 20,
             hp: '10-15',
-            damage: '5-7',
+            damage: '3-5',
             range: 6,
             dodge: 0.10
         }
@@ -68,7 +68,8 @@ export const Bestiaire = {
             danger: 15,
             damage: '7-8',
             hp: '10-15',
-            dodge: 0.05
+            dodge: 0.05,
+            range: 1,
         },
         Sailor:{
             kind: "Sailor",
@@ -77,7 +78,7 @@ export const Bestiaire = {
             damage: '9-14',
             range: 1,
             dodge: 0.0,
-            onHit: {chance: 0.5, target: 'target', effect: EffectMaker.create(Effects.Stun)}
+            /*onHit: {chance: 0.5, target: 'target', effect: EffectMaker.create(Effects.Stun)}*/
         },
         Pirate:{
             kind: "Pirate",
@@ -86,7 +87,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.2, target: 'target', effect: EffectMaker.create(Effects.Bleed)}
+            onHit: {chance: 0.1, target: 'target', effect: EffectMaker.create(Effects.Bleed)}
         }
     }
 }

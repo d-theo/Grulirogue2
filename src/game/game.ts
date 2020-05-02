@@ -11,7 +11,7 @@ import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { Monster } from "./monsters/monster";
-import { makeThings } from "./special/additionnal-things";
+import { makeThings } from "./generation/additionnal-things";
 import { monstersSpawn } from "./generation/monster-spawn";
 import { itemSpawn } from "./generation/item-spawn";
 import { ThingToPlace } from "../generation/map_tiling_utils";
@@ -26,7 +26,7 @@ export class Game {
     currentTurn: number;
     level = 1;
     Danger = [50, 70, 80, 90, 120, 160];
-    Loots = [100, 7, 5, 5, 5, 5];
+    Loots = [10, 7, 5, 5, 5, 5];
     constructor() {
         Log.init();
         this.tilemap = new TileMap();

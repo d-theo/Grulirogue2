@@ -4,8 +4,8 @@ import { GameRange } from "../utils/range";
 import { EffectMaker, Effects } from "../effects/effect";
 import { Weapon } from "../items/weapon";
 
-export const DmgPerTier = [1,3,5,7,9];
-export const rangePerTier = [1,2,3,4,5];
+export const DmgPerTier = [1,3,5,7,9,13,16];
+export const rangePerTier = [1,2,3,4,5,5,5];
 
 export const namesPerRange = [
 {
@@ -50,7 +50,7 @@ export const namesPerDamage = [
     {
         names: ['Epic', 'Well crafted'],
         lessThan: 20
-    }
+    },
 ];
 
 export const WeaponEchants: XTable = [

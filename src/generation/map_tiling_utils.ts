@@ -5,7 +5,8 @@ import { Coordinate } from "../game/utils/coordinate";
 
 export interface ThingToPlace {
     pos: Coordinate,
-    type: 'snakeBoss'|'potion'|'scroll'|'item-good'|'item'|'monster';
+    type: 'snakeBoss'|'potion'|'scroll'|'item-good'|'item'|'monster'|'pirateBoss'|'sailor'
+    |'misc'|'crabBoss'|'crab';
 }
 
 export function lineTile(A, B, tilemap, type, atRate?: Function) { // 0-1

@@ -86,9 +86,11 @@ export function createGraph() {
     }) {
         links.push(arg);
     }
-    function generate(): MapGraph {
-        _.sample(rooms).isEntry = true;
-        _.sample(rooms).isExit = true;
+    function generate(randomStair:boolean = true): MapGraph {
+        if (randomStair === true) {
+            _.sample(rooms).isEntry = true;
+            _.sample(rooms).isExit = true;
+        }
 
         let res: MapGraph = {
             doors,

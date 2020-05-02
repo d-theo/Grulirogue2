@@ -55,6 +55,14 @@ export const Bestiaire = {
         }
     },
     Pirate: {
+        PirateBoss: {
+            kind: 'Pirate King',
+            danger: 50,
+            hp: '40-45',
+            damage: '10-20',
+            range: 4,
+            dodge: 0.0
+        },
         Rat:{
             kind: "Rat",
             danger: 10,
@@ -68,6 +76,14 @@ export const Bestiaire = {
             danger: 15,
             damage: '7-8',
             hp: '10-15',
+            dodge: 0.05,
+            range: 1,
+        },
+        CrabBoss: {
+            kind: "Crab King",
+            danger: 20,
+            damage: '4-5',
+            hp: '40-55',
             dodge: 0.05,
             range: 1,
         },

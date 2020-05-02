@@ -6,6 +6,9 @@ import { MapGraph } from "../map_definition";
 import { BoatWallPainter } from "../painters/boat-wall-painter";
 import { pirateDeco } from "../painters/boat-deco-painter";
 import { boatWaterPainter } from "../painters/boat-water-painter";
+import { ThingToPlace } from "../map_tiling_utils";
+import { pirateBossPainter } from "../painters/pirateboss-painter";
+import { randomIn } from "../../game/utils/rectangle";
 
 const config: TilerConfig = {
     width: 100,
@@ -27,9 +30,9 @@ const config: TilerConfig = {
         {painter: paintWater, chance: 0.10},
         {painter: paintStandard, chance: 1},
     ],
-    boss: {chance: 1, painter: () => ({})},
-    miniRoom: {chance: 1, painter: () => ({})},
-    specialRoom: {chance: 1, painter: () => ({}) },
+    boss: {chance: 0, painter: pirateBoss},
+    miniRoom: {chance: 0, painter: miniRoom},
+    specialRoom: {chance: 0, painter: () => ({}) },
 };
 
 export function pirateMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {
@@ -46,4 +49,56 @@ function paintStandard(room, tilemap1, tilemap2) {
 }
 function paintWater(room, tilemap1, tilemap2) {
     boatWaterPainter(room, tilemap1, tilemap2);
+}
+function miniRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)},
+        type: 'crabBoss'
+    });
+    thingsToPlace.push({
+        pos: randomIn(room,1),
+        type: 'crab'
+    });
+    thingsToPlace.push({
+        pos: randomIn(room,1),
+        type: 'crab'
+    });
+    thingsToPlace.push({
+        pos: randomIn(room,1),
+        type: 'crab'
+    });
+    thingsToPlace.push({
+        pos: randomIn(room,1),
+        type: 'crab'
+    });
+    
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        type: 'misc'
+    });
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)-1, y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        type: 'misc'
+    });
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)+1, y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        type: 'misc'
+    });
+}
+function pirateBoss(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    pirateBossPainter(room, tilemap1, tilemap2);
+    pirateDeco(room, tilemap1, tilemap2);
+    boatWaterPainter(room, tilemap1, tilemap2);
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)},
+        type: 'pirateBoss'
+    });
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)+1, y: Math.floor(room.rect.y + room.rect.height/2)+1},
+        type: 'sailor'
+    });
+    thingsToPlace.push({
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)-1, y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        type: 'sailor'
+    });
 }

@@ -5,6 +5,30 @@ export class InventoryView extends Phaser.GameObjects.Container {
     scroller: any;
     config;
     letters;
+
+    totalHeight = 0;
+    scrollDelta = 0;
+    cursorPos = 0;
+    scrollUp() {
+        if (this.cursorPos === 0) return;
+        this.cursorPos += 32;
+        if (this.scrollDelta === 0) return;
+        this.scroller.incY(+32)
+        this.scrollDelta += 32;
+    }
+    scrollDown() {
+        
+        this.cursorPos -= 32;
+        if (this.cursorPos > -350) {
+            return;
+        }
+        if (this.scrollDelta < -(this.totalHeight)) {
+            return;
+        }
+        this.scroller.incY(-32)
+        this.scrollDelta -= 32;
+    }
+
     inputs(args: {viewW: number, viewH: number, config: any, title: string}) {
         const {viewW, viewH, config, title} = args;
         this.config = config;
@@ -48,6 +72,7 @@ export class InventoryView extends Phaser.GameObjects.Container {
             }
             halfLine();
         }
+        this.totalHeight = y;
         return {letters: this.letters};
     }
 }

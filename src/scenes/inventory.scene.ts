@@ -21,7 +21,7 @@ class InventoryScene extends Phaser.Scene {
   alreadyLoaded = false;
   currentScreen: 'list' | 'detail' = 'list';
   action: 'useItem' | 'pickItem';
-
+  viewPanel: InventoryView;
   w = 23 * 32;
   h = 17 * 32;
   halfw = this.w * 0.9;
@@ -52,17 +52,17 @@ class InventoryScene extends Phaser.Scene {
     let g = this.add.graphics();
     g.fillStyle(0x000000, 0.7);
     g.fillRect(0, 0, this.w, this.h);
-    const viewPanel = new InventoryView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
+    this.viewPanel = new InventoryView(this, (this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2));
     const title = this.action === 'pickItem' ? 'Select an item' : 'Inventory';
-    const {letters} = viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config, title: title});
-    this.add.existing(viewPanel);
+    const {letters} = this.viewPanel.inputs({viewW: this.halfw, viewH: this.halfh, config: this.config, title: title});
+    this.add.existing(this.viewPanel);
 
     this.letters = letters;
 
     const shape = this.make.graphics({});
     shape.fillRect((this.w / 2) - (this.halfw / 2), (this.h / 2) - (this.halfh / 2) , this.halfw, this.halfh);
     let mask = new Phaser.Display.Masks.GeometryMask(this, shape);
-    viewPanel.setMask(mask);
+    this.viewPanel.setMask(mask);
 
     this.selectLine(this.currentSelected);
   }
@@ -90,6 +90,7 @@ class InventoryScene extends Phaser.Scene {
             this.currentSelected = String.fromCharCode(this.currentSelected.charCodeAt(0)+1);
             try {
               this.selectLine(this.currentSelected);
+              this.viewPanel.scrollDown();
             } catch(e) {
               this.currentSelected = String.fromCharCode(this.currentSelected.charCodeAt(0)-1);
               this.selectLine(this.currentSelected);
@@ -98,6 +99,7 @@ class InventoryScene extends Phaser.Scene {
           case 'ArrowUp':
             this.unSelectLine(this.currentSelected);
             this.currentSelected = String.fromCharCode(this.currentSelected.charCodeAt(0)-1);
+            this.viewPanel.scrollUp();
             try {  
               this.selectLine(this.currentSelected);
             } catch (e) {

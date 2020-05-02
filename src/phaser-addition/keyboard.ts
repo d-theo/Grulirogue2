@@ -8,6 +8,10 @@ export class Keyboard {
     private listening = true;
     public pause() {
         this.listening = false;
+        this.downReleased();
+        this.upReleased();
+        this.leftReleased();
+        this.rightReleased();
     }
     public resume() {
         this.listening = true;

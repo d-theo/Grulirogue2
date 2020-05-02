@@ -15,9 +15,6 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
         case 1:
             painterFn = greeeceMap;
             mapGeneratorFn = generateRLMap;
-            /*painterFn = pirateMap;
-            mapGeneratorFn = generatePirateMap2;
-            overrides = [{path: 'boss.chance', value: 1}, {path: 'specialRoom.chance', value: 1}];*/
             break;
         case 2: 
             painterFn = greeeceMap;

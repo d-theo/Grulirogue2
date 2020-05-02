@@ -46,15 +46,15 @@ export function tilemapper(config: TilerConfig) {
         const tilemap2 = Array(config.height).fill(Terrain.Void).map(()=>Array(config.width).fill(Terrain.Transparent));
         for (const r of rooms) {
             if (r.isExit) continue;
-            if (map.bossRoom && r.roomId === map.bossRoom && config.boss.chance) {
+            if (map.bossRoom && r.roomId === map.bossRoom && Math.random()  < config.boss.chance) {
                 config.boss.painter(r, tilemap1, tilemap2, thingsToPlace);
                 continue;
             }
-            if (map.specialRoom && r.roomId === map.specialRoom && Math.random() > config.specialRoom.chance) {
+            if (map.specialRoom && r.roomId === map.specialRoom && Math.random() < config.specialRoom.chance) {
                 config.specialRoom.painter(r, tilemap1, tilemap2, thingsToPlace);
                 continue;
             }
-            if (map.miniRoom && r.roomId === map.miniRoom && config.miniRoom.chance) {
+            if (map.miniRoom && r.roomId === map.miniRoom && Math.random() < config.miniRoom.chance) {
                 config.miniRoom.painter(r, tilemap1, tilemap2, thingsToPlace);
                 continue;
             }

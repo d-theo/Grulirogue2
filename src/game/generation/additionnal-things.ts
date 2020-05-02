@@ -30,7 +30,7 @@ export function makeThings(
                 potion.pos = add.pos;
                 itemCollection.itemsArray().push(potion);
                 break;
-            case 'potion':
+            case 'misc':
                 const miscItem = getInTable(MiscTable);
                 const it = miscItem();
                 it.pos = add.pos;

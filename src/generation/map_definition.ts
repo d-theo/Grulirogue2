@@ -108,11 +108,14 @@ export function createGraph() {
                 if (r.rect.width * r.rect.height > 40) {
                     if (!res.bossRoom) {
                         res.bossRoom = r.roomId;
+                        console.log('bossroom available');
                     } else {
                         res.specialRoom = r.roomId;
+                        console.log('specialroom available');
                     }
                 } else {
                     res.miniRoom = r.roomId;
+                    console.log('miniroom available');
                 }
             }
         }

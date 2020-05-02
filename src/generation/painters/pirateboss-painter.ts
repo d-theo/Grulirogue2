@@ -27,4 +27,8 @@ export function pirateBossPainter(room, tilemapBg, tilemap) {
         const pos = randomIn(room.rect, 1);
         tilemap[pos.y][pos.x] =  Terrain.FloorRope;
     }
+    for (let i = 0; i < 5; i++) {
+        const pos = randomIn(room.rect, 1);
+        tilemap[pos.y][pos.x] =  Terrain.Box;
+    }
 }

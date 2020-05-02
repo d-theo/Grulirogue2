@@ -31,12 +31,13 @@ const config: TilerConfig = {
         {painter: paintStandard, chance: 1},
     ],
     boss: {chance: 0, painter: pirateBoss},
-    miniRoom: {chance: 0, painter: miniRoom},
-    specialRoom: {chance: 0, painter: () => ({}) },
+    miniRoom: {chance: 0, painter: (() => ({}))},
+    specialRoom: {chance: 0, painter: crabRoom },
 };
 
 export function pirateMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {
     configOverride.forEach(override => _.set(config, override.path, override.value));
+    console.log(config);
     const tiler = tilemapper(config);
     return tiler(mapGenerator());
 }
@@ -50,38 +51,43 @@ function paintStandard(room, tilemap1, tilemap2) {
 function paintWater(room, tilemap1, tilemap2) {
     boatWaterPainter(room, tilemap1, tilemap2);
 }
-function miniRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+function crabRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    console.log('generating special room');
     thingsToPlace.push({
         pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)},
         type: 'crabBoss'
     });
     thingsToPlace.push({
-        pos: randomIn(room,1),
+        pos: randomIn(room.rect,1),
         type: 'crab'
     });
     thingsToPlace.push({
-        pos: randomIn(room,1),
+        pos: randomIn(room.rect,1),
         type: 'crab'
     });
     thingsToPlace.push({
-        pos: randomIn(room,1),
+        pos: randomIn(room.rect,1),
         type: 'crab'
     });
     thingsToPlace.push({
-        pos: randomIn(room,1),
+        pos: randomIn(room.rect,1),
+        type: 'crab'
+    });
+    thingsToPlace.push({
+        pos: randomIn(room.rect,1),
         type: 'crab'
     });
     
     thingsToPlace.push({
-        pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height)-1},
         type: 'misc'
     });
     thingsToPlace.push({
-        pos: {x: Math.floor(room.rect.x + room.rect.width/2)-1, y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)-1, y: Math.floor(room.rect.y + room.rect.height)-1},
         type: 'misc'
     });
     thingsToPlace.push({
-        pos: {x: Math.floor(room.rect.x + room.rect.width/2)+1, y: Math.floor(room.rect.y + room.rect.height/2)-1},
+        pos: {x: Math.floor(room.rect.x + room.rect.width/2)+1, y: Math.floor(room.rect.y + room.rect.height)-1},
         type: 'misc'
     });
 }

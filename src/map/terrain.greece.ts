@@ -66,4 +66,5 @@ export const Terrain = {
     PirateWindow: 66,
     WallRope: 67,
     FloorRope: 68,
+    Box: 71,
 };

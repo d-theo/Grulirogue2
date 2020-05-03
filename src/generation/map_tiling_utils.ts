@@ -2,11 +2,12 @@ import { pointsOfRect } from "./map-geo";
 import { randomIn } from "../game/utils/rectangle";
 import * as _ from 'lodash';
 import { Coordinate } from "../game/utils/coordinate";
+import { PlaceKind } from "../game/places/place-definitions";
 
 export interface ThingToPlace {
     pos: Coordinate,
     type: 'snakeBoss'|'potion'|'scroll'|'item-good'|'item'|'monster'|'pirateBoss'|'sailor'
-    |'misc'|'crabBoss'|'crab';
+    |'misc'|'crabBoss'|'crab'| PlaceKind;
 }
 
 export function lineTile(A, B, tilemap, type, atRate?: Function) { // 0-1

@@ -13,6 +13,7 @@ import { Tile, TileVisibility } from "../tilemap/tile";
 import { SkillNames } from "../hero/hero-skills";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
+import { BloodFountain } from "../places/places";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -636,6 +637,24 @@ export class ColdEffect implements IEffect {
         }
 
         gameBus.publish(logPublished({level: 'warning', data: `${target.name} is freezing`}));
+    }
+}
+
+export class UnholySpellBook implements IEffect {
+    type = EffectTarget.None;
+    turns = 1;
+    constructor(private world: WorldEffect){}
+    cast() {
+        const hpos = this.world.getHero().pos;
+        const place = this.world.getPlaces().getAt(hpos);
+
+        if (place != null && place instanceof BloodFountain) {
+            gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
+            place.cursed = false;
+        } else {
+            doDamages(1, this.world.getHero(), 'sacred');
+            gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
+        }
     }
 }
 

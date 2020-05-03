@@ -15,6 +15,7 @@ import { makeThings } from "./generation/additionnal-things";
 import { monstersSpawn } from "./generation/monster-spawn";
 import { itemSpawn } from "./generation/item-spawn";
 import { ThingToPlace } from "../generation/map_tiling_utils";
+import { SpecialPlaces } from "./places/special-places";
 
 export class Game {
     static Engine: Game;
@@ -27,6 +28,7 @@ export class Game {
     level = 1;
     Danger = [50, 70, 80, 90, 120, 160];
     Loots = [10, 7, 5, 5, 5, 5];
+    places: SpecialPlaces;
     constructor() {
         Log.init();
         this.tilemap = new TileMap();
@@ -35,6 +37,7 @@ export class Game {
         this.currentTurn = 0;
         this.monsters = new MonsterCollection();
         this.items = new ItemCollection();
+        this.places = new SpecialPlaces(this.items);
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         this.initBus();
@@ -51,16 +54,17 @@ export class Game {
     }
 
     reInitLevel() {
-        if (this.level === 5) gameBus.publish(gameFinished({}));
+        if (this.level === 6) gameBus.publish(gameFinished({}));
         
+        this.places.clear();
         let additionalThingsToPlace: ThingToPlace[] = [];
         additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
         this.adjustSight();
         this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level-1]));
-        EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero});
+        EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero, places: this.places});
         this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level-1]));
-        makeThings(additionalThingsToPlace, this.monsters, this.items);
+        makeThings(additionalThingsToPlace, this.monsters, this.items, this.places);
         if (this.tilemap.graph.bossRoom && this.level == 2) {
             gameBus.publish(logPublished({level: 'warning', data:'You hear a distinct hissing...'}));
         }
@@ -76,7 +80,8 @@ export class Game {
                 pos: to,
                 hero: this.hero,
                 tilemap: this.tilemap,
-                items: this.items
+                items: this.items,
+                places: this.places
             });
             if (result.status === MessageResponseStatus.Ok) {
                 gameBus.publish(playerMoved({}));
@@ -101,6 +106,7 @@ export class Game {
             if (usedItem !== undefined) {
                 usedItem.keyMapping[action](target);
                 this.hero.consumeItem(usedItem);
+                this.places.checkForItem(usedItem);
             }
             this.nextTurn(1);
         });

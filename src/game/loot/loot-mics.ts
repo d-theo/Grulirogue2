@@ -2,7 +2,7 @@ import { SpellNames, EffectMaker } from "../effects/effect";
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
 import { Coordinate } from "../utils/coordinate";
-import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell } from "../effects/effects";
+import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook } from "../effects/effects";
 
 export const createWildFireBottle = () => {
     return new WildfireBottle({
@@ -46,6 +46,13 @@ export const createColdCrystal = () => {
         name: 'Cold crystal',
         description: 'A back sphere that seems to be alive',
     })
+}
+
+export const createUnholyBook = () => {
+    return new UnholyBook({
+        name: 'Unholy book',
+        description: 'Its covered with blood and dangerous words...'
+    });
 }
 
 export class WildfireBottle extends Item implements ItemArgument {
@@ -210,6 +217,30 @@ export class SphereOfShadows extends Item implements ItemArgument {
     getArgumentForKey(key: string) {
         switch(key) {
             case 'u': return EffectTarget.AoE;
+            case 'd': 
+            default : return EffectTarget.None;
+        }
+    }
+}
+
+export class UnholyBook extends Item implements ItemArgument {
+    effect: UnholySpellBook = EffectMaker.createSpell(SpellNames.UnholySpell) as UnholySpellBook;
+    constructor(arg: any) {
+        super(arg);
+        this.skin = 'unholy_book';
+        this.keyDescription['u'] = '(u)se';
+        this.keyMapping['u'] = this.use.bind(this);
+    }
+    use() {
+        this.effect.cast();
+    }
+    visit(itemVisitor: ItemVisitor): any {
+        return itemVisitor.visitMisc(this);
+    }
+    reveal() {}
+    getArgumentForKey(key: string) {
+        switch(key) {
+            case 'u':
             case 'd': 
             default : return EffectTarget.None;
         }

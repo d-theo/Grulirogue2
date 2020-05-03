@@ -62,7 +62,7 @@ export class Hero implements Entity {
     }
     dropItem(item: Item) {
         item.pos = this.pos;
-        this.inventory.flagEquiped(item);
+        this.inventory.flagUnEquiped(item);
         this.inventory.remove(item);
     }
     equip(item: Item) {

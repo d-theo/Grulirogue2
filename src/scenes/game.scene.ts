@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -442,6 +442,13 @@ class GameScene extends Phaser.Scene {
 				item
 			} = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
+		}));
+		this.subs.push(gameBus.subscribe(itemRemoved, event => {
+			const {
+				item
+			} = event.payload;
+			const gameItem = this.gameItems[item.id];
+			gameItem.destroy();
 		}));
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {

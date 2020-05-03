@@ -67,6 +67,7 @@ import { PotionColors } from "../game/items/potion";
       this.load.image('tome_of_rain', '/assets/sprites/tome-rain.png');
       this.load.image('small_torch', '/assets/sprites/small-torch.png');
       this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
+      this.load.image('unholy_book', '/assets/sprites/unholy-book.png');
       
     }
     

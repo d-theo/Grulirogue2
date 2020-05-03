@@ -7,14 +7,16 @@ import { Coordinate } from "../utils/coordinate";
 import { gameBus, doorOpened, itemPickedUp } from "../../eventBus/game-bus";
 import { ItemCollection } from "../items/item-collection";
 import { Terrain } from "../../map/terrain.greece";
+import { SpecialPlaces } from "../places/special-places";
 
 export function playerMove(args: {
     pos: Coordinate,
     monsters: MonsterCollection, hero: Hero,
     tilemap: TileMap,
-    items: ItemCollection
+    items: ItemCollection,
+    places: SpecialPlaces
 }): MessageResponse {
-    const {hero, pos, tilemap, monsters, items} = args;
+    const {hero, pos, tilemap, monsters, items, places} = args;
     if (
         isTileEmpty(pos, monsters.monstersArray())
         && (isSurroundingClear(pos, tilemap) || hasOpenedDoors(pos, tilemap))
@@ -27,6 +29,7 @@ export function playerMove(args: {
             hero.addToBag(maybeItem);
             gameBus.publish(itemPickedUp({item: maybeItem}));
         }
+        places.checkForHero(hero);
         return {
             timeSpent: hero.speed,
             status: MessageResponseStatus.Ok,

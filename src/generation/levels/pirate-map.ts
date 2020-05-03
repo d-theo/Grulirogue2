@@ -1,5 +1,4 @@
 import { TilerConfig, tilemapper } from "../tiler";
-import { waterPainter } from "../painters/water-painter";
 import { Terrain } from "../../map/terrain.greece";
 import * as _ from 'lodash';
 import { MapGraph } from "../map_definition";
@@ -9,6 +8,7 @@ import { boatWaterPainter } from "../painters/boat-water-painter";
 import { ThingToPlace } from "../map_tiling_utils";
 import { pirateBossPainter } from "../painters/pirateboss-painter";
 import { randomIn } from "../../game/utils/rectangle";
+import { PlaceTypes } from "../../game/places/place-definitions";
 
 const config: TilerConfig = {
     width: 100,
@@ -31,7 +31,7 @@ const config: TilerConfig = {
         {painter: paintStandard, chance: 1},
     ],
     boss: {chance: 0, painter: pirateBoss},
-    miniRoom: {chance: 0, painter: (() => ({}))},
+    miniRoom: {chance: 0.2, painter: miniRoom},
     specialRoom: {chance: 0, painter: crabRoom },
 };
 
@@ -43,6 +43,17 @@ export function pirateMap(mapGenerator: () => MapGraph, configOverride: {path: s
 }
 
 /////////////// painters //////////////
+
+function miniRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    console.log('special place room');
+    const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
+    const placeType = _.sample(PlaceTypes);
+    tilemap2[pos.y][pos.x] = Terrain[placeType];
+    thingsToPlace.push({
+        pos,
+        type: placeType
+    });
+}
 
 function paintStandard(room, tilemap1, tilemap2) {
     BoatWallPainter(room, tilemap1, tilemap2);

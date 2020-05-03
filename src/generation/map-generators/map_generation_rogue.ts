@@ -1,4 +1,5 @@
 import { rand, insideRect, middleOfRect, getMiddlesOfRect, pointInRect, lineIntersectRect, distanceBetween, reduceMin } from "../map-geo";
+import * as _ from 'lodash';
 
 const Params = {
     Area: 250, // min area of a room
@@ -18,7 +19,8 @@ export function generateRLMap() {
         rooms: G.getRooms(),
         vertices: G.getVertices(),
         doors: G.getDoors(),
-        links: G.getLinks()
+        links: G.getLinks(),
+        specialRoom: _.sample(G.getRooms().filter(r => r.isExit == false)).roomId
     }
 
     function createMapPair() {

@@ -1,12 +1,24 @@
 import { Item } from "../entitybase/item";
 import { Coordinate, equalsCoordinate } from "../utils/coordinate";
+import { gameBus, itemRemoved } from "../../eventBus/game-bus";
 
 export class ItemCollection {
     items: Item[] = [];
-    constructor() { 
+    constructor() {
+        gameBus.subscribe(itemRemoved, event => {
+			const {
+				item
+			} = event.payload;
+			this.removeItem(item);
+		});
     }
     setItems(items: Item[]) {
         this.items = items;
+    }
+    removeItem(item: Item) {
+        this.items = this.items.filter(i => {
+            return i.id !== item.id
+        });
     }
     itemsArray() {
         return this.items;

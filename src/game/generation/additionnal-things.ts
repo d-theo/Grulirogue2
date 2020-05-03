@@ -8,11 +8,13 @@ import { Potion } from "../items/potion";
 import { PotionTable, MiscTable } from "../loot/loot-table";
 import { Weapon } from "../items/weapon";
 import { craftWeapon } from "../loot/loot-weapons";
+import { SpecialPlaces } from "../places/special-places";
 
 export function makeThings(
     additional: ThingToPlace[],
     monsterCollection: MonsterCollection,
-    itemCollection: ItemCollection) {
+    itemCollection: ItemCollection,
+    places: SpecialPlaces) {
     for (const add of additional) {
         switch (add.type) {
             case 'snakeBoss': 
@@ -66,6 +68,12 @@ export function makeThings(
                 const _crabBoss = Monster.makeMonster(Object.assign(crabBoss, {pos: add.pos}));
                 monsterCollection.monstersArray().push(_crabBoss);
                 break;
+            case 'BloodFountain':
+            case 'HolyFountain':
+            case 'PoisonPot':
+                places.addPlace({pos: add.pos, kind: add.type});
+                break;
+                    
             default:
                 console.log('add this stuff not impl'+add.type);
                 break;

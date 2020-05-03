@@ -30,6 +30,7 @@ export class Game {
     Loots = [11, 7, 6, 6, 6, 6];
     places: SpecialPlaces;
     constructor() {
+        console.log('update');
         Log.init();
         this.tilemap = new TileMap();
         this.hero = new Hero();

@@ -33,7 +33,7 @@ export class Potion extends Item implements ItemArgument {
         this.skin = Potion.mystery[this._name];
         this.keyMapping['q'] = this.use.bind(this);
         this.keyDescription['q'] = '(q)uaff';
-        this.keyDescription['t'] = '(t)hrow';
+        //this.keyDescription['t'] = '(t)hrow';
     }
     get description () {
         if (! Potion.identified[this.getColor()]) {

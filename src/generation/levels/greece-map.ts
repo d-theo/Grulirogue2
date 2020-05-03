@@ -46,6 +46,7 @@ export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: 
 /////////////// painters ////////////
 
 function specialRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    console.log("sp");
     const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
     const placeType = _.sample(PlaceTypes);
     tilemap2[pos.y][pos.x] = Terrain[placeType];

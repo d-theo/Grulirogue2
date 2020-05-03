@@ -20,7 +20,6 @@ export const ArmoursTable: XTable[] = [
 ];
 
 export const ItemTable: XTable[] = [
-    //[{chance: 0, type: 'potion'}, {chance: 0, type: 'scroll'}, {chance: 100, type: 'weapon'}, {chance: 0, type: 'armour'}, {chance: 0, type: 'misc'}],
     [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
     [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
     [{chance: 45, type: 'potion'}, {chance: 30, type: 'scroll'}, {chance: 10, type: 'weapon'}, {chance: 10, type: 'armour'}, {chance: 5, type: 'misc'}],
@@ -84,18 +83,18 @@ export function getRandomLoot(level: number): Item {
             });
             break;
         case "weapon": 
-            const w = craftWeapon(pickInRange(level-1,level+1));
-            loot = w;
+            loot = craftWeapon(pickInRange(level-1,level+1));
             break;
         case 'armour':
             const armour = getInTable(ArmoursTable[level-1]);
-            const a = new Armour({
+            loot = new Armour({
                 name: armour.name,
                 baseAbsorb: pickInRange(armour.absorb),
                 bulky: armour.bulky,
                 description: armour.description,
                 skin: armour.skin
             });
+            break;
         case 'misc':
             const item = getInTable(MiscTable)();
             loot = item;

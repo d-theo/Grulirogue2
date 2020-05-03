@@ -26,8 +26,8 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     level = 1;
-    Danger = [50, 70, 80, 90, 120, 160];
-    Loots = [10, 7, 5, 5, 5, 5];
+    Danger = [50, 70, 80, 100, 120, 160];
+    Loots = [11, 7, 6, 6, 6, 6];
     places: SpecialPlaces;
     constructor() {
         Log.init();

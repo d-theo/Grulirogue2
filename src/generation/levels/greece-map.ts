@@ -54,6 +54,28 @@ function specialRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
         pos,
         type: placeType
     });
+    /*
+    const pos2 = {x: Math.floor(room.rect.x + room.rect.width/2)+1, y: Math.floor(room.rect.y + room.rect.height/2)};
+    const placeType2 = _.sample(PlaceTypes);
+    tilemap2[pos2.y][pos2.x] = Terrain[placeType2];
+    thingsToPlace.push({
+        pos:pos2,
+        type: placeType2
+    });
+    const pos4 = {x: Math.floor(room.rect.x + room.rect.width/2)+2, y: Math.floor(room.rect.y + room.rect.height/2)};
+    const placeType4 = _.sample(PlaceTypes);
+    tilemap2[pos4.y][pos4.x] = Terrain[placeType4];
+    thingsToPlace.push({
+        pos:pos4,
+        type: placeType4
+    });
+    const pos3 = {x: Math.floor(room.rect.x + room.rect.width/2)+3, y: Math.floor(room.rect.y + room.rect.height/2)};
+    const placeType3 = _.sample(PlaceTypes);
+    tilemap2[pos3.y][pos3.x] = Terrain[placeType3];
+    thingsToPlace.push({
+        pos:pos3,
+        type: placeType3
+    });*/
 }
 function paintStandard(room, tilemap1, tilemap2) {
     torchPainter(room, tilemap1, tilemap2);

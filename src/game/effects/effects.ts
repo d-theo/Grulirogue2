@@ -652,7 +652,7 @@ export class UnholySpellBook implements IEffect {
             gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
             place.cursed = false;
         } else {
-            doDamages(1, this.world.getHero(), 'sacred');
+            doDamages(1, this.world.getHero(), 'sickness');
             gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
         }
     }

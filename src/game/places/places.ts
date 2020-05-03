@@ -159,7 +159,7 @@ export class PoisonPot implements Place {
     }
     checkForHero(hero: Hero): any {
         gameBus.publish(logPublished({
-            data: 'You are on a top of a bubbly and smell pot...',
+            data: 'You are on a top of a bubbly and smelly pot...',
             level: 'warning'
         }));
     }

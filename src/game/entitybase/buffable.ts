@@ -18,7 +18,8 @@ export class Buffs {
         this.buffs.forEach(buf => buf.turns = 0);
     }
     apply(target: any) {
-
+        this.applyOnCarryBuffs(target);
+        this.applyTempBuffs(target);
     }
     applyTempBuffs(target: any) {
         const nextTurn: BuffDefinition[] = []
@@ -43,7 +44,7 @@ export class Buffs {
         }
         this.buffs = nextTurn;
     }
-    
+
     applyOnCarryBuffs(target: any) {
         for (let buff of this.buffs) {
             if (buff.turns <= 0) {

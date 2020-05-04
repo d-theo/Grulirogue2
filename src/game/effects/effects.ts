@@ -368,7 +368,7 @@ export class XPEffect implements IEffect {
             }));
             gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
         } else {
-            gameBus.publish(logPublished({data:'noting happens'}));
+            gameBus.publish(logPublished({data:'nothing happens'}));
         }
     }
 }

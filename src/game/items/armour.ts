@@ -1,6 +1,14 @@
 import { ItemVisitor } from "../items/item-visitor";
-import { EffectTarget } from "../effects/effects";
+import { EffectTarget, IEffect } from "../effects/effects";
 import { Item, ItemArgument } from "../entitybase/item";
+
+/*
+regen
+vitesse
+hp
+bulky
+
+*/
 
 export class Armour extends Item implements ItemArgument{
     public baseAbsorb: number;
@@ -20,6 +28,21 @@ export class Armour extends Item implements ItemArgument{
             return `An unidentified ${this.skin}`
         }
     }
+    /*public effectOnCarry(target: Hero|Monster) {
+        this.additionnalEffectsOnCarry.forEach(e => {
+            e.effect.cast(target);
+        });
+    }
+    drop(target: Hero) {
+        super.drop(target);
+        /*this.additionnalEffectsOnCarry.forEach(effect => {
+            target.buffs.detachBuff(effect.effect);
+        })*/
+        /*target.dropItem(this);
+        gameBus.publish(itemDropped({
+            item: this
+        }));
+    }*/
     get name() {
         if (this.identified) {
             return this._name;

@@ -20,6 +20,7 @@ export class UIEffect {
 	}
 
 	throwProjectile(to: Coordinate) {
+		this.sprite.setDepth(3);
 		this.parentScene.tweens.add({
 			targets: this.sprite,
 			ease: 'Linear',

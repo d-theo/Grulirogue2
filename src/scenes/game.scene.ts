@@ -107,7 +107,7 @@ class GameScene extends Phaser.Scene {
 		const mobs = this.gameEngine.getNearestAttackables();
 		if (mobs.length === 0) {
 			gameBus.publish(logPublished({
-				data: 'noting to attack'
+				data: 'nothing to attack'
 			}));
 			return false;
 		} else {
@@ -519,7 +519,7 @@ class GameScene extends Phaser.Scene {
 	}
 
 	placeItems() {
-		const itemsToPlace: Item[] = this.gameEngine.items.itemsArray();
+		const itemsToPlace: Item[] = this.gameEngine.items.itemOnGround();
 		for (const i of itemsToPlace) {
 			if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) continue;
 			if (this.gameEngine.tilemap.getAt(i.pos).isEntry) continue;

@@ -3,7 +3,7 @@ import { Coordinate, equalsCoordinate } from "../utils/coordinate";
 import { gameBus, itemRemoved } from "../../eventBus/game-bus";
 
 export class ItemCollection {
-    items: Item[] = [];
+    private items: Item[] = [];
     constructor() {
         gameBus.subscribe(itemRemoved, event => {
 			const {
@@ -13,15 +13,19 @@ export class ItemCollection {
 		});
     }
     setItems(items: Item[]) {
-        this.items = items;
+        this.items.forEach(i => i.pos = null);
+        this.items = this.items.concat(items);
     }
-    removeItem(item: Item) {
+    private removeItem(item: Item) {
         this.items = this.items.filter(i => {
             return i.id !== item.id
         });
     }
     itemsArray() {
         return this.items;
+    }
+    itemOnGround() {
+        return this.items.filter(item => item.pos != null);
     }
     getItemById(id: string) {
         return this.items.find(i => id === i.id);

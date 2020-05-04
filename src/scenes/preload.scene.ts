@@ -53,7 +53,7 @@ import { PotionColors } from "../game/items/potion";
       this.load.image('armour-heavy', '/assets/sprites/armour-heavy.png');
   
       this.load.image('Spikes', '/assets/sprites/spikes.png');
-      this.load.image('Poison_Trap', '/assets/sprites/Poison_trap.png');
+      this.load.image('Poison_Trap', '/assets/sprites/poison_trap.png');
 
       for (const c of PotionColors) {
         this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);

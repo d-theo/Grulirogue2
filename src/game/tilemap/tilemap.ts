@@ -9,10 +9,10 @@ import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import * as _ from 'lodash';
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { IEffect } from "../effects/effects";
 import { gameBus, effectUnset } from "../../eventBus/game-bus";
 import { Terrain } from "../../map/terrain.greece";
-import { EffectMaker, Effects } from "../effects/effect";
+import { BuffDefinition } from "../effects/effect";
+import { Affect } from "../effects/affects";
 let short = require('short-uuid');
 
 type DebuffDuration = {debugId?: string, id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -77,7 +77,7 @@ export class TileMap {
     setFgEffect(tile: Tile) {
         if (tile.type[1] === Terrain.WaterFloor) {
             this.addTileEffects2({
-                debuff: EffectMaker.create(Effects.Wet),
+                debuff: new Affect('wet').create(),
                 tile,
                 duration: Infinity,
                 stayOnWalk: true
@@ -88,7 +88,7 @@ export class TileMap {
         return this.tiles[pos.y][pos.x];
     }
 
-    addTileEffects(args: {debugId?: string, pos: Coordinate, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
+    addTileEffects(args: {debugId?: string, pos: Coordinate, debuff: BuffDefinition, duration: number, stayOnWalk: boolean}) {
         const {pos, debuff, duration, stayOnWalk, debugId} = args;
         const id = short.generate();
         if (this.getAt(pos).isSolid()) return null;
@@ -96,7 +96,7 @@ export class TileMap {
         this.debuffDurations.push({id, duration: duration, triggered: stayOnWalk, pos, debugId});
         return id;
     }
-    addTileEffects2(args: {tile: Tile, debuff: IEffect, duration: number, stayOnWalk: boolean}) {
+    addTileEffects2(args: {tile: Tile, debuff: BuffDefinition, duration: number, stayOnWalk: boolean}) {
         const {tile, debuff, duration, stayOnWalk} = args;
         if (tile.isSolid()) return null;
         const id = short.generate();
@@ -136,7 +136,7 @@ export class TileMap {
         const idTriggered: string[] = [];
         if (debuffs.length > 0) {
             debuffs.forEach(d => {
-                d.debuff.cast(walker);
+                walker.addBuff(d.debuff);
                 idTriggered.push(d.id);
             });
         }

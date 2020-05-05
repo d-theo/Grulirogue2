@@ -18,11 +18,13 @@ export class Attack {
         const weapon = this.attacker.weapon;
         const armour = this.target.armour;
         let dealt = weapon.deal();
+
         for (const addition of weapon.additionnalEffects) {
             if (addition.target === 'target' && (this.target as any).addBuff && Math.random() <= addition.chance) {
-                addition.effect.cast(this.target);
+                this.target.buffs.addBuff(addition.effect);
             }
         }
+
         if (this.attacker instanceof Hero) {
             if (this.attacker.fightModifier.additionnalDmg) {
                 dealt +=  this.attacker.fightModifier.additionnalDmg;

@@ -16,8 +16,18 @@ export class EnchantTable {
     private wet = false;
     private blind = false;
     private burned = false;
+    private cold = false;
+    private shocked = false;
 
     constructor(private readonly notif: boolean = false) {}
+    setChocked(x:boolean) {
+        this.shocked=x;
+        this.update();
+    }
+    setCold(x:boolean) {
+        this.cold=x;
+        this.update();
+    }
     setStuned(x: boolean) {
         this.stuned = x;
         this.update();
@@ -69,6 +79,12 @@ export class EnchantTable {
     setBurned(x: boolean) {
         this.burned = x;
         this.update();
+    }
+    getCold() {
+        return this.cold;
+    }
+    getShocked() {
+        return this.shocked;
     }
     getStuned() {
         return this.stuned;

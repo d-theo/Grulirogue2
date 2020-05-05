@@ -1,10 +1,9 @@
 import { Item, ItemArgument } from "../entitybase/item";
 import * as _ from 'lodash';
-import { IEffect, EffectTarget } from "../effects/effects";
 import { ItemVisitor } from "./item-visitor";
 import { Hero } from "../hero/hero";
-import { SkillNames } from "../hero/hero-skills";
 import { gameBus, logPublished } from "../../eventBus/game-bus";
+import { EffectTarget } from "../effects/spells";
 
 export const PotionColors = [
     'blue',
@@ -20,7 +19,7 @@ export const PotionColors = [
 ];
 
 export class Potion extends Item implements ItemArgument {
-    effect: IEffect;
+    effect: (t:Hero) => ({});
     static colors: string[] = _.shuffle(_.cloneDeep(PotionColors));
     static mystery: any = {};
     static identified: any = {};
@@ -56,16 +55,16 @@ export class Potion extends Item implements ItemArgument {
         return 'potion-'+Potion.colors.pop();
     }
     use(target: any) {
-        if (target instanceof Hero && target.heroSkills.getSkillLevel(SkillNames.Alchemist) > 0) {
+        /*if (target instanceof Hero && target.heroSkills.getSkillLevel(SkillNames.Alchemist) > 0) {
             if (this.effect.turns) {
                 this.effect.turns += 5 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
             }
-        }
+        } FIXME */
         if(! Potion.identified[this.getColor()]) {
             Potion.identified[this.getColor()] = true;
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
         }
-        this.effect.cast(target);
+        this.effect(target);
     }
     visit(visitor: ItemVisitor) {
         return visitor.visitPotion(this);
@@ -77,8 +76,7 @@ export class Potion extends Item implements ItemArgument {
     getArgumentForKey(key: string) {
         switch(key) {
             case 'q': return EffectTarget.Hero;
-            case 't': return this.effect.type;
-            case 'd': 
+            case 'd':
             default : return EffectTarget.None;
         }
     }

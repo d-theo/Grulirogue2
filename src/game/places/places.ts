@@ -7,8 +7,8 @@ import { Weapon } from "../items/weapon";
 import { Armour } from "../items/armour";
 import { Hero } from "../hero/hero";
 import { createSmellyBottle } from "../loot/loot-mics";
-import { EffectMaker, Effects } from "../effects/effect";
 import { Scroll } from "../items/scroll";
+import { Affect } from "../effects/affects";
 
 export class BloodFountain implements Place {
     cursed = true;
@@ -45,7 +45,7 @@ export class BloodFountain implements Place {
                         data: `${item.name} is filled with blood of your ennemies !`,
                         level: 'warning'
                     }));
-                    const e = EffectMaker.create(Effects.Bleed);
+                    const e = new Affect('bleed').turns(2).create();
                     item.additionnalEffects.push({
                         chance: 0.2,
                         effect: e,

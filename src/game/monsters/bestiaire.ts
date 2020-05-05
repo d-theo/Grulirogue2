@@ -1,4 +1,4 @@
-import { EffectMaker, Effects } from "../effects/effect";
+import { Affect } from "../effects/affects";
 
 export const Bestiaire = {
     Greece: {
@@ -9,7 +9,7 @@ export const Bestiaire = {
             damage: '2-3',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.5, target: 'target', effect: EffectMaker.create(Effects.Poison)}
+            onHit: {chance: 0.3, target: 'target', effect: new Affect('poison').turns(5).create()}
         },
         SnakeKing: {
             kind: "Snake King",
@@ -18,7 +18,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 1, target: 'target', effect: EffectMaker.create(Effects.Poison)}
+            onHit: {chance: 1, target: 'target', effect: new Affect('poison').turns(5).create()}
         },
         Rat: {
             kind: "Rat",
@@ -103,7 +103,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.1, target: 'target', effect: EffectMaker.create(Effects.Bleed)}
+            onHit: {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()}
         }
     }
 }

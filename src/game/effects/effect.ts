@@ -2,40 +2,20 @@ import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
-import { HealEffect, ThicknessEffect, CleaningEffect, StunEffect, DodgeEffect, XPEffect, BleedEffect, PoisonEffect, StupidityEffect, SpeedEffect, RageEffect, AccuratyEffect, TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WetEffect, WildFireSpell, IEffect, ShadowSpell, ShadowEffet, RawDamageEffet, ShockEffect, PoisonCloudSpell, RainCloudSpell, FireCloudSpell, ColdCloudSpell, RootTrapSpell, FireEffect, ColdEffect, LightningSpell, PoisonTrapSpell, UnholySpellBook } from './effects';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect } from './spells';
 
 export type BuffDefinition = {
     start: Function | null;
     tick?: Function;
     end: Function;
-    turns: number
+    turns: number,
+    isStackable: boolean,
+    isTemp: boolean,
+    tags: string,
+    source?: string|null;
 };
-
-export enum Effects {
-    Heal = 'Heal',
-    Bleed = 'Bleed',
-    Const = 'Const',
-    Invisibility = 'Invisibility',
-    Thick = 'Thick',
-    Cleaning = 'Cleaning',
-    Dodge = 'Dodge',
-    XP = 'XP',
-    Stun = 'Stun',
-    Blind = 'Blind',
-    Poison = 'Poison',
-    Stupid = 'Stupid',
-    Speed = 'Speed',
-    Rage = 'Rage',
-    Accuraty = 'Accuraty',
-    Wet = 'Wet',
-    RawDamage = 'RawDamage',
-    Shadow = 'Shadow',
-    Shock = 'Shock',
-    Fire = 'Fire',
-    Cold = 'Cold',
-}
 
 export enum SpellNames {
     SpikeTrap = 'SpikeTrap',
@@ -54,7 +34,9 @@ export enum SpellNames {
     RainCloud = 'RainCloud',
     FireCloud = 'FireCloud',
     LightningCloud = 'LightningCloud',
-    UnholySpell = 'UnholySpell'
+    UnholySpell = 'UnholySpell',
+    CleaningSpell = 'CleaningSpell',
+    XPSpell = 'XPSpell'
 }
 
 let tilemap: TileMap;
@@ -64,7 +46,6 @@ let effect: WorldEffect;
 let places: SpecialPlaces;
 export const EffectMaker = {
     set: initEffects,
-    create: createEffect,
     createSpell: createSpell
 };
 
@@ -113,52 +94,12 @@ function createSpell(name: SpellNames) {
             return new PoisonTrapSpell(effect);
         case SpellNames.UnholySpell:
             return new UnholySpellBook(effect);
+        case SpellNames.XPSpell:
+            return new XPEffect();
+        case SpellNames.CleaningSpell:
+            return new CleaningEffect;
         default:
             throw new Error(`${name} spell not impl`);
-    }
-}
-
-function createEffect(name: Effects) {
-    //microValidator([tilemap, hero, monsters], 'createEffect failure: null');
-    switch(name) {
-        case Effects.Heal:
-            return new HealEffect();
-        case Effects.Thick:
-            return new ThicknessEffect();
-        case Effects.Cleaning:
-            return new CleaningEffect();
-        case Effects.Stun:
-            return new StunEffect();
-        case Effects.Dodge:
-            return new DodgeEffect();
-        case Effects.XP:
-            return new XPEffect();
-        case Effects.Bleed:
-            return new BleedEffect();
-        case Effects.Poison:
-            return new PoisonEffect();
-        case Effects.Stupid:
-            return new StupidityEffect();
-        case Effects.Speed:
-            return new SpeedEffect();
-        case Effects.Rage:
-            return new RageEffect();
-        case Effects.Accuraty:
-            return new AccuratyEffect();
-        case Effects.Wet:
-            return new WetEffect();
-        case Effects.Shadow:
-            return new ShadowEffet();
-        case Effects.RawDamage:
-            return new RawDamageEffet();
-        case Effects.Shock:
-            return new ShockEffect();
-        case Effects.Fire:
-            return new FireEffect();
-        case Effects.Cold:
-            return new ColdEffect();
-        default:
-            throw new Error(`createEffect ${name} is not implemented`);
     }
 }
 

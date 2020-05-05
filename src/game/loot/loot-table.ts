@@ -1,7 +1,7 @@
 import { XTable, getInTable } from "../monsters/mob-table"
 import { pickInRange } from "../utils/random";
 import { Item } from "../entitybase/item";
-import { Armours } from "./loot-armours";
+import { Armours, armourLevel, ArmourEnchants } from "./loot-armours";
 import { Potions } from "./loot-potions";
 import { Scrolls } from "./loot-scrolls";
 import { craftWeapon } from "./loot-weapons";
@@ -9,6 +9,7 @@ import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
 import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook } from "./loot-mics";
+import * as _ from 'lodash';
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -48,8 +49,8 @@ export const PotionTable: XTable = [
     {chance: 12, type: Potions.Curring},
     {chance: 12, type: Potions.Dodge},
     {chance: 5, type: Potions.Immobilisation},
-    {chance: 8, type: Potions.Rage},
-    //{chance: 3, type: Potions.Stupidity},
+    {chance: 5, type: Potions.Rage},
+    {chance: 5, type: Potions.Blindness},
     {chance: 2, type: Potions.XP},
 ];
 
@@ -71,7 +72,7 @@ export function getRandomLoot(level: number): Item {
             loot = new Potion({
                 name: p.name,
                 description: p.description,
-                effect: p.effect()
+                effect: p.effect
             });
             break;
         case "scroll": 
@@ -94,6 +95,19 @@ export function getRandomLoot(level: number): Item {
                 description: armour.description,
                 skin: armour.skin
             });
+            if (Math.random() < 0.05) {
+                const enchant = _.sample(ArmourEnchants);
+                (loot as Armour).additionalName.push(enchant!.name);
+                (loot as Armour).additionalDescription.push(enchant!.description);
+                (loot as Armour).onEquipBuffs.push(enchant!.effect);
+                loot.identified = false;
+            }
+            if (Math.random() < 0.1) {
+                const add = getInTable(armourLevel);
+                (loot as Armour).additionalName.push(`+${add}`);
+                (loot as Armour).additionalAbsorb += add;
+                loot.identified = false;
+            }
             break;
         case 'misc':
             const item = getInTable(MiscTable)();

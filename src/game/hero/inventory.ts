@@ -19,7 +19,7 @@ export class Inventory {
          return i;
     }
     flagUnEquiped(item: Item) {
-        this.equiped.delete(item.id);
+        return this.equiped.delete(item.id);
     }
     addGold(n: number) {
         this.gold += n;

@@ -1,13 +1,20 @@
 import { pickInRange } from "../utils/random";
 import { ItemVisitor } from "../items/item-visitor";
-import { IEffect, EffectTarget } from "../effects/effects";
+import { EffectTarget } from "../effects/spells";
 import { Item, ItemArgument } from "../entitybase/item";
+import { BuffDefinition } from "../effects/effect";
+import { Hero } from "../hero/hero";
+import { Affect } from "../effects/affects";
+import * as _ from 'lodash';
 
 export class Weapon extends Item implements ItemArgument {
     baseDamage: string;
     additionnalDmg: number = 0;
-    additionnalEffects: {chance: number, effect: IEffect, target: 'attacker' | 'target'}[] = [];
+    additionnalEffects: {chance: number, effect: BuffDefinition, target: 'attacker' | 'target'}[] = [];
     additionalDescription: string[]=[];
+
+    private additionnalBuff: BuffDefinition[] = []; // pas oublier le sourceID !
+
     additionalName: string[]=[];
     maxRange: number;
     constructor(arg: any) { // FIXME
@@ -59,12 +66,18 @@ export class Weapon extends Item implements ItemArgument {
             return `${this.skin} (unidentified)`;
         }
     }
-
+    onUnEquip(target: Hero) {
+        this.additionnalBuff.forEach(b => target.buffs.cleanBuffSource(this.id));
+    }
     deal() {
         return pickInRange(this.baseDamage)+this.additionnalDmg;
     }
-    use(target: any) {
+    use(target: Hero) {
         target.equip(this);
+        this.additionnalBuff.forEach(b => {
+            b.source = this.id;
+            target.buffs.addBuff(_.cloneDeep(b));
+        });
     }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitWeapon(this);
@@ -76,3 +89,5 @@ export class Weapon extends Item implements ItemArgument {
         return EffectTarget.Hero;
     }
 }
+
+export const NullWeapon = new Weapon({baseDamage: '0-0', maxRange: 1, name: 'Fist', description: '-', kind: '-'});

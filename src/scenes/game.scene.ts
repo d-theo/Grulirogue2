@@ -11,8 +11,7 @@ import {UIEffect} from '../UIEntities/ui-effect';
 import {SkillNames} from '../game/hero/hero-skills';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
-import {MapEffect}from '../map/map-effect';
-import {EffectTarget} from '../game/effects/effects';
+import {EffectTarget} from '../game/effects/spells';
 import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState, Modes } from '../eventBus/states';
 import { Keyboard } from '../phaser-addition/keyboard';
 

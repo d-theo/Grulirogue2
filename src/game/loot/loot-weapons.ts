@@ -1,8 +1,8 @@
 import { XTable, getInTable } from "../monsters/mob-table";
 import { pickInArray, pickInRange } from "../utils/random";
 import { GameRange } from "../utils/range";
-import { EffectMaker, Effects } from "../effects/effect";
 import { Weapon } from "../items/weapon";
+import { Affect } from "../effects/affects";
 
 export const DmgPerTier = [1,3,5,7,9,13,16];
 export const rangePerTier = [1,2,3,4,5,5,5];
@@ -139,25 +139,25 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.identified = false;
                 break;
             case 'bleed':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Bleed), target: 'target', chance: 0.1});
+                w.additionnalEffects.push({effect: new Affect('bleed').turns(3).create(), target: 'target', chance: 0.1});
                 w.additionalDescription.push('inflict bleeding');
                 w.additionalName.push('Bleeding');
                 w.identified = false;
                 break;
             case 'poison':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Poison), target: 'target', chance: 0.5});
+                w.additionnalEffects.push({effect: new Affect('poison').turns(4).create(), target: 'target', chance: 0.5});
                 w.additionalDescription.push('poison the target');
                 w.additionalName.push('Poison');
                 w.identified = false;
                 break;
             case 'shock':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Shock), target: 'target', chance: 0.5});
+                w.additionnalEffects.push({effect: new Affect('shock').create(), target: 'target', chance: 0.5});
                 w.additionalDescription.push('Can shock the target. If the target is wet, it also adds a bonus dammage');
                 w.additionalName.push('Lightning');
                 w.identified = false;
                 break;
             case 'cold':
-                w.additionnalEffects.push({effect: EffectMaker.create(Effects.Cold), target: 'target', chance: 0.5});
+                w.additionnalEffects.push({effect: new Affect('cold').create(), target: 'target', chance: 0.5});
                 w.additionalDescription.push('Deals additionnal cold damages. If the target is wet, it also freeze it');
                 w.additionalName.push('Cold');
                 w.identified = false;

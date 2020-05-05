@@ -8,8 +8,8 @@ import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
 import { gameBus, itemEquiped } from "../../eventBus/game-bus";
-import { Armour } from "../items/armour";
-import { Weapon } from "../items/weapon";
+import { Armour, NullArmour } from "../items/armour";
+import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
@@ -62,19 +62,32 @@ export class Hero implements Entity {
     }
     dropItem(item: Item) {
         item.pos = this.pos;
-        this.inventory.flagUnEquiped(item);
+        const wasEquiped = this.inventory.flagUnEquiped(item);
         this.inventory.remove(item);
+        wasEquiped && this.unEquip(item);
+    }
+    unEquip(item: Item) {
+        if (item instanceof Weapon) {
+            item.onUnEquip(this);
+            this.weapon = NullWeapon;
+        }
+        if (item instanceof Armour) {
+            item.onUnEquip(this);
+            this.armour = NullArmour;
+        }
     }
     equip(item: Item) {
         if (item instanceof Weapon) {
             if (this.weapon) {
                 this.inventory.flagUnEquiped(this.weapon);
+                this.unEquip(this.weapon);
             }
             this.weapon = item;
         }
         if (item instanceof Armour) {
             if (this.armour) {
                 this.inventory.flagUnEquiped(this.armour);
+                this.unEquip(this.armour);
             }
             this.armour = item;
         }

@@ -1,19 +1,18 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, playerHealed, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp } from "../../eventBus/game-bus";
+import { gameBus, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
-import { WorldEffect, EffectMaker, Effects, SpellNames } from "./effect";
-import { pickInRange,  } from "../utils/random";
+import { WorldEffect, EffectMaker } from "./effect";
 import { handleHealthReport } from "../use-cases/health-report";
 import { MapEffect } from "../../map/map-effect";
 import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
 import { Tile, TileVisibility } from "../tilemap/tile";
-import { SkillNames } from "../hero/hero-skills";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { BloodFountain } from "../places/places";
+import { Affect } from "./affects";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -36,8 +35,9 @@ export class TrapSpell implements IEffect {
     type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
+        const bleed = new Affect('bleed').turns(3).create();
         const id = this.world.getTilemap().addTileEffects({
-            debuff: EffectMaker.create(Effects.Bleed),
+            debuff: bleed,
             pos,
             duration: 1,
             stayOnWalk: false,
@@ -59,10 +59,8 @@ export class RootTrapSpell implements IEffect {
     type = EffectTarget.Location;
     constructor(private readonly world: WorldEffect) {}
     cast() {
-        const root = EffectMaker.create(Effects.Stun) as StunEffect;
-        root.stunKind = 'rooted';
         const id = this.world.getTilemap().addTileEffects({
-            debuff: root,
+            debuff: new Affect('stun').turns(5).create(),
             pos: this.world.getHero().pos,
             duration: 1,
             stayOnWalk: false,
@@ -84,8 +82,11 @@ export class PoisonTrapSpell implements IEffect {
     constructor(private readonly world: WorldEffect) {}
     cast() {
         const pos = this.world.getHero().pos;
+        const poison = new Affect('poison')
+            .turns(3)
+            .create();
         const id = this.world.getTilemap().addTileEffects({
-            debuff: EffectMaker.create(Effects.Poison),
+            debuff: poison,
             pos,
             duration: 1,
             stayOnWalk: false,
@@ -108,8 +109,9 @@ export class WildFireSpell implements IEffect {
     constructor(private readonly world: WorldEffect) {}
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
+            const dmg = new Affect('damage').params(0.5,'4-6','wild fire').create(); // FIXME
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.RawDamage),
+                debuff: dmg,
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -134,7 +136,7 @@ export class LightningSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Shock),
+                debuff: new Affect('shock').create(),
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -159,7 +161,7 @@ export class PoisonCloudSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Poison),
+                debuff: new Affect('poison').turns(5).create(),
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -184,7 +186,7 @@ export class ColdCloudSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Cold),
+                debuff: new Affect('cold').create(),
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -209,7 +211,7 @@ export class RainCloudSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 2).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Wet),
+                debuff: new Affect('wet').create(),
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -234,7 +236,7 @@ export class FireCloudSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Fire),
+                debuff: new Affect('fire').create(),
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -259,7 +261,7 @@ export class ShadowSpell implements IEffect {
     cast(pos: Coordinate) {
         around(pos, 2).forEach(p => {
             const id = this.world.getTilemap().addTileEffects({
-                debuff: EffectMaker.create(Effects.Shadow),
+                debuff: new Affect('blind').params(7).create(),
                 pos: p,
                 duration: 40,
                 stayOnWalk: true,
@@ -274,6 +276,24 @@ export class ShadowSpell implements IEffect {
                 }));
             }
         });
+    }
+}
+
+export class UnholySpellBook implements IEffect {
+    type = EffectTarget.None;
+    turns = 1;
+    constructor(private world: WorldEffect){}
+    cast() {
+        const hpos = this.world.getHero().pos;
+        const place = this.world.getPlaces().getAt(hpos);
+
+        if (place != null && place instanceof BloodFountain) {
+            gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
+            place.cursed = false;
+        } else {
+            doDamages(1, this.world.getHero(), 'sickness');
+            gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
+        }
     }
 }
 
@@ -298,7 +318,80 @@ export class KnowledgeSpell implements IEffect {
         gameBus.publish(sightUpdated({}));
     }
 }
+export class TeleportationSpell implements IEffect  {
+    type = EffectTarget.Movable;
+    constructor(private readonly world: WorldEffect) {}
+    cast(target: Hero|Monster) {
+        let done = false;
+        const rX = new GameRange(0, this.world.getMapWidth());
+        const rY = new GameRange(0, this.world.getMapHeight());
+        while(!done) {
+            const pos = {
+                x: rX.pick(),
+                y: rY.pick()
+            };
+            if (this.world.tileIsEmpty(pos) && this.world.monsterAt(pos) == null) {
+                done = true;
+                target.pos = pos;
+            }
+        }
+    }
+}
 
+export class BlinkSpell implements IEffect  {
+    type = EffectTarget.Location;
+    constructor(private readonly world: WorldEffect) {}
+    cast(target: Coordinate) {
+        this.world.getHero().pos = target;
+        gameBus.publish(playerMoved({}));
+    }
+}
+
+export class ImproveArmourSpell implements IEffect  {
+    type = EffectTarget.Armour;
+    constructor(private world: WorldEffect){}
+    cast(target: Armour) {
+        target.baseAbsorb += 1;
+        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
+        gameBus.publish(itemEquiped({armour: this.world.getHero().armour}))
+    }
+}
+export class ImproveWeaponSpell implements IEffect  {
+    type = EffectTarget.Weapon;
+    constructor(private world: WorldEffect){}
+    cast(target: Weapon) {
+        target.additionnalDmg += 1;
+        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
+        gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}))
+    }
+}
+
+/// SHOULD BE SPELLS
+export class CleaningEffect implements IEffect {
+    type = EffectTarget.Movable;
+    cast(target: Hero|Monster) {
+        target.buffs.cleanBuff();
+        target.enchants.clean();
+        gameBus.publish(logPublished({level: 'success', data:`${target.name} looks purified`}));
+    }
+}
+
+export class XPEffect implements IEffect {
+    type = EffectTarget.Movable;
+    cast(target: Hero | Monster) {
+        if (target instanceof Hero) {
+            gameBus.publish(heroGainedXp({
+                amount: 999999
+            }));
+            gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
+        } else {
+            gameBus.publish(logPublished({data:'nothing happens'}));
+        }
+    }
+}
+
+ /// END SPELLS
+/*
 export class HealEffect implements IEffect {
     type = EffectTarget.Movable;
     cast(target: Hero) {
@@ -326,17 +419,9 @@ export class ThicknessEffect implements IEffect {
                 t.speed = t.speed / 2;
                 gameBus.publish(itemEquiped({armour: t.armour}));
             },
-            turns: this.turns
+            turns: this.turns,
         });
         gameBus.publish(logPublished({level: 'success', data:'Your skin seems thicker'}));
-    }
-}
-export class CleaningEffect implements IEffect {
-    type = EffectTarget.Movable;
-    cast(target: Hero|Monster) {
-        target.buffs.cleanBuff();
-        target.enchants.clean();
-        gameBus.publish(logPublished({level: 'success', data:`${target.name} looks purified`}));
     }
 }
 
@@ -356,20 +441,6 @@ export class DodgeEffect implements IEffect {
             turns: this.turns
         });
         gameBus.publish(logPublished({level: 'success', data:`${target.name} feels more agile`}));
-    }
-}
-
-export class XPEffect implements IEffect {
-    type = EffectTarget.Movable;
-    cast(target: Hero | Monster) {
-        if (target instanceof Hero) {
-            gameBus.publish(heroGainedXp({
-                amount: 999999
-            }));
-            gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
-        } else {
-            gameBus.publish(logPublished({data:'nothing happens'}));
-        }
     }
 }
 
@@ -461,54 +532,6 @@ export class RageEffect implements IEffect   {
     }
 }
 
-export class TeleportationSpell implements IEffect  {
-    type = EffectTarget.Movable;
-    constructor(private readonly world: WorldEffect) {}
-    cast(target: Hero|Monster) {
-        let done = false;
-        const rX = new GameRange(0, this.world.getMapWidth());
-        const rY = new GameRange(0, this.world.getMapHeight());
-        while(!done) {
-            const pos = {
-                x: rX.pick(),
-                y: rY.pick()
-            };
-            if (this.world.tileIsEmpty(pos) && this.world.monsterAt(pos) == null) {
-                done = true;
-                target.pos = pos;
-            }
-        }
-    }
-}
-
-export class BlinkSpell implements IEffect  {
-    type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
-    cast(target: Coordinate) {
-        this.world.getHero().pos = target;
-        gameBus.publish(playerMoved({}));
-    }
-}
-
-export class ImproveArmourSpell implements IEffect  {
-    type = EffectTarget.Armour;
-    constructor(private world: WorldEffect){}
-    cast(target: Armour) {
-        target.baseAbsorb += 1;
-        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
-        gameBus.publish(itemEquiped({armour: this.world.getHero().armour}))
-    }
-}
-export class ImproveWeaponSpell implements IEffect  {
-    type = EffectTarget.Weapon;
-    constructor(private world: WorldEffect){}
-    cast(target: Weapon) {
-        target.additionnalDmg += 1;
-        gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
-        gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}))
-    }
-}
-
 export class BleedEffect implements IEffect  {
     type = EffectTarget.Movable;
     turns = 3;
@@ -540,15 +563,7 @@ export class PoisonEffect implements IEffect  {
                 bleed.cast(target);
             }
         }
-        target.addBuff({
-            start: (t: Hero|Monster) => { 
-                t.enchants.setPoisoned(true);
-                poison(t);
-            },
-            tick: (t: Hero|Monster) => poison(t),
-            end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
-            turns: this.turns
-        });
+        target.addBuff();
     }
 }
 
@@ -613,14 +628,7 @@ export class ShockEffect implements IEffect {
     type = EffectTarget.Movable;
     turns = 1;
     cast(target: Hero|Monster) {
-        if (target.enchants.getWet()) {
-            doDamages(pickInRange('5-10'), target, 'shock');
-        }
-        const shock: StunEffect = EffectMaker.create(Effects.Stun) as StunEffect;
-        shock.turns = 1;
-        shock.stunKind = 'shocked';
-        shock.cast(target);
-        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is stricken by a lightning bolt`}));
+        
     }
 }
 
@@ -628,33 +636,7 @@ export class ColdEffect implements IEffect {
     type = EffectTarget.Movable;
     turns = 1;
     cast(target: Hero|Monster) {
-        doDamages(pickInRange('2-4'), target, 'cold');
-        if (target.enchants.getWet()) {
-            const stunEffect = EffectMaker.create(Effects.Stun) as StunEffect;
-            stunEffect.turns = 3;
-            stunEffect.stunKind = 'frozen';
-            stunEffect.cast(target);
-        }
-
-        gameBus.publish(logPublished({level: 'warning', data: `${target.name} is freezing`}));
-    }
-}
-
-export class UnholySpellBook implements IEffect {
-    type = EffectTarget.None;
-    turns = 1;
-    constructor(private world: WorldEffect){}
-    cast() {
-        const hpos = this.world.getHero().pos;
-        const place = this.world.getPlaces().getAt(hpos);
-
-        if (place != null && place instanceof BloodFountain) {
-            gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
-            place.cursed = false;
-        } else {
-            doDamages(1, this.world.getHero(), 'sickness');
-            gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
-        }
+        
     }
 }
 
@@ -694,9 +676,9 @@ export class FireEffect implements IEffect {
         });
         gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
     }
-}
+}*/
 
-function doDamages(dmg: number, target: Monster | Hero, cause: string): void {
+export function doDamages(dmg: number, target: Monster | Hero, cause: string): void {
     const r = target.health.take(dmg);
     if (target instanceof Hero) {
         gameBus.publish(playerTookDammage({

@@ -1,7 +1,8 @@
 import { Hero } from "./hero";
-import { EffectMaker, SpellNames, Effects } from "../effects/effect";
-import { SpeedEffect, TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/effects";
+import { EffectMaker, SpellNames  } from "../effects/effect";
+import { TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/spells";
 import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc, HunterDesc, RogueDesc } from "./skill-desc";
+import { Affect } from "../effects/affects";
 
 export enum SkillNames {
     Rogue = 'rogue',
@@ -119,8 +120,7 @@ export class HeroSkills {
                     trapSpell.cast(this.hero.pos);
                     break;
                 case SkillNames.Coward: 
-                    const runEffect: SpeedEffect = EffectMaker.create(Effects.Speed) as SpeedEffect;
-                    runEffect.cast(this.hero);
+                    new Affect('speed').turns(15).target(this.hero).cast();
                     break;
                 case SkillNames.Rogue:
                     const rogueSpell: PoisonTrapSpell = EffectMaker.createSpell(SpellNames.PoisonTrap) as PoisonTrapSpell;

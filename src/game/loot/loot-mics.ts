@@ -2,7 +2,7 @@ import { SpellNames, EffectMaker } from "../effects/effect";
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
 import { Coordinate } from "../utils/coordinate";
-import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook } from "../effects/effects";
+import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook } from "../effects/spells";
 
 export const createWildFireBottle = () => {
     return new WildfireBottle({

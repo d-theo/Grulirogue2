@@ -2,7 +2,7 @@ import { Coordinate } from "../utils/coordinate";
 import { ItemVisitor } from "../items/item-visitor";
 import { gameBus, itemDropped } from "../../eventBus/game-bus";
 import { Hero } from "../hero/hero";
-import { EffectTarget } from "../effects/effects";
+import { EffectTarget } from "../effects/spells";
 let short = require('short-uuid');
 
 export interface ItemArgument {

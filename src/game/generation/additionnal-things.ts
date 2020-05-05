@@ -27,7 +27,7 @@ export function makeThings(
                 const potion = new Potion({
                     name: p.name,
                     description: p.description,
-                    effect: p.effect()
+                    effect: p.effect
                 });
                 potion.pos = add.pos;
                 itemCollection.itemsArray().push(potion);

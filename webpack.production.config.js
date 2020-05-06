@@ -6,6 +6,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var phaserModule = path.join(__dirname, '/node_modules/phaser/')
 var phaser = path.join(phaserModule, 'src/phaser.js')
 
+const Uglify = require("uglifyjs-webpack-plugin");
+
 var definePlugin = new webpack.DefinePlugin({
   __DEV__: JSON.stringify(JSON.parse(process.env.BUILD_DEV || 'false')),
   WEBGL_RENDERER: true, 
@@ -27,13 +29,7 @@ module.exports = {
   plugins: [
     definePlugin,
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new webpack.optimize.UglifyJsPlugin({
-      drop_console: true,
-      minimize: true,
-      output: {
-        comments: false
-      }
-    }),
+    new Uglify(),
     new webpack.optimize.CommonsChunkPlugin({ name: 'vendor' /* chunkName= */, filename: 'js/vendor.bundle.js' /* filename= */ }),
     new HtmlWebpackPlugin({
       filename: 'index.html',

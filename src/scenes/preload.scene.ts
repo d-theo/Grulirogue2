@@ -2,6 +2,8 @@ import {
     SceneName
   } from "./scenes.constants";
 import { PotionColors } from "../game/items/potion";
+import { InventoryFont } from "./inventory.scene";
+import TweenHelper from "../phaser-addition/tween-helper";
 
   class PreLoadScene extends Phaser.Scene {
     constructor() {
@@ -11,6 +13,7 @@ import { PotionColors } from "../game/items/potion";
     }
   
     preload() {
+      this.load.image('screen', '/assets/tilemaps/screen.png');
       this.load.image('terrain2', '/assets/tilemaps/tilemap2.png');
       this.load.image('hero', '/assets/sprites/hero.png');
       this.load.image('hero-heavy', '/assets/sprites/hero-heavy.png');
@@ -72,7 +75,19 @@ import { PotionColors } from "../game/items/potion";
     }
     
     create() {
-      this.scene.stop().launch(SceneName.Game);
+      this.game.scale.resize(1030, 761);
+      this.add.image(0, 0, 'screen').setOrigin(0, 0).setDisplaySize(1030, 761);
+      const txt = this.add.text((1030/2)-200,500,'Push space to start', {
+        fontSize: '36px',
+        fontFamily: 'Courier New',
+        color: '#FFFFFF',
+      });
+      txt.style.fixedWidth = 400;
+      TweenHelper.flashElement(this, txt);
+      this.input.keyboard.on('keydown-' + 'SPACE', (e) => {
+        this.game.scale.resize(32*23, 32*17);
+        this.scene.stop().launch(SceneName.Game);
+      }); 
     }
   }
   

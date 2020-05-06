@@ -6,7 +6,7 @@ export function test() {
         $('#hud').show();
         $('#log').show();
         $('#howto').show();
-        setTimeout(() => $('#screen').hide(), 3);
+        
     });
     gameBus.subscribe(logPublished, event => {
         const {data, level} = event.payload;

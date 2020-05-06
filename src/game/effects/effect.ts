@@ -4,7 +4,7 @@ import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
-import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect } from './spells';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell } from './spells';
 
 export type BuffDefinition = {
     start: Function | null;
@@ -24,7 +24,7 @@ export enum SpellNames {
     EnchantArmour = "EnchantArmour",
     Blink = "Blink",
     Identify = "Identify",
-    Knowledge= "Knowledge",
+    Knowledge = "Knowledge",
     WildFire = 'WildFire',
     Shadow = "Shadow",
     RootTrap = 'RootTrap',
@@ -36,7 +36,8 @@ export enum SpellNames {
     LightningCloud = 'LightningCloud',
     UnholySpell = 'UnholySpell',
     CleaningSpell = 'CleaningSpell',
-    XPSpell = 'XPSpell'
+    XPSpell = 'XPSpell',
+    RogueEventSpell = "RogueEventSpell"
 }
 
 let tilemap: TileMap;
@@ -98,6 +99,8 @@ function createSpell(name: SpellNames) {
             return new XPEffect();
         case SpellNames.CleaningSpell:
             return new CleaningEffect;
+        case SpellNames.RogueEventSpell:
+            return new RogueEventSpell();
         default:
             throw new Error(`${name} spell not impl`);
     }

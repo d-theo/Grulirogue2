@@ -3,6 +3,7 @@ import { pickInArray, pickInRange } from "../utils/random";
 import { GameRange } from "../utils/range";
 import { Weapon } from "../items/weapon";
 import { Affect } from "../effects/affects";
+import * as _ from 'lodash';
 
 export const DmgPerTier = [1,3,5,7,9,13,16];
 export const rangePerTier = [1,2,3,4,5,5,5];
@@ -68,6 +69,12 @@ export const WeaponEchants: XTable = [
     {chance: 5, type: 'minus_two'},
     {chance: 5, type: 'minus_three'},
 ];
+
+export const WeaponOnCarryBonus = [
+    {effect: new Affect('precision').params(0.1).isStackable(true).create(), name: 'of precision', description: 'this weapon is very accurate'},
+    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
+    {effect: new Affect('dodge').params(0.05).isStackable(true).create(), name: 'of agility', description: 'this weapon is easy enought to manipulate and allows to dodge better'},
+]
 
 const getDmgName = (dmg: number) => {
     for(let n of namesPerDamage) {
@@ -161,10 +168,17 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.additionalDescription.push('Deals additionnal cold damages. If the target is wet, it also freeze it');
                 w.additionalName.push('Cold');
                 w.identified = false;
-                break;
+                break;  
             default:
                 break;
         }
+    }
+    if (Math.random() > 0.05) {
+        const onCarryEnchant = _.sample(WeaponOnCarryBonus);
+        w.onEquipBuffs.push(onCarryEnchant!.effect);
+        w.additionalDescription.push(onCarryEnchant!.description);
+        w.additionalName.push(onCarryEnchant!.name);
+        w.identified = false;
     }
     return w;
 }

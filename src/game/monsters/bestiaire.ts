@@ -94,9 +94,8 @@ export const Bestiaire = {
             damage: '9-14',
             range: 1,
             dodge: 0.0,
-            /*onHit: {chance: 0.5, target: 'target', effect: EffectMaker.create(Effects.Stun)}*/
         },
-        Pirate:{
+        Pirate: {
             kind: "Pirate",
             danger: 30,
             hp: '25-30',
@@ -104,6 +103,32 @@ export const Bestiaire = {
             range: 1,
             dodge: 0.20,
             onHit: {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()}
+        }
+    },
+    Rogue: {
+        SkeletonWarrior: {
+            kind: "Skeleton",
+            danger: 30,
+            hp: '2',
+            damage: '0',
+            range: 1,
+            dodge: 0.00,
+        },
+        Wizard: {
+            kind: "Wizard",
+            danger: 30,
+            hp: '1',
+            damage: '0',
+            range: 1,
+            dodge: 0.00,
+        },
+        Orc: {
+            kind: "Orc",
+            danger: 30,
+            hp: '1',
+            damage: '0',
+            range: 1,
+            dodge: 0.0,
         }
     }
 }

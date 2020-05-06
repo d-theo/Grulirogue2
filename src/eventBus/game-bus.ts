@@ -121,7 +121,7 @@ export const heroTargetMonster = createEventDefinition<{
 }>()('heroTargetMonster');
 export const gameOver = createEventDefinition<{}>()('gameOver');
 export const gameFinished = createEventDefinition<{}>()('gameFinished');
-
+export const rogueEvent = createEventDefinition<{}>()('rogueEvent');
 type StaticEffet = {
     id: string,
     animation: 'static';

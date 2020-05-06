@@ -70,4 +70,10 @@ export const Terrain = {
     WallRope: 67,
     FloorRope: 68,
     Box: 71,
+    WallRogue: 81,
+    FloorRogue: 82,
+    DoorRogue: 83,
+    DoorOpenedRogue: 84,
+    WaterRogue: 86,
+    HerbRogue: 85,
 };

@@ -2,7 +2,7 @@ import { SpellNames, EffectMaker } from "../effects/effect";
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
 import { Coordinate } from "../utils/coordinate";
-import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook } from "../effects/spells";
+import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook, RogueEventSpell } from "../effects/spells";
 
 export const createWildFireBottle = () => {
     return new WildfireBottle({
@@ -52,6 +52,13 @@ export const createUnholyBook = () => {
     return new UnholyBook({
         name: 'Unholy book',
         description: 'Its covered with blood and dangerous words...'
+    });
+}
+
+export const createRogueTome = () => {
+    return new RogueTome({
+        name: 'Strange tome',
+        description: 'Its covered with glyphs: @.+-"~mw#'
     });
 }
 
@@ -241,6 +248,30 @@ export class UnholyBook extends Item implements ItemArgument {
     getArgumentForKey(key: string) {
         switch(key) {
             case 'u':
+            case 'd': 
+            default : return EffectTarget.None;
+        }
+    }
+}
+
+export class RogueTome extends Item implements ItemArgument {
+    effect: RogueEventSpell = EffectMaker.createSpell(SpellNames.RogueEventSpell) as RogueEventSpell;
+    constructor(arg: any) {
+        super(arg);
+        this.skin = 'rogue_tome';
+        this.keyDescription['u'] = '(u)se';
+        this.keyMapping['u'] = this.use.bind(this);
+    }
+    use() {
+        this.effect.cast();
+    }
+    visit(itemVisitor: ItemVisitor): any {
+        return itemVisitor.visitMisc(this);
+    }
+    reveal() {}
+    getArgumentForKey(key: string) {
+        switch(key) {
+            case 'u': return EffectTarget.Hero;
             case 'd': 
             default : return EffectTarget.None;
         }

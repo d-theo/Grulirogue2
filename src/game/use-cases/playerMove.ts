@@ -44,8 +44,8 @@ export function playerMove(args: {
 
 function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     const tile = tilemap.getAt(pos);
-    if (tile.isType(Terrain.DoorOpen)) {
-        tile.type[0] = Terrain.DoorOpened;
+    if (tile.isType(Terrain.DoorOpen) || tile.isType(Terrain.DoorRogue)) {
+        tile.type[0] = Terrain.DoorOpened; // fixme should be floor + doorOpen on top
         gameBus.publish(doorOpened({pos}));
         return true;
     }

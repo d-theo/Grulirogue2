@@ -62,6 +62,9 @@ export function tilemapper(config: TilerConfig) {
             for (let p of config.painters) {
                 if (rand <= p.chance) {
                     p.painter(r, tilemap1, tilemap2);
+                    if (p.exclusive === true) {
+                        break;
+                    }
                 }
             }
         }

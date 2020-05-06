@@ -5,7 +5,7 @@ import { playerMove } from "./use-cases/playerMove";
 import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished, rogueEvent} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -16,6 +16,7 @@ import { monstersSpawn } from "./generation/monster-spawn";
 import { itemSpawn } from "./generation/item-spawn";
 import { ThingToPlace } from "../generation/map_tiling_utils";
 import { SpecialPlaces } from "./places/special-places";
+import { RogueEventLevel } from "../eventBus/event-rogue";
 
 export class Game {
     static Engine: Game;
@@ -26,8 +27,24 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     level = 1;
-    Danger = [50, 70, 80, 100, 120, 160];
-    Loots = [11, 7, 6, 6, 6, 6];
+    Danger: any = {
+        1: 50,
+        2: 70,
+        3: 80,
+        4: 100,
+        5: 120,
+        6: 160,
+        99: 50
+    };
+    Loots: any = {
+        1:11,
+        2:7,
+        3:6,
+        4:6,
+        5:6,
+        6:6,
+        99: 10
+    };
     places: SpecialPlaces;
     constructor() {
         Log.init();
@@ -61,9 +78,9 @@ export class Game {
         additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
         this.adjustSight();
-        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level-1]));
+        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level]));
         EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero, places: this.places});
-        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level-1]));
+        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level]));
         makeThings(additionalThingsToPlace, this.monsters, this.items, this.places);
         if (this.tilemap.graph.bossRoom && this.level == 2) {
             gameBus.publish(logPublished({level: 'warning', data:'You hear a distinct hissing...'}));
@@ -118,6 +135,10 @@ export class Game {
                 this.level ++;
                 this.reInitLevel();
             }
+        });
+        gameBus.subscribe(rogueEvent, event => {
+            this.level = RogueEventLevel;
+            this.reInitLevel();
         });
         gameBus.subscribe(playerChoseSkill, event => {
             const {name} = event.payload;

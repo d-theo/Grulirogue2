@@ -22,6 +22,8 @@ export function tilePropertiesForTerrain() {
             Terrain.PirateWallS,
             Terrain.PirateWallE,
             Terrain.PirateWallW,
+            Terrain.WallRogue,
+            Terrain.DoorRogue
         ].indexOf(type) > -1;
     }
     function isWalkable(type: number) {

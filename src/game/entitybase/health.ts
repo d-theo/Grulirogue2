@@ -53,6 +53,14 @@ export class Health {
             }
         }
     }
+    getStrongerByHp(hp: number) {
+        this.baseHp += hp;
+        gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
+    }
+    getWeakerByHp(hp: number) {
+        this.baseHp -= hp;
+        gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
+    }
 }
 
 export type HealthReport = {

@@ -39,7 +39,6 @@ export function lineTile(A, B, tilemap, type, atRate?: Function) { // 0-1
  export function propagate(pos, tilemap, factor, propagationEntropy, biome, predicate, marked = {}) {
     if (marked[pos.x+' '+pos.y]) return;
     marked[pos.x+' '+pos.y] = true;
-
     if (predicate(pos, factor)) {
         tilemap[pos.y][pos.x] = biome;
         propagate({x: pos.x+1, y: pos.y+1}, tilemap, factor*propagationEntropy, propagationEntropy, biome, predicate, marked);

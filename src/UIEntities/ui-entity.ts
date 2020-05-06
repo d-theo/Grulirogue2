@@ -105,11 +105,12 @@ export class UIEntity {
 		}
 	}
 
-	updateHeroSprite(armour: Armour) {
+	updateHeroSprite(armourSkin: string) {
 		const skin = {
 			'armour-light': 'hero-light',
-			'armour-heavy': 'hero-heavy'
+			'armour-heavy': 'hero-heavy',
+			'@': '@'
 		}
-		this.sprite.setTexture(skin[armour.skin] ?? 'hero');
+		this.sprite.setTexture(skin[armourSkin] ?? 'hero');
 	}
 }

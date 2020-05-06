@@ -21,6 +21,7 @@ export class Hero implements Entity {
     dodge: number = 0.30;
     weapon: Weapon;
     pos!: Coordinate;
+    precision: number = 0;
     enchants: EnchantTable = new EnchantTable(true);
     xp: number;
     nextXp!: number;

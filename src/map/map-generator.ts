@@ -6,6 +6,8 @@ import { generateOlMap } from '../generation/map-generators/map_generation_ol';
 import { pirateMap } from '../generation/levels/pirate-map';
 import { generatePirateMap } from '../generation/map-generators/map_generation_pirate1';
 import { generatePirateMap2 } from '../generation/map-generators/map_generation_pirate2';
+import { rogueMap } from '../generation/levels/rogue-map';
+import { RogueEventLevel } from '../eventBus/event-rogue';
 
 export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
     let painterFn;
@@ -37,6 +39,10 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
         case 6:
             painterFn = pirateMap;
             mapGeneratorFn = generatePirateMap;
+            break;
+        case RogueEventLevel:
+            painterFn = rogueMap;
+            mapGeneratorFn = generateOlMap;
             break;
     }
     const {tilemapBG, tilemapFG, mapObject, thingsToPlace} = painterFn(mapGeneratorFn, overrides);

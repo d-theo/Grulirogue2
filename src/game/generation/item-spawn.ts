@@ -16,6 +16,7 @@ export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
         let total = 0;
         while(total < nb) {
             let item: Item = getRandomLoot(level);
+            //let item: Item = createRogueTome();
             const pos = randomIn(room.rect);
             item.pos = pos;
             items.push(item);

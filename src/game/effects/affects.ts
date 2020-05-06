@@ -26,7 +26,10 @@ export type AffectType =
 | 'cold'
 | 'fire'
 | 'brave'
-| 'health';
+| 'health'
+| 'precision'
+| 'hp'
+| 'procChance';
 
 export class Affect {
     private _target!: Hero | Monster;
@@ -76,7 +79,6 @@ export class Affect {
         this._source = s;
         return this;
     }
-
     public cast() {
         if (this.paramsNb === 1) {
             microValidator([this.param1]);
@@ -277,6 +279,31 @@ export class Affect {
             tags: 'speed'
         }
     }
+    private precision() {
+        this.paramsNb = 1;
+        return {
+            start: (t: Hero|Monster) => {
+                gameBus.publish(logPublished({level: 'success', data:'your eyes are stronger'}));
+                t.precision += this.param1;
+            },
+            end: (t: Hero|Monster) => {
+                t.precision -= this.param1;
+            },
+            tags: 'precision'
+        }
+    }
+    private hp() {
+        this.paramsNb = 1;
+        return {
+            start: (t: Hero|Monster) => {
+                t.health.getStrongerByHp(this.param1);
+            },
+            end: (t: Hero|Monster) => {
+                t.health.getWeakerByHp(this.param1);
+            },
+            tags: 'hp'
+        }
+    }
     private slow() {
         return {
             start: (t: Hero|Monster) => {
@@ -387,6 +414,21 @@ export class Affect {
             start: null,
             tick: (t: Hero|Monster) => t.armour.baseAbsorb += this.param1,
             end: (t: Hero|Monster) => t.armour.baseAbsorb -= this.param1,
+        }
+    }
+    private procChance() {
+        this.paramsNb = 3;
+        return {
+            start: null,
+            tick: (t: Hero|Monster) => {
+                if (this.param1 >= Math.random()) {
+                    new Affect(this.param2)
+                        .turns(this.param3)
+                        .target(t)
+                        .cast();
+                }
+            },
+            end: NullFunc,
         }
     }
 }

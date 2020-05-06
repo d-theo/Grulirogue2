@@ -4,10 +4,10 @@ import * as _ from 'lodash';
 const Params = {
     Area: 250, // min area of a room
     Fuzz: 0.25, // room size variation +-
-    MinClusterSize: 8, // minimal cluster of room
-    Width: 80,
-    Height: 60,
-    MinSubSize: 10, // subdivise into subcluster if cluster is bigger than MinSubSize
+    MinClusterSize: 5, // minimal cluster of room
+    Width: 60,
+    Height: 40,
+    MinSubSize: 6, // subdivise into subcluster if cluster is bigger than MinSubSize
 };
 
 export function generateRLMap() {
@@ -249,7 +249,6 @@ export function generateRLMap() {
                 ok = true;
             } catch(e) {
                 cpt ++;
-                console.log(e.message);
                 G.reset();
             }
         }
@@ -379,19 +378,18 @@ export function generateRLMap() {
     
 
     function checkValidHall(line, rooms, id1, id2, max) {
-        /*let x = 0;
+        let x = 0;
         for (let r of rooms) {
             var id = r.gameMetadata.groupId;
             var intersec = lineIntersectRect(line, r.gameMetadata.rect);
             if (intersec) {
-                G.addDoor(id, id2, intersec, id1==id2);
                 x++;
                 if (x > max) throw new Error('nop')
                 if (id !== id1 && id !== id2) {
                     throw new Error('nop')
                 }
             }
-        }*/
+        }
     }
 
     function getSide(positions1, positions2) {

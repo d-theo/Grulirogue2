@@ -72,6 +72,13 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
       this.load.image('unholy_book', '/assets/sprites/unholy-book.png');
       
+
+      /*rogue mode*/ 
+      this.load.image('@', '/assets/sprites/@.png');
+      this.load.image('Wizard', '/assets/sprites/w.png');
+      this.load.image('Orc', '/assets/sprites/o.png');
+      this.load.image('Skeleton', '/assets/sprites/s.png');
+      this.load.image('rogue_tome', '/assets/sprites/rogue_tome.png');
     }
     
     create() {
@@ -84,7 +91,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       });
       txt.style.fixedWidth = 400;
       TweenHelper.flashElement(this, txt);
-      this.input.keyboard.on('keydown-' + 'SPACE', (e) => {
+      this.input.keyboard.on('keydown-' + 'SPACE', () => {
         this.game.scale.resize(32*23, 32*17);
         this.scene.stop().launch(SceneName.Game);
       }); 

@@ -7,15 +7,17 @@ import { EnchantTable } from "./enchantable";
 
 export interface Entity {
     health: Health;
-    armour: Armour|null;
+    armour: Armour;
     dodge: number;
 
     pos: Coordinate;
     sight: number;
 
-    weapon: Weapon|null;
+    weapon: Weapon;
     level: number;
 
     buffs: Buffs;
     enchants: EnchantTable;
+
+    precision: number;
 }

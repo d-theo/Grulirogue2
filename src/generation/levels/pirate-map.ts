@@ -37,7 +37,6 @@ const config: TilerConfig = {
 
 export function pirateMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {
     configOverride.forEach(override => _.set(config, override.path, override.value));
-    console.log(config);
     const tiler = tilemapper(config);
     return tiler(mapGenerator());
 }

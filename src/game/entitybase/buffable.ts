@@ -40,7 +40,6 @@ export class Buffs {
         });
     }
     apply(target: any) {
-        console.log(this.buffs)
         const nextTurn: BuffDefinition[] = []
         for (let buff of this.buffs) {
             if (buff.turns <= 0) {

@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -449,6 +449,9 @@ class GameScene extends Phaser.Scene {
 			const gameItem = this.gameItems[item.id];
 			gameItem.destroy();
 		}));
+		this.subs.push(gameBus.subscribe(rogueEvent, () => {
+			this.hero.updateHeroSprite('@');
+		}));
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {
 				status
@@ -482,9 +485,6 @@ class GameScene extends Phaser.Scene {
 				id
 			} = event.payload;
 			if (! this.gameEffects[id]) {
-				console.log('there is a problem with id' + id);
-				console.log(JSON.stringify(this.gameEngine.tilemap.debuffDurations));
-				console.log(JSON.stringify(Object.keys(this.gameEffects)));
 				return ;
 			}
 			this.gameEffects[id].destroy();
@@ -501,7 +501,7 @@ class GameScene extends Phaser.Scene {
 				armour
 			} = event.payload;
 			if (armour) {
-				this.hero.updateHeroSprite(armour);
+				this.hero.updateHeroSprite(armour.skin);
 			}
 		}));
 		gameBus.subscribe(nextLevelCreated, event => {

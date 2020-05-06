@@ -13,6 +13,7 @@ let short = require('short-uuid');
  
 export class Monster implements Entity {
     id = short.generate();
+    precision: number = 0;
     health!: Health;
     armour: Armour = new Armour({absorbBase: 0});
     weapon!: Weapon;

@@ -4,6 +4,8 @@ import { Game } from '../game';
 import { monsterMove } from '../use-cases/monsterMove';
 import { monsterAttack } from '../use-cases/monsterAttack';
 import { astar } from '../tilemap/astar';
+import { Coordinate } from '../utils/coordinate';
+import { isTileEmpty } from '../use-cases/preconditions/moveAllowed';
 
 export type Behavior = (monster: Monster) => void;
 
@@ -90,6 +92,66 @@ export const AI = (game: Game) => {
         }
     }
 
+    function fearfullAI (monster: Monster) {
+        const heroPos = game.hero.pos;        
+        const selfPos = monster.pos;
+
+        const dir = relativePosition(selfPos, heroPos);
+        const ne = [
+            {x:selfPos.x+1, y: selfPos.y-1},
+            {x:selfPos.x+1, y: selfPos.y},
+            {x:selfPos.x, y: selfPos.y-1},
+        ];
+        const nw = [
+            {x:selfPos.x-1, y: selfPos.y-1},
+            {x:selfPos.x-1, y: selfPos.y},
+            {x:selfPos.x, y: selfPos.y-1},
+        ];
+        const n = [
+            {x:selfPos.x, y: selfPos.y-1},
+            {x:selfPos.x-1, y: selfPos.y-1},
+            {x:selfPos.x+1, y: selfPos.y-1},
+        ];
+        const s = [
+            {x:selfPos.x, y: selfPos.y+1},
+            {x:selfPos.x-1, y: selfPos.y+1},
+            {x:selfPos.x+1, y: selfPos.y+1},
+        ];
+        const sw = [
+            {x:selfPos.x-1, y: selfPos.y+1},
+            {x:selfPos.x, y: selfPos.y+1},
+            {x:selfPos.x-1, y: selfPos.y},
+        ];
+        const se = [
+            {x:selfPos.x+1, y: selfPos.y+1},
+            {x:selfPos.x+1, y: selfPos.y},
+            {x:selfPos.x, y: selfPos.y+1},
+        ];
+        let nextMoves: Coordinate[]|any = {
+            NE: ne,
+            N:n,
+            NW: nw,
+            S: s,
+            SW: sw,
+            SE: se
+        };
+        const possibleMoves = nextMoves[dir];
+        let chosedMove;
+        for (const m of possibleMoves) {
+            const t = game.tilemap.getAt(m);
+            if (t.isWalkable() === true && isTileEmpty(m, game.monsters.monstersArray())) {
+                chosedMove = m;
+            } 
+        }
+        if (chosedMove) {
+            monsterMove({
+                game: game,
+                monster: monster,
+                nextPos: chosedMove
+            });
+        }
+    }
+
     function randomAI (monster: Monster) {
         const rand = new GameRange(-1,1);
         const x = rand.pick();
@@ -104,5 +166,23 @@ export const AI = (game: Game) => {
             nextPos
         })
     }
+
+    function friendlyAI(monster: Monster) {
+        
+    }
 }
 
+function relativePosition(pos1: Coordinate, pos2: Coordinate) {
+    let str = '';
+    if (pos1.y - pos2.y > 0) {
+        str+='S'
+    }else if (pos1.y - pos2.y < 0) {
+        str+='N'
+    }
+    if (pos1.x - pos2.x > 0) {
+        str+='E'
+    }else if (pos1.x - pos2.x < 0) {
+        str+='W'
+    }
+    return str;
+}

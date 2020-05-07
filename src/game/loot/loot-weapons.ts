@@ -71,9 +71,9 @@ export const WeaponEchants: XTable = [
 ];
 
 export const WeaponOnCarryBonus = [
-    {effect: new Affect('precision').params(0.1).isStackable(true).create(), name: 'of precision', description: 'this weapon is very accurate'},
-    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
-    {effect: new Affect('dodge').params(0.05).isStackable(true).create(), name: 'of agility', description: 'this weapon is easy enought to manipulate and allows to dodge better'},
+    {effect: new Affect('precision').params(0.1).isStackable(true).turns(Infinity).create(), name: 'of precision', description: 'this weapon is very accurate'},
+    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).turns(Infinity).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
+    {effect: new Affect('dodge').params(0.05).isStackable(true).turns(Infinity).create(), name: 'of agility', description: 'this weapon is easy enought to manipulate and allows to dodge better'},
 ]
 
 const getDmgName = (dmg: number) => {

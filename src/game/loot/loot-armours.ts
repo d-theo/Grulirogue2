@@ -25,7 +25,7 @@ export const ArmourEnchants = [
     {effect: new Affect('health').turns(Infinity).params(2, 0.01).isStackable(true).create(), name: 'of life', description: 'This armour is pulsing sometimes like it\'s alive'},
     {effect: new Affect('brave').turns(Infinity).create(), name: 'of braveness', description: 'This armour shines only when you need it'},
     {effect: new Affect('procChance').turns(Infinity).params('speed', 0.01, 5).create(), name: 'of speed', description: 'This armour weight nothing'},
-    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
+    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).turns(Infinity).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
 ];
 
 export const armourLevel: XTable = [

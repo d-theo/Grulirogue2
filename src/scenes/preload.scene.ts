@@ -44,6 +44,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Light', '/assets/sprites/light.png');
 
       this.load.image('target', '/assets/sprites/target.png');
+      this.load.image('itemable', '/assets/sprites/itemable.png');
   
       this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
       this.load.image('rock', '/assets/sprites/rock.png');

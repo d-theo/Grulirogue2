@@ -1,76 +1,110 @@
 import { SpellNames, EffectMaker } from "../effects/effect";
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
-import { Coordinate } from "../utils/coordinate";
-import { EffectTarget, WildFireSpell, ShadowSpell, ColdCloudSpell, RainCloudSpell, FireCloudSpell, PoisonCloudSpell, LightningSpell, UnholySpellBook, RogueEventSpell } from "../effects/spells";
+import { EffectTarget, IEffect } from "../effects/spells";
 
 export const createWildFireBottle = () => {
-    return new WildfireBottle({
+    return new Misc({
         name: 'Bottle of wildfire',
-        description: 'The flame inside this bottle looks like it wants to get out'
+        description: 'The flame inside this bottle looks like it wants to get out',
+        effect: EffectMaker.createSpell(SpellNames.WildFire),
+        effectTarget: EffectTarget.AoE,
+        skin: 'wildfire_bottle'
     });
 };
 export const createSphereOfShadow = () => {
-    return new SphereOfShadows({
+    return new Misc({
         name: 'Sphere of shadows',
         description: 'A back sphere that seems to be alive',
+        effectTarget: EffectTarget.AoE,
+        effect: EffectMaker.createSpell(SpellNames.Shadow),
+        skin: 'sphere_of_shadows'
     });
 };
-
 export const createTomeOfRain = () => {
-    return new TomeOfRain({
+    return new Misc({
         name: 'Tome of rain',
         description: 'Can invok the god of rain',
+        skin: 'tome_of_rain',
+        effect: EffectMaker.createSpell(SpellNames.RainCloud),
+        effectTarget: EffectTarget.AoE
     })
 }
 export const createSmallTorch = () => {
-    return new SmallTorch({
+    return new Misc({
         name: 'Torch',
         description: 'A torch that could burn if throwed',
+        skin: 'small_torch',
+        effectTarget: EffectTarget.AoE,
+        effect: EffectMaker.createSpell(SpellNames.FireCloud)
     })
 }
 export const createSmellyBottle = () => {
-    return new SmellyBottle({
+    return new Misc({
         name: 'Smelly bottle',
         description: 'It has a strong gaz inside',
+        skin: 'smelly_bottle',
+        effect: EffectMaker.createSpell(SpellNames.PoisonCloud),
+        effectTarget: EffectTarget.AoE
     })
 }
 export const createSphereOfLighting = () => {
-    return new SphereOfLighting({
+    return new Misc({
         name: 'Sphere of lightning',
         description: 'A blue sphere that seems to be alive',
+        skin: 'sphere_of_lighting',
+        effectTarget: EffectTarget.AoE,
+        effect: EffectMaker.createSpell(SpellNames.LightningCloud)
     })
 }
 export const createColdCrystal = () => {
-    return new ColdCrystal({
+    return new Misc({
         name: 'Cold crystal',
         description: 'A back sphere that seems to be alive',
+        effect: EffectMaker.createSpell(SpellNames.ColdCloud),
+        skin: 'cold_crystal',
+        effectTarget: EffectTarget.AoE,
     })
 }
-
 export const createUnholyBook = () => {
-    return new UnholyBook({
+    return new Misc({
         name: 'Unholy book',
-        description: 'Its covered with blood and dangerous words...'
+        description: 'Its covered with blood and dangerous words...',
+        effect: EffectMaker.createSpell(SpellNames.UnholySpell),
+        effectTarget: EffectTarget.None,
+        skin: 'unholy_book'
     });
 }
-
 export const createRogueTome = () => {
-    return new RogueTome({
+    return new Misc({
         name: 'Strange tome',
-        description: 'Its covered with glyphs: @.+-"~mw#'
+        description: 'Its covered with glyphs: @.+-"~mw#',
+        skin: 'rogue_tome',
+        effect: EffectMaker.createSpell(SpellNames.RogueEventSpell),
+        effectTarget: EffectTarget.Hero
     });
 }
-
-export class WildfireBottle extends Item implements ItemArgument {
-    effect: WildFireSpell = EffectMaker.createSpell(SpellNames.WildFire) as WildFireSpell;
+export const createRealityTome = () => {
+    return new Misc({
+        name: 'Strange tome',
+        description: 'Should a read that ... ?',
+        skin: 'reality_tome',
+        effect: EffectMaker.createSpell(SpellNames.RealityEventSpell),
+        effectTarget: EffectTarget.Hero
+    });
+}
+export class Misc extends Item implements ItemArgument {
+    effect: IEffect;
+    effectTarget: EffectTarget;
     constructor(arg: any) {
         super(arg);
-        this.skin = 'wildfire_bottle';
+        this.skin = arg.skin;
+        this.effect = arg.effect;
+        this.effectTarget = arg.effectTarget;
         this.keyDescription['u'] = '(u)se';
         this.keyMapping['u'] = this.use.bind(this);
     }
-    use(target: Coordinate) {
+    use(target: any) {
         this.effect.cast(target);
     }
     visit(itemVisitor: ItemVisitor): any {
@@ -79,199 +113,24 @@ export class WildfireBottle extends Item implements ItemArgument {
     reveal() {}
     getArgumentForKey(key: string) {
         switch(key) {
-            case 'u': return EffectTarget.AoE;
+            case 'u': return this.effectTarget;
             case 'd': 
             default : return EffectTarget.None;
         }
     }
 }
-
-export class ColdCrystal extends Item implements ItemArgument {
-    effect: ColdCloudSpell = EffectMaker.createSpell(SpellNames.ColdCloud) as ColdCloudSpell;
-    skin = 'cold_crystal';
+export class CatStatue extends Item {
     constructor(arg: any) {
         super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
+        this.skin = arg.skin;
+        this._name = 'Cat statue';
+        this._description = 'A cat statue. What could be the use of that ...?';
     }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
+    use(target: any) {}
+    visit(itemVisitor: ItemVisitor): any {return itemVisitor.visitMisc(this);}
     reveal() {}
     getArgumentForKey(key: string) {
         switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class TomeOfRain extends Item implements ItemArgument {
-    effect: RainCloudSpell = EffectMaker.createSpell(SpellNames.RainCloud) as RainCloudSpell;
-    skin = 'tome_of_rain';
-    constructor(arg: any) {
-        super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class SmallTorch extends Item implements ItemArgument {
-    effect: FireCloudSpell = EffectMaker.createSpell(SpellNames.FireCloud) as FireCloudSpell;
-    skin = 'small_torch';
-    constructor(arg: any) {
-        super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class SmellyBottle extends Item implements ItemArgument {
-    effect: PoisonCloudSpell = EffectMaker.createSpell(SpellNames.PoisonCloud) as PoisonCloudSpell;
-    skin = 'smelly_bottle';
-    constructor(arg: any) {
-        super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class SphereOfLighting extends Item implements ItemArgument {
-    effect: LightningSpell = EffectMaker.createSpell(SpellNames.LightningCloud) as LightningSpell;
-    skin = 'sphere_of_lighting';
-    constructor(arg: any) {
-        super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class SphereOfShadows extends Item implements ItemArgument {
-    effect: ShadowSpell = EffectMaker.createSpell(SpellNames.Shadow) as ShadowSpell;
-    skin = 'sphere_of_shadows';
-    constructor(arg: any) {
-        super(arg);
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use(target: Coordinate) {
-        this.effect.cast(target);
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.AoE;
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class UnholyBook extends Item implements ItemArgument {
-    effect: UnholySpellBook = EffectMaker.createSpell(SpellNames.UnholySpell) as UnholySpellBook;
-    constructor(arg: any) {
-        super(arg);
-        this.skin = 'unholy_book';
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use() {
-        this.effect.cast();
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u':
-            case 'd': 
-            default : return EffectTarget.None;
-        }
-    }
-}
-
-export class RogueTome extends Item implements ItemArgument {
-    effect: RogueEventSpell = EffectMaker.createSpell(SpellNames.RogueEventSpell) as RogueEventSpell;
-    constructor(arg: any) {
-        super(arg);
-        this.skin = 'rogue_tome';
-        this.keyDescription['u'] = '(u)se';
-        this.keyMapping['u'] = this.use.bind(this);
-    }
-    use() {
-        this.effect.cast();
-    }
-    visit(itemVisitor: ItemVisitor): any {
-        return itemVisitor.visitMisc(this);
-    }
-    reveal() {}
-    getArgumentForKey(key: string) {
-        switch(key) {
-            case 'u': return EffectTarget.Hero;
             case 'd': 
             default : return EffectTarget.None;
         }

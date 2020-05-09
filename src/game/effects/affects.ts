@@ -6,6 +6,7 @@ import { SkillNames } from "../hero/hero-skills";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
 import { doDamages } from "./spells";
+import { AIBehavior } from "../monsters/ai";
 
 export type AffectType = 
 | 'thicc'
@@ -29,6 +30,8 @@ export type AffectType =
 | 'health'
 | 'precision'
 | 'hp'
+| 'weakness'
+| 'fear'
 | 'procChance';
 
 export class Affect {
@@ -304,6 +307,18 @@ export class Affect {
             tags: 'hp'
         }
     }
+    private weakness() {
+        this.paramsNb = 1;
+        return {
+            start: (t: Hero|Monster) => {
+                t.health.getWeakerByHp(this.param1);
+            },
+            end: (t: Hero|Monster) => {
+                t.health.getStrongerByHp(this.param1);
+            },
+            tags: 'weakness'
+        }
+    }
     private slow() {
         return {
             start: (t: Hero|Monster) => {
@@ -429,6 +444,16 @@ export class Affect {
                 }
             },
             end: NullFunc,
+        }
+    }
+    private fear() {
+        return {
+            start: (t: Monster) => {
+                t.setBehavior(AIBehavior.Fearfull());
+            },
+            end: (t: Monster) => {
+                t.setBehavior(AIBehavior.Default());
+            },
         }
     }
 }

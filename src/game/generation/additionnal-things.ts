@@ -9,11 +9,16 @@ import { PotionTable, MiscTable } from "../loot/loot-table";
 import { Weapon } from "../items/weapon";
 import { craftWeapon } from "../loot/loot-weapons";
 import { SpecialPlaces } from "../places/special-places";
+import { TileMap } from "../tilemap/tilemap";
+import { randomIn } from "../utils/rectangle";
+import { CatStatue } from "../loot/loot-mics";
+import * as _ from 'lodash';
 
 export function makeThings(
     additional: ThingToPlace[],
     monsterCollection: MonsterCollection,
     itemCollection: ItemCollection,
+    tilemap: TileMap,
     places: SpecialPlaces) {
     for (const add of additional) {
         switch (add.type) {
@@ -73,7 +78,12 @@ export function makeThings(
             case 'PoisonPot':
                 places.addPlace({pos: add.pos, kind: add.type});
                 break;
-                    
+            case 'CatAltar':
+                places.addPlace({pos: add.pos, kind: add.type});
+                const statuePos = randomIn(_.sample(tilemap.graph.rooms)!.rect);
+                const cat = new CatStatue({x: statuePos.x, y: statuePos.y});
+                itemCollection.itemsArray().push(cat);
+                break;  
             default:
                 console.log('add this stuff not impl'+add.type);
                 break;

@@ -4,7 +4,8 @@ import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
-import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell } from './spells';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell } from './spells';
+import { Game } from '../game';
 
 export type BuffDefinition = {
     start: Function | null;
@@ -37,7 +38,11 @@ export enum SpellNames {
     UnholySpell = 'UnholySpell',
     CleaningSpell = 'CleaningSpell',
     XPSpell = 'XPSpell',
-    RogueEventSpell = "RogueEventSpell"
+    RogueEventSpell = "RogueEventSpell",
+    RealityEventSpell = 'RealityEventSpell',
+    Fear = 'Fear',
+    Sacrifice = 'Sacrifice',
+    AsservissementSpell = 'AsservissementSpell',
 }
 
 let tilemap: TileMap;
@@ -50,16 +55,16 @@ export const EffectMaker = {
     createSpell: createSpell
 };
 
-function initEffects(args: {tilemap : TileMap, hero: Hero, monsters: MonsterCollection, places: SpecialPlaces}) {
-    tilemap = args.tilemap;
-    hero = args.hero;
-    monsters = args.monsters;
-    places = args.places;
-    effect = new WorldEffect(tilemap, hero, monsters, places);
+function initEffects(game: Game) {
+    tilemap = game.tilemap;
+    hero = game.hero;
+    monsters = game.monsters;
+    places = game.places;
+    effect = new WorldEffect(tilemap, hero, monsters, places, game);
 }
 
 function createSpell(name: SpellNames) {
-    microValidator([tilemap, hero, monsters], 'createSpell failure: null');
+    microValidator([tilemap, hero, monsters, places], 'createSpell failure: null');
     switch(name) {
         case SpellNames.SpikeTrap: 
             return new TrapSpell(effect);
@@ -101,6 +106,14 @@ function createSpell(name: SpellNames) {
             return new CleaningEffect;
         case SpellNames.RogueEventSpell:
             return new RogueEventSpell();
+        case SpellNames.Fear:
+            return new FearSpell(effect);
+        case SpellNames.Sacrifice:
+            return new SacrificeSpell(effect);
+        case SpellNames.RealityEventSpell:
+            return new RealityEventSpell();
+        case SpellNames.AsservissementSpell:
+            return new AsservissementSpell();
         default:
             throw new Error(`${name} spell not impl`);
     }
@@ -111,7 +124,8 @@ export class WorldEffect {
         protected tilemap : TileMap,
         protected hero: Hero,
         protected monsters: MonsterCollection,
-        protected places: SpecialPlaces
+        protected places: SpecialPlaces,
+        protected game: Game
     ) {}
 
     monsterAt(pos: Coordinate) {
@@ -140,5 +154,8 @@ export class WorldEffect {
     }
     getTilemap() {
         return this.tilemap;
+    }
+    getNearestAttackables() {
+        return this.game.getNearestAttackables();
     }
 }

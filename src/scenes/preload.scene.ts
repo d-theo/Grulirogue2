@@ -63,6 +63,11 @@ import TweenHelper from "../phaser-addition/tween-helper";
         this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
       }
       this.load.image('scroll', '/assets/sprites/scroll-empty.png');
+      this.load.image('scroll_sacrifice', '/assets/sprites/scroll-sacrifice.png');
+
+      for (const w of ['fire','poison','water','identification','herb']) {
+        this.load.image(`wand-${w}`, `/assets/sprites/wand-${w}.png`);
+      }
 
       this.load.image('wildfire_bottle', '/assets/sprites/wildfire-bottle.png');
       this.load.image('sphere_of_shadows', '/assets/sprites/sphere-of-shadows.png');

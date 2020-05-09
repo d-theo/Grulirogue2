@@ -85,6 +85,7 @@ export class TileMap {
         }
     }
     getAt(pos: Coordinate): Tile {
+        console.log(pos);
         return this.tiles[pos.y][pos.x];
     }
 

@@ -5,12 +5,14 @@ import { gameBus, heroGainedXp, monsterDead, playerAttackedMonster } from "../..
 export function handleHealthReport(
     healthReport: HealthReport,
     monster: Monster,
-    damages: number) {
+    damages: number,
+    externalSource?: any) {
     gameBus.publish(playerAttackedMonster({
         amount: damages,
         monster: monster,
         currentHp: monster.health.currentHp,
-        baseHp: monster.health.baseHp
+        baseHp: monster.health.baseHp,
+        externalSource
     }));
     if (healthReport.status === HealthStatus.Dead) {
         gameBus.publish(heroGainedXp({

@@ -1,8 +1,8 @@
 import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
-import {Coordinate} from '../game/utils/coordinate';
+import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -409,6 +409,14 @@ class GameScene extends Phaser.Scene {
 			const {
 				monster
 			} = event.payload;
+			if (monster.isFriendly) {
+				debugger;
+			}
+			const m = this.gameMonsters[monster.id];
+			m.updateHp();
+		}));
+		this.subs.push(gameBus.subscribe(monsterTookDamage, event => {
+			const monster = event.payload.monster;
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
 		}));
@@ -451,6 +459,11 @@ class GameScene extends Phaser.Scene {
 		}));
 		this.subs.push(gameBus.subscribe(rogueEvent, () => {
 			this.hero.updateHeroSprite('@');
+		}));
+		this.subs.push(gameBus.subscribe(monsterSpawned, (event) => {
+			const mob = event.payload.monster;
+			const monster = new UIEntity(this, mob, mob.name)
+			this.gameMonsters[mob.id] = monster;
 		}));
 		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
 			const {
@@ -520,9 +533,19 @@ class GameScene extends Phaser.Scene {
 	placeItems() {
 		const itemsToPlace: Item[] = this.gameEngine.items.itemOnGround();
 		for (const i of itemsToPlace) {
-			if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) continue;
+			
+			if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) {
+				console.log(i);
+				const next = around(i.pos, 1);
+				for (const n of next) {
+					if (this.gameEngine.tilemap.getAt(n).isWalkable()) {
+						i.pos = n;
+					}
+				}
+				continue;
+			}
+
 			if (this.gameEngine.tilemap.getAt(i.pos).isEntry) continue;
-			if (this.gameEngine.tilemap.getAt(i.pos).isExit) continue;
 			const item = new UIItem(this, i, i.skin);
 			this.gameItems[i.id] = item;
 		}

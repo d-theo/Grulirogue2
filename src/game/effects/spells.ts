@@ -1,6 +1,6 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp, rogueEvent } from "../../eventBus/game-bus";
+import { gameBus, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp, rogueEvent, endRogueEvent } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect, EffectMaker } from "./effect";
 import { handleHealthReport } from "../use-cases/health-report";
@@ -13,7 +13,7 @@ import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { BloodFountain } from "../places/places";
 import { Affect } from "./affects";
-import { isRogueEventActive } from "../../eventBus/event-rogue";
+import { AIBehavior } from "../monsters/ai";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -396,6 +396,59 @@ export class RogueEventSpell implements IEffect {
     cast() {
         gameBus.publish(rogueEvent({}));
         gameBus.publish(logPublished({level: 'danger', data:'where the heck are you ?!'}));
+    }
+}
+export class RealityEventSpell implements IEffect {
+    type = EffectTarget.None;
+    cast() {
+        gameBus.publish(endRogueEvent({}));
+        gameBus.publish(logPublished({level: 'success', data:'Yeah, back to the quest !'}));
+    }
+}
+
+export class FearSpell implements IEffect {
+    type = EffectTarget.None;
+    constructor(private world: WorldEffect) {}
+    cast() {
+        const mobs = this.world.getNearestAttackables();
+        mobs.forEach(m => {
+            new Affect('fear').turns(10).target(m).cast();
+        });
+    }
+}
+
+export class SacrificeSpell implements IEffect {
+    type = EffectTarget.Movable;
+    constructor(private world: WorldEffect) {}
+    cast(t: Hero|Monster) {
+        const hero = this.world.getHero();
+        const sacrifice = Math.floor(hero.health.baseHp * 0.25);
+        const curse = Math.floor(t.health.baseHp * 0.5);
+        const target = t;
+        hero.health.getWeakerByHp(sacrifice);
+        target.health.getWeakerByHp(curse);
+        gameBus.publish(logPublished({level: 'danger', data: `You used a forbidden blood magic, hoping this sacrifice is worth the price...`}));
+
+        gameBus.publish(playerTookDammage({
+            amount: sacrifice,
+            source: 'sacrifice',
+            baseHp: hero.health.baseHp,
+            currentHp: hero.health.currentHp
+        }));
+        doDamages(curse, t, 'sacrifice');
+    }
+}
+
+export class AsservissementSpell implements IEffect {
+    type = EffectTarget.Movable;
+    cast(target: Hero | Monster) {
+        if (target instanceof Hero) {
+            gameBus.publish(logPublished({data: `You cannot do that`}));
+            return;
+        }
+
+        target.setBehavior(AIBehavior.friendlyAI());
+        target.isFriendly = true;
     }
 }
 

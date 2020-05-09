@@ -1,6 +1,16 @@
 import { Affect } from "../effects/affects";
 
 export const Bestiaire = {
+    Misc: {
+        Cat:{
+            kind: "Cat",
+            danger: 30,
+            hp: '10-15',
+            damage: '3-5',
+            range: 1,
+            dodge: 0.40,
+        }
+    },
     Greece: {
         Snake:{
             kind: "Snake",

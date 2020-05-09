@@ -13,7 +13,7 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 * 5 weapons combinable with 9 enchants
 * 2 armour combinable with 5 enchants
 * 10 potions
-* 6 scrolls
+* 7 scrolls
 * 15 monsters
 * 9 consumables
 * 5 special rooms
@@ -23,36 +23,27 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 ### todos
 
 * fixing doors problems
-* fix loot tables ?
-* "miss" animations
-* item with a green square to signify it is an item
-* weapon of stun
-* weapon of weakness (reduce dammage of the other guy)
-* scroll of sacrifice (-25% vs -25%)
 * scroll of enchanting weapon
 * scroll of enchanting armor
 * scroll of replacement
-* wand of identification
-* wand of firebolt
-* wand of water
-* wand of poison
-* wand of blinking
-* wand of weakness
-* MINIMAP
 * friendly IA
 * Immobile IA
-* Fearfull IA
 * IA that can cast spells
-* scroll of fear
 * scroll of invocation
 * scroll of asservissement
-* rework basic map generation
 * scroll of filling // hack, create immobile monster
 * sphere of coldness (freeze)
 * sphere of fire (rework)
 * sphere of poison (rework)
+* rework basic map generation
+* fix loot tables
+* "miss"/"critical" animations
+* MINIMAP
 
 ---- future ----
+* procedural quests
+* steath noise + AI
+* seeds to grow on herb ??? 
 * more combos with elements : vegetal + fire, vegetal + water
 * terrain with other effect : holes (die), mud (slow), dust ??, thorns plants
 * weapon of bump

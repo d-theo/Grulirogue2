@@ -13,11 +13,11 @@ export const ScrollType = [
     'RRHEIPV',
     'DFIONV YHE PO',
     'DFGBIKN',
+    'QSEFV XPO',
 ];
 
 export class Scroll extends Item implements ItemArgument {
     effect: IEffect
-    target: any;
     static scrollType: string[] = _.shuffle(_.cloneDeep(ScrollType));
     static mystery: any = {};
     static identified: any = {};
@@ -31,10 +31,6 @@ export class Scroll extends Item implements ItemArgument {
         this.keyMapping['r'] = this.use.bind(this);
         this.keyDescription['r'] = '(r)ead';
         this.skin = 'scroll';
-    }
-    setTarget(target: any) {
-        this.target = target;
-        return this;
     }
     get description () {
         if (! Scroll.identified[this.getFormula()]) {

@@ -28,7 +28,7 @@ export class Monster implements Entity {
     sight = 8;
     speed = 1;
     dodge: number = 0.15;
-    currentAI: string = '';
+    isFriendly = false;
     private constructor() {
         // this.behavior = arg.behavior;
     }

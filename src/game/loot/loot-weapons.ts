@@ -55,13 +55,15 @@ export const namesPerDamage = [
 ];
 
 export const WeaponEchants: XTable = [
-    {chance: 34, type: 'nothing'},
+    {chance: 26, type: 'nothing'},
     {chance: 15, type: 'plus_one'},
     {chance: 10, type: 'plus_two'},
     {chance: 5, type: 'poisoned'},
     {chance: 5, type: 'bleed'},
+    {chance: 5, type: 'stun'},
     {chance: 5, type: 'shock'},
     {chance: 5, type: 'cold'},
+    {chance: 5, type: 'weak'},
     {chance: 3, type: 'plus_three'},
     {chance: 2, type: 'plus_four'},
     {chance: 1, type: 'plus_five'},
@@ -145,6 +147,12 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.additionnalDmg += 1;
                 w.identified = false;
                 break;
+            case 'stun':
+                w.additionnalEffects.push({effect: new Affect('stun').turns(1).create(), target: 'target', chance: 0.07});
+                w.additionalDescription.push('can stun the target');
+                w.additionalName.push('Stun');
+                w.identified = false;
+            break;
             case 'bleed':
                 w.additionnalEffects.push({effect: new Affect('bleed').turns(3).create(), target: 'target', chance: 0.1});
                 w.additionalDescription.push('inflict bleeding');
@@ -169,6 +177,12 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.additionalName.push('Cold');
                 w.identified = false;
                 break;  
+            case 'weakness':
+                w.additionnalEffects.push({effect: new Affect('weakness').params(5).turns(10).isStackable(true).create(), target: 'target', chance: 0.1});
+                w.additionalDescription.push('Weaken your opponent by reducing their total hp');
+                w.additionalName.push('Weakness');
+                w.identified = false;
+                break;
             default:
                 break;
         }

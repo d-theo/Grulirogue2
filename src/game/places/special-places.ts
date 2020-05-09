@@ -1,24 +1,30 @@
 import { Item } from "../entitybase/item";
 import { Hero } from "../hero/hero";
-import { gameBus, itemDropped } from "../../eventBus/game-bus";
+import { gameBus, itemDropped, monsterSpawned } from "../../eventBus/game-bus";
 import { Coordinate, equalsCoordinate } from "../utils/coordinate";
 import { ItemCollection } from "../items/item-collection";
 import { Place } from "./place-interface";
 import { PlaceKind } from "./place-definitions";
-import { BloodFountain, HolyFountain, PoisonPot } from "./places";
+import { BloodFountain, HolyFountain, PoisonPot, CatAltar } from "./places";
+import { Monster } from "../monsters/monster";
+import { MonsterCollection } from "../monsters/monsterCollection";
 
 
 export class SpecialPlaces {
     places: Place[] = [];
-    constructor(private items: ItemCollection) {}
+    constructor(private items: ItemCollection, private monsters: MonsterCollection) {}
     checkForItem(item: Item) {
         this.places.forEach(p => {
             const pos = item.pos ? item.pos : {x:- 1, y:-1};
             if (equalsCoordinate(p.pos, pos)) {
                 const r = p.checkForItem(item);
-                if (r != null) {
+                if (r != null && r instanceof Item) {
                     this.items.itemsArray().push(r);
                     gameBus.publish(itemDropped({item: r}));
+                }
+                if (r != null && r instanceof Monster) {
+                    this.monsters.monstersArray().push(r);
+                    gameBus.publish(monsterSpawned({monster: r}));
                 }
             }
         });
@@ -38,6 +44,8 @@ export class SpecialPlaces {
                 return this.places.push(new HolyFountain(arg.pos));
             case 'PoisonPot': 
                 return this.places.push(new PoisonPot(arg.pos));
+            case 'CatAltar':
+                return this.places.push(new CatAltar(arg.pos));
             default: throw new Error('not implemented' + arg.kind);
         }
     }

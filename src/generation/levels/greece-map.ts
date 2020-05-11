@@ -9,7 +9,8 @@ import { randomIn } from "../../game/utils/rectangle";
 import { Terrain } from "../../map/terrain.greece";
 import * as _ from 'lodash';
 import { MapGraph } from "../map_definition";
-import { PlaceTypes } from "../../game/places/place-definitions";
+import { PlaceTypes, availablePlaceType } from "../../game/places/place-definitions";
+import { placePainter } from "../painters/place-painter";
 
 const config: TilerConfig = {
     width: 100,
@@ -34,7 +35,7 @@ const config: TilerConfig = {
     ],
     boss: {chance: 0.3, painter: paintSnakeBoss},
     miniRoom: {chance: 0.3, painter: stash},
-    specialRoom: {chance: 1, painter: specialRoom},
+    specialRoom: {chance: 0.15, painter: specialRoom},
 }
 
 export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {
@@ -46,15 +47,7 @@ export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: 
 /////////////// painters ////////////
 
 function specialRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
-    const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
-    let placeType = _.sample(PlaceTypes);
-    placeType = 'CatAltar';
-    console.log("sp"+placeType);
-    tilemap2[pos.y][pos.x] = Terrain[placeType];
-    thingsToPlace.push({
-        pos,
-        type: placeType
-    });
+    placePainter(room, tilemap1, tilemap2, thingsToPlace);
 }
 function paintStandard(room, tilemap1, tilemap2) {
     torchPainter(room, tilemap1, tilemap2);

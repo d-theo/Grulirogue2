@@ -16,7 +16,7 @@ export const Bestiaire = {
             kind: "Snake",
             danger: 10,
             hp: '5-7',
-            damage: '2-3',
+            damage: '3-4',
             range: 1,
             dodge: 0.20,
             onHit: {chance: 0.3, target: 'target', effect: new Affect('poison').turns(5).create()}
@@ -119,26 +119,26 @@ export const Bestiaire = {
         SkeletonWarrior: {
             kind: "Skeleton",
             danger: 30,
-            hp: '2',
-            damage: '0',
+            hp: '10-15',
+            damage: '5-8',
             range: 1,
-            dodge: 0.00,
+            dodge: 0.10,
         },
         Wizard: {
             kind: "Wizard",
             danger: 30,
-            hp: '1',
-            damage: '0',
-            range: 1,
+            hp: '10-15',
+            damage: '10-13',
+            range: 6,
             dodge: 0.00,
         },
         Orc: {
             kind: "Orc",
             danger: 30,
-            hp: '1',
-            damage: '0',
+            hp: '20-30',
+            damage: '3-5',
             range: 1,
-            dodge: 0.0,
+            dodge: 0.1,
         }
     }
 }

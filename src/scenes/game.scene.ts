@@ -436,6 +436,10 @@ class GameScene extends Phaser.Scene {
 			const {
 				item
 			} = event.payload;
+			if (this.gameItems[item.id] == null) {
+				console.error(`${JSON.stringify(item)} is not pickable??`);
+				return;
+			}
 			this.gameItems[item.id].pickedUp();
 		}));
 		this.subs.push(gameBus.subscribe(playerHealed, event => {

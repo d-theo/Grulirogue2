@@ -40,7 +40,7 @@ export class UIEntity {
 		this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
-		this.outline && this.outline.destroy();
+		if (this.outline != null) this.outline.destroy();
 	}
 
 	updateHp(isHero = false) {

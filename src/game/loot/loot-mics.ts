@@ -100,9 +100,16 @@ export class Misc extends Item implements ItemArgument {
         super(arg);
         this.skin = arg.skin;
         this.effect = arg.effect;
+        this.identified = true;
         this.effectTarget = arg.effectTarget;
         this.keyDescription['u'] = '(u)se';
         this.keyMapping['u'] = this.use.bind(this);
+    }
+    get description () {
+        return this._description;
+    }
+    get name () {
+        return this._name;
     }
     use(target: any) {
         this.effect.cast(target);
@@ -127,6 +134,12 @@ export class CatStatue extends Item {
         this._description = 'A cat statue. What could be the use of that ...?';
     }
     use(target: any) {}
+    get name() {
+        return this._name;
+    }
+    get description() {
+        return this._description;
+    }
     visit(itemVisitor: ItemVisitor): any {return itemVisitor.visitMisc(this);}
     reveal() {}
     getArgumentForKey(key: string) {

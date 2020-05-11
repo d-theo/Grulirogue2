@@ -39,7 +39,6 @@ export const MiscTable: XTable = [
     {chance: 10, type: () => createSmellyBottle()},
     {chance: 15, type: () => createColdCrystal()},
     {chance: 15, type: () => createSphereOfLighting()},
-    {chance: 10, type: () => createUnholyBook()},
 ];
 
 export const PotionTable: XTable = [
@@ -119,6 +118,5 @@ export function getRandomLoot(level: number): Item {
         default:
             throw new Error(`Not implemented loot type : ${itemKind}`);
     }
-    return randomWand();
     return loot;
 }

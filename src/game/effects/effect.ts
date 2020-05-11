@@ -150,7 +150,7 @@ function createSpell(name: SpellNames) {
                 type: EffectTarget.Location,
                 affect: new Affect('wet').create(),
                 mapEffect:  MapEffect.Water,
-                duration: 5,
+                duration: 40,
             });
         case SpellNames.PoisonTrap:
             return new PoisonTrapSpell(effect);

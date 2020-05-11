@@ -107,6 +107,7 @@ export class Game {
 
         if (uniq != null) {
             uniq.pos = p;
+            console.log('uniq', uniq.name);
             this.items.itemsArray().push(uniq);
         }
     }

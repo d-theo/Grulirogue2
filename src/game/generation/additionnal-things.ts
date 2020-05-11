@@ -76,14 +76,9 @@ export function makeThings(
             case 'BloodFountain':
             case 'HolyFountain':
             case 'PoisonPot':
-                places.addPlace({pos: add.pos, kind: add.type});
-                break;
             case 'CatAltar':
                 places.addPlace({pos: add.pos, kind: add.type});
-                const statuePos = randomIn(_.sample(tilemap.graph.rooms)!.rect);
-                const cat = new CatStatue({x: statuePos.x, y: statuePos.y});
-                itemCollection.itemsArray().push(cat);
-                break;  
+                break;
             default:
                 console.log('add this stuff not impl'+add.type);
                 break;

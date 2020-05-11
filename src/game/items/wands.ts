@@ -6,19 +6,25 @@ import { IEffect, EffectTarget } from "../effects/spells";
 
 export class Wand extends Item implements ItemArgument {
     effect: IEffect;
+    cooldown = 500;
+    currentCooldown = 0;
+    isConsumable = false;
     constructor(args: any) {
         super(args);
-        this.effect = args.effect;
+        this.effect = args.effect();
         this.keyMapping['z'] = this.use.bind(this);
         this.keyDescription['z'] = '(z)ap';
         this.skin = args.skin;
-        this.identified = false;
+        this.identified = true;
     }
     get description () {
         if (! this.identified) {
             return `A stick with stranges inscriptions on it`;
         } else {
-            return this._description;
+            let str = this._description;
+            str += "\n\n";
+            str += "turns before next zap: "+this.currentCooldown;
+            return str;
         }
     }
     get name () {
@@ -29,11 +35,16 @@ export class Wand extends Item implements ItemArgument {
         }
     }
     use(target: any) {
+        if (this.currentCooldown > 0) {
+            return;
+        }
         if (! this.identified) {
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));
             this.reveal();
         }
         this.effect.cast(target);
+        this.currentCooldown = this.cooldown;
+        this.identified = true;
     }
     visit(visitor: ItemVisitor):any {
         return visitor.visitWand(this);
@@ -48,5 +59,8 @@ export class Wand extends Item implements ItemArgument {
             case 'd': 
             default : return EffectTarget.None;
         }
+    }
+    update() {
+        this.currentCooldown = Math.max(0, this.currentCooldown -1);
     }
 }

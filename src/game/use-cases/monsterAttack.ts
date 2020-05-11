@@ -3,10 +3,9 @@ import { Attack } from "../fight/fight";
 import { HealthStatus } from "../entitybase/health";
 import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
-import { gameBus, playerTookDammage, effectSet, monsterTookDamage, monsterDead } from "../../eventBus/game-bus";
+import { gameBus, playerTookDammage, effectSet, monsterTookDamage, monsterDead, heroGainedXp } from "../../eventBus/game-bus";
 import { distance } from "../utils/coordinate";
 import { MapEffect } from "../../map/map-effect";
-import { handleHealthReport } from "./health-report";
 
 export function monsterAttack(args: {target: Hero | Monster, monster: Monster}): MessageResponse {
     const {target, monster} = args; 
@@ -49,7 +48,7 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
             }));
         }
     } else {
-        if (target.isFriendly && healthReport.status === HealthStatus.Dead) {
+        if (target.getFriendly() && healthReport.status === HealthStatus.Dead) {
             debugger;
         }
         gameBus.publish(monsterTookDamage({
@@ -59,6 +58,12 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
             gameBus.publish(monsterDead({
                 monster: target
             }));
+            // a friendly killed it
+            if (!monster.getFriendly()) {
+                gameBus.publish(heroGainedXp({
+                    amount: monster.xp
+                }));
+            }
         }
     }
     

@@ -197,7 +197,7 @@ export const AI = (game: Game) => {
             .map(n => n.mob)
             .filter(m => {
                 if (m instanceof Hero) return true;
-                if (m instanceof Monster) return m.isFriendly
+                if (m instanceof Monster) return m.getFriendly()
             });
     }
     function getAttackable(me: Monster) {
@@ -217,7 +217,7 @@ export const AI = (game: Game) => {
                 return b.dist - a.dist;
             })
             .map(n => n.mob)
-            .filter(m => !m.isFriendly);
+            .filter(m => !m.getFriendly());
     }
     function attackIfPossible(monster: Monster, target: Monster | Hero) {
         const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: target.pos});

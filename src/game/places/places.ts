@@ -13,6 +13,7 @@ import { Scrolls } from "../loot/loot-scrolls";
 import { EffectMaker, SpellNames } from "../effects/effect";
 import { Bestiaire } from "../monsters/bestiaire";
 import { Monster } from "../monsters/monster";
+import { AIBehavior } from "../monsters/ai";
 
 export class BloodFountain implements Place {
     cursed = true;
@@ -156,7 +157,10 @@ export class CatAltar implements Place {
             gameBus.publish(itemRemoved({
                 item: item
             }));
-            const cat = Monster.makeMonster({...Bestiaire.Misc.Cat, pos: {x: this.pos.x, y: this.pos.y+1}});
+            const cat = Monster
+                .makeMonster({...Bestiaire.Misc.Cat, pos: {x: this.pos.x, y: this.pos.y+1}})
+                .setFriendly(true)
+                .setBehavior(AIBehavior.friendlyAI());
             return cat;
         } else {
             gameBus.publish(logPublished({

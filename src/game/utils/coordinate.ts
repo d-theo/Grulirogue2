@@ -14,21 +14,6 @@ export function distance(c: Coordinate, c2: Coordinate) {
     return Math.max(v,h);
 }
 
-/*export function around (pos: Coordinate) {
-    const {x,y} = pos;
-    return [
-        {x: x-1, y:y-1},
-        {x: x, y: y-1},
-        {x: x+1, y: y-1},
-        {x: x+1, y: y},
-        {x: x+1, y:y+1},
-        {x: x, y:y+1},
-        {x: x-1, y:y+1},
-        {x: x, y:y},
-        {x: x-1, y:y},
-    ];
-}*/
-
 export function around (pos: Coordinate, n: number): Coordinate[] {
     const r = [];
     for (let i = -n; i < n+1; i++) {

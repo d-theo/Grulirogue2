@@ -9,16 +9,24 @@
     <meta name="MobileOptimized" content="320">
     <meta http-equiv="cleartype" content="on">
     <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="./style.css">
     <style>
         html,
         body {
             margin: 0;
             padding: 0;
+            font-family: "square" /*Courier New*/;
+            font-size: 11px;
+        }
+        @font-face{
+            font-family: "square";
+            src: url("../assets/fonts/square.ttf") format("truetype");
         }
     </style>
 </head>
 
 <body class="g-body">
+    <div style="font-family:'square'; position:absolute; left:-1000px; visibility:hidden;">.</div>
     <div style="display: flex;">
         <div id="content"></div>
         <div style="display: none;" id="hud" class="hud">
@@ -76,7 +84,8 @@
 
 <style>
     html {
-        font-family: Courier New;
+        font-family: "square" /*Courier New*/;
+        font-size: 11px;
     }
     .manual {
         margin-top: 30px;

@@ -1,0 +1,11 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "square" /*Courier New*/;
+    font-size: 11px;
+}
+@font-face{
+    font-family: "square";
+    src: url("../assets/fonts/square.ttf") format("truetype");
+}

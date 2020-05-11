@@ -2,8 +2,7 @@ import { TilerConfig, tilemapper } from "../tiler";
 import { Terrain } from "../../map/terrain.greece";
 import * as _ from 'lodash';
 import { MapGraph } from "../map_definition";
-import { pointsOfRect } from "../map-geo";
-import { lineTile, propagate } from "../map_tiling_utils";
+import { propagate } from "../map_tiling_utils";
 import { randomIn } from "../../game/utils/rectangle";
 
 const config: TilerConfig = {
@@ -11,7 +10,7 @@ const config: TilerConfig = {
     height: 100,
     terrain: {
         floor: Terrain.FloorRogue,
-        exit: Terrain.Stair,
+        exit: Terrain.FloorRogue,
         door: Terrain.DoorRogue,
         walln: Terrain.WallRogue,
         walls: Terrain.WallRogue,

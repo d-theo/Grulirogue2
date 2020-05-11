@@ -27,10 +27,14 @@ export class MonsterCollection {
             return m;
         }
     }
-
+    update() {
+        this.resolveBuffs();
+        this.play();
+    }
     resolveBuffs() {
         for (const m of this.monsters) {
             m.buffs.apply(m);
+            m.update();
         }
     }
     play() {

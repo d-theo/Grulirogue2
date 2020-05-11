@@ -24,9 +24,8 @@ export const rogueBestiaire: XTable = [
     {chance: 25, type: Bestiaire.Rogue.SkeletonWarrior},
 ];
 export const LootWand = [
-    Wands.Floral,
+    //Wands.Floral,
     Wands.Fire,
-    Wands.Poison,
     Wands.Identification,
     Wands.Water,
 ];

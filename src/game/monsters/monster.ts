@@ -9,6 +9,7 @@ import { BuffDefinition } from "../effects/effect";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
+import { EnchantSolver } from "../effects/affects";
 let short = require('short-uuid');
  
 export class Monster implements Entity {
@@ -28,14 +29,22 @@ export class Monster implements Entity {
     sight = 8;
     speed = 1;
     dodge: number = 0.15;
-    isFriendly = false;
+    enchantSolver: EnchantSolver;
+    private isFriendly = false;
     private constructor() {
-        // this.behavior = arg.behavior;
+        this.enchantSolver = new EnchantSolver(this);
     }
     setXp(xp: number) {
         this.xp = xp;
         this.level = Math.floor(this.xp / 5);
         return this;
+    }
+    setFriendly(newValue: boolean) {
+        this.isFriendly = newValue;
+        return this;
+    }
+    getFriendly() {
+        return this.isFriendly;
     }
     setPos(pos: Coordinate) {
         this.pos = pos;
@@ -70,6 +79,9 @@ export class Monster implements Entity {
     }
     play() {
         this.behavior(this);
+    }
+    update() {
+        this.enchantSolver.solve();
     }
     static makeMonster(arg: any) : Monster {
         const {speed, kind, danger, hp, damage, range, pos, dodge, onHit} = arg;

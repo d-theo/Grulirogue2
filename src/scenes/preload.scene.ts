@@ -4,6 +4,7 @@ import {
 import { PotionColors } from "../game/items/potion";
 import { InventoryFont } from "./inventory.scene";
 import TweenHelper from "../phaser-addition/tween-helper";
+import { GameFont } from "../main";
 
   class PreLoadScene extends Phaser.Scene {
     constructor() {
@@ -32,6 +33,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Pirate', '/assets/sprites/pirate.png');
       this.load.image('Sailor', '/assets/sprites/sailor.png');
       this.load.image('Pirate King', '/assets/sprites/pirate-boss.png');
+      this.load.image('Wild cat', '/assets/sprites/cat-friend.png');
 
       this.load.image('blood', '/assets/sprites/blood.png');
 
@@ -45,6 +47,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
 
       this.load.image('target', '/assets/sprites/target.png');
       this.load.image('itemable', '/assets/sprites/itemable.png');
+      this.load.image('friendly', '/assets/sprites/friend.png');
   
       this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
       this.load.image('rock', '/assets/sprites/rock.png');
@@ -85,14 +88,15 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Orc', '/assets/sprites/o.png');
       this.load.image('Skeleton', '/assets/sprites/s.png');
       this.load.image('rogue_tome', '/assets/sprites/rogue_tome.png');
+      this.load.image('reality_tome', '/assets/sprites/tome-reality.png');
     }
     
     create() {
       this.game.scale.resize(1030, 761);
       this.add.image(0, 0, 'screen').setOrigin(0, 0).setDisplaySize(1030, 761);
       const txt = this.add.text((1030/2)-200,500,'Push space to start', {
-        fontSize: '36px',
-        fontFamily: 'Courier New',
+        fontSize: '26px',
+        fontFamily: GameFont,
         color: '#FFFFFF',
       });
       txt.style.fixedWidth = 400;

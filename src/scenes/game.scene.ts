@@ -409,9 +409,6 @@ class GameScene extends Phaser.Scene {
 			const {
 				monster
 			} = event.payload;
-			if (monster.isFriendly) {
-				debugger;
-			}
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
 		}));
@@ -535,7 +532,6 @@ class GameScene extends Phaser.Scene {
 		for (const i of itemsToPlace) {
 			
 			if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) {
-				console.log(i);
 				const next = around(i.pos, 1);
 				for (const n of next) {
 					if (this.gameEngine.tilemap.getAt(n).isWalkable()) {

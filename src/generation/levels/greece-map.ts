@@ -48,8 +48,8 @@ export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: 
 function specialRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
     const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
     let placeType = _.sample(PlaceTypes);
-    console.log("sp"+placeType);
     placeType = 'CatAltar';
+    console.log("sp"+placeType);
     tilemap2[pos.y][pos.x] = Terrain[placeType];
     thingsToPlace.push({
         pos,

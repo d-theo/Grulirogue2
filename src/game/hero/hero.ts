@@ -11,6 +11,7 @@ import { gameBus, itemEquiped } from "../../eventBus/game-bus";
 import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
+import { EnchantSolver } from "../effects/affects";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -31,6 +32,7 @@ export class Hero implements Entity {
     public sight: number;
     speed: number = 1;
     fightModifier = new FightModifier();
+    enchantSolver: EnchantSolver;
     skillFlags = {
         regenHpOverTime: 0,
         gainHpPerLevel: 0,
@@ -51,6 +53,7 @@ export class Hero implements Entity {
         this.equip(this.armour);
         this.equip(this.weapon);
         this.heroSkills = new HeroSkills(this);
+        this.enchantSolver = new EnchantSolver(this);
     }
     calcNextXp() {
         this.nextXp = XP[this.level] - XP[this.level-1];
@@ -133,5 +136,10 @@ export class Hero implements Entity {
     }
     regenHealth() {
         this.health.regenHealth();
+    }
+    update() {
+        this.regenHealth();
+        this.resolveBuffs();
+        this.enchantSolver.solve();
     }
 }

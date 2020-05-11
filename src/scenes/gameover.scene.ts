@@ -1,9 +1,10 @@
 import {
     SceneName
   } from "./scenes.constants";
+import { GameFont } from "../main";
  const Font = {
-  fontSize: '16px',
-  fontFamily: 'Courier New',
+  fontSize: '13px',
+  fontFamily: GameFont,
   color: '#FFFFFF',
   wordWrap: {
     width: 310

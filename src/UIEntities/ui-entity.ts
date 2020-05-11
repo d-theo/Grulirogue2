@@ -5,9 +5,11 @@ import { gameBus, gameOver } from "../eventBus/game-bus";
 import { pickInRange } from "../game/utils/random";
 import { Armour } from "../game/items/armour";
 import { Entity } from "../game/entitybase/entity";
+import { Monster } from "../game/monsters/monster";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
+    outline: Phaser.GameObjects.Sprite;
     healthBar: Phaser.GameObjects.Sprite;
     healthBarFull: Phaser.GameObjects.Sprite;
 	healthSize = 28;
@@ -24,20 +26,25 @@ export class UIEntity {
 		this.healthBar.setAlpha(0);
 		this.healthBarFull.setAlpha(0);
 		this.sprite.setDepth(3);
+		this.updateFriendyIndication();
 	}
     
     move() {
 		const delta = this.adjustSpriteAndLogicPosition();
-        delta && this.animateToSynchronize(delta);
+		delta && this.animateToSynchronize(delta);
+		this.updateFriendyIndication();
+		
 	}
 
 	destroy() {
 		this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
+		this.outline && this.outline.destroy();
 	}
 
 	updateHp(isHero = false) {
+		this.updateFriendyIndication();
 		if (this.subject.health.currentHp <= 0 && !this.isDead) {
 			this.isDead = true;
 			if (isHero) {
@@ -93,6 +100,17 @@ export class UIEntity {
 			x: { from: this.healthBarFull.x, to: this.healthBarFull.x + delta.x },
 			y: { from: this.healthBarFull.y, to: this.healthBarFull.y + delta.y }
 		});
+		if (this.outline) {
+			this.parentScene.tweens.add({
+				targets: this.outline,
+				ease: 'Linear',
+				duration: 50,
+				repeat: 0,
+				yoyo: false,
+				x: { from: this.outline.x, to: this.outline.x + delta.x },
+				y: { from: this.outline.y, to: this.outline.y + delta.y }
+			});
+		}
     }
 
     adjustSpriteAndLogicPosition() {
@@ -102,6 +120,12 @@ export class UIEntity {
 			return {x: dx,y: dy};
 		} else {
 			return null;
+		}
+	}
+
+	updateFriendyIndication() {
+		if (this.subject instanceof Monster && this.subject.getFriendly() && this.outline == null) {
+			this.outline = this.parentScene.physics.add.sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y), 'friendly').setOrigin(0,0);
 		}
 	}
 

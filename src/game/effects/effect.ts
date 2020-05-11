@@ -4,8 +4,10 @@ import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate } from '../utils/coordinate';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
-import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, ShadowSpell, RootTrapSpell, ColdCloudSpell, FireCloudSpell, RainCloudSpell, PoisonCloudSpell, LightningSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell } from './spells';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell } from './spells';
 import { Game } from '../game';
+import { Affect } from './affects';
+import { MapEffect } from '../../map/map-effect';
 
 export type BuffDefinition = {
     start: Function | null;
@@ -43,6 +45,8 @@ export enum SpellNames {
     Fear = 'Fear',
     Sacrifice = 'Sacrifice',
     AsservissementSpell = 'AsservissementSpell',
+    WaterLine = 'WaterLine',
+    FireLine = 'FireLine'
 }
 
 let tilemap: TileMap;
@@ -82,20 +86,72 @@ function createSpell(name: SpellNames) {
             return new KnowledgeSpell(effect);
         case SpellNames.WildFire:
             return new WildFireSpell(effect);
-        case SpellNames.Shadow:
-            return new ShadowSpell(effect);
         case SpellNames.RootTrap:
             return new RootTrapSpell(effect);
+        case SpellNames.Shadow:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: new Affect('blind').params(7).create(),
+                mapEffect:  MapEffect.Shadow,
+                duration: 40,
+            });
         case SpellNames.ColdCloud:
-            return new ColdCloudSpell(effect);
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: new Affect('cold').create(),
+                mapEffect:  MapEffect.Cold,
+                duration: 10,
+            });
         case SpellNames.FireCloud:
-            return new FireCloudSpell(effect);
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: new Affect('fire').turns(2).create(),
+                mapEffect:  MapEffect.Fire,
+                duration: 10,
+            });
         case SpellNames.RainCloud:
-            return new RainCloudSpell(effect);
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around2',
+                type: EffectTarget.Location,
+                affect: new Affect('wet').create(),
+                mapEffect:  MapEffect.Water,
+                duration: 10,
+            });
         case SpellNames.PoisonCloud:
-            return new PoisonCloudSpell(effect);
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: new Affect('poison').turns(5).create(),
+                mapEffect:  MapEffect.Poison,
+                duration: 10,
+            });
         case SpellNames.LightningCloud:
-            return new LightningSpell(effect);
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: new Affect('shock').create(),
+                mapEffect:  MapEffect.Light,
+                duration: 10,
+            });
+        case SpellNames.FireLine:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'line',
+                type: EffectTarget.Location,
+                affect: new Affect('fire').turns(2).create(),
+                mapEffect:  MapEffect.Fire,
+                duration: 5,
+            });
+        case SpellNames.WaterLine:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'line',
+                type: EffectTarget.Location,
+                affect: new Affect('wet').create(),
+                mapEffect:  MapEffect.Water,
+                duration: 5,
+            });
         case SpellNames.PoisonTrap:
             return new PoisonTrapSpell(effect);
         case SpellNames.UnholySpell:

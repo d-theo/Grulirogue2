@@ -10,6 +10,7 @@ import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
 import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome } from "./loot-mics";
 import * as _ from 'lodash';
+import { randomWand } from "../../eventBus/event-rogue";
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -118,5 +119,6 @@ export function getRandomLoot(level: number): Item {
         default:
             throw new Error(`Not implemented loot type : ${itemKind}`);
     }
+    return randomWand();
     return loot;
 }

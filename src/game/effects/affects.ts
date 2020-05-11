@@ -385,10 +385,10 @@ export class Affect {
             start: (t: Hero|Monster) => {
                 t.enchants.setBurned(true);
             },
-            tick: (t: Hero|Monster) => {
+            /*tick: (t: Hero|Monster) => {
                 gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
                 doDamages(1, t, 'burning');
-            },
+            },*/
             end: (t: Hero|Monster) => { 
                 t.enchants.setBurned(false);
             },
@@ -463,6 +463,10 @@ export class EnchantSolver {
     solve() {
         if (this.t.enchants.getWet()) {
             this.t.buffs.cleanBuffType('burn');
+        }
+        if (this.t.enchants.getBurned()) {
+            gameBus.publish(logPublished({level: 'warning', data: `${this.t.name} is burning`}));
+            doDamages(1, this.t, 'burning');
         }
         if (this.t.enchants.getBurned() && this.t.enchants.getPoisoned()) {
             new Affect('bleed').turns(1).target(this.t).cast();

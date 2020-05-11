@@ -85,7 +85,6 @@ export class TileMap {
         }
     }
     getAt(pos: Coordinate): Tile {
-        console.log(pos);
         return this.tiles[pos.y][pos.x];
     }
 
@@ -124,9 +123,6 @@ export class TileMap {
                 tile.removeDebuff(timer.id);
                 toDelete.push(timer.id);
                 gameBus.publish(effectUnset({id: timer.id}));
-            }
-            if (timer.duration == null) {
-                console.log('WTF', timer);
             }
         }
         this.debuffDurations = this.debuffDurations.filter(dd => toDelete.indexOf(dd.id) < 0);

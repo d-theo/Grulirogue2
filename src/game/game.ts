@@ -61,6 +61,7 @@ export class Game {
         this.places = new SpecialPlaces(this.items, this.monsters);
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
+        EffectMaker.set(this);
         this.initBus();
         this.reInitLevel();
     }
@@ -90,7 +91,6 @@ export class Game {
             friendlies
                 .concat(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level]))
         );
-        EffectMaker.set(this);
         this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level]));
         this.mayAddUniqItem();
         makeThings(additionalThingsToPlace, this.monsters, this.items, this.tilemap, this.places);

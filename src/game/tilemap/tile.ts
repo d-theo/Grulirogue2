@@ -16,7 +16,7 @@ export class Tile {
     isWalkableFct: (n:number) => boolean;
     isEntry = false;
     isExit = false;
-    private debuffs: {id: string, debuff: BuffDefinition}[] = [];
+    private debuffs: {id: string, debuff: () => BuffDefinition}[] = [];
     constructor(arg: {x: number, y: number, visibility?: TileVisibility, type?: number, isSolidFct: (n:number) => boolean, isWalkableFct: (n:number) => boolean}) {
         this.pos = {x: arg.x, y: arg.y}
         this.visibility = arg.visibility || TileVisibility.Hidden;
@@ -50,13 +50,13 @@ export class Tile {
         this.visibility = TileVisibility.OnSight;
         this.viewed = true;
     }
-    addDebuff(d: {id: string, debuff: BuffDefinition}) {
+    addDebuff(d: {id: string, debuff: () => BuffDefinition}) {
         this.debuffs.push(d);
     }
     removeDebuff(id: string) {
         this.debuffs = this.debuffs.filter(d => d.id !== id);
     }
-    getDebuffs(): {id: string, debuff: BuffDefinition}[] {
+    getDebuffs(): {id: string, debuff: () => BuffDefinition}[] {
         return this.debuffs;
     }
 }

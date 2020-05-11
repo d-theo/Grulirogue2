@@ -10,6 +10,9 @@ import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 import { EnchantSolver } from "../effects/affects";
+import { IEffect } from "../effects/spells";
+import * as _ from 'lodash';
+
 let short = require('short-uuid');
  
 export class Monster implements Entity {
@@ -31,6 +34,7 @@ export class Monster implements Entity {
     dodge: number = 0.15;
     enchantSolver: EnchantSolver;
     private isFriendly = false;
+    spells: IEffect[] = [];
     private constructor() {
         this.enchantSolver = new EnchantSolver(this);
     }
@@ -74,6 +78,10 @@ export class Monster implements Entity {
         this.speed = speed;
         return this;
     }
+    setSpells(spells: IEffect[]) {
+        this.spells = _.shuffle(spells);
+        return this;
+    }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
@@ -84,7 +92,7 @@ export class Monster implements Entity {
         this.enchantSolver.solve();
     }
     static makeMonster(arg: any) : Monster {
-        const {speed, kind, danger, hp, damage, range, pos, dodge, onHit} = arg;
+        const {speed, kind, danger, hp, damage, range, pos, dodge, onHit, spells} = arg;
         microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');
         
         const monster = new Monster();
@@ -104,6 +112,10 @@ export class Monster implements Entity {
 
         if (onHit) {
             monster.weapon.additionnalEffects.push(onHit);
+        }
+        if (spells) {
+            const sp = spells.map((s: Function) => s());
+            monster.setSpells( sp );
         }
         return monster;
     }

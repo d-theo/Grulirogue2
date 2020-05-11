@@ -1,4 +1,5 @@
 import { Affect } from "../effects/affects";
+import { EffectMaker, SpellNames } from "../effects/effect";
 
 export const Bestiaire = {
     Misc: {
@@ -36,7 +37,7 @@ export const Bestiaire = {
             hp: '1-3',
             damage: '1-2',
             range: 1,
-            dodge: 0.05
+            dodge: 0.05,
         },
         Bat: {
             kind: "Bat",
@@ -71,7 +72,11 @@ export const Bestiaire = {
             hp: '40-45',
             damage: '10-20',
             range: 4,
-            dodge: 0.0
+            dodge: 0.0,
+            spells: [
+                () => EffectMaker.createSpell(SpellNames.Shadow),
+                () => EffectMaker.createSpell(SpellNames.Shadow),
+            ]
         },
         Rat:{
             kind: "Rat",
@@ -96,6 +101,7 @@ export const Bestiaire = {
             hp: '40-55',
             dodge: 0.05,
             range: 1,
+            onHit: {chance: 1, target: 'target', effect: new Affect('slow').turns(5).create()}
         },
         Sailor:{
             kind: "Sailor",
@@ -112,7 +118,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()}
+            onHit: {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()},
         }
     },
     Rogue: {
@@ -128,9 +134,17 @@ export const Bestiaire = {
             kind: "Wizard",
             danger: 30,
             hp: '10-15',
-            damage: '10-13',
+            damage: '1-5',
             range: 6,
             dodge: 0.00,
+            spells: [
+                () => EffectMaker.createSpell(SpellNames.FireCloud),
+                () => EffectMaker.createSpell(SpellNames.FireCloud),
+                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
+                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
+                () => EffectMaker.createSpell(SpellNames.Shadow),
+                () => EffectMaker.createSpell(SpellNames.Shadow),
+            ]
         },
         Orc: {
             kind: "Orc",

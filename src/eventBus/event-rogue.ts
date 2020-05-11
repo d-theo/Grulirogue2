@@ -24,10 +24,10 @@ export const rogueBestiaire: XTable = [
     {chance: 25, type: Bestiaire.Rogue.SkeletonWarrior},
 ];
 export const LootWand = [
-    //Wands.Floral,
-    Wands.Fire,
+    Wands.Floral,
+    /*Wands.Fire,
     Wands.Identification,
-    Wands.Water,
+    Wands.Water,*/
 ];
 
 export function spawnRogueEventItem(graph: MapGraph) {

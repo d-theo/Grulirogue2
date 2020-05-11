@@ -10,6 +10,16 @@ import { MapEffect } from "../../map/map-effect";
 export function monsterAttack(args: {target: Hero | Monster, monster: Monster}): MessageResponse {
     const {target, monster} = args; 
 
+    if (monster.spells.length > 0 && Math.random() > 0.7) {
+        const spell = monster.spells.pop();
+        spell?.cast(target.pos);
+        return {
+            timeSpent: 1,
+            status: MessageResponseStatus.Ok,
+            data: null
+        };
+    }
+
     const damages = new Attack(monster, target).do();
     const healthReport = target.health.take(damages);
     if (distance(monster.pos, target.pos) > 1) {

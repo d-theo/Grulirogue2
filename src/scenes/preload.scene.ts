@@ -42,6 +42,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Root', '/assets/sprites/root.png');
       this.load.image('Water', '/assets/sprites/water.png');
       this.load.image('Light', '/assets/sprites/light.png');
+      this.load.image('Floral', '/assets/sprites/floral.png');
 
       this.load.image('target', '/assets/sprites/target.png');
       this.load.image('itemable', '/assets/sprites/itemable.png');
@@ -75,6 +76,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('smelly_bottle', '/assets/sprites/poison-bottle.png');
       this.load.image('cold_crystal', '/assets/sprites/crystal.png');
       this.load.image('tome_of_rain', '/assets/sprites/tome-rain.png');
+      this.load.image('tome_floral', '/assets/sprites/tome-floral.png');
       this.load.image('small_torch', '/assets/sprites/small-torch.png');
       this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
       this.load.image('unholy_book', '/assets/sprites/unholy-book.png');

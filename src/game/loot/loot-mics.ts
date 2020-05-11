@@ -30,6 +30,15 @@ export const createTomeOfRain = () => {
         effectTarget: EffectTarget.AoE
     })
 }
+export const createTomeOfVegetation = () => {
+    return new Misc({
+        name: 'Tome of vegetation',
+        description: 'Can invok the god of vegetation',
+        skin: 'tome_floral',
+        effect: EffectMaker.createSpell(SpellNames.FloralCloud),
+        effectTarget: EffectTarget.AoE
+    })
+}
 export const createSmallTorch = () => {
     return new Misc({
         name: 'Torch',

@@ -1,6 +1,6 @@
 import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
-import { gameBus, itemEquiped, playerHealed, logPublished } from "../../eventBus/game-bus";
+import { gameBus, itemEquiped, playerHealed, logPublished, monsterTookDamage } from "../../eventBus/game-bus";
 import { BuffDefinition } from "./effect";
 import { SkillNames } from "../hero/hero-skills";
 import { pickInRange } from "../utils/random";
@@ -32,6 +32,7 @@ export type AffectType =
 | 'hp'
 | 'weakness'
 | 'fear'
+| 'floral'
 | 'procChance';
 
 export class Affect {
@@ -208,9 +209,20 @@ export class Affect {
     }
     private wet() {
         return {
-            start: (t: Hero|Monster) => t.enchants.setWet(true),
-            end: (t: Hero|Monster) => t.enchants.setWet(false),
+            start: (t: Hero|Monster) => {
+                t.enchants.setWet(true);
+            },
+            end: (t: Hero|Monster) => {
+                t.enchants.setWet(false)
+            },
             tags: 'wet'
+        }
+    }
+    private floral() {
+        return {
+            start: (t: Hero|Monster) => t.enchants.setFloral(true),
+            end: (t: Hero|Monster) => t.enchants.setFloral(false),
+            tags: 'floral'
         }
     }
 
@@ -470,6 +482,19 @@ export class EnchantSolver {
         }
         if (this.t.enchants.getBurned() && this.t.enchants.getPoisoned()) {
             new Affect('bleed').turns(1).target(this.t).cast();
+        }
+        if (this.t.enchants.getFloral() && this.t.enchants.getWet()) {
+            this.t.health.take(-1);
+            if (this.t instanceof Hero) {
+                gameBus.publish(playerHealed({
+                    baseHp: this.t.health.baseHp,
+                    currentHp: this.t.health.currentHp
+                }));
+            } else {
+                gameBus.publish(monsterTookDamage({
+                    monster: this.t
+                }));
+            }
         }
     }
 }

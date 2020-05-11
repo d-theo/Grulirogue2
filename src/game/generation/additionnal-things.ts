@@ -80,7 +80,7 @@ export function makeThings(
                 places.addPlace({pos: add.pos, kind: add.type});
                 break;
             default:
-                console.log('add this stuff not impl'+add.type);
+                console.error('add this stuff not impl'+add.type);
                 break;
         }
     }

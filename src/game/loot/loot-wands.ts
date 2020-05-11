@@ -1,12 +1,12 @@
 import { EffectMaker, SpellNames } from "../effects/effect";
 
 export const Wands = {
-    /*Floral: {
+    Floral: {
         name:'Wand of vegetation',
         description: 'Spans vegetation at the given location',
-        effect: () => EffectMaker.createSpell(SpellNames.Blink),
+        effect: () => EffectMaker.createSpell(SpellNames.FloralLine),
         skin: 'wand-herb'
-    },*/
+    },
     Fire: {
         name:'Wand of fire',
         description: 'Spans fire at the given location',

@@ -14,7 +14,6 @@ export function availablePlaceType () {
         if (p.need == null) return true;
         return Uniqs.find(u => u.name === p.need) === undefined;
     }));
-    console.log(places);
     const place = _.sample(places);
     if (place) {
         return place.place;

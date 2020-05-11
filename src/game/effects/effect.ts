@@ -46,7 +46,9 @@ export enum SpellNames {
     Sacrifice = 'Sacrifice',
     AsservissementSpell = 'AsservissementSpell',
     WaterLine = 'WaterLine',
-    FireLine = 'FireLine'
+    FireLine = 'FireLine',
+    FloralLine = 'FloralLine',
+    FloralCloud = 'FloralCloud'
 }
 
 let tilemap: TileMap;
@@ -92,7 +94,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around',
                 type: EffectTarget.Location,
-                affect: new Affect('blind').params(7).create(),
+                affect: () => new Affect('blind').params(7).create(),
                 mapEffect:  MapEffect.Shadow,
                 duration: 40,
             });
@@ -100,7 +102,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around',
                 type: EffectTarget.Location,
-                affect: new Affect('cold').create(),
+                affect: () => new Affect('cold').create(),
                 mapEffect:  MapEffect.Cold,
                 duration: 10,
             });
@@ -108,7 +110,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around',
                 type: EffectTarget.Location,
-                affect: new Affect('fire').turns(2).create(),
+                affect: () => new Affect('fire').turns(2).create(),
                 mapEffect:  MapEffect.Fire,
                 duration: 10,
             });
@@ -116,7 +118,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around2',
                 type: EffectTarget.Location,
-                affect: new Affect('wet').create(),
+                affect: () => new Affect('wet').create(),
                 mapEffect:  MapEffect.Water,
                 duration: 10,
             });
@@ -124,7 +126,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around',
                 type: EffectTarget.Location,
-                affect: new Affect('poison').turns(5).create(),
+                affect: () => new Affect('poison').turns(5).create(),
                 mapEffect:  MapEffect.Poison,
                 duration: 10,
             });
@@ -132,7 +134,7 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'around',
                 type: EffectTarget.Location,
-                affect: new Affect('shock').create(),
+                affect: () => new Affect('shock').create(),
                 mapEffect:  MapEffect.Light,
                 duration: 10,
             });
@@ -140,15 +142,31 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'line',
                 type: EffectTarget.Location,
-                affect: new Affect('fire').turns(2).create(),
+                affect: () => new Affect('fire').turns(2).create(),
                 mapEffect:  MapEffect.Fire,
                 duration: 5,
+            });
+        case SpellNames.FloralLine:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'line',
+                type: EffectTarget.Location,
+                affect: () => new Affect('floral').create(),
+                mapEffect:  MapEffect.Floral,
+                duration: 40,
+            });
+        case SpellNames.FloralCloud:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'around',
+                type: EffectTarget.Location,
+                affect: () => new Affect('floral').create(),
+                mapEffect:  MapEffect.Floral,
+                duration: 40,
             });
         case SpellNames.WaterLine:
             return createElementalSpell(effect, {
                 shapeStrategy: 'line',
                 type: EffectTarget.Location,
-                affect: new Affect('wet').create(),
+                affect: () => new Affect('wet').create(),
                 mapEffect:  MapEffect.Water,
                 duration: 40,
             });

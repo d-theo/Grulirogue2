@@ -8,7 +8,7 @@ import { craftWeapon } from "./loot-weapons";
 import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
-import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome } from "./loot-mics";
+import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome, createTomeOfVegetation } from "./loot-mics";
 import * as _ from 'lodash';
 import { randomWand } from "../../eventBus/event-rogue";
 
@@ -38,7 +38,8 @@ export const MiscTable: XTable = [
     {chance: 10, type: () => createSmallTorch()},
     {chance: 10, type: () => createSmellyBottle()},
     {chance: 15, type: () => createColdCrystal()},
-    {chance: 15, type: () => createSphereOfLighting()},
+    {chance: 10, type: () => createSphereOfLighting()},
+    {chance: 15, type: () => createTomeOfVegetation()},
 ];
 
 export const PotionTable: XTable = [

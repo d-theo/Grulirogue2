@@ -40,7 +40,7 @@ export class TrapSpell implements IEffect {
     cast(pos: Coordinate) {
         const bleed = new Affect('bleed').turns(3).create();
         const id = this.world.getTilemap().addTileEffects({
-            debuff: bleed,
+            debuff: () => bleed,
             pos,
             duration: 1,
             stayOnWalk: false,
@@ -63,7 +63,7 @@ export class RootTrapSpell implements IEffect {
     constructor(private readonly world: WorldEffect) {}
     cast() {
         const id = this.world.getTilemap().addTileEffects({
-            debuff: new Affect('stun').turns(5).create(),
+            debuff: () => new Affect('stun').turns(5).create(),
             pos: this.world.getHero().pos,
             duration: 1,
             stayOnWalk: false,
@@ -89,7 +89,7 @@ export class PoisonTrapSpell implements IEffect {
             .turns(3)
             .create();
         const id = this.world.getTilemap().addTileEffects({
-            debuff: poison,
+            debuff: () => poison,
             pos,
             duration: 1,
             stayOnWalk: false,
@@ -114,7 +114,7 @@ export class WildFireSpell implements IEffect {
         around(pos, 1).forEach(p => {
             const dmg = new Affect('damage').params(0.5,'4-6','wild fire').create(); // FIXME
             const id = this.world.getTilemap().addTileEffects({
-                debuff: dmg,
+                debuff: () => dmg,
                 pos: p,
                 duration: 10,
                 stayOnWalk: true,
@@ -323,7 +323,7 @@ export function doDamages(dmg: number, target: Monster | Hero, cause: string): v
 interface ElementSpell {
     shapeStrategy: string;
     type: EffectTarget;
-    affect: BuffDefinition;
+    affect: () => BuffDefinition;
     mapEffect: MapEffect;
     duration: number;
 }

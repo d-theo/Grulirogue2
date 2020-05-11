@@ -253,7 +253,6 @@ export const AI = (game: Game) => {
         const selfPos = monster.pos;
 
         const dir = relativePosition(selfPos, heroPos);
-        console.log(dir)
         const ne = [
             {x:selfPos.x+1, y: selfPos.y-1},
             {x:selfPos.x+1, y: selfPos.y},

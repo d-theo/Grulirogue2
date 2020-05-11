@@ -1,4 +1,5 @@
 import { BuffDefinition } from "../effects/effect";
+import { Hero } from "../hero/hero";
 
 export class Buffs {
     buffs: BuffDefinition[] = [];

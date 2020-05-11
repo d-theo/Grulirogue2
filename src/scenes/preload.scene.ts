@@ -2,9 +2,7 @@ import {
     SceneName
   } from "./scenes.constants";
 import { PotionColors } from "../game/items/potion";
-import { InventoryFont } from "./inventory.scene";
 import TweenHelper from "../phaser-addition/tween-helper";
-import { GameFont } from "../main";
 
   class PreLoadScene extends Phaser.Scene {
     constructor() {
@@ -94,9 +92,9 @@ import { GameFont } from "../main";
     create() {
       this.game.scale.resize(1030, 761);
       this.add.image(0, 0, 'screen').setOrigin(0, 0).setDisplaySize(1030, 761);
-      const txt = this.add.text((1030/2)-200,500,'Push space to start', {
+      const txt = this.add.text((1030/2)-250,500,'Push space to start', {
         fontSize: '26px',
-        fontFamily: GameFont,
+        fontFamily: 'square',
         color: '#FFFFFF',
       });
       txt.style.fixedWidth = 400;

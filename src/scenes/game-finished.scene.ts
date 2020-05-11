@@ -1,10 +1,9 @@
 import {
     SceneName
   } from "./scenes.constants";
-import { GameFont } from "../main";
  const Font = {
   fontSize: '13px',
-  fontFamily: GameFont,
+  fontFamily: 'square',
   color: '#FFFFFF',
   wordWrap: {
     width: 310

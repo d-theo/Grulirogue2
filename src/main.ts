@@ -11,7 +11,6 @@ import PreLoadScene from './scenes/preload.scene';
 export const CellSize = 32;
 export const W = CellSize*23;
 export const H = CellSize*17;
-export const GameFont = 'square';
 export const config = {
     type: Phaser.AUTO,
     parent: 'content',

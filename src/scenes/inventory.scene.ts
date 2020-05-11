@@ -4,11 +4,10 @@ import {
 import { InventoryView } from "./inventory/inventory-view";
 import { InventoryDescriptionView } from "./inventory/inventory-description";
 import { Item } from "../game/entitybase/item";
-import { GameFont } from "../main";
 
 export const InventoryFont = {
-  fontSize: '10px',
-  fontFamily: GameFont,
+  fontSize: '11px',
+  fontFamily: 'square',
   color: '#FFFFFF',
   wordWrap: {
     width: 310

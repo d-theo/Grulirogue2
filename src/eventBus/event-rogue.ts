@@ -25,9 +25,9 @@ export const rogueBestiaire: XTable = [
 ];
 export const LootWand = [
     Wands.Floral,
-    /*Wands.Fire,
+    Wands.Fire,
     Wands.Identification,
-    Wands.Water,*/
+    Wands.Water,
 ];
 
 export function spawnRogueEventItem(graph: MapGraph) {

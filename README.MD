@@ -26,11 +26,8 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 * scroll of enchanting weapon
 * scroll of enchanting armor
 * scroll of replacement
-* friendly IA
 * Immobile IA
-* IA that can cast spells
 * scroll of invocation
-* scroll of asservissement
 * scroll of filling // hack, create immobile monster
 * sphere of coldness (freeze)
 * sphere of fire (rework)
@@ -44,11 +41,10 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 * procedural quests
 * steath noise + AI
 * seeds to grow on herb ??? 
-* more combos with elements : vegetal + fire, vegetal + water
+* more combos with elements : vegetal + fire
 * terrain with other effect : holes (die), mud (slow), dust ??, thorns plants
 * weapon of bump
 * armour of bumps
-* Gods Cat vs Dogs (?), priere, changement
 * Combat mechanics (piercing, contact) (?)
 * western map + 4mobs + generation kind
 * modern map + 4 mobs  // use boat generation Bugs

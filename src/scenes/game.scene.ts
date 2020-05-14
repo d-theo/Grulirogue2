@@ -12,8 +12,9 @@ import {SkillNames} from '../game/hero/hero-skills';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
 import {EffectTarget} from '../game/effects/spells';
-import {Monster} from '../game/monsters/monster';import { GameContext, SelectLocationState, SelectMovableState, Modes } from '../eventBus/states';
+import {Monster} from '../game/monsters/monster';import { GameContext, Modes } from '../eventBus/states';
 import { Keyboard } from '../phaser-addition/keyboard';
+import { CellSize } from '../main';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;
@@ -43,7 +44,6 @@ class GameScene extends Phaser.Scene {
 	| any;
 
 	range;
-	subs: any = [];
 
 	gameContext: GameContext;
 	constructor() {
@@ -75,7 +75,7 @@ class GameScene extends Phaser.Scene {
 			data: this.tilemap,
 			key: 'map'
 		});
-		var tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', 32, 32, 1, 2, 0);
+		var tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', CellSize, CellSize, 1, 2, 0);
 		this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
 		this.layer2 = map.createBlankDynamicLayer('additions', tileset);
 		this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
@@ -218,10 +218,10 @@ class GameScene extends Phaser.Scene {
 		gameBus.publish(waitATurn({}));
 	}
 	moveTarget(direction: string) {
-		if (direction === 'ArrowUp') this.target.y -= 32;
-		if (direction === 'ArrowDown') this.target.y += 32;
-		if (direction === 'ArrowLeft') this.target.x -= 32;
-		if (direction === 'ArrowRight') this.target.x += 32;
+		if (direction === 'ArrowUp') this.target.y -= CellSize;
+		if (direction === 'ArrowDown') this.target.y += CellSize;
+		if (direction === 'ArrowLeft') this.target.x -= CellSize;
+		if (direction === 'ArrowRight') this.target.x += CellSize;
 	}
 
 	moveTargetToAttack(direction: string) {
@@ -391,12 +391,11 @@ class GameScene extends Phaser.Scene {
 	}
 
 	initGameEvents() {
-		this.subs = [];
-		this.subs.push(gameBus.subscribe(sightUpdated, event => {
+		gameBus.subscribe(sightUpdated, event => {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
-		}));
-		this.subs.push(gameBus.subscribe(monsterMoved, event => {
+		});
+		gameBus.subscribe(monsterMoved, event => {
 			const {
 				monster
 			} = event.payload;
@@ -404,35 +403,35 @@ class GameScene extends Phaser.Scene {
 			this.hero.updateHp(true);
 			m.move();
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
-		}));
-		this.subs.push(gameBus.subscribe(monsterDead, event => {
+		});
+		gameBus.subscribe(monsterDead, event => {
 			const {
 				monster
 			} = event.payload;
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
-		}));
-		this.subs.push(gameBus.subscribe(monsterTookDamage, event => {
+		});
+		gameBus.subscribe(monsterTookDamage, event => {
 			const monster = event.payload.monster;
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
-		}));
-		this.subs.push(gameBus.subscribe(playerMoved, event => {
+		});
+		gameBus.subscribe(playerMoved, event => {
 			this.hero.move();
-		}));
-		this.subs.push(gameBus.subscribe(doorOpened, event => {
+		});
+		gameBus.subscribe(doorOpened, event => {
 			const {
 				pos
 			} = event.payload;
 			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
-		}));
-		this.subs.push(gameBus.subscribe(playerAttackedMonster, event => {
+		});
+		gameBus.subscribe(playerAttackedMonster, event => {
 			const {
 				monster
 			} = event.payload;
 			this.gameMonsters[monster.id].updateHp();
-		}));
-		this.subs.push(gameBus.subscribe(itemPickedUp, event => {
+		});
+		gameBus.subscribe(itemPickedUp, event => {
 			const {
 				item
 			} = event.payload;
@@ -441,32 +440,32 @@ class GameScene extends Phaser.Scene {
 				return;
 			}
 			this.gameItems[item.id].pickedUp();
-		}));
-		this.subs.push(gameBus.subscribe(playerHealed, event => {
+		});
+		gameBus.subscribe(playerHealed, event => {
 			this.hero.updateHp();
 		}));
-		this.subs.push(gameBus.subscribe(itemDropped, event => {
+		gameBus.subscribe(itemDropped, event => {
 			const {
 				item
 			} = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
-		}));
-		this.subs.push(gameBus.subscribe(itemRemoved, event => {
+		});
+		gameBus.subscribe(itemRemoved, event => {
 			const {
 				item
 			} = event.payload;
 			const gameItem = this.gameItems[item.id];
 			gameItem.destroy();
-		}));
-		this.subs.push(gameBus.subscribe(rogueEvent, () => {
+		});
+		gameBus.subscribe(rogueEvent, () => {
 			this.hero.updateHeroSprite('@');
-		}));
-		this.subs.push(gameBus.subscribe(monsterSpawned, (event) => {
+		});
+		gameBus.subscribe(monsterSpawned, (event) => {
 			const mob = event.payload.monster;
 			const monster = new UIEntity(this, mob, mob.name)
 			this.gameMonsters[mob.id] = monster;
-		}));
-		this.subs.push(gameBus.subscribe(xpHasChanged, event => {
+		});
+		gameBus.subscribe(xpHasChanged, event => {
 			const {
 				status
 			} = event.payload;
@@ -477,8 +476,8 @@ class GameScene extends Phaser.Scene {
 					action: 'pickSkill'
 				});
 			}
-		}));
-		this.subs.push(gameBus.subscribe(effectSet, event => {
+		});
+		gameBus.subscribe(effectSet, event => {
 			switch (event.payload.animation) {
 				case 'static':
 					return this.gameEffects[event.payload.id] = new UIEffect(this, {
@@ -493,8 +492,8 @@ class GameScene extends Phaser.Scene {
 					p.throwProjectile(event.payload.to);
 					break;
 			}
-		}));
-		this.subs.push(gameBus.subscribe(effectUnset, event => {
+		});
+		gameBus.subscribe(effectUnset, event => {
 			const {
 				id
 			} = event.payload;
@@ -503,21 +502,21 @@ class GameScene extends Phaser.Scene {
 			}
 			this.gameEffects[id].destroy();
 			delete this.gameEffects[id];
-		}));
-		this.subs.push(gameBus.subscribe(gameOver, event => {
+		});
+		gameBus.subscribe(gameOver, event => {
 			this.scene.pause().launch(SceneName.GameOver);
-		}));
-		this.subs.push(gameBus.subscribe(gameFinished, event => {
+		});
+		gameBus.subscribe(gameFinished, event => {
 			this.scene.pause().launch(SceneName.GameFinished);
-		}));
-		this.subs.push(gameBus.subscribe(itemEquiped, event => {
+		});
+		gameBus.subscribe(itemEquiped, event => {
 			const {
 				armour
 			} = event.payload;
 			if (armour) {
 				this.hero.updateHeroSprite(armour.skin);
 			}
-		}));
+		});
 		gameBus.subscribe(nextLevelCreated, event => {
 			this.reInit();
 		});
@@ -552,67 +551,37 @@ class GameScene extends Phaser.Scene {
 	}
 
 	moveTo(pos) {
-		if (this.gameEngine.hero.enchants.getStupid()) {
-			if (pos === 'left')	pos = 'right;'
-			if (pos === 'right')pos = 'left';
-			if (pos === 'up')	pos = 'down';
-			if (pos === 'down')	pos = 'up';
-		}
 		let newPos: Coordinate = {x: -1,y: -1};
 		let heroPos = this.gameEngine.hero.pos;
 		switch (pos) {
-			case 'left':
-				newPos = {
-					x: heroPos.x - 1,
-					y: heroPos.y
-				}
+			case 'left': 
+				newPos = {x: heroPos.x, y: heroPos.y}
 				break;
 			case 'right':
-				newPos = {
-					x: heroPos.x + 1,
-					y: heroPos.y
-				}
+				newPos = {x: heroPos.x, y: heroPos.y}
 				break;
-			case 'down':
-				newPos = {
-					x: heroPos.x,
-					y: heroPos.y + 1
-				}
+			case 'down': 
+				newPos = {x: heroPos.x,y: heroPos.y + 1}
 				break;
-			case 'up':
-				newPos = {
-					x: heroPos.x,
-					y: heroPos.y - 1
-				}
+			case 'up': 
+				newPos = {x: heroPos.x,y: heroPos.y - 1}
 				break;
-			case 'upleft':
-				newPos = {
-					x: heroPos.x - 1,
-					y: heroPos.y - 1
-				}
+			case 'upleft': 
+				newPos = {x: heroPos.x - 1,y: heroPos.y - 1}
 				break;
-			case 'upright':
-				newPos = {
-					x: heroPos.x + 1,
-					y: heroPos.y - 1
-				}
+			case 'upright': 
+				newPos = {x: heroPos.x + 1,y: heroPos.y - 1}
 				break;
-			case 'downright':
-				newPos = {
-					x: heroPos.x + 1,
-					y: heroPos.y + 1
-				}
+			case 'downright': 
+				newPos = {x: heroPos.x + 1,y: heroPos.y + 1}
 				break;
-			case 'downleft':
-				newPos = {
-					x: heroPos.x - 1,
-					y: heroPos.y + 1
-				}
+			case 'downleft': 
+				newPos = {x: heroPos.x - 1,y: heroPos.y + 1}
 				break;
 		}
 		this.moveAllowed = false;
 		this.delta = 0;
-		this.target.setAlpha(0);
+		this.hideTarget();
 		gameBus.publish(playerActionMove({
 			to: newPos
 		}));
@@ -628,10 +597,6 @@ class GameScene extends Phaser.Scene {
 		}
 
 		if (this.gameContext.isOnState(Modes.Play)) {
-			/*var isUpDown = this.cursors.up.isDown;
-			var isDownDown = this.cursors.down.isDown;
-			var isLeftDown = this.cursors.left.isDown;
-			var isRightDown = this.cursors.right.isDown;*/
 			var isUpDown = this.keyboard.pressed.up;
 			var isDownDown = this.keyboard.pressed.down;
 			var isLeftDown = this.keyboard.pressed.left;
@@ -669,12 +634,12 @@ class GameScene extends Phaser.Scene {
 		return {x: this.target.x, y: this.target.y};
 	}
 	getTargetPos() {
-		return {x: this.target.x / 32, y: this.target.y/32};
+		return {x: this.target.x / CellSize, y: this.target.y / CellSize};
 	}
 	setTargetAtPos(pos: Coordinate) {
 		this.showTarget();
-		this.target.x = pos.x * 32;
-		this.target.y = pos.y * 32;
+		this.target.x = pos.x * CellSize;
+		this.target.y = pos.y * CellSize;
 	}
 	putTargetOnHero() {
 		this.showTarget();
@@ -690,8 +655,8 @@ class GameScene extends Phaser.Scene {
 	handleMouseClick() {
 		const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
 		const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
-		this.target.x = tile.x * 32;
-		this.target.y = tile.y * 32;
+		this.target.x = tile.x * CellSize;
+		this.target.y = tile.y * CellSize;
 		const mob = this.gameEngine.getAttackable({
 			x: tile.x,
 			y: tile.y

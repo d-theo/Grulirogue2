@@ -29,7 +29,7 @@ const config: TilerConfig = {
         wallsw: Terrain.CornerSW,
     },
     painters: [
-        {painter: paintWater, chance: 0.810, exclusive: true},
+        {painter: paintWater, chance: 0.15, exclusive: true},
         {painter: paintFloral, chance: 0.20, exclusive: true},
         {painter: paintStandard, chance: 1},
     ],

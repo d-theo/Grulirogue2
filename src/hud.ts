@@ -1,7 +1,7 @@
 import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged, itemEquiped, enchantChanged } from "./eventBus/game-bus";
 import $ from 'jquery';
 
-export function test() {
+export function hud() {
     gameBus.subscribe(gameStarted, event => {
         $('#hud').show();
         $('#log').show();

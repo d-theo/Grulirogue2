@@ -4,11 +4,8 @@ import _ from 'lodash';
 
 export class Inventory {
     bag: Item[];
-    gold: number = 0;
-    size: number;
     equiped = new Set();
     constructor() {
-        this.size = 12;
         this.bag = [];
     }
     flagEquiped(item: Item) {
@@ -21,23 +18,10 @@ export class Inventory {
     flagUnEquiped(item: Item) {
         return this.equiped.delete(item.id);
     }
-    addGold(n: number) {
-        this.gold += n;
-    }
-    payOrThrow(n: number) {
-        if (n > this.gold) {
-            throw new Error('Not enough gold');
-        } else {
-            this.gold -= n;
-        }
-    }
     add(item: Item) {
         item.pos = null;
         this.bag.push(item);
     }
-    /*drop(item: Item) {
-        this.bag = this.bag.filter(i => i !== item);
-    }*/
     remove(item: Item) {
         this.bag = this.bag.filter(i => i.id !== item.id);
     }

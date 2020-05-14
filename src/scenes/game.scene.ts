@@ -12,7 +12,8 @@ import {SkillNames} from '../game/hero/hero-skills';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
 import {EffectTarget} from '../game/effects/spells';
-import {Monster} from '../game/monsters/monster';import { GameContext, Modes } from '../eventBus/states';
+import {Monster} from '../game/monsters/monster';
+import { GameContext, Modes } from './states';
 import { Keyboard } from '../phaser-addition/keyboard';
 import { CellSize } from '../main';
 
@@ -25,7 +26,6 @@ class GameScene extends Phaser.Scene {
 	gameItems: {[id: string]: UIItem} = {};
 	gameEffects: {[id: string]: UIEffect} = {};
 
-	cursors: any;
 	tilemap;
 	layer;
 	layer2;
@@ -36,7 +36,7 @@ class GameScene extends Phaser.Scene {
 	gameEngine: GameEngine;
 	tilemapVisibility: TilemapVisibility;
 
-	mode: 'play' | 'select' = 'play';
+	gameContext: GameContext;
 	actionContext: 
 	{target: 'basic_attack',mobs: Monster[]} 
 	| {action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem', key: string, item: Item, target: EffectTarget}
@@ -44,8 +44,6 @@ class GameScene extends Phaser.Scene {
 	| any;
 
 	range;
-
-	gameContext: GameContext;
 	constructor() {
 		super({
 			key: SceneName.Game
@@ -115,7 +113,6 @@ class GameScene extends Phaser.Scene {
 			}));
 			const mob = mobs[0];
 			this.setTargetAtPos(mob.pos);
-			this.mode = 'select';
 			this.actionContext = {
 				target: 'basic_attack',
 				mobs: mobs
@@ -140,7 +137,6 @@ class GameScene extends Phaser.Scene {
 			}));
 		}
 		this.hideTarget();
-		this.mode = 'play';
 		this.actionContext = null;
 	}
 	enterLocation() {
@@ -160,7 +156,6 @@ class GameScene extends Phaser.Scene {
 			target: pos,
 			action: this.actionContext.key
 		}));
-		this.mode = 'play';
 	}
 
 	enterMovable() {
@@ -173,7 +168,6 @@ class GameScene extends Phaser.Scene {
 			t = this.gameEngine.getAttackable(pos);
 			if (!t) return;
 		}
-		this.mode = 'play';
 		gameBus.publish(playerUseItem({
 			item: this.actionContext.item,
 			target: t,
@@ -181,13 +175,22 @@ class GameScene extends Phaser.Scene {
 		}));
 	}
 
-	displayInventory() {
+	displayInventory(action: 'useItem'|'pickItem', timeoutMs?: number, displayCategories?: string[]) {
+		let conf;
+		if (displayCategories) {
+			conf = this.gameEngine.hero.openBag(displayCategories);
+		} else {
+			conf = this.gameEngine.hero.openBag();
+		}
+
 		this.keyboard.pause();
-		this.scene.pause()
-			.launch(SceneName.Inventory, {
-				config: this.gameEngine.hero.openBag(),
-				action: 'useItem'
-			});
+		setTimeout(() => {
+			this.scene.pause()
+				.launch(SceneName.Inventory, {
+					config: conf,
+					action: action
+				});
+		}, timeoutMs || 0)
 	}
 
 	displaySkill() {
@@ -204,7 +207,6 @@ class GameScene extends Phaser.Scene {
 		gameBus.publish(logPublished({
 			data: 'forget that'
 		}));
-		this.mode = 'play';
 		this.hideRange();
 		this.hideTarget();
 	}
@@ -232,13 +234,9 @@ class GameScene extends Phaser.Scene {
 
 	create() {
 		this.reInit();
-		/*this.input.on('pointermove', () => {
-			this.target.setAlpha(0.9);
-		});*/
 		this.keyboard = new Keyboard();
 		this.input.on('pointerup', this.handleMouseClick.bind(this));
 		this.initGameEvents();
-		// this.cursors = this.input.keyboard.createCursorKeys();
 		this.input.keyboard.on('keydown-' + 'UP', (e) => this.keyboard.keyPressed(e.key));
 		this.input.keyboard.on('keydown-' + 'DOWN',(e) => this.keyboard.keyPressed(e.key));
 		this.input.keyboard.on('keydown-' + 'LEFT', (e) => this.keyboard.keyPressed(e.key));
@@ -315,30 +313,14 @@ class GameScene extends Phaser.Scene {
 							...data,
 							target: itemNeedsTarget
 						};
-						this.keyboard.pause();
-						setTimeout(() => {
-							this.scene.pause().launch(SceneName.Inventory, {
-								config: this.gameEngine.hero.openBag(['Weapons', 'Armours', 'Consumables']),
-								action: 'pickItem'
-							});
-						}, 500);
+						this.displayInventory('pickItem', 500, ['Weapons', 'Armours', 'Consumables']);
 						break;
 					case EffectTarget.Weapon:
 						this.actionContext = {
 							...data,
 							target: itemNeedsTarget
 						};
-						this.keyboard.pause();
-						setTimeout(() => {
-							this.scene
-								.pause()
-								.launch(
-									SceneName.Inventory, {
-										config: this.gameEngine.hero.openBag(['Weapons']),
-										action: 'pickItem'
-									}
-								);
-						}, 500);
+						this.displayInventory('pickItem', 500, ['Weapons']);
 						gameBus.publish(logPublished({
 							data: 'Select a weapon'
 						}));
@@ -351,23 +333,9 @@ class GameScene extends Phaser.Scene {
 							...data,
 							target: itemNeedsTarget
 						};
-
-						setTimeout(() => {
-							this.scene
-								.pause()
-								.launch(SceneName.Inventory, {
-									config: this.gameEngine.hero.openBag(['Armours']),
-									action: 'pickItem'
-								});
-						}, 500);
+						this.displayInventory('pickItem', 500, ['Armours']);
 						break;
 					case EffectTarget.Hero:
-						gameBus.publish(playerUseItem({
-							item: data.item,
-							target: this.hero.subject as Hero,
-							action: data.key,
-						}));
-						break;
 					case EffectTarget.None:
 						gameBus.publish(playerUseItem({
 							item: data.item,
@@ -396,18 +364,14 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});
 		gameBus.subscribe(monsterMoved, event => {
-			const {
-				monster
-			} = event.payload;
+			const { monster } = event.payload;
 			const m = this.gameMonsters[monster.id];
 			this.hero.updateHp(true);
 			m.move();
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});
 		gameBus.subscribe(monsterDead, event => {
-			const {
-				monster
-			} = event.payload;
+			const { monster } = event.payload;
 			const m = this.gameMonsters[monster.id];
 			m.updateHp();
 		});
@@ -420,21 +384,15 @@ class GameScene extends Phaser.Scene {
 			this.hero.move();
 		});
 		gameBus.subscribe(doorOpened, event => {
-			const {
-				pos
-			} = event.payload;
+			const { pos } = event.payload;
 			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
 		});
 		gameBus.subscribe(playerAttackedMonster, event => {
-			const {
-				monster
-			} = event.payload;
+			const { monster } = event.payload;
 			this.gameMonsters[monster.id].updateHp();
 		});
 		gameBus.subscribe(itemPickedUp, event => {
-			const {
-				item
-			} = event.payload;
+			const { item } = event.payload;
 			if (this.gameItems[item.id] == null) {
 				console.error(`${JSON.stringify(item)} is not pickable??`);
 				return;
@@ -445,15 +403,11 @@ class GameScene extends Phaser.Scene {
 			this.hero.updateHp();
 		});
 		gameBus.subscribe(itemDropped, event => {
-			const {
-				item
-			} = event.payload;
+			const { item } = event.payload;
 			this.gameItems[item.id] = new UIItem(this, item, item.skin);
 		});
 		gameBus.subscribe(itemRemoved, event => {
-			const {
-				item
-			} = event.payload;
+			const { item } = event.payload;
 			const gameItem = this.gameItems[item.id];
 			gameItem.destroy();
 		});
@@ -466,9 +420,7 @@ class GameScene extends Phaser.Scene {
 			this.gameMonsters[mob.id] = monster;
 		});
 		gameBus.subscribe(xpHasChanged, event => {
-			const {
-				status
-			} = event.payload;
+			const { status } = event.payload;
 			if (status === 'level_up') {
 				this.keyboard.pause();
 				this.scene.pause().launch(SceneName.SkillTreeScene, {
@@ -494,11 +446,10 @@ class GameScene extends Phaser.Scene {
 			}
 		});
 		gameBus.subscribe(effectUnset, event => {
-			const {
-				id
-			} = event.payload;
-			if (! this.gameEffects[id]) {
-				return ;
+			const { id } = event.payload;
+			if (!this.gameEffects[id]) {
+				console.error(`${id} is not defined`);
+				return;
 			}
 			this.gameEffects[id].destroy();
 			delete this.gameEffects[id];

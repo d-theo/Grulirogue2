@@ -58,9 +58,6 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
             }));
         }
     } else {
-        if (target.getFriendly() && healthReport.status === HealthStatus.Dead) {
-            debugger;
-        }
         gameBus.publish(monsterTookDamage({
             monster: target
         }));

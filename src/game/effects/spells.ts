@@ -1,9 +1,8 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, logPublished, playerTookDammage, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp, rogueEvent, endRogueEvent } from "../../eventBus/game-bus";
+import { gameBus, logPublished, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp, rogueEvent, endRogueEvent } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
-import { WorldEffect, EffectMaker, BuffDefinition } from "./effect";
-import { handleHealthReport } from "../use-cases/health-report";
+import { WorldEffect, BuffDefinition } from "./effect";
 import { MapEffect } from "../../map/map-effect";
 import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
@@ -13,9 +12,8 @@ import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { BloodFountain } from "../places/places";
 import { Affect } from "./affects";
-import { AIBehavior } from "../monsters/ai";
-import { stringify } from "querystring";
 import { line } from "../tilemap/sight";
+import { dealDamages } from "../use-cases/damages";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -144,7 +142,7 @@ export class UnholySpellBook implements IEffect {
             gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
             place.cursed = false;
         } else {
-            doDamages(1, this.world.getHero(), 'sickness');
+            dealDamages(1, null, this.world.getHero(), 'sickness');
             gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
         }
     }
@@ -280,14 +278,8 @@ export class SacrificeSpell implements IEffect {
         hero.health.getWeakerByHp(sacrifice);
         target.health.getWeakerByHp(curse);
         gameBus.publish(logPublished({level: 'danger', data: `You used a forbidden blood magic, hoping this sacrifice is worth the price...`}));
-
-        gameBus.publish(playerTookDammage({
-            amount: sacrifice,
-            source: 'sacrifice',
-            baseHp: hero.health.baseHp,
-            currentHp: hero.health.currentHp
-        }));
-        doDamages(curse, t, 'sacrifice');
+        dealDamages(curse, null, t, 'sacrifice');
+        dealDamages(sacrifice, null, hero, 'sacrifice');
     }
 }
 export class AsservissementSpell implements IEffect {
@@ -298,28 +290,10 @@ export class AsservissementSpell implements IEffect {
             return;
         }
 
-        target.setBehavior(AIBehavior.friendlyAI()).setFriendly(true);
+        target.setFriendly(true);
     }
 }
 
-export function doDamages(dmg: number, target: Monster | Hero, cause: string): void {
-    const r = target.health.take(dmg);
-    if (target instanceof Hero) {
-        gameBus.publish(playerTookDammage({
-            amount: r.amount,
-            source: cause,
-            baseHp: target.health.baseHp,
-            currentHp: target.health.currentHp
-        }));
-    } else if (target instanceof Monster) {
-        handleHealthReport(r, target, dmg);
-        if (cause === 'poisoning') {
-            gameBus.publish(logPublished({level: 'danger', data: `${target.name} suffers from poisoning`}));
-        }
-    }
-}
-
-/// TEST 
 interface ElementSpell {
     shapeStrategy: string;
     type: EffectTarget;
@@ -422,153 +396,3 @@ export class ElementalSpell {
         this.strategy(pos);
     }
 }
-/*
-export class LightningSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 1;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 1).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('shock').create(),
-                pos: p,
-                duration: 10,
-                stayOnWalk: true,
-                debugId: "LightningSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Light,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/
-/*
-export class PoisonCloudSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 1;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 1).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('poison').turns(5).create(),
-                pos: p,
-                duration: 10,
-                stayOnWalk: true,
-                debugId: "PoisonCloudSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Poison,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/
-/*
-export class ColdCloudSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 1;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 1).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('cold').create(),
-                pos: p,
-                duration: 10,
-                stayOnWalk: true,
-                debugId: "ColdCloudSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Cold,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/
-
-/*export class RainCloudSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 1;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 2).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('wet').create(),
-                pos: p,
-                duration: 10,
-                stayOnWalk: true,
-                debugId: "RainCloudSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Water,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/
-
-/*export class FireCloudSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 1;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 1).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('fire').create(),
-                pos: p,
-                duration: 10,
-                stayOnWalk: true,
-                debugId: "FireCloudSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Fire,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/
-
-/*export class ShadowSpell implements IEffect {
-    type = EffectTarget.Location;
-    area = 2;
-    constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
-        around(pos, 2).forEach(p => {
-            const id = this.world.getTilemap().addTileEffects({
-                debuff: new Affect('blind').params(7).create(),
-                pos: p,
-                duration: 40,
-                stayOnWalk: true,
-                debugId: "ShadowSpell"
-            });
-            if (id !== null) {
-                gameBus.publish(effectSet({
-                    id: id,
-                    type: MapEffect.Shadow,
-                    pos: p,
-                    animation: 'static'
-                }));
-            }
-        });
-    }
-}*/

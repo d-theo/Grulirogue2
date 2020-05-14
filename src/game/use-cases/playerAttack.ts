@@ -4,7 +4,7 @@ import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Log } from "../log/log";
 import { Monster } from "../monsters/monster";
-import { handleHealthReport } from "./health-report";
+import { dealDamages } from "./damages";
 import { distance } from "../utils/coordinate";
 import { gameBus, effectSet } from "../../eventBus/game-bus";
 import { MapEffect } from "../../map/map-effect";
@@ -45,9 +45,12 @@ export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilem
         }
     }
     const damages = new Attack(hero, attacked).do();
-    const healthReport = attacked.health.take(damages);
-
-    handleHealthReport(healthReport, attacked, damages);
+    dealDamages(
+        damages,
+        hero,
+        attacked,
+        ''
+    );
     
     return {
         timeSpent: 1,

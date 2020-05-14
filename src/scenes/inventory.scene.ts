@@ -4,6 +4,7 @@ import {
 import { InventoryView } from "./inventory/inventory-view";
 import { InventoryDescriptionView } from "./inventory/inventory-description";
 import { Item } from "../game/entitybase/item";
+import { CellSize } from "../main";
 
 export const InventoryFont = {
   fontSize: '11px',

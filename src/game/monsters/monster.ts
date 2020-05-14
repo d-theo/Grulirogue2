@@ -45,6 +45,11 @@ export class Monster implements Entity {
     }
     setFriendly(newValue: boolean) {
         this.isFriendly = newValue;
+        if (newValue) {
+            this.setBehavior(AIBehavior.friendlyAI());
+        } else {
+            this.setBehavior(AIBehavior.Default());
+        }
         return this;
     }
     getFriendly() {

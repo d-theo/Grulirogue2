@@ -5,8 +5,8 @@ import { BuffDefinition } from "./effect";
 import { SkillNames } from "../hero/hero-skills";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
-import { doDamages } from "./spells";
 import { AIBehavior } from "../monsters/ai";
+import { dealDamages } from "../use-cases/damages";
 
 export type AffectType = 
 | 'thicc'
@@ -263,7 +263,7 @@ export class Affect {
                 gameBus.publish(logPublished({level: 'danger', data: `${t.name} starts bleeding`}));
             },
             tick: (t: Hero|Monster) => {
-                doDamages(4+t.level, t, 'bleeding');
+                dealDamages(4+t.level, null, t, 'bleeding' );
             },
             end: (t: Hero|Monster) => t.enchants.setBleeding(false),
             tags: 'bleed'
@@ -275,7 +275,7 @@ export class Affect {
                 gameBus.publish(logPublished({level: 'danger', data: `${t.name} feels poison in his veins`}));
                 t.enchants.setPoisoned(true)
             },
-            tick: (t: Hero|Monster) => doDamages(2, t, 'poisoning'),
+            tick: (t: Hero|Monster) => dealDamages(2, null, t, 'poisoning' ),
             end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
             tags: 'poison'
         }
@@ -352,7 +352,7 @@ export class Affect {
             tick: (t: Hero | Monster) => {
                 if (this.param1 > Math.random()) return;
                 const dmg = pickInRange(this.param2);
-                doDamages(dmg, t, this.param3);
+                dealDamages(dmg, null, t, this.param3)
             },
             end: NullFunc
         }
@@ -362,7 +362,7 @@ export class Affect {
             start: null,
             tick: (t: Hero | Monster) => {
                 if (t.enchants.getWet()) {
-                    doDamages(7, t, 'shock');
+                    dealDamages(7, null, t, 'shock');
                 }
                 new Affect('stun')
                     .turns(1)
@@ -478,7 +478,7 @@ export class EnchantSolver {
         }
         if (this.t.enchants.getBurned()) {
             gameBus.publish(logPublished({level: 'warning', data: `${this.t.name} is burning`}));
-            doDamages(1, this.t, 'burning');
+            dealDamages(1, null, this.t, 'burning');
         }
         if (this.t.enchants.getBurned() && this.t.enchants.getPoisoned()) {
             new Affect('bleed').turns(1).target(this.t).cast();

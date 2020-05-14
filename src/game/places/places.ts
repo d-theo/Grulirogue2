@@ -159,8 +159,7 @@ export class CatAltar implements Place {
             }));
             const cat = Monster
                 .makeMonster({...Bestiaire.Misc.Cat, pos: {x: this.pos.x, y: this.pos.y+1}})
-                .setFriendly(true)
-                .setBehavior(AIBehavior.friendlyAI());
+                .setFriendly(true);
             return cat;
         } else {
             gameBus.publish(logPublished({

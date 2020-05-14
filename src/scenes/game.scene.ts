@@ -443,7 +443,7 @@ class GameScene extends Phaser.Scene {
 		});
 		gameBus.subscribe(playerHealed, event => {
 			this.hero.updateHp();
-		}));
+		});
 		gameBus.subscribe(itemDropped, event => {
 			const {
 				item
@@ -555,10 +555,10 @@ class GameScene extends Phaser.Scene {
 		let heroPos = this.gameEngine.hero.pos;
 		switch (pos) {
 			case 'left': 
-				newPos = {x: heroPos.x, y: heroPos.y}
+				newPos = {x: heroPos.x-1, y: heroPos.y}
 				break;
 			case 'right':
-				newPos = {x: heroPos.x, y: heroPos.y}
+				newPos = {x: heroPos.x+1, y: heroPos.y}
 				break;
 			case 'down': 
 				newPos = {x: heroPos.x,y: heroPos.y + 1}

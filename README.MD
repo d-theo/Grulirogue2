@@ -1,6 +1,7 @@
 ### Grulirogue 2
 
 Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progress !
+https://grulirogue2.s3-eu-west-1.amazonaws.com/index.html
 
 ## install locally
 

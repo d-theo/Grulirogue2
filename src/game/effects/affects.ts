@@ -275,7 +275,7 @@ export class Affect {
                 gameBus.publish(logPublished({level: 'danger', data: `${t.name} feels poison in his veins`}));
                 t.enchants.setPoisoned(true)
             },
-            tick: (t: Hero|Monster) => dealDamages(2, null, t, 'poisoning' ),
+            tick: (t: Hero|Monster) => {dealDamages(2, null, t, 'poisoning' )},
             end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
             tags: 'poison'
         }

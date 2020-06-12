@@ -3,7 +3,6 @@ import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
 import { gameBus, gameOver } from "../eventBus/game-bus";
 import { pickInRange } from "../game/utils/random";
-import { Armour } from "../game/items/armour";
 import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 

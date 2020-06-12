@@ -17,7 +17,7 @@ export function dealDamages(
             currentHp: target.health.currentHp
         }));
     } else if (target instanceof Monster) {
-        if (source instanceof Hero) {
+        if (source instanceof Hero || source === null) {
             handleHealthReport(r, target, dmg);
             if (cause === 'poisoning') {
                 gameBus.publish(logPublished({level: 'danger', data: `${target.name} suffers from poisoning`}));

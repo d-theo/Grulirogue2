@@ -32,6 +32,7 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Sailor', '/assets/sprites/sailor.png');
       this.load.image('Pirate King', '/assets/sprites/pirate-boss.png');
       this.load.image('Wild cat', '/assets/sprites/cat-friend.png');
+      this.load.image('Cat statue', '/assets/sprites/cat-statue.png');
 
       this.load.image('blood', '/assets/sprites/blood.png');
 

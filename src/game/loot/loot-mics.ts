@@ -138,9 +138,9 @@ export class Misc extends Item implements ItemArgument {
 export class CatStatue extends Item {
     constructor(arg: any) {
         super(arg);
-        this.skin = arg.skin;
+        this.skin = 'Cat statue';
         this._name = 'Cat statue';
-        this._description = 'A cat statue. What could be the use of that ...?';
+        this._description = 'A little cat statue. What could be the use of that ...?';
     }
     use(target: any) {}
     get name() {

@@ -13,6 +13,7 @@ export class DamageResolution {
     
     heroTakesDamages() {
         gameBus.publish(playerTookDammage({
+            monster: this.source as Monster,
             amount: this.report.amount,
             source: this.cause,
             baseHp: this.target.health.baseHp,

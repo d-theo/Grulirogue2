@@ -23,9 +23,9 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 ### todos
 
 * fixing doors problems
+* fix weapon that heal when malus is too big
 * fix loot tables ?
 * "miss" animations
-* item with a green square to signify it is an item
 * weapon of stun
 * weapon of weakness (reduce dammage of the other guy)
 * scroll of sacrifice (-25% vs -25%)
@@ -47,7 +47,7 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 * scroll of invocation
 * scroll of asservissement
 * rework basic map generation
-* scroll of filling // hack, create immobile monster
+* scroll of filling // hack, create immobile monster?
 * sphere of coldness (freeze)
 * sphere of fire (rework)
 * sphere of poison (rework)

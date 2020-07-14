@@ -12,6 +12,7 @@ import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 import { EnchantSolver } from "../effects/affects";
+import { DamageResolution } from "../fight/damages";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -141,5 +142,11 @@ export class Hero implements Entity {
         this.regenHealth();
         this.resolveBuffs();
         this.enchantSolver.solve();
+    }
+    takeDamages(fight: DamageResolution) {
+        fight.heroTakesDamages();
+    }
+    getAligment(): 'good'|'bad' {
+        return 'good';
     }
 }

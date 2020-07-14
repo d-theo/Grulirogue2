@@ -13,7 +13,7 @@ import { Weapon } from "../items/weapon";
 import { BloodFountain } from "../places/places";
 import { Affect } from "./affects";
 import { line } from "../tilemap/sight";
-import { dealDamages } from "../use-cases/damages";
+import { DamageResolution } from "../fight/damages";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -142,7 +142,7 @@ export class UnholySpellBook implements IEffect {
             gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
             place.cursed = false;
         } else {
-            dealDamages(1, null, this.world.getHero(), 'sickness');
+            new DamageResolution(null, this.world.getHero(), 1, 'sickness');
             gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
         }
     }
@@ -278,8 +278,8 @@ export class SacrificeSpell implements IEffect {
         hero.health.getWeakerByHp(sacrifice);
         target.health.getWeakerByHp(curse);
         gameBus.publish(logPublished({level: 'danger', data: `You used a forbidden blood magic, hoping this sacrifice is worth the price...`}));
-        dealDamages(curse, null, t, 'sacrifice');
-        dealDamages(sacrifice, null, hero, 'sacrifice');
+        new DamageResolution(null, t, curse, 'sacrifice');
+        new DamageResolution(null, hero, sacrifice, 'sacrifice');
     }
 }
 export class AsservissementSpell implements IEffect {
@@ -290,7 +290,7 @@ export class AsservissementSpell implements IEffect {
             return;
         }
 
-        target.setFriendly(true);
+        target.setAligment('good');
     }
 }
 

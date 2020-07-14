@@ -4,6 +4,7 @@ import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Buffs } from "./buffable";
 import { EnchantTable } from "./enchantable";
+import { DamageResolution } from "../fight/damages";
 
 export interface Entity {
     health: Health;
@@ -20,4 +21,6 @@ export interface Entity {
     enchants: EnchantTable;
 
     precision: number;
+    takeDamages(c: DamageResolution);
+    getAligment(): 'bad'|'good';
 }

@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttackedMonster,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -386,10 +386,6 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(doorOpened, event => {
 			const { pos } = event.payload;
 			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
-		});
-		gameBus.subscribe(playerAttackedMonster, event => {
-			const { monster } = event.payload;
-			this.gameMonsters[monster.id].updateHp();
 		});
 		gameBus.subscribe(itemPickedUp, event => {
 			const { item } = event.payload;

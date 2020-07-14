@@ -1,4 +1,4 @@
-import { gameBus, logPublished, playerTookDammage, playerAttackedMonster, itemPickedUp, playerHealed, itemEquiped } from "../../eventBus/game-bus";
+import { gameBus, logPublished, playerTookDammage, itemPickedUp, playerHealed, itemEquiped, monsterTookDamage } from "../../eventBus/game-bus";
 
 export class Log {
     static initialized = false;
@@ -15,7 +15,7 @@ export class Log {
                 Log.log(`You suffer from ${event.payload.source}`, 'warning');
             }
         });
-        gameBus.subscribe(playerAttackedMonster, event => {
+        gameBus.subscribe(monsterTookDamage, event => {
             if (event.payload.externalSource) {
                 Log.log(`${event.payload.externalSource.name} deals ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
             } else {

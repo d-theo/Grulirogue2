@@ -59,7 +59,11 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
         }
     } else {
         gameBus.publish(monsterTookDamage({
-            monster: target
+            monster: target,
+            amount: healthReport.amount,
+            baseHp: target.health.baseHp,
+            currentHp: target.health.currentHp,
+            externalSource: monster
         }));
         if (healthReport.status === HealthStatus.Dead) {
             gameBus.publish(monsterDead({

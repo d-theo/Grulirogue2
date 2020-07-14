@@ -4,10 +4,10 @@ import { Hero } from "../hero/hero";
 import { TileMap } from "../tilemap/tilemap";
 import { Log } from "../log/log";
 import { Monster } from "../monsters/monster";
-import { dealDamages } from "./damages";
 import { distance } from "../utils/coordinate";
 import { gameBus, effectSet } from "../../eventBus/game-bus";
 import { MapEffect } from "../../map/map-effect";
+import { DamageResolution } from "../fight/damages";
 
 export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 
@@ -45,13 +45,7 @@ export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilem
         }
     }
     const damages = new Attack(hero, attacked).do();
-    dealDamages(
-        damages,
-        hero,
-        attacked,
-        ''
-    );
-    
+    new DamageResolution(hero, attacked, damages, '');
     return {
         timeSpent: 1,
         status: MessageResponseStatus.Ok

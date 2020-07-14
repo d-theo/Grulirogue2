@@ -77,16 +77,12 @@ export const playerHealed = createEventDefinition<{
     currentHp: number,
     isSilent?: boolean,
 }>()("playerHealed");
-
-export const playerAttackedMonster = createEventDefinition<{
-    amount: number,
+export const monsterTookDamage = createEventDefinition<{
     monster: Monster,
+    amount: number,
     baseHp: number,
     currentHp: number;
     externalSource?: any;
-}>()('playerAttackedMonster');
-export const monsterTookDamage = createEventDefinition<{
-    monster: Monster,
 }>()('monsterTookDamage');
 export const playerAttemptAttackMonster = createEventDefinition<{
     monster: Monster,

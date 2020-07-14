@@ -12,6 +12,7 @@ import { Entity } from "../entitybase/entity";
 import { EnchantSolver } from "../effects/affects";
 import { IEffect } from "../effects/spells";
 import * as _ from 'lodash';
+import { DamageResolution } from "../fight/damages";
 
 let short = require('short-uuid');
  
@@ -33,8 +34,8 @@ export class Monster implements Entity {
     speed = 1;
     dodge: number = 0.15;
     enchantSolver: EnchantSolver;
-    private isFriendly = false;
     spells: IEffect[] = [];
+    aligment: 'bad'|'good' = 'bad';
     private constructor() {
         this.enchantSolver = new EnchantSolver(this);
     }
@@ -43,17 +44,20 @@ export class Monster implements Entity {
         this.level = Math.floor(this.xp / 5);
         return this;
     }
-    setFriendly(newValue: boolean) {
-        this.isFriendly = newValue;
-        if (newValue) {
+    setAligment(value: 'good'|'bad') {
+        this.aligment = value;
+        if (this.aligment === 'good') {
             this.setBehavior(AIBehavior.friendlyAI());
-        } else {
+        } else if (this.aligment === 'bad') {
             this.setBehavior(AIBehavior.Default());
         }
         return this;
     }
+    getAligment() {
+        return this.aligment;
+    }
     getFriendly() {
-        return this.isFriendly;
+        return this.getAligment() === 'good';
     }
     setPos(pos: Coordinate) {
         this.pos = pos;
@@ -96,6 +100,10 @@ export class Monster implements Entity {
     update() {
         this.enchantSolver.solve();
     }
+    takeDamages(c: DamageResolution) {
+        c.monsterTakesDamages(this);
+    }
+    
     static makeMonster(arg: any) : Monster {
         const {speed, kind, danger, hp, damage, range, pos, dodge, onHit, spells} = arg;
         microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');

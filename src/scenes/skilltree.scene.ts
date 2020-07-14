@@ -2,10 +2,9 @@ import {
     SceneName
   } from "./scenes.constants";
 import { SkillView } from "./skills/skill-view";
-  
   export const SkillFont = {
-    fontSize: '13px',
-    fontFamily: 'Courier New',
+    fontSize: '11px',
+    fontFamily: 'square',
     color: '#FFFFFF',
   };
   type Skill = {name: string, description: string; level:number, maxLevel: number};

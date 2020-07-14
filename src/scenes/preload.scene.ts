@@ -2,7 +2,6 @@ import {
     SceneName
   } from "./scenes.constants";
 import { PotionColors } from "../game/items/potion";
-import { InventoryFont } from "./inventory.scene";
 import TweenHelper from "../phaser-addition/tween-helper";
 
   class PreLoadScene extends Phaser.Scene {
@@ -32,6 +31,8 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Pirate', '/assets/sprites/pirate.png');
       this.load.image('Sailor', '/assets/sprites/sailor.png');
       this.load.image('Pirate King', '/assets/sprites/pirate-boss.png');
+      this.load.image('Wild cat', '/assets/sprites/cat-friend.png');
+      this.load.image('Cat statue', '/assets/sprites/cat-statue.png');
 
       this.load.image('blood', '/assets/sprites/blood.png');
 
@@ -42,9 +43,11 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Root', '/assets/sprites/root.png');
       this.load.image('Water', '/assets/sprites/water.png');
       this.load.image('Light', '/assets/sprites/light.png');
+      this.load.image('Floral', '/assets/sprites/floral.png');
 
       this.load.image('target', '/assets/sprites/target.png');
       this.load.image('itemable', '/assets/sprites/itemable.png');
+      this.load.image('friendly', '/assets/sprites/friend.png');
   
       this.load.image('Blowpipe', '/assets/sprites/blowpipe.png');
       this.load.image('rock', '/assets/sprites/rock.png');
@@ -63,12 +66,18 @@ import TweenHelper from "../phaser-addition/tween-helper";
         this.load.image(`potion-${c}`, `/assets/sprites/potion-${c}.png`);
       }
       this.load.image('scroll', '/assets/sprites/scroll-empty.png');
+      this.load.image('scroll_sacrifice', '/assets/sprites/scroll-sacrifice.png');
+
+      for (const w of ['fire','poison','water','identification','herb']) {
+        this.load.image(`wand-${w}`, `/assets/sprites/wand-${w}.png`);
+      }
 
       this.load.image('wildfire_bottle', '/assets/sprites/wildfire-bottle.png');
       this.load.image('sphere_of_shadows', '/assets/sprites/sphere-of-shadows.png');
       this.load.image('smelly_bottle', '/assets/sprites/poison-bottle.png');
       this.load.image('cold_crystal', '/assets/sprites/crystal.png');
       this.load.image('tome_of_rain', '/assets/sprites/tome-rain.png');
+      this.load.image('tome_floral', '/assets/sprites/tome-floral.png');
       this.load.image('small_torch', '/assets/sprites/small-torch.png');
       this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
       this.load.image('unholy_book', '/assets/sprites/unholy-book.png');
@@ -80,14 +89,15 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('Orc', '/assets/sprites/o.png');
       this.load.image('Skeleton', '/assets/sprites/s.png');
       this.load.image('rogue_tome', '/assets/sprites/rogue_tome.png');
+      this.load.image('reality_tome', '/assets/sprites/tome-reality.png');
     }
     
     create() {
       this.game.scale.resize(1030, 761);
       this.add.image(0, 0, 'screen').setOrigin(0, 0).setDisplaySize(1030, 761);
-      const txt = this.add.text((1030/2)-200,500,'Push space to start', {
-        fontSize: '36px',
-        fontFamily: 'Courier New',
+      const txt = this.add.text((1030/2)-250,500,'Push space to start', {
+        fontSize: '26px',
+        fontFamily: 'square',
         color: '#FFFFFF',
       });
       txt.style.fixedWidth = 400;

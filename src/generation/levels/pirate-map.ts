@@ -9,6 +9,7 @@ import { ThingToPlace } from "../map_tiling_utils";
 import { pirateBossPainter } from "../painters/pirateboss-painter";
 import { randomIn } from "../../game/utils/rectangle";
 import { PlaceTypes } from "../../game/places/place-definitions";
+import { placePainter } from "../painters/place-painter";
 
 const config: TilerConfig = {
     width: 100,
@@ -44,14 +45,7 @@ export function pirateMap(mapGenerator: () => MapGraph, configOverride: {path: s
 /////////////// painters //////////////
 
 function miniRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
-    console.log('special place room');
-    const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
-    const placeType = _.sample(PlaceTypes);
-    tilemap2[pos.y][pos.x] = Terrain[placeType];
-    thingsToPlace.push({
-        pos,
-        type: placeType
-    });
+    placePainter(room, tilemap1, tilemap2, thingsToPlace);
 }
 
 function paintStandard(room, tilemap1, tilemap2) {

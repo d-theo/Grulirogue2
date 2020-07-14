@@ -4,10 +4,11 @@ import {
 import { InventoryView } from "./inventory/inventory-view";
 import { InventoryDescriptionView } from "./inventory/inventory-description";
 import { Item } from "../game/entitybase/item";
+import { CellSize } from "../main";
 
 export const InventoryFont = {
-  fontSize: '13px',
-  fontFamily: 'Courier New',
+  fontSize: '11px',
+  fontFamily: 'square',
   color: '#FFFFFF',
   wordWrap: {
     width: 310
@@ -22,8 +23,8 @@ class InventoryScene extends Phaser.Scene {
   currentScreen: 'list' | 'detail' = 'list';
   action: 'useItem' | 'pickItem';
   viewPanel: InventoryView;
-  w = 23 * 32;
-  h = 17 * 32;
+  w = 23 * CellSize;
+  h = 17 * CellSize;
   halfw = this.w * 0.9;
   halfh = this.h * 0.9;
 

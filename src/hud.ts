@@ -1,7 +1,7 @@
 import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged, itemEquiped, enchantChanged } from "./eventBus/game-bus";
 import $ from 'jquery';
 
-export function test() {
+export function hud() {
     $('#log').keydown(function(e) {
         // space and arrow keys
         if([37, 38, 39, 40].indexOf(e.keyCode) > -1) {

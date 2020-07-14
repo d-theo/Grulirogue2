@@ -1,6 +1,7 @@
 import { Item } from "../entitybase/item";
 import { Coordinate, equalsCoordinate } from "../utils/coordinate";
 import { gameBus, itemRemoved } from "../../eventBus/game-bus";
+import { Wand } from "./wands";
 
 export class ItemCollection {
     private items: Item[] = [];
@@ -37,5 +38,12 @@ export class ItemCollection {
         } else {
             return item;
         }
+    }
+    update() {
+        this.items.forEach(i => {
+            if (i instanceof Wand) {
+                i.update();
+            }
+        })
     }
 }

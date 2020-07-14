@@ -6,9 +6,14 @@ import { gameBus, logPublished, itemRemoved } from "../../eventBus/game-bus";
 import { Weapon } from "../items/weapon";
 import { Armour } from "../items/armour";
 import { Hero } from "../hero/hero";
-import { createSmellyBottle } from "../loot/loot-mics";
+import { createSmellyBottle, CatStatue } from "../loot/loot-mics";
 import { Scroll } from "../items/scroll";
 import { Affect } from "../effects/affects";
+import { Scrolls } from "../loot/loot-scrolls";
+import { EffectMaker, SpellNames } from "../effects/effect";
+import { Bestiaire } from "../monsters/bestiaire";
+import { Monster } from "../monsters/monster";
+import { AIBehavior } from "../monsters/ai";
 
 export class BloodFountain implements Place {
     cursed = true;
@@ -16,13 +21,26 @@ export class BloodFountain implements Place {
     constructor(public pos: Coordinate){}
     checkForItem(item: Item): any {
         if (item instanceof Scroll) {
-            gameBus.publish(logPublished({
-                data: `You put your scroll in the fountain... As expected, it's wet and wasted now.`,
-                level: 'warning'
-            }));
-            gameBus.publish(itemRemoved({
-                item: item
-            }));
+            if (this.cursed) {
+                gameBus.publish(logPublished({
+                    data: `You put your scroll in the bloody fountain... it's tainted of blood.`,
+                    level: 'warning'
+                }));
+                gameBus.publish(itemRemoved({
+                    item: item
+                }));
+            }
+            else {
+                const s = Scrolls.Sacrifice;
+                const sacrifice = new Scroll({
+                    name: s.name,
+                    description: s.description,
+                    effect: s.effect(),
+                });
+                sacrifice.skin = 'scroll_sacrifice';
+                sacrifice.pos = {x: this.pos.x, y: this.pos.y+1};
+                return sacrifice;
+            }
         }
         else if (item instanceof Potion) {
             gameBus.publish(logPublished({
@@ -132,6 +150,32 @@ export class HolyFountain implements Place {
         }));
     }
 }
+export class CatAltar implements Place {
+    constructor(public pos: Coordinate){}
+    checkForItem(item: Item): any {
+        if (item instanceof CatStatue) {
+            gameBus.publish(itemRemoved({
+                item: item
+            }));
+            const cat = Monster
+                .makeMonster({...Bestiaire.Misc.Cat, pos: {x: this.pos.x, y: this.pos.y+1}})
+                .setFriendly(true);
+            return cat;
+        } else {
+            gameBus.publish(logPublished({
+                data: 'nothing happens',
+            }));
+        }
+        return null;
+    }
+    checkForHero(hero: Hero): any {
+        gameBus.publish(logPublished({
+            data: 'You are standing on a altar dedicated to cats',
+            level: 'warning'
+        }));
+    }
+}
+
 export class PoisonPot implements Place {
     constructor(public pos: Coordinate){}
     checkForItem(item: Item): any {

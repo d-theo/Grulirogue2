@@ -18,8 +18,16 @@ export class EnchantTable {
     private burned = false;
     private cold = false;
     private shocked = false;
+    private floral = false;
 
     constructor(private readonly notif: boolean = false) {}
+    setFloral(x: boolean) {
+        this.floral = x;
+        this.update();
+    }
+    getFloral() {
+        return this.floral;
+    }
     setChocked(x:boolean) {
         this.shocked=x;
         this.update();

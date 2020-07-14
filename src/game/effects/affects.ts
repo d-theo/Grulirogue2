@@ -1,11 +1,12 @@
 import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
-import { gameBus, itemEquiped, playerHealed, logPublished } from "../../eventBus/game-bus";
+import { gameBus, itemEquiped, playerHealed, logPublished, monsterTookDamage } from "../../eventBus/game-bus";
 import { BuffDefinition } from "./effect";
 import { SkillNames } from "../hero/hero-skills";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
-import { doDamages } from "./spells";
+import { AIBehavior } from "../monsters/ai";
+import { dealDamages } from "../use-cases/damages";
 
 export type AffectType = 
 | 'thicc'
@@ -29,6 +30,9 @@ export type AffectType =
 | 'health'
 | 'precision'
 | 'hp'
+| 'weakness'
+| 'fear'
+| 'floral'
 | 'procChance';
 
 export class Affect {
@@ -205,9 +209,20 @@ export class Affect {
     }
     private wet() {
         return {
-            start: (t: Hero|Monster) => t.enchants.setWet(true),
-            end: (t: Hero|Monster) => t.enchants.setWet(false),
+            start: (t: Hero|Monster) => {
+                t.enchants.setWet(true);
+            },
+            end: (t: Hero|Monster) => {
+                t.enchants.setWet(false)
+            },
             tags: 'wet'
+        }
+    }
+    private floral() {
+        return {
+            start: (t: Hero|Monster) => t.enchants.setFloral(true),
+            end: (t: Hero|Monster) => t.enchants.setFloral(false),
+            tags: 'floral'
         }
     }
 
@@ -248,7 +263,7 @@ export class Affect {
                 gameBus.publish(logPublished({level: 'danger', data: `${t.name} starts bleeding`}));
             },
             tick: (t: Hero|Monster) => {
-                doDamages(4+t.level, t, 'bleeding');
+                dealDamages(4+t.level, null, t, 'bleeding' );
             },
             end: (t: Hero|Monster) => t.enchants.setBleeding(false),
             tags: 'bleed'
@@ -260,7 +275,7 @@ export class Affect {
                 gameBus.publish(logPublished({level: 'danger', data: `${t.name} feels poison in his veins`}));
                 t.enchants.setPoisoned(true)
             },
-            tick: (t: Hero|Monster) => doDamages(2, t, 'poisoning'),
+            tick: (t: Hero|Monster) => {dealDamages(2, null, t, 'poisoning' )},
             end: (t: Hero|Monster) => t.enchants.setPoisoned(false),
             tags: 'poison'
         }
@@ -304,6 +319,18 @@ export class Affect {
             tags: 'hp'
         }
     }
+    private weakness() {
+        this.paramsNb = 1;
+        return {
+            start: (t: Hero|Monster) => {
+                t.health.getWeakerByHp(this.param1);
+            },
+            end: (t: Hero|Monster) => {
+                t.health.getStrongerByHp(this.param1);
+            },
+            tags: 'weakness'
+        }
+    }
     private slow() {
         return {
             start: (t: Hero|Monster) => {
@@ -325,7 +352,7 @@ export class Affect {
             tick: (t: Hero | Monster) => {
                 if (this.param1 > Math.random()) return;
                 const dmg = pickInRange(this.param2);
-                doDamages(dmg, t, this.param3);
+                dealDamages(dmg, null, t, this.param3)
             },
             end: NullFunc
         }
@@ -335,7 +362,7 @@ export class Affect {
             start: null,
             tick: (t: Hero | Monster) => {
                 if (t.enchants.getWet()) {
-                    doDamages(7, t, 'shock');
+                    dealDamages(7, null, t, 'shock');
                 }
                 new Affect('stun')
                     .turns(1)
@@ -370,10 +397,10 @@ export class Affect {
             start: (t: Hero|Monster) => {
                 t.enchants.setBurned(true);
             },
-            tick: (t: Hero|Monster) => {
+            /*tick: (t: Hero|Monster) => {
                 gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
                 doDamages(1, t, 'burning');
-            },
+            },*/
             end: (t: Hero|Monster) => { 
                 t.enchants.setBurned(false);
             },
@@ -431,6 +458,16 @@ export class Affect {
             end: NullFunc,
         }
     }
+    private fear() {
+        return {
+            start: (t: Monster) => {
+                t.setBehavior(AIBehavior.Fearfull());
+            },
+            end: (t: Monster) => {
+                t.setBehavior(AIBehavior.Default());
+            },
+        }
+    }
 }
 
 export class EnchantSolver {
@@ -439,8 +476,25 @@ export class EnchantSolver {
         if (this.t.enchants.getWet()) {
             this.t.buffs.cleanBuffType('burn');
         }
+        if (this.t.enchants.getBurned()) {
+            gameBus.publish(logPublished({level: 'warning', data: `${this.t.name} is burning`}));
+            dealDamages(1, null, this.t, 'burning');
+        }
         if (this.t.enchants.getBurned() && this.t.enchants.getPoisoned()) {
             new Affect('bleed').turns(1).target(this.t).cast();
+        }
+        if (this.t.enchants.getFloral() && this.t.enchants.getWet()) {
+            this.t.health.take(-1);
+            if (this.t instanceof Hero) {
+                gameBus.publish(playerHealed({
+                    baseHp: this.t.health.baseHp,
+                    currentHp: this.t.health.currentHp
+                }));
+            } else {
+                gameBus.publish(monsterTookDamage({
+                    monster: this.t
+                }));
+            }
         }
     }
 }

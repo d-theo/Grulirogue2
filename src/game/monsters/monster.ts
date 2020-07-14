@@ -9,6 +9,10 @@ import { BuffDefinition } from "../effects/effect";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
+import { EnchantSolver } from "../effects/affects";
+import { IEffect } from "../effects/spells";
+import * as _ from 'lodash';
+
 let short = require('short-uuid');
  
 export class Monster implements Entity {
@@ -28,14 +32,28 @@ export class Monster implements Entity {
     sight = 8;
     speed = 1;
     dodge: number = 0.15;
-    currentAI: string = '';
+    enchantSolver: EnchantSolver;
+    private isFriendly = false;
+    spells: IEffect[] = [];
     private constructor() {
-        // this.behavior = arg.behavior;
+        this.enchantSolver = new EnchantSolver(this);
     }
     setXp(xp: number) {
         this.xp = xp;
         this.level = Math.floor(this.xp / 5);
         return this;
+    }
+    setFriendly(newValue: boolean) {
+        this.isFriendly = newValue;
+        if (newValue) {
+            this.setBehavior(AIBehavior.friendlyAI());
+        } else {
+            this.setBehavior(AIBehavior.Default());
+        }
+        return this;
+    }
+    getFriendly() {
+        return this.isFriendly;
     }
     setPos(pos: Coordinate) {
         this.pos = pos;
@@ -65,14 +83,21 @@ export class Monster implements Entity {
         this.speed = speed;
         return this;
     }
+    setSpells(spells: IEffect[]) {
+        this.spells = _.shuffle(spells);
+        return this;
+    }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
     play() {
         this.behavior(this);
     }
+    update() {
+        this.enchantSolver.solve();
+    }
     static makeMonster(arg: any) : Monster {
-        const {speed, kind, danger, hp, damage, range, pos, dodge, onHit} = arg;
+        const {speed, kind, danger, hp, damage, range, pos, dodge, onHit, spells} = arg;
         microValidator([kind, danger, hp, damage, range, pos], 'makeMonster');
         
         const monster = new Monster();
@@ -92,6 +117,10 @@ export class Monster implements Entity {
 
         if (onHit) {
             monster.weapon.additionnalEffects.push(onHit);
+        }
+        if (spells) {
+            const sp = spells.map((s: Function) => s());
+            monster.setSpells( sp );
         }
         return monster;
     }

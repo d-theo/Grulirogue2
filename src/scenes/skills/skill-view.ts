@@ -42,7 +42,7 @@ export class SkillView extends Phaser.GameObjects.Container {
                 txt = `${letter} - ${skill.name} - Turns before next use: ${skill.cooldown}`
             }
             
-            const skillLine = this.scene.add.text(x, y, txt, SkillFont).setOrigin(0);
+            const skillLine = this.scene.add.text(x, y, txt, Object.assign({}, SkillFont, {wordWrap: {width: 300}})).setOrigin(0);
             this.add(skillLine);
             this.scroller.add(skillLine);
             this.letters[letter] = {

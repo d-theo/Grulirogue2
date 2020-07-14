@@ -8,8 +8,9 @@ import { craftWeapon } from "./loot-weapons";
 import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
-import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook } from "./loot-mics";
+import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome, createTomeOfVegetation } from "./loot-mics";
 import * as _ from 'lodash';
+import { randomWand } from "../../eventBus/event-rogue";
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -37,8 +38,8 @@ export const MiscTable: XTable = [
     {chance: 10, type: () => createSmallTorch()},
     {chance: 10, type: () => createSmellyBottle()},
     {chance: 15, type: () => createColdCrystal()},
-    {chance: 15, type: () => createSphereOfLighting()},
-    {chance: 10, type: () => createUnholyBook()},
+    {chance: 10, type: () => createSphereOfLighting()},
+    {chance: 15, type: () => createTomeOfVegetation()},
 ];
 
 export const PotionTable: XTable = [
@@ -56,11 +57,13 @@ export const PotionTable: XTable = [
 
 export const ScrollTable: XTable = [
     {chance: 25, type: Scrolls.Identification},
-    {chance: 25, type: Scrolls.Teleportation},
+    {chance: 15, type: Scrolls.Teleportation},
     {chance: 15, type: Scrolls.EnchantWeapon},
     {chance: 15, type: Scrolls.EnchantArmour},
     {chance: 10, type: Scrolls.Knowledge},
     {chance: 10, type: Scrolls.Blink},
+    {chance: 8, type: Scrolls.Fear},
+    {chance: 2, type: Scrolls.Asservissement},
 ];
 
 export function getRandomLoot(level: number): Item {

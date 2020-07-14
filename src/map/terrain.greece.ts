@@ -54,6 +54,7 @@ export const Terrain = {
     PoisonPot: 54,
     HolyFountain: 53,
     BloodFountain: 55,
+    CatAltar: 56,
     PirateFloor: 60,
     PirateWallBossE: 61,
     PirateWallBossW: 61,

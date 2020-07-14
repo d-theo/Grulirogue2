@@ -30,7 +30,7 @@ export class Weapon extends Item implements ItemArgument {
             str += "\n";
             str += "kind: "+this.skin;
             str += "\n";
-            str += `damages: ${this.baseDamage} + ${this.additionnalDmg}`;
+            str += `damages: ${this.baseDamage} ${this.additionnalDmg > 0? '+':''}${this.additionnalDmg}`;
             str += "\n";
             str += `range: ${this.maxRange}`;
             str += "\n";
@@ -57,7 +57,7 @@ export class Weapon extends Item implements ItemArgument {
             if (this.additionalName.length > 0) {
                 str += ' of ';
                 str += this.additionalName.join(' and ');
-                str += ' + ' + this.additionnalDmg;
+                str += ` ${this.additionnalDmg > 0? '+':''}${this.additionnalDmg}`;
             }
             return str;
         } else {

@@ -5,6 +5,13 @@ import { Armour } from "./armour";
 import { Item } from "../entitybase/item";
 
 export class ItemVisitor {
+    visitWand(wand: Item) {
+        return {
+            kind: 'Reusable',
+            item: wand,
+            count: 1
+        }
+    }
     visitMisc(misc: Item) {
         return {
             kind: 'Consumables',

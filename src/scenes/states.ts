@@ -88,7 +88,7 @@ export class PlayState extends State {
         this.gameContext.gameScene.displaySkill();
     }
     i() {
-        this.gameContext.gameScene.displayInventory();
+        this.gameContext.gameScene.displayInventory('useItem');
     }
     w() {
         this.gameContext.gameScene.waitATurn();

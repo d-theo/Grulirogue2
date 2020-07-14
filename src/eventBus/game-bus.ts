@@ -83,8 +83,11 @@ export const playerAttackedMonster = createEventDefinition<{
     monster: Monster,
     baseHp: number,
     currentHp: number;
+    externalSource?: any;
 }>()('playerAttackedMonster');
-
+export const monsterTookDamage = createEventDefinition<{
+    monster: Monster,
+}>()('monsterTookDamage');
 export const playerAttemptAttackMonster = createEventDefinition<{
     monster: Monster,
 }>()('playerAttemptAttackMonster');
@@ -101,10 +104,6 @@ export const effectSet = createEventDefinition<MapEffects>()('effectSet');
 export const effectUnset = createEventDefinition<{
     id: string;
 }>()('effectUnset');
-
-export const monsterAttacked = createEventDefinition<{
-    monster: Monster
-}>()("monsterAttack");
 export const heroGainedXp = createEventDefinition<{amount: number}>()('heroGainedXp');
 export const playerUseSkill = createEventDefinition<{
     name: SkillNames
@@ -119,9 +118,13 @@ export const enchantChanged = createEventDefinition<{
 export const heroTargetMonster = createEventDefinition<{
     monster: Monster,
 }>()('heroTargetMonster');
+export const monsterSpawned = createEventDefinition<{
+    monster: Monster,
+}>()('monsterSpawned');
 export const gameOver = createEventDefinition<{}>()('gameOver');
 export const gameFinished = createEventDefinition<{}>()('gameFinished');
 export const rogueEvent = createEventDefinition<{}>()('rogueEvent');
+export const endRogueEvent = createEventDefinition<{}>()('endRogueEvent');
 type StaticEffet = {
     id: string,
     animation: 'static';

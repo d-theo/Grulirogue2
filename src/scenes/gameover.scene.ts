@@ -2,8 +2,8 @@ import {
     SceneName
   } from "./scenes.constants";
  const Font = {
-  fontSize: '16px',
-  fontFamily: 'Courier New',
+  fontSize: '13px',
+  fontFamily: 'square',
   color: '#FFFFFF',
   wordWrap: {
     width: 310

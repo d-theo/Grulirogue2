@@ -1,9 +1,10 @@
 import {
     SceneName
   } from "./scenes.constants";
+import { CellSize } from "../main";
  const Font = {
-  fontSize: '16px',
-  fontFamily: 'Courier New',
+  fontSize: '13px',
+  fontFamily: 'square',
   color: '#FFFFFF',
   wordWrap: {
     width: 310
@@ -11,8 +12,8 @@ import {
 };
   class GameFinishedScene extends Phaser.Scene {
   
-    w = 23 * 32;
-    h = 17 * 32;
+    w = 23 * CellSize;
+    h = 17 * CellSize;
     halfw = this.w * 0.9;
     halfh = this.h * 0.9;
   

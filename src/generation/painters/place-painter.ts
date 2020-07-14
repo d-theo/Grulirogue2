@@ -1,0 +1,12 @@
+import { ThingToPlace } from "../map_tiling_utils";
+import { availablePlaceType } from "../../game/places/place-definitions";
+import { Terrain } from "../../map/terrain.greece";
+
+export function placePainter(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
+    const pos = {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)};
+    let placeType = availablePlaceType();
+    console.log(placeType);
+    if (placeType) {
+        tilemap2[pos.y][pos.x] = Terrain[placeType];
+    }
+}

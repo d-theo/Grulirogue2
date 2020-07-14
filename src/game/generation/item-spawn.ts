@@ -4,8 +4,12 @@ import { Item } from "../entitybase/item";
 import { MapGraph } from "../../generation/map_definition";
 import { isSpecialRoom } from "./monster-spawn";
 import { getRandomLoot } from "../loot/loot-table";
+import { RogueEventLevel, spawnRogueEventItem } from "../../eventBus/event-rogue";
 
 export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
+    if (level == RogueEventLevel) {
+        return spawnRogueEventItem(graph);
+    }
     const rooms = graph.rooms;
     const zones = distribute(rooms.length-1, nbLoot);
     const items: Item[] = [];
@@ -16,7 +20,6 @@ export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
         let total = 0;
         while(total < nb) {
             let item: Item = getRandomLoot(level);
-            //let item: Item = createRogueTome();
             const pos = randomIn(room.rect);
             item.pos = pos;
             items.push(item);

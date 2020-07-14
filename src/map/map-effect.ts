@@ -8,5 +8,6 @@ export enum MapEffect {
     Poison = 'Poison',
     Cold = 'Cold',
     Water = 'Water',
-    Light = 'Light'
+    Light = 'Light',
+    Floral = 'Floral'
 }

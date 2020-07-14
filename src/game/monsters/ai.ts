@@ -4,8 +4,10 @@ import { Game } from '../game';
 import { monsterMove } from '../use-cases/monsterMove';
 import { monsterAttack } from '../use-cases/monsterAttack';
 import { astar } from '../tilemap/astar';
-import { Coordinate } from '../utils/coordinate';
+import { Coordinate, equalsCoordinate } from '../utils/coordinate';
 import { isTileEmpty } from '../use-cases/preconditions/moveAllowed';
+import { Hero } from '../hero/hero';
+import * as _ from 'lodash';
 
 export type Behavior = (monster: Monster) => void;
 
@@ -29,6 +31,16 @@ export class AIBehavior {
         if (!b) throw new Error('no agressive IA initialized')
         return b;
     }
+    static Fearfull(): Behavior {
+        const b = this.aiMap.get('fearfull');
+        if (!b) throw new Error('no fearfull IA initialized')
+        return b;
+    }
+    static friendlyAI(): Behavior {
+        const b = this.aiMap.get('friendly');
+        if (!b) throw new Error('no friendly IA initialized')
+        return b;
+    }
 }
 
 export const AI = (game: Game) => {
@@ -36,6 +48,8 @@ export const AI = (game: Game) => {
     ais.set('agressive', agressiveAI);
     ais.set('blind', randomAI);
     ais.set('default', defaultAI);
+    ais.set('fearfull', fearfullAI);
+    ais.set('friendly', friendlyAI);
     return ais;
 
     function defaultAI(monster: Monster) {
@@ -45,29 +59,30 @@ export const AI = (game: Game) => {
         const distance = Math.max(dx,dy);
         if (distance > monster.sight + 2) {
             monster.asSeenHero = false;
-            monster.currentAI = 'random';
             return randomAI(monster);
         } else if  (hasVisibility) {
             monster.asSeenHero = true;
-            monster.currentAI = 'agressive';
             return agressiveAI(monster);
         } else if (monster.asSeenHero) {
-            monster.currentAI = 'agressive';
             return agressiveAI(monster);
         } else {
-            monster.currentAI = 'random';
             return randomAI(monster);
         }
     }
 
     function agressiveAI (monster: Monster) {
-        const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: game.hero.pos});
-        const dx = monster.pos.x - game.hero.pos.x;
-        const dy = monster.pos.y - game.hero.pos.y;
-        const range = Math.max(Math.abs(dx),Math.abs(dy));
-        if (monster.weapon.maxRange >= range && hasVisibility) {
+        const targets = getAttackablePlayerOrAllies(monster);
+        const canAttack = targets.filter(t => {
+            const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: game.hero.pos});
+            const dx = monster.pos.x - t.pos.x;
+            const dy = monster.pos.y - t.pos.y;
+            const range = Math.max(Math.abs(dx),Math.abs(dy));
+            return (monster.weapon.maxRange >= range && hasVisibility)
+        });
+        
+        if (canAttack.length > 0) {
             monsterAttack({
-                hero: game.hero,
+                target: canAttack[0],
                 monster
             });
         } else {
@@ -93,7 +108,148 @@ export const AI = (game: Game) => {
     }
 
     function fearfullAI (monster: Monster) {
-        const heroPos = game.hero.pos;        
+        goAwayFromHero(monster);
+    }
+
+    function randomAI (monster: Monster) {
+        randomMove(monster);
+    }
+
+    function friendlyAI(monster: Monster) {
+        const scanner = scanEnnemies();
+        if (scanner.status === true) {
+            const target: Monster = scanner.res.pop() as Monster;
+            const atk = attack(target);
+            if (!atk) {
+                const res = goTo({from: monster.pos, to: target.pos, game});
+                if (!res.status) {
+                    split();
+                } else {
+                    monsterMove({
+                        game: game,
+                        monster: monster,
+                        nextPos: res.res
+                    });
+                }
+            }
+        } else {
+            follow();
+        }
+
+        function follow(): boolean {
+            const heroPos = game.hero.pos;
+            const mePos = monster.pos;
+            if ((Math.max(Math.abs(heroPos.x - mePos.x), Math.abs(heroPos.y - mePos.y))) == 1) {
+                split();
+                return false;
+            }
+            const nextMove = goTo({from: mePos, to: heroPos, game: game});
+            if (!nextMove.status) {
+                split();
+                return false;
+            } else {
+                monsterMove({
+                    game: game,
+                    monster: monster,
+                    nextPos: nextMove.res
+                });
+                return true;
+            }
+        }
+        function attack(target: Monster) {
+            return attackIfPossible(monster, target);
+        }
+        function exploreTerrain() {
+            randomMove(monster);
+        }
+        function split() {
+            goAwayFromHero(monster);
+        }
+
+        type ScanResult = {status: true, res: Monster[]} | {status: false, res: []};
+        function scanEnnemies(): ScanResult {
+            const enemies = getAttackable(monster);
+            if (enemies.length > 0) {
+                return {status: true, res: enemies}; 
+            } else {
+                return {status: false, res: []};
+            }
+        }
+    }
+    function getAttackablePlayerOrAllies(me: Monster) {
+        let nearest = [];
+        const poss: (Hero|Monster)[] = game.monsters.monstersArray().concat([game.hero as any]);
+
+		for (const mob of poss) {
+            const posA = mob.pos;
+            const posB = me.pos;
+            const dist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.y - posB.y));
+            if (dist <= me.sight 
+                && game.tilemap.hasVisibility({from: posA, to: posB})) {
+                nearest.push({dist, mob});
+            }
+        }
+
+        return nearest
+            .sort((a,b) => {
+                return b.dist - a.dist;
+            })
+            .map(n => n.mob)
+            .filter(m => {
+                if (m instanceof Hero) return true;
+                if (m instanceof Monster) return m.getFriendly()
+            });
+    }
+    function getAttackable(me: Monster) {
+        let nearest = [];
+		for (const mob of game.monsters.monstersArray()) {
+            const posA = mob.pos;
+            const posB = me.pos;
+            const dist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.y - posB.y));
+            if (dist <= me.sight 
+                && game.tilemap.hasVisibility({from: posA, to: posB})) {
+                nearest.push({dist, mob});
+            }
+        }
+
+        return nearest
+            .sort((a,b) => {
+                return b.dist - a.dist;
+            })
+            .map(n => n.mob)
+            .filter(m => !m.getFriendly());
+    }
+    function attackIfPossible(monster: Monster, target: Monster | Hero) {
+        const hasVisibility = game.tilemap.hasVisibility({from: monster.pos, to: target.pos});
+        const dx = monster.pos.x - target.pos.x;
+        const dy = monster.pos.y - target.pos.y;
+        const range = Math.max(Math.abs(dx),Math.abs(dy));
+        if (monster.weapon.maxRange >= range && hasVisibility) {
+            monsterAttack({
+                target,
+                monster,
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function randomMove(monster: Monster) {
+        const rand = new GameRange(-1,1);
+        const x = rand.pick();
+        const y = rand.pick();
+        const nextPos = {
+            x: monster.pos.x+x,
+            y: monster.pos.y+y
+        };
+        monsterMove({
+            game: game,
+            monster: monster,
+            nextPos
+        });
+    }
+    function goAwayFromHero(monster: Monster) {
+        const heroPos = game.hero.pos;     
         const selfPos = monster.pos;
 
         const dir = relativePosition(selfPos, heroPos);
@@ -127,13 +283,25 @@ export const AI = (game: Game) => {
             {x:selfPos.x+1, y: selfPos.y},
             {x:selfPos.x, y: selfPos.y+1},
         ];
+        const e = [
+            {x:selfPos.x+1, y: selfPos.y},
+            {x:selfPos.x+1, y: selfPos.y+1},
+            {x:selfPos.x+1, y: selfPos.y-1},
+        ];
+        const w = [
+            {x:selfPos.x-1, y: selfPos.y},
+            {x:selfPos.x-1, y: selfPos.y+1},
+            {x:selfPos.x-1, y: selfPos.y-1},
+        ];
         let nextMoves: Coordinate[]|any = {
             NE: ne,
             N:n,
             NW: nw,
             S: s,
             SW: sw,
-            SE: se
+            SE: se,
+            E: e,
+            W: w,
         };
         const possibleMoves = nextMoves[dir];
         let chosedMove;
@@ -151,24 +319,27 @@ export const AI = (game: Game) => {
             });
         }
     }
+}
 
-    function randomAI (monster: Monster) {
-        const rand = new GameRange(-1,1);
-        const x = rand.pick();
-        const y = rand.pick();
-        const nextPos = {
-            x: monster.pos.x+x,
-            y: monster.pos.y+y
-        };
-        monsterMove({
-            game: game,
-            monster: monster,
-            nextPos
-        })
-    }
-
-    function friendlyAI(monster: Monster) {
-        
+type GoTo = {status: true, res: Coordinate} | {status: false, res:null}
+function goTo(arg:{from: Coordinate, to: Coordinate, game: Game}): GoTo {
+    const {from, to, game} = arg;
+    const otherMobsPositions = game
+        .monsters
+        .monstersArray()
+        .map(m => m.pos)
+        .concat([game.hero.pos])
+        .filter(p => !equalsCoordinate(p, from) && !equalsCoordinate(p, to));
+    const path = astar({
+        from: from,
+        to: to,
+        tiles: game.tilemap.tiles,
+        additionnalObstacle: otherMobsPositions
+    });
+    if (path.length > 0) {
+        return {status: true, res: path[0]};
+    } else {
+        return {status: false, res: null};
     }
 }
 

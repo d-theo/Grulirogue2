@@ -1,6 +1,7 @@
 ### Grulirogue 2
 
 Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progress !
+https://grulirogue2.s3-eu-west-1.amazonaws.com/index.html
 
 ## install locally
 
@@ -13,7 +14,7 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 * 5 weapons combinable with 9 enchants
 * 2 armour combinable with 5 enchants
 * 10 potions
-* 6 scrolls
+* 7 scrolls
 * 15 monsters
 * 9 consumables
 * 5 special rooms
@@ -23,41 +24,28 @@ Rogue like inspired by Pixel Dungeon, Brogue, DCSS and my wife :) Work in progre
 ### todos
 
 * fixing doors problems
-* fix weapon that heal when malus is too big
-* fix loot tables ?
-* "miss" animations
-* weapon of stun
-* weapon of weakness (reduce dammage of the other guy)
-* scroll of sacrifice (-25% vs -25%)
 * scroll of enchanting weapon
 * scroll of enchanting armor
 * scroll of replacement
-* wand of identification
-* wand of firebolt
-* wand of water
-* wand of poison
-* wand of blinking
-* wand of weakness
-* MINIMAP
-* friendly IA
 * Immobile IA
-* Fearfull IA
-* IA that can cast spells
-* scroll of fear
 * scroll of invocation
-* scroll of asservissement
-* rework basic map generation
-* scroll of filling // hack, create immobile monster?
+* scroll of filling // hack, create immobile monster
 * sphere of coldness (freeze)
 * sphere of fire (rework)
 * sphere of poison (rework)
+* rework basic map generation
+* fix loot tables
+* "miss"/"critical" animations
+* MINIMAP
 
 ---- future ----
-* more combos with elements : vegetal + fire, vegetal + water
+* procedural quests
+* steath noise + AI
+* seeds to grow on herb ??? 
+* more combos with elements : vegetal + fire
 * terrain with other effect : holes (die), mud (slow), dust ??, thorns plants
 * weapon of bump
 * armour of bumps
-* Gods Cat vs Dogs (?), priere, changement
 * Combat mechanics (piercing, contact) (?)
 * western map + 4mobs + generation kind
 * modern map + 4 mobs  // use boat generation Bugs

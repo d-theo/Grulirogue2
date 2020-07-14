@@ -5,7 +5,7 @@ import { playerMove } from "./use-cases/playerMove";
 import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished, rogueEvent} from '../eventBus/game-bus';
+import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
@@ -17,6 +17,9 @@ import { itemSpawn } from "./generation/item-spawn";
 import { ThingToPlace } from "../generation/map_tiling_utils";
 import { SpecialPlaces } from "./places/special-places";
 import { RogueEventLevel } from "../eventBus/event-rogue";
+import { randomIn } from "./utils/rectangle";
+import { getUniqLoot } from "./loot/loot-uniq";
+import * as _ from 'lodash';
 
 export class Game {
     static Engine: Game;
@@ -27,6 +30,7 @@ export class Game {
     loopNb: number;
     currentTurn: number;
     level = 1;
+    savedLevel = -1;
     Danger: any = {
         1: 50,
         2: 70,
@@ -54,9 +58,10 @@ export class Game {
         this.currentTurn = 0;
         this.monsters = new MonsterCollection();
         this.items = new ItemCollection();
-        this.places = new SpecialPlaces(this.items);
+        this.places = new SpecialPlaces(this.items, this.monsters);
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
+        EffectMaker.set(this);
         this.initBus();
         this.reInitLevel();
     }
@@ -78,15 +83,32 @@ export class Game {
         additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
         this.adjustSight();
-        this.monsters.setMonsters(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level]));
-        EffectMaker.set({tilemap: this.tilemap, monsters: this.monsters, hero: this.hero, places: this.places});
+
+        const friendlies = this.monsters.monstersArray().filter(m => m.getFriendly());
+        friendlies.forEach(f => f.pos = {x: this.hero.pos.x, y: this.hero.pos.y+1});
+
+        this.monsters.setMonsters(
+            friendlies
+                .concat(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level]))
+        );
         this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level]));
-        makeThings(additionalThingsToPlace, this.monsters, this.items, this.places);
+        this.mayAddUniqItem();
+        makeThings(additionalThingsToPlace, this.monsters, this.items, this.tilemap, this.places);
         if (this.tilemap.graph.bossRoom && this.level == 2) {
             gameBus.publish(logPublished({level: 'warning', data:'You hear a distinct hissing...'}));
         }
         if (this.level > 1) {
             gameBus.publish(nextLevelCreated({level: this.level}));
+        }
+    }
+    mayAddUniqItem() {
+        const p = randomIn(_.sample(this.tilemap.graph.rooms)!.rect);
+        const uniq = getUniqLoot();
+
+        if (uniq != null) {
+            uniq.pos = p;
+            console.log('uniq', uniq.name);
+            this.items.itemsArray().push(uniq);
         }
     }
     initBus() {
@@ -137,7 +159,12 @@ export class Game {
             }
         });
         gameBus.subscribe(rogueEvent, event => {
+            this.savedLevel = this.level;
             this.level = RogueEventLevel;
+            this.reInitLevel();
+        });
+        gameBus.subscribe(endRogueEvent, event => {
+            this.level = this.savedLevel+1;
             this.reInitLevel();
         });
         gameBus.subscribe(playerChoseSkill, event => {
@@ -165,11 +192,10 @@ export class Game {
     nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
-            this.hero.regenHealth();
-            this.hero.resolveBuffs();
+            this.hero.update();
             this.hero.heroSkills.update(); // TODO REFACTO
-            this.monsters.resolveBuffs();
-            this.monsters.play();
+            this.monsters.update();
+            this.items.update();
         }
 
         if (this.hero.enchants.getStuned()) {
@@ -201,7 +227,7 @@ export class Game {
 		for (const mob of this.monsters.monstersArray()) {
             const posA = mob.pos;
             const posB = this.hero.pos;
-            const dist = Math.min(Math.abs(posA.x - posB.x),Math.abs(posA.y - posB.y));
+            const dist = Math.max(Math.abs(posA.x - posB.x),Math.abs(posA.y - posB.y));
             if (dist <= this.hero.weapon.maxRange 
                 && this.tilemap.hasVisibility({from: posA, to: posB})) {
                 nearest.push(mob);
@@ -211,6 +237,6 @@ export class Game {
             const distA = Math.abs(a.pos.x - this.hero.pos.x) + Math.abs(a.pos.y - this.hero.pos.y);
             const distB = Math.abs(b.pos.x - this.hero.pos.x) + Math.abs(b.pos.y - this.hero.pos.y);
             return distA > distB ? 1 : -1;
-        });
+        }).filter(m => !m.getFriendly());
 	}
 }

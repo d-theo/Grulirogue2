@@ -1,7 +1,7 @@
 import 'phaser';
 import GameScene from './scenes/game.scene';
 
-import {test} from './hud';
+import {hud} from './hud';
 import InventoryScene from './scenes/inventory.scene';
 import SkillTreeScene from './scenes/skilltree.scene';
 import GameOverScene from './scenes/gameover.scene';
@@ -37,4 +37,4 @@ export const config = {
 };
 
 const game = new Phaser.Game(config);
-test();
+hud();

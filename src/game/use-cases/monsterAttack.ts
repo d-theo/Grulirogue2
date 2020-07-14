@@ -6,6 +6,7 @@ import { Monster } from "../monsters/monster";
 import { gameBus, playerTookDammage, effectSet, monsterTookDamage, monsterDead, heroGainedXp } from "../../eventBus/game-bus";
 import { distance } from "../utils/coordinate";
 import { MapEffect } from "../../map/map-effect";
+import { DamageResolution } from "../fight/damages";
 
 export function monsterAttack(args: {target: Hero | Monster, monster: Monster}): MessageResponse {
     const {target, monster} = args; 
@@ -21,7 +22,7 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
     }
 
     const damages = new Attack(monster, target).do();
-    const healthReport = target.health.take(damages);
+    new DamageResolution(monster, target, damages, null);
     if (distance(monster.pos, target.pos) > 1) {
         gameBus.publish(effectSet({
             animation: 'throw',
@@ -30,62 +31,9 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
             to: target.pos
         }));
     }
-
-    if (target instanceof Hero) {
-        const hero = target;
-        if (healthReport.status === HealthStatus.Dammaged) {
-            gameBus.publish(playerTookDammage({
-                amount: healthReport.amount,
-                monster: monster,
-                baseHp: hero.health.baseHp,
-                currentHp: hero.health.currentHp
-            }));
-        }
-        if (healthReport.status === HealthStatus.Unaffected) {
-            gameBus.publish(playerTookDammage({
-                amount: 0,
-                monster: monster,
-                baseHp: hero.health.baseHp,
-                currentHp: hero.health.currentHp
-            }));
-        }
-        if (healthReport.status === HealthStatus.Dead) {
-            gameBus.publish(playerTookDammage({
-                amount: healthReport.amount,
-                monster: monster,
-                baseHp: hero.health.baseHp,
-                currentHp: hero.health.currentHp
-            }));
-        }
-    } else {
-        gameBus.publish(monsterTookDamage({
-            monster: target,
-            amount: healthReport.amount,
-            baseHp: target.health.baseHp,
-            currentHp: target.health.currentHp,
-            externalSource: monster
-        }));
-        if (healthReport.status === HealthStatus.Dead) {
-            gameBus.publish(monsterDead({
-                monster: target
-            }));
-            // a friendly killed it
-            if (!monster.getFriendly()) {
-                gameBus.publish(heroGainedXp({
-                    amount: monster.xp
-                }));
-            }
-        }
-    }
     
     return {
         timeSpent: 1,
         status: MessageResponseStatus.Ok,
-        data: {
-            report: {
-                healthReport: healthReport,
-                target: target
-            }
-        },
     };
 }

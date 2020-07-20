@@ -2,7 +2,7 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -16,6 +16,8 @@ import {Monster} from '../game/monsters/monster';
 import { GameContext, Modes } from './states';
 import { Keyboard } from '../phaser-addition/keyboard';
 import { CellSize } from '../main';
+import { UIDamages } from '../UIEntities/ui-damages';
+import { DamageQueue } from '../phaser-addition/damage-queue';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;
@@ -25,6 +27,7 @@ class GameScene extends Phaser.Scene {
 	gameMonsters: {[id: string]: UIEntity} = {};
 	gameItems: {[id: string]: UIItem} = {};
 	gameEffects: {[id: string]: UIEffect} = {};
+	damageQueue: DamageQueue = new DamageQueue();
 
 	tilemap;
 	layer;
@@ -367,6 +370,8 @@ class GameScene extends Phaser.Scene {
 			const { monster } = event.payload;
 			const m = this.gameMonsters[monster.id];
 			this.hero.updateHp(true);
+			this.damageQueue.resolve();
+
 			m.move();
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});
@@ -378,7 +383,11 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(monsterTookDamage, event => {
 			const monster = event.payload.monster;
 			const m = this.gameMonsters[monster.id];
+			new UIDamages(this, monster, event.payload.amount).showDamage();
 			m.updateHp();
+		});
+		gameBus.subscribe(playerTookDammage, event => {
+			this.damageQueue.add(new UIDamages(this, this.hero.subject as Hero, event.payload.amount));
 		});
 		gameBus.subscribe(playerMoved, event => {
 			this.hero.move();

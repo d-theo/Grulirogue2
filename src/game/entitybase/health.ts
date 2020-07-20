@@ -35,18 +35,18 @@ export class Health {
         if (this.currentHp <= 0) {
             return {
                 status: HealthStatus.Dead,
-                amount: this.currentHp
+                amount: -hp
             }
         } else {
             if (this.currentHp > oldHp) {
                 return {
                     status: HealthStatus.Healed,
-                    amount: this.currentHp - oldHp
+                    amount: +hp
                 };
             } else if (this.currentHp < oldHp) {
                 return {
                     status: HealthStatus.Dammaged,
-                    amount: this.currentHp - oldHp
+                    amount: -hp
                 };
             } else {
                 return {status: HealthStatus.Unaffected, amount: 0};

@@ -54,6 +54,7 @@ export class UIEntity {
 					this.healthBarFull.destroy();
 					this.healthBar.destroy();
 					this.sprite.setDepth(0);
+					if (this.outline != null) this.outline.destroy(); // todo refacto ?
 				} else {
 					this.destroy();
 				}

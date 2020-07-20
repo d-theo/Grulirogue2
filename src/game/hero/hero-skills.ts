@@ -3,6 +3,7 @@ import { EffectMaker, SpellNames  } from "../effects/effect";
 import { TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/spells";
 import { TankDesc, TirelessDesc, MonkDesc, SnakeDesc, CowardDesc, WarriorDesc, SneakyDesc, HunterDesc, RogueDesc } from "./skill-desc";
 import { Affect } from "../effects/affects";
+import { MessageResponse, MessageResponseStatus } from "../utils/types";
 
 export enum SkillNames {
     Rogue = 'rogue',
@@ -30,11 +31,11 @@ export class HeroSkills {
     ];
 
     Cooldowns = {
-        [SkillNames.Coward]: [100, 75, 50],
-        [SkillNames.Sneaky]: [400, 300, 200],
-        [SkillNames.Rogue]: [300, 150, 100],
-        [SkillNames.Hunter]: [200, 100, 75],
-        [SkillNames.Alchemist]: [Infinity],
+        [SkillNames.Coward]: [0, 100, 75, 50],
+        [SkillNames.Sneaky]: [0, 400, 300, 200],
+        [SkillNames.Rogue]: [0, 300, 150, 100],
+        [SkillNames.Hunter]: [0, 200, 100, 75],
+        [SkillNames.Alchemist]: [0, Infinity],
     };
 
     heroCooldowns = {
@@ -104,7 +105,7 @@ export class HeroSkills {
     getSkillLevel(name: SkillNames) {
         return this.AllSkills.find(s => s.name === name)?.level || 0;
     }
-    castSkill(name: SkillNames) {
+    castSkill(name: SkillNames): MessageResponse {
         const skill = this.getSkill(name);
         if (!skill) {
             throw new Error(`${name} does not exists`);
@@ -133,6 +134,15 @@ export class HeroSkills {
                 default:
                     throw new Error('skill not implemented');
             }
+            return {
+                timeSpent: 1,
+                status: MessageResponseStatus.Ok,
+            };
+        } else {
+            return {
+                timeSpent: 0,
+                status: MessageResponseStatus.NotAllowed,
+            };
         }
     }
 }

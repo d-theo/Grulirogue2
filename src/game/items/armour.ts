@@ -31,7 +31,7 @@ export class Armour extends Item implements ItemArgument{
     get description(): string {
         if (this.identified) {
             let s = '';
-            s += `Armour class: ${this.baseAbsorb} ${this.additionalAbsorb > 0? '+':''}${this.additionalAbsorb}`;
+            s += `Armour class: ${this.baseAbsorb} ${this.additionalAbsorb > 0? '+':''}${this.additionalAbsorb !== 0 ? this.additionalAbsorb : ''}`;
             s += '\n\n';
             s += `${this.additionalDescription.join("\n")}`;
             return s;

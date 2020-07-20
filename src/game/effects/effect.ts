@@ -92,7 +92,7 @@ function createSpell(name: SpellNames) {
             return new RootTrapSpell(effect);
         case SpellNames.Shadow:
             return createElementalSpell(effect, {
-                shapeStrategy: 'around',
+                shapeStrategy: 'around2',
                 type: EffectTarget.Location,
                 affect: () => new Affect('blind').params(7).create(),
                 mapEffect:  MapEffect.Shadow,

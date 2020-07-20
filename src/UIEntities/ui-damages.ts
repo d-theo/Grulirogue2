@@ -1,7 +1,7 @@
 import { Scene } from "phaser";
 import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
-
+const Rainbow = require('rainbowvis.js');
 export class UIDamages {
 	textObj;
 	offset: number = 0;
@@ -13,15 +13,19 @@ export class UIDamages {
 		  width: 310
 		}
 	  };
+	rainbow = new Rainbow();
 	constructor(private readonly parentScene: Scene,
 				 public subject: {name: string, pos: Coordinate},
 				 private number) {
+		this.rainbow.setSpectrum('white', 'yellow', 'red'); 
+		this.rainbow.setNumberRange(1, 40);
 		let txt;
 		if (number == 0) {
 			txt = 'miss';
 			this.Font.fontSize = '8px';
 		} else if (number < 0) {
 			txt = ''+number;
+			this.Font.color =  `#${this.rainbow.colourAt(Math.abs(number))}`;
 		} else if (number > 0) {
 			txt = '+'+number;
 			this.Font.color = '#83F52C'

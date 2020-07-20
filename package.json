@@ -46,6 +46,7 @@
     "npm-bump": "0.0.30",
     "on-change": "^2.0.1",
     "phaser": "^3.24.1",
+    "rainbowvis.js": "^1.0.1",
     "raw-loader": "^0.5.1",
     "rectangle-overlap": "^2.0.0",
     "s3": "^4.4.0",

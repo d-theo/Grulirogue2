@@ -42,12 +42,18 @@ export class UIDamages {
 		this.offset = i*12;
 	}
 
-	public showDamage() {
+	public showDamage(option?: {delay: number}) {
+		if (!option) {
+			option = {
+				delay: 0
+			}
+		}
 		this.textObj.setDepth(3);
 		this.parentScene.tweens.add({
 			targets: this.textObj,
 			ease: 'Linear',
 			duration: 200,
+			delay: option.delay,
 			repeat: 0,
 			yoyo: false,
 			x: { from: this.textObj.x, to:this.textObj.x },

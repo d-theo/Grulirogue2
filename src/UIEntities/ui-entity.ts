@@ -5,6 +5,7 @@ import { gameBus, gameOver } from "../eventBus/game-bus";
 import { pickInRange } from "../game/utils/random";
 import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
+import { Hero } from "../game/hero/hero";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
@@ -72,10 +73,19 @@ export class UIEntity {
 	}
 
     animateToSynchronize(delta: Coordinate) {
+		let delay = 75;
+		if (this.subject instanceof Hero) {
+			delay = 0;
+		}
+		if (this.subject instanceof Monster && this.subject.getFriendly() ) {
+			delay = 0;
+		}
+
 		this.parentScene.tweens.add({
 			targets: this.sprite,
 			ease: 'Linear',
 			duration: 50,
+			delay: delay,
 			repeat: 0,
 			yoyo: false,
 			x: { from: this.sprite.x, to: this.sprite.x + delta.x },
@@ -86,6 +96,7 @@ export class UIEntity {
 			targets: this.healthBar,
 			ease: 'Linear',
 			duration: 50,
+			delay: delay,
 			repeat: 0,
 			yoyo: false,
 			x: { from: this.healthBar.x, to: this.healthBar.x + delta.x },
@@ -95,6 +106,7 @@ export class UIEntity {
 			targets: this.healthBarFull,
 			ease: 'Linear',
 			duration: 50,
+			delay: delay,
 			repeat: 0,
 			yoyo: false,
 			x: { from: this.healthBarFull.x, to: this.healthBarFull.x + delta.x },
@@ -105,6 +117,7 @@ export class UIEntity {
 				targets: this.outline,
 				ease: 'Linear',
 				duration: 50,
+				delay: delay,
 				repeat: 0,
 				yoyo: false,
 				x: { from: this.outline.x, to: this.outline.x + delta.x },

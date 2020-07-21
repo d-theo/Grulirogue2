@@ -369,10 +369,13 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(monsterMoved, event => {
 			const { monster } = event.payload;
 			const m = this.gameMonsters[monster.id];
+
 			this.hero.updateHp(true);
 			this.damageQueue.resolve();
 
+			// TODO REFACTO
 			m.move();
+
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});
 		gameBus.subscribe(monsterDead, event => {

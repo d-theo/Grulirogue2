@@ -24,7 +24,7 @@ export class UIDamages {
 			txt = 'miss';
 			this.Font.fontSize = '8px';
 		} else if (number < 0) {
-			txt = ''+number;
+			txt = ''+Math.abs(number);
 			this.Font.color =  `#${this.rainbow.colourAt(Math.abs(number))}`;
 		} else if (number > 0) {
 			txt = '+'+number;
@@ -46,8 +46,8 @@ export class UIDamages {
 		this.textObj.setDepth(3);
 		this.parentScene.tweens.add({
 			targets: this.textObj,
-			ease: 'Cubic.easeInOut',
-			duration: 160,
+			ease: 'Linear',
+			duration: 200,
 			repeat: 0,
 			yoyo: false,
 			x: { from: this.textObj.x, to:this.textObj.x },

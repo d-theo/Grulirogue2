@@ -7,10 +7,12 @@ export class DamageQueue {
         this.queue.push(damage);
     }
     resolve() {
-        for (let i = 0; i < this.queue.length; i++) {
-            this.queue[i].addOffset(i);
-        }
-        this.queue.forEach(q => q.showDamage());
-        this.queue = [];
+        setTimeout(() => {
+            for (let i = 0; i < this.queue.length; i++) {
+                this.queue[i].addOffset(i);
+            }
+            this.queue.forEach(q => q.showDamage());
+            this.queue = [];
+        }, 150);
     }
 }

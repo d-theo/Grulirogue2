@@ -402,7 +402,8 @@ class GameScene extends Phaser.Scene {
 		gameBus.subscribe(itemPickedUp, event => {
 			const { item } = event.payload;
 			if (this.gameItems[item.id] == null) {
-				console.error(`${JSON.stringify(item)} is not pickable??`);
+				console.error(item);
+				console.error('is not pickable');
 				return;
 			}
 			this.gameItems[item.id].pickedUp();

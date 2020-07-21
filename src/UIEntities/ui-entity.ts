@@ -6,6 +6,8 @@ import { pickInRange } from "../game/utils/random";
 import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
+import { repeat } from "lodash";
+import { report } from "process";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
@@ -14,6 +16,7 @@ export class UIEntity {
     healthBarFull: Phaser.GameObjects.Sprite;
 	healthSize = 28;
 	isDead = false;
+	affects: {sprite: Phaser.GameObjects.Sprite, type: string}[] = [];
 	constructor(private readonly parentScene: Scene,
 				 public subject: Entity,
 				 private imageKey) {
@@ -43,7 +46,20 @@ export class UIEntity {
 		if (this.outline != null) this.outline.destroy();
 	}
 
+	updateStatus() {
+		const report = this.subject.enchants.report();
+		const status = {
+			Bleeding:'bleeding',
+			Poisoned:'bleeding',
+			Movement:'bleeding',
+			Range:'bleeding',
+			Absorb:'bleeding',
+		};
+		const sprite = this.parentScene.add.sprite(this.sprite.x, this.sprite.y, status[r]);
+	}
+
 	updateHp(isHero = false) {
+		//this.updateStatus();
 		this.updateFriendyIndication();
 		if (this.subject.health.currentHp <= 0 && !this.isDead) {
 			this.isDead = true;
@@ -112,6 +128,17 @@ export class UIEntity {
 			x: { from: this.healthBarFull.x, to: this.healthBarFull.x + delta.x },
 			y: { from: this.healthBarFull.y, to: this.healthBarFull.y + delta.y }
 		});
+		this.parentScene.tweens.add({
+			targets: this.affect,
+			ease: 'Linear',
+			duration: 50,
+			delay: delay,
+			repeat: 0,
+			yoyo: false,
+			x: { from: this.affect.x, to: this.affect.x + delta.x },
+			y: { from: this.affect.y, to: this.affect.y + delta.y }
+		});
+		
 		if (this.outline) {
 			this.parentScene.tweens.add({
 				targets: this.outline,

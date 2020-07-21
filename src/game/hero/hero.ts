@@ -45,7 +45,7 @@ export class Hero implements Entity {
         this.name = "Grulito le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'Pyjamas', description: 'Your favorite pair of pyjamas for spleeping'});
-        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this', kind: "Fist"});
+        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this', kind: "Fist", skin: "Fist"});
         this.xp = 0;
         this.calcNextXp();
         this.sight = 8;

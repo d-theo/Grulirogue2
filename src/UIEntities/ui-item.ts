@@ -11,7 +11,6 @@ export class UIItem {
 		this.sprite = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), imageKey);
 		this.sprite.setOrigin(0,0);
 		this.outline = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), 'itemable').setOrigin(0,0);
-		//this.sprite.setDepth(2);
 	}
 	pickedUp() {
 		this.sprite.destroy();

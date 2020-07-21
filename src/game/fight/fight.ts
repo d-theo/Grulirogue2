@@ -28,7 +28,7 @@ export class Attack {
                 dealt +=  this.attacker.fightModifier.additionnalDmg;
             }
             if (this.attacker.fightModifier.fistAdditionnalDmg &&
-                this.attacker.weapon.skin.toLocaleLowerCase() === 'fist') {
+                this.attacker.weapon.skin === 'Fist') {
                 dealt += this.attacker.fightModifier.fistAdditionnalDmg;
             }
         }

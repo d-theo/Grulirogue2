@@ -17,7 +17,7 @@ export class UIDamages {
 	constructor(private readonly parentScene: Scene,
 				 public subject: {name: string, pos: Coordinate},
 				 private number) {
-		this.rainbow.setSpectrum('white', 'yellow', 'red'); 
+		this.rainbow.setSpectrum('white', 'yellow', 'orange' ,'red'); 
 		this.rainbow.setNumberRange(1, 40);
 		let txt;
 		if (number == 0) {
@@ -32,10 +32,6 @@ export class UIDamages {
 		}
 		this.textObj = this.parentScene.add.text(toPix(subject.pos.x), toPix(subject.pos.y), txt, this.Font);
 		this.textObj.setOrigin(0,0);
-		this.textObj.setDepth(1);
-	}
-	private destroy() {
-		this.textObj.destroy();
 	}
 
 	public addOffset(i: number) {
@@ -52,15 +48,13 @@ export class UIDamages {
 		this.parentScene.tweens.add({
 			targets: this.textObj,
 			ease: 'Linear',
-			duration: 200,
+			duration: 320,
 			delay: option.delay,
 			repeat: 0,
 			yoyo: false,
+			onComplete: () => this.textObj.destroy(),
 			x: { from: this.textObj.x, to:this.textObj.x },
 			y: { from: this.textObj.y-this.offset, to: this.textObj.y - 30 - this.offset }
 		});
-		setTimeout(() => {
-			this.destroy();
-		},250);
 	};
 }

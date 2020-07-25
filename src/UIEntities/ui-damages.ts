@@ -18,7 +18,7 @@ export class UIDamages {
 				 public subject: {name: string, pos: Coordinate},
 				 private number) {
 		this.rainbow.setSpectrum('white', 'yellow', 'orange' ,'red'); 
-		this.rainbow.setNumberRange(1, 40);
+		this.rainbow.setNumberRange(1, 25);
 		let txt;
 		if (number == 0) {
 			txt = 'miss';
@@ -48,7 +48,7 @@ export class UIDamages {
 		this.parentScene.tweens.add({
 			targets: this.textObj,
 			ease: 'Linear',
-			duration: 320,
+			duration: 500,
 			delay: option.delay,
 			repeat: 0,
 			yoyo: false,

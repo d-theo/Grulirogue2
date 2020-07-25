@@ -105,44 +105,53 @@ export class HeroSkills {
     getSkillLevel(name: SkillNames) {
         return this.AllSkills.find(s => s.name === name)?.level || 0;
     }
-    castSkill(name: SkillNames): MessageResponse {
+    // TODO trick 
+    canCastSkill(name: SkillNames): MessageResponse {
         const skill = this.getSkill(name);
         if (!skill) {
-            throw new Error(`${name} does not exists`);
-        }
-        if (skill.level === 0) {
-            throw new Error(`${name} not learnt`);
-        }
-        if (this.heroCooldowns[name] <= 0) {
-            this.heroCooldowns[name] = this.Cooldowns[name][skill.level];
-            switch (name) {
-                case SkillNames.Sneaky: 
-                    const trapSpell = EffectMaker.createSpell(SpellNames.SpikeTrap) as TrapSpell;
-                    trapSpell.cast(this.hero.pos);
-                    break;
-                case SkillNames.Coward: 
-                    new Affect('speed').turns(15).target(this.hero).cast();
-                    break;
-                case SkillNames.Rogue:
-                    const rogueSpell: PoisonTrapSpell = EffectMaker.createSpell(SpellNames.PoisonTrap) as PoisonTrapSpell;
-                    rogueSpell.cast();
-                    break;
-                case SkillNames.Hunter:
-                    const root: RootTrapSpell = EffectMaker.createSpell(SpellNames.RootTrap) as RootTrapSpell;
-                    root.cast();
-                    break;
-                default:
-                    throw new Error('skill not implemented');
-            }
-            return {
-                timeSpent: 1,
-                status: MessageResponseStatus.Ok,
-            };
-        } else {
             return {
                 timeSpent: 0,
                 status: MessageResponseStatus.NotAllowed,
             };
+        }
+        if (skill.level === 0) {
+            return {
+                timeSpent: 0,
+                status: MessageResponseStatus.NotAllowed,
+            };
+        }
+        if (this.heroCooldowns[name] > 0) {
+            return {
+                timeSpent: 0,
+                status: MessageResponseStatus.NotAllowed,
+            };
+        }
+        return {
+            timeSpent: 1,
+            status: MessageResponseStatus.Ok,
+        };
+    }
+    castSkill(name: SkillNames) {
+        const skill = this.getSkill(name);
+        this.heroCooldowns[name] = this.Cooldowns[name][skill.level];
+        switch (name) {
+            case SkillNames.Sneaky: 
+                const trapSpell = EffectMaker.createSpell(SpellNames.SpikeTrap) as TrapSpell;
+                trapSpell.cast(this.hero.pos);
+                break;
+            case SkillNames.Coward: 
+                new Affect('speed').turns(15).target(this.hero).cast();
+                break;
+            case SkillNames.Rogue:
+                const rogueSpell: PoisonTrapSpell = EffectMaker.createSpell(SpellNames.PoisonTrap) as PoisonTrapSpell;
+                rogueSpell.cast();
+                break;
+            case SkillNames.Hunter:
+                const root: RootTrapSpell = EffectMaker.createSpell(SpellNames.RootTrap) as RootTrapSpell;
+                root.cast();
+                break;
+            default:
+                throw new Error('skill not implemented');
         }
     }
 }

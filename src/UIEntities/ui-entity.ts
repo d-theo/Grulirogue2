@@ -6,8 +6,7 @@ import { pickInRange } from "../game/utils/random";
 import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
-import { repeat } from "lodash";
-import { report } from "process";
+import * as _ from 'lodash';
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
@@ -36,30 +35,62 @@ export class UIEntity {
 		const delta = this.adjustSpriteAndLogicPosition();
 		delta && this.animateToSynchronize(delta);
 		this.updateFriendyIndication();
-		
+		this.updateStatus();
 	}
 
 	destroy() {
 		this.sprite.destroy();
 		this.healthBarFull.destroy();
 		this.healthBar.destroy();
+		this.affects.forEach(a => a.sprite.destroy());
 		if (this.outline != null) this.outline.destroy();
 	}
 
 	updateStatus() {
 		const report = this.subject.enchants.report();
+
+		const currentStatus = new Set<string>();
+		for (let affect of this.affects) {
+			// affect ended
+			if (report.indexOf(affect.type) < 0) {
+				this.removeAffect(affect);
+			} else {
+				currentStatus.add(affect.type);
+			}
+		}
+
+		for (let affect of report) {
+			if (!currentStatus.has(affect)) {
+				currentStatus.add(affect);
+				this.addAffect(affect);
+			}
+		}	
+	}
+
+	addAffect(affect: string) {
 		const status = {
 			Bleeding:'bleeding',
-			Poisoned:'bleeding',
-			Movement:'bleeding',
-			Range:'bleeding',
-			Absorb:'bleeding',
+			Poisoned:'poisoning',
+			Movement:'movement+',
+			Range:'range+',
+			Absorb:'absord+',
 		};
-		const sprite = this.parentScene.add.sprite(this.sprite.x, this.sprite.y, status[r]);
+		const offset = this.affects.length * 10;
+		const sprite = this.parentScene.add.sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y) + offset, status[affect]);
+		this.sprite.setOrigin(0,0);
+		this.affects.push({
+			type: affect,
+			sprite: sprite
+		});
+	}
+	removeAffect(affect: {type, sprite}) {
+		//const index = _.findIndex(this.affects, (a => affect.type === a.type));
+		affect.sprite.destroy();
+		this.affects = this.affects.filter(a => a.type !== affect.type);
 	}
 
 	updateHp(isHero = false) {
-		//this.updateStatus();
+		this.updateStatus();
 		this.updateFriendyIndication();
 		if (this.subject.health.currentHp <= 0 && !this.isDead) {
 			this.isDead = true;
@@ -128,15 +159,17 @@ export class UIEntity {
 			x: { from: this.healthBarFull.x, to: this.healthBarFull.x + delta.x },
 			y: { from: this.healthBarFull.y, to: this.healthBarFull.y + delta.y }
 		});
-		this.parentScene.tweens.add({
-			targets: this.affect,
-			ease: 'Linear',
-			duration: 50,
-			delay: delay,
-			repeat: 0,
-			yoyo: false,
-			x: { from: this.affect.x, to: this.affect.x + delta.x },
-			y: { from: this.affect.y, to: this.affect.y + delta.y }
+		this.affects.forEach(affect => {
+			this.parentScene.tweens.add({
+				targets: affect.sprite,
+				ease: 'Linear',
+				duration: 50,
+				delay: delay,
+				repeat: 0,
+				yoyo: false,
+				x: { from: affect.sprite.x, to: affect.sprite.x + delta.x },
+				y: { from: affect.sprite.y, to: affect.sprite.y + delta.y }
+			});
 		});
 		
 		if (this.outline) {

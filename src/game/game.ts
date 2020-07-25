@@ -177,9 +177,10 @@ export class Game {
         })
         gameBus.subscribe(playerUseSkill, event => {
             const {name} = event.payload;
-            const res = this.hero.heroSkills.castSkill(name);
+            const res = this.hero.heroSkills.canCastSkill(name);
             if (res.status === MessageResponseStatus.Ok) {
-                this.nextTurn(res.timeSpent);
+                this.nextTurn(res.timeSpent); // Traps resolve too early if nextTurn is after cast()
+                this.hero.heroSkills.castSkill(name);
             } else {
                 gameBus.publish(logPublished({level: 'neutral', data:'You cannot do that.'}));
             }

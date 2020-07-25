@@ -71,9 +71,9 @@ export class UIEntity {
 		const status = {
 			Bleeding:'bleeding',
 			Poisoned:'poisoning',
-			Movement:'movement_plus',
-			Range:'range_plus',
-			Absorb:'absorb_plus',
+			'Movement+':'movement_plus',
+			'Range+':'range_plus',
+			'Absorb+':'absorb_plus',
 		};
 		const offset = this.affects.length * 10;
 		const sprite = this.parentScene.add.sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y) + offset, status[affect]);
@@ -102,6 +102,7 @@ export class UIEntity {
 					this.healthBarFull.destroy();
 					this.healthBar.destroy();
 					this.sprite.setDepth(0);
+					this.affects.forEach(a => a.sprite.destroy());
 					if (this.outline != null) this.outline.destroy(); // todo refacto ?
 				} else {
 					this.destroy();

@@ -141,11 +141,13 @@ export class Affect {
             start: (t: Hero|Monster) => {
                 t.armour.baseAbsorb += 5;
                 t.speed = t.speed * 2;
+                t.enchants.setAbsorb(true);
                 gameBus.publish(itemEquiped({armour: t.armour}));
             },
             end: (t: Hero|Monster) => {
                 t.armour.baseAbsorb -= 5;
                 t.speed = t.speed / 2;
+                t.enchants.setAbsorb(false);
                 gameBus.publish(itemEquiped({armour: t.armour}));
             },
             tags: 'thicc'

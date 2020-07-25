@@ -12,6 +12,7 @@ export class EnchantTable {
     private agile = false;
     private confident = false;
     private moreDamage = false;
+    private lessDamage = false;
     private moreVulnerable = false;
     private wet = false;
     private blind = false;
@@ -88,6 +89,13 @@ export class EnchantTable {
         this.burned = x;
         this.update();
     }
+    setAbsorb(x: boolean) {
+        this.lessDamage = x;
+        this.update();
+    }
+    getAbsorb() {
+        return this.lessDamage;
+    }
     getCold() {
         return this.cold;
     }
@@ -152,6 +160,9 @@ export class EnchantTable {
         }
         if (this.moreVulnerable) {
             r.push('Absorb-');
+        }
+        if (this.lessDamage) {
+            r.push('Absorb+');
         }
         if (this.moreDamage) {
             r.push('Dmg+');

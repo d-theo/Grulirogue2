@@ -84,9 +84,9 @@ import TweenHelper from "../phaser-addition/tween-helper";
 
       this.load.image('bleeding', '/assets/sprites/affect-bleeding.png');
       this.load.image('poisoning', '/assets/sprites/affect-poisoning.png');
-      this.load.image('absorb+', '/assets/sprites/affect-absorbing.png');
-      this.load.image('range+', '/assets/sprites/affect-ranging.png');
-      this.load.image('movement+', '/assets/sprites/affect-speeding.png');
+      this.load.image('absorb_plus', '/assets/sprites/affect-absorbing.png');
+      this.load.image('range_plus', '/assets/sprites/affect-ranging.png');
+      this.load.image('movement_plus', '/assets/sprites/affect-speeding.png');
       
 
       /*rogue mode*/ 

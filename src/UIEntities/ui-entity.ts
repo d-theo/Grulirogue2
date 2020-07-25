@@ -71,9 +71,9 @@ export class UIEntity {
 		const status = {
 			Bleeding:'bleeding',
 			Poisoned:'poisoning',
-			Movement:'movement+',
-			Range:'range+',
-			Absorb:'absord+',
+			Movement:'movement_plus',
+			Range:'range_plus',
+			Absorb:'absorb_plus',
 		};
 		const offset = this.affects.length * 10;
 		const sprite = this.parentScene.add.sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y) + offset, status[affect]);

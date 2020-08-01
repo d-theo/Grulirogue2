@@ -1,0 +1,231 @@
+strict digraph "dependency-cruiser output"{
+    ordering="out" rankdir="LR" splines="true" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/effects" {label="effects" "game/effects/affects.ts" [label="affects.ts" URL="game/effects/affects.ts" fillcolor="#ddfeff"] } }
+    "game/effects/affects.ts" -> "game/hero/hero.ts" [arrowhead="normalnoneodot"]
+    "game/effects/affects.ts" -> "game/hero/hero-skills.ts" [arrowhead="normalnoneodot"]
+    "game/effects/affects.ts" -> "game/monsters/ai.ts" [arrowhead="normalnoneodot"]
+    "game/effects/affects.ts" -> "game/use-cases/damages.ts" [arrowhead="normalnoneodot"]
+    "game/effects/affects.ts" -> "game/utils/micro-validator.ts"
+    "game/effects/affects.ts" -> "game/utils/random.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/effects" {label="effects" "game/effects/effect.ts" [label="effect.ts" URL="game/effects/effect.ts" fillcolor="#ddfeff"] } }
+    "game/effects/effect.ts" -> "game/utils/micro-validator.ts"
+    "game/effects/effect.ts" -> "game/effects/affects.ts" [arrowhead="normalnoneodot"]
+    "game/effects/effect.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/effects" {label="effects" "game/effects/spells.ts" [label="spells.ts" URL="game/effects/spells.ts" fillcolor="#ddfeff"] } }
+    "game/effects/spells.ts" -> "game/hero/hero.ts" [arrowhead="normalnoneodot"]
+    "game/effects/spells.ts" -> "game/places/places.ts" [arrowhead="normalnoneodot"]
+    "game/effects/spells.ts" -> "game/tilemap/sight.ts"
+    "game/effects/spells.ts" -> "game/tilemap/tile.ts"
+    "game/effects/spells.ts" -> "game/use-cases/damages.ts" [arrowhead="normalnoneodot"]
+    "game/effects/spells.ts" -> "game/utils/coordinate.ts"
+    "game/effects/spells.ts" -> "game/utils/matrix.ts"
+    "game/effects/spells.ts" -> "game/utils/range.ts"
+    "game/effects/spells.ts" -> "game/effects/affects.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/buffable.ts" [label="buffable.ts" URL="game/entitybase/buffable.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/enchantable.ts" [label="enchantable.ts" URL="game/entitybase/enchantable.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/entity.ts" [label="entity.ts" URL="game/entitybase/entity.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/fight-modifier.ts" [label="fight-modifier.ts" URL="game/entitybase/fight-modifier.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/health.ts" [label="health.ts" URL="game/entitybase/health.ts" fillcolor="#ddfeff"] } }
+    "game/entitybase/health.ts" -> "game/utils/random.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/entitybase" {label="entitybase" "game/entitybase/item.ts" [label="item.ts" URL="game/entitybase/item.ts" fillcolor="#ddfeff"] } }
+    "game/entitybase/item.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/fight" {label="fight" "game/fight/fight.ts" [label="fight.ts" URL="game/fight/fight.ts" fillcolor="#ddfeff"] } }
+    "game/fight/fight.ts" -> "game/hero/hero.ts"
+    subgraph "cluster_game" {label="game" "game/game.ts" [label="game.ts" URL="game/game.ts" fillcolor="#ddfeff"] }
+    "game/game.ts" -> "game/effects/effect.ts"
+    "game/game.ts" -> "game/generation/additionnal-things.ts"
+    "game/game.ts" -> "game/generation/item-spawn.ts"
+    "game/game.ts" -> "game/generation/monster-spawn.ts"
+    "game/game.ts" -> "game/hero/hero.ts"
+    "game/game.ts" -> "game/items/item-collection.ts"
+    "game/game.ts" -> "game/log/log.ts"
+    "game/game.ts" -> "game/loot/loot-uniq.ts"
+    "game/game.ts" -> "game/monsters/ai.ts"
+    "game/game.ts" -> "game/monsters/monsterCollection.ts"
+    "game/game.ts" -> "game/places/special-places.ts"
+    "game/game.ts" -> "game/tilemap/tilemap.ts"
+    "game/game.ts" -> "game/use-cases/playerAttack.ts"
+    "game/game.ts" -> "game/use-cases/playerMove.ts"
+    "game/game.ts" -> "game/utils/rectangle.ts"
+    "game/game.ts" -> "game/utils/types.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/generation" {label="generation" "game/generation/additionnal-things.ts" [label="additionnal-things.ts" URL="game/generation/additionnal-things.ts" fillcolor="#ddfeff"] } }
+    "game/generation/additionnal-things.ts" -> "game/items/potion.ts"
+    "game/generation/additionnal-things.ts" -> "game/loot/loot-table.ts"
+    "game/generation/additionnal-things.ts" -> "game/loot/loot-weapons.ts"
+    "game/generation/additionnal-things.ts" -> "game/monsters/bestiaire.ts"
+    "game/generation/additionnal-things.ts" -> "game/monsters/mob-table.ts"
+    "game/generation/additionnal-things.ts" -> "game/monsters/monster.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/generation" {label="generation" "game/generation/item-spawn.ts" [label="item-spawn.ts" URL="game/generation/item-spawn.ts" fillcolor="#ddfeff"] } }
+    "game/generation/item-spawn.ts" -> "game/loot/loot-table.ts"
+    "game/generation/item-spawn.ts" -> "game/utils/random.ts"
+    "game/generation/item-spawn.ts" -> "game/utils/rectangle.ts"
+    "game/generation/item-spawn.ts" -> "game/generation/monster-spawn.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/generation" {label="generation" "game/generation/monster-spawn.ts" [label="monster-spawn.ts" URL="game/generation/monster-spawn.ts" fillcolor="#ddfeff"] } }
+    "game/generation/monster-spawn.ts" -> "game/monsters/mob-table.ts"
+    "game/generation/monster-spawn.ts" -> "game/monsters/monster.ts"
+    "game/generation/monster-spawn.ts" -> "game/utils/random.ts"
+    "game/generation/monster-spawn.ts" -> "game/utils/rectangle.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/hero" {label="hero" "game/hero/hero-skills.ts" [label="hero-skills.ts" URL="game/hero/hero-skills.ts" fillcolor="#ddfeff"] } }
+    "game/hero/hero-skills.ts" -> "game/effects/affects.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero-skills.ts" -> "game/effects/effect.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero-skills.ts" -> "game/hero/skill-desc.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/hero" {label="hero" "game/hero/hero.ts" [label="hero.ts" URL="game/hero/hero.ts" fillcolor="#ddfeff"] } }
+    "game/hero/hero.ts" -> "game/effects/affects.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero.ts" -> "game/entitybase/buffable.ts"
+    "game/hero/hero.ts" -> "game/entitybase/enchantable.ts"
+    "game/hero/hero.ts" -> "game/entitybase/fight-modifier.ts"
+    "game/hero/hero.ts" -> "game/entitybase/health.ts"
+    "game/hero/hero.ts" -> "game/items/armour.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero.ts" -> "game/items/weapon.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero.ts" -> "game/hero/hero-skills.ts" [arrowhead="normalnoneodot"]
+    "game/hero/hero.ts" -> "game/hero/inventory.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/hero" {label="hero" "game/hero/inventory.ts" [label="inventory.ts" URL="game/hero/inventory.ts" fillcolor="#ddfeff"] } }
+    "game/hero/inventory.ts" -> "game/items/item-visitor.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/hero" {label="hero" "game/hero/skill-desc.ts" [label="skill-desc.ts" URL="game/hero/skill-desc.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/armour.ts" [label="armour.ts" URL="game/items/armour.ts" fillcolor="#ddfeff"] } }
+    "game/items/armour.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    "game/items/armour.ts" -> "game/entitybase/item.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/item-collection.ts" [label="item-collection.ts" URL="game/items/item-collection.ts" fillcolor="#ddfeff"] } }
+    "game/items/item-collection.ts" -> "game/utils/coordinate.ts"
+    "game/items/item-collection.ts" -> "game/items/wands.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/item-visitor.ts" [label="item-visitor.ts" URL="game/items/item-visitor.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/potion.ts" [label="potion.ts" URL="game/items/potion.ts" fillcolor="#ddfeff"] } }
+    "game/items/potion.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    "game/items/potion.ts" -> "game/entitybase/item.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/scroll.ts" [label="scroll.ts" URL="game/items/scroll.ts" fillcolor="#ddfeff"] } }
+    "game/items/scroll.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    "game/items/scroll.ts" -> "game/entitybase/item.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/wands.ts" [label="wands.ts" URL="game/items/wands.ts" fillcolor="#ddfeff"] } }
+    "game/items/wands.ts" -> "game/effects/spells.ts"
+    "game/items/wands.ts" -> "game/entitybase/item.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/items" {label="items" "game/items/weapon.ts" [label="weapon.ts" URL="game/items/weapon.ts" fillcolor="#ddfeff"] } }
+    "game/items/weapon.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    "game/items/weapon.ts" -> "game/entitybase/item.ts" [arrowhead="normalnoneodot"]
+    "game/items/weapon.ts" -> "game/utils/random.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/log" {label="log" "game/log/log.ts" [label="log.ts" URL="game/log/log.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-armours.ts" [label="loot-armours.ts" URL="game/loot/loot-armours.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-armours.ts" -> "game/effects/affects.ts"
+    "game/loot/loot-armours.ts" -> "game/utils/random.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-mics.ts" [label="loot-mics.ts" URL="game/loot/loot-mics.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-mics.ts" -> "game/effects/effect.ts" [arrowhead="normalnoneodot"]
+    "game/loot/loot-mics.ts" -> "game/effects/spells.ts" [arrowhead="normalnoneodot"]
+    "game/loot/loot-mics.ts" -> "game/entitybase/item.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-potions.ts" [label="loot-potions.ts" URL="game/loot/loot-potions.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-potions.ts" -> "game/effects/affects.ts"
+    "game/loot/loot-potions.ts" -> "game/effects/effect.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-scrolls.ts" [label="loot-scrolls.ts" URL="game/loot/loot-scrolls.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-scrolls.ts" -> "game/effects/effect.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-table.ts" [label="loot-table.ts" URL="game/loot/loot-table.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-table.ts" -> "game/items/armour.ts"
+    "game/loot/loot-table.ts" -> "game/items/potion.ts"
+    "game/loot/loot-table.ts" -> "game/items/scroll.ts"
+    "game/loot/loot-table.ts" -> "game/monsters/mob-table.ts"
+    "game/loot/loot-table.ts" -> "game/utils/random.ts"
+    "game/loot/loot-table.ts" -> "game/loot/loot-armours.ts"
+    "game/loot/loot-table.ts" -> "game/loot/loot-mics.ts"
+    "game/loot/loot-table.ts" -> "game/loot/loot-potions.ts"
+    "game/loot/loot-table.ts" -> "game/loot/loot-scrolls.ts"
+    "game/loot/loot-table.ts" -> "game/loot/loot-weapons.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-uniq.ts" [label="loot-uniq.ts" URL="game/loot/loot-uniq.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-uniq.ts" -> "game/loot/loot-mics.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-wands.ts" [label="loot-wands.ts" URL="game/loot/loot-wands.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-wands.ts" -> "game/effects/effect.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/loot" {label="loot" "game/loot/loot-weapons.ts" [label="loot-weapons.ts" URL="game/loot/loot-weapons.ts" fillcolor="#ddfeff"] } }
+    "game/loot/loot-weapons.ts" -> "game/effects/affects.ts"
+    "game/loot/loot-weapons.ts" -> "game/items/weapon.ts"
+    "game/loot/loot-weapons.ts" -> "game/monsters/mob-table.ts"
+    "game/loot/loot-weapons.ts" -> "game/utils/random.ts"
+    "game/loot/loot-weapons.ts" -> "game/utils/range.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/monsters" {label="monsters" "game/monsters/ai.ts" [label="ai.ts" URL="game/monsters/ai.ts" fillcolor="#ddfeff"] } }
+    "game/monsters/ai.ts" -> "game/hero/hero.ts" [arrowhead="normalnoneodot"]
+    "game/monsters/ai.ts" -> "game/tilemap/astar.ts"
+    "game/monsters/ai.ts" -> "game/use-cases/monsterAttack.ts" [arrowhead="normalnoneodot"]
+    "game/monsters/ai.ts" -> "game/use-cases/monsterMove.ts"
+    "game/monsters/ai.ts" -> "game/use-cases/preconditions/moveAllowed.ts"
+    "game/monsters/ai.ts" -> "game/utils/coordinate.ts"
+    "game/monsters/ai.ts" -> "game/utils/range.ts"
+    "game/monsters/ai.ts" -> "game/monsters/monster.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/monsters" {label="monsters" "game/monsters/bestiaire.ts" [label="bestiaire.ts" URL="game/monsters/bestiaire.ts" fillcolor="#ddfeff"] } }
+    "game/monsters/bestiaire.ts" -> "game/effects/affects.ts"
+    "game/monsters/bestiaire.ts" -> "game/effects/effect.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/monsters" {label="monsters" "game/monsters/mob-table.ts" [label="mob-table.ts" URL="game/monsters/mob-table.ts" fillcolor="#ddfeff"] } }
+    "game/monsters/mob-table.ts" -> "game/utils/random.ts"
+    "game/monsters/mob-table.ts" -> "game/monsters/bestiaire.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/monsters" {label="monsters" "game/monsters/monster.ts" [label="monster.ts" URL="game/monsters/monster.ts" fillcolor="#ddfeff"] } }
+    "game/monsters/monster.ts" -> "game/effects/affects.ts" [arrowhead="normalnoneodot"]
+    "game/monsters/monster.ts" -> "game/entitybase/buffable.ts"
+    "game/monsters/monster.ts" -> "game/entitybase/enchantable.ts"
+    "game/monsters/monster.ts" -> "game/entitybase/health.ts"
+    "game/monsters/monster.ts" -> "game/items/armour.ts" [arrowhead="normalnoneodot"]
+    "game/monsters/monster.ts" -> "game/items/weapon.ts" [arrowhead="normalnoneodot"]
+    "game/monsters/monster.ts" -> "game/utils/micro-validator.ts"
+    "game/monsters/monster.ts" -> "game/utils/random.ts"
+    "game/monsters/monster.ts" -> "game/monsters/ai.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/monsters" {label="monsters" "game/monsters/monsterCollection.ts" [label="monsterCollection.ts" URL="game/monsters/monsterCollection.ts" fillcolor="#ddfeff"] } }
+    "game/monsters/monsterCollection.ts" -> "game/utils/coordinate.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/places" {label="places" "game/places/place-definitions.ts" [label="place-definitions.ts" URL="game/places/place-definitions.ts" fillcolor="#ddfeff"] } }
+    "game/places/place-definitions.ts" -> "game/loot/loot-uniq.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/places" {label="places" "game/places/place-interface.ts" [label="place-interface.ts" URL="game/places/place-interface.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/places" {label="places" "game/places/places.ts" [label="places.ts" URL="game/places/places.ts" fillcolor="#ddfeff"] } }
+    "game/places/places.ts" -> "game/effects/affects.ts"
+    "game/places/places.ts" -> "game/items/armour.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/items/potion.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/items/scroll.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/items/weapon.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/loot/loot-mics.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/loot/loot-scrolls.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/monsters/bestiaire.ts" [arrowhead="normalnoneodot"]
+    "game/places/places.ts" -> "game/monsters/monster.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/places" {label="places" "game/places/special-places.ts" [label="special-places.ts" URL="game/places/special-places.ts" fillcolor="#ddfeff"] } }
+    "game/places/special-places.ts" -> "game/entitybase/item.ts"
+    "game/places/special-places.ts" -> "game/monsters/monster.ts"
+    "game/places/special-places.ts" -> "game/utils/coordinate.ts"
+    "game/places/special-places.ts" -> "game/places/places.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/tilemap" {label="tilemap" "game/tilemap/astar.ts" [label="astar.ts" URL="game/tilemap/astar.ts" fillcolor="#ddfeff"] } }
+    "game/tilemap/astar.ts" -> "game/utils/matrix.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/tilemap" {label="tilemap" "game/tilemap/sight.ts" [label="sight.ts" URL="game/tilemap/sight.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/tilemap" {label="tilemap" "game/tilemap/tile-type-metadata.ts" [label="tile-type-metadata.ts" URL="game/tilemap/tile-type-metadata.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/tilemap" {label="tilemap" "game/tilemap/tile.ts" [label="tile.ts" URL="game/tilemap/tile.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/tilemap" {label="tilemap" "game/tilemap/tilemap.ts" [label="tilemap.ts" URL="game/tilemap/tilemap.ts" fillcolor="#ddfeff"] } }
+    "game/tilemap/tilemap.ts" -> "game/effects/affects.ts"
+    "game/tilemap/tilemap.ts" -> "game/utils/matrix.ts"
+    "game/tilemap/tilemap.ts" -> "game/utils/rectangle.ts"
+    "game/tilemap/tilemap.ts" -> "game/tilemap/sight.ts"
+    "game/tilemap/tilemap.ts" -> "game/tilemap/tile.ts"
+    "game/tilemap/tilemap.ts" -> "game/tilemap/tile-type-metadata.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/damages.ts" [label="damages.ts" URL="game/use-cases/damages.ts" fillcolor="#ddfeff"] } }
+    "game/use-cases/damages.ts" -> "game/entitybase/health.ts"
+    "game/use-cases/damages.ts" -> "game/hero/hero.ts" [arrowhead="normalnoneodot"]
+    "game/use-cases/damages.ts" -> "game/monsters/monster.ts" [arrowhead="normalnoneodot"]
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/health-report.ts" [label="health-report.ts" URL="game/use-cases/health-report.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/monsterAttack.ts" [label="monsterAttack.ts" URL="game/use-cases/monsterAttack.ts" fillcolor="#ddfeff"] } }
+    "game/use-cases/monsterAttack.ts" -> "game/entitybase/health.ts"
+    "game/use-cases/monsterAttack.ts" -> "game/fight/fight.ts" [arrowhead="normalnoneodot"]
+    "game/use-cases/monsterAttack.ts" -> "game/hero/hero.ts"
+    "game/use-cases/monsterAttack.ts" -> "game/utils/coordinate.ts"
+    "game/use-cases/monsterAttack.ts" -> "game/utils/types.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/monsterMove.ts" [label="monsterMove.ts" URL="game/use-cases/monsterMove.ts" fillcolor="#ddfeff"] } }
+    "game/use-cases/monsterMove.ts" -> "game/utils/types.ts"
+    "game/use-cases/monsterMove.ts" -> "game/use-cases/preconditions/moveAllowed.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/playerAttack.ts" [label="playerAttack.ts" URL="game/use-cases/playerAttack.ts" fillcolor="#ddfeff"] } }
+    "game/use-cases/playerAttack.ts" -> "game/fight/fight.ts"
+    "game/use-cases/playerAttack.ts" -> "game/log/log.ts"
+    "game/use-cases/playerAttack.ts" -> "game/utils/coordinate.ts"
+    "game/use-cases/playerAttack.ts" -> "game/utils/types.ts"
+    "game/use-cases/playerAttack.ts" -> "game/use-cases/damages.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" "game/use-cases/playerMove.ts" [label="playerMove.ts" URL="game/use-cases/playerMove.ts" fillcolor="#ddfeff"] } }
+    "game/use-cases/playerMove.ts" -> "game/utils/types.ts"
+    "game/use-cases/playerMove.ts" -> "game/use-cases/preconditions/moveAllowed.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/use-cases" {label="use-cases" subgraph "cluster_game/use-cases/preconditions" {label="preconditions" "game/use-cases/preconditions/moveAllowed.ts" [label="moveAllowed.ts" URL="game/use-cases/preconditions/moveAllowed.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/coordinate.ts" [label="coordinate.ts" URL="game/utils/coordinate.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/matrix.ts" [label="matrix.ts" URL="game/utils/matrix.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/micro-validator.ts" [label="micro-validator.ts" URL="game/utils/micro-validator.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/random.ts" [label="random.ts" URL="game/utils/random.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/range.ts" [label="range.ts" URL="game/utils/range.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/rectangle.ts" [label="rectangle.ts" URL="game/utils/rectangle.ts" fillcolor="#ddfeff"] } }
+    "game/utils/rectangle.ts" -> "game/utils/range.ts"
+    subgraph "cluster_game" {label="game" subgraph "cluster_game/utils" {label="utils" "game/utils/types.ts" [label="types.ts" URL="game/utils/types.ts" fillcolor="#ddfeff"] } }
+}

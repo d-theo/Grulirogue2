@@ -1,13 +1,10 @@
 import { TileMap } from "./tilemap/tilemap";
 import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
-import { playerMove } from "./use-cases/playerMove";
-import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
+import {gameBus, nextLevelCreated, heroGainedXp, xpHasChanged, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
 import { Log } from "./log/log";
-import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { Monster } from "./monsters/monster";
@@ -20,6 +17,8 @@ import { RogueEventLevel } from "../eventBus/event-rogue";
 import { randomIn } from "./utils/rectangle";
 import { getUniqLoot } from "./loot/loot-uniq";
 import * as _ from 'lodash';
+import { Action } from "./actions/action";
+
 
 export class Game {
     static Engine: Game;
@@ -52,6 +51,7 @@ export class Game {
     places: SpecialPlaces;
     constructor() {
         Log.init();
+        Action.bindOnce(this);
         this.tilemap = new TileMap();
         this.hero = new Hero();
         this.loopNb = 0;
@@ -111,53 +111,10 @@ export class Game {
             this.items.itemsArray().push(uniq);
         }
     }
+    public setNextAction(action: Action) {
+        action.execute();
+    }
     initBus() {
-        gameBus.subscribe(playerActionMove, event => {
-            const {to} = event.payload;
-            const result: MessageResponse = playerMove({
-                monsters: this.monsters,
-                pos: to,
-                hero: this.hero,
-                tilemap: this.tilemap,
-                items: this.items,
-                places: this.places
-            });
-            if (result.status === MessageResponseStatus.Ok) {
-                gameBus.publish(playerMoved({}));
-                this.nextTurn(result.timeSpent);
-                this.adjustSight();
-            }
-        });
-        gameBus.subscribe(playerAttemptAttackMonster, event => {
-            const {monster} = event.payload;
-            const result: MessageResponse = playerAttack({
-                hero: this.hero,
-                attacked: monster,
-                tilemap: this.tilemap
-            });
-            if (result.status === MessageResponseStatus.Ok) {
-                this.nextTurn(result.timeSpent);
-            }
-        });
-        gameBus.subscribe(playerUseItem, event => {
-            const {target, item, action} = event.payload;
-            const usedItem = this.hero.getItem(item);
-            if (usedItem !== undefined) {
-                usedItem.keyMapping[action](target);
-                this.hero.consumeItem(usedItem);
-                this.places.checkForItem(usedItem);
-            }
-            this.nextTurn(1);
-        });
-        gameBus.subscribe(waitATurn, event => {
-            this.nextTurn(1);
-        });
-        gameBus.subscribe(nextLevel, event => {
-            if (this.canGoToNextLevel()) {
-                this.level ++;
-                this.reInitLevel();
-            }
-        });
         gameBus.subscribe(rogueEvent, event => {
             this.savedLevel = this.level;
             this.level = RogueEventLevel;
@@ -167,31 +124,13 @@ export class Game {
             this.level = this.savedLevel+1;
             this.reInitLevel();
         });
-        gameBus.subscribe(playerChoseSkill, event => {
-            const {name} = event.payload;
-            this.hero.heroSkills.learnSkill(name);
-        });
         gameBus.subscribe(heroGainedXp, event => {
             const report = this.hero.gainXP(event.payload.amount);
             gameBus.publish(xpHasChanged(report));
-        })
-        gameBus.subscribe(playerUseSkill, event => {
-            const {name} = event.payload;
-            const res = this.hero.heroSkills.canCastSkill(name);
-            if (res.status === MessageResponseStatus.Ok) {
-                this.nextTurn(res.timeSpent); // Traps resolve too early if nextTurn is after cast()
-                this.hero.heroSkills.castSkill(name);
-            } else {
-                gameBus.publish(logPublished({level: 'neutral', data:'You cannot do that.'}));
-            }
         });
-    }
-    canGoToNextLevel() {
-        return this.tilemap.getAt(this.hero.pos).isExit;
     }
     adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
-        gameBus.publish(sightUpdated({}));
     }
 
     nextTurn(timeSpent: number) {
@@ -243,5 +182,5 @@ export class Game {
             const distB = Math.abs(b.pos.x - this.hero.pos.x) + Math.abs(b.pos.y - this.hero.pos.y);
             return distA > distB ? 1 : -1;
         }).filter(m => !m.getFriendly());
-	}
+    }
 }

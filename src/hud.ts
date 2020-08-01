@@ -12,7 +12,6 @@ export function hud() {
         $('#hud').show();
         $('#log').show();
         $('#howto').show();
-        
     });
     gameBus.subscribe(logPublished, event => {
         const {data, level} = event.payload;

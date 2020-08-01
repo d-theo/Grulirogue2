@@ -13,15 +13,9 @@ export const gameBus = new EventBus();
 
 export const gameStarted = createEventDefinition<{}>()('gameStarted');
 
-export const waitATurn = createEventDefinition<{}>()('waitATurn');
-export const nextLevel = createEventDefinition<{}>()('nextLevel');
 export const nextLevelCreated = createEventDefinition<{
     level: number
 }>()('nextLevelCreated');
-
-export const playerChoseSkill = createEventDefinition<{
-    name: string;
-}>()('playerChoseSkill');
 
 export const xpHasChanged = createEventDefinition<{
     current: number;
@@ -47,12 +41,6 @@ export const playerActionMove = createEventDefinition<{
 
 export const playerMoved = createEventDefinition<{
 }>()("playerMove");
-
-export const playerUseItem = createEventDefinition<{
-    item: Item,
-    target: Monster | Hero | Coordinate | Item,
-    action: string,
-}>()('playerUseItem');
 
 export const itemPickedUp = createEventDefinition<{
     item: Item;
@@ -84,9 +72,6 @@ export const monsterTookDamage = createEventDefinition<{
     currentHp: number;
     externalSource?: any;
 }>()('monsterTookDamage');
-export const playerAttemptAttackMonster = createEventDefinition<{
-    monster: Monster,
-}>()('playerAttemptAttackMonster');
 
 export const monsterMoved = createEventDefinition<{
     monster: Monster

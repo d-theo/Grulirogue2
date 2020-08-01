@@ -9,7 +9,7 @@ import { tilePropertiesForTerrain } from "./tile-type-metadata";
 import * as _ from 'lodash';
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, effectUnset } from "../../eventBus/game-bus";
+import { gameBus, effectUnset, sightUpdated } from "../../eventBus/game-bus";
 import { Terrain } from "../../map/terrain.greece";
 import { BuffDefinition } from "../effects/effect";
 import { Affect } from "../effects/affects";
@@ -229,6 +229,7 @@ export class TileMap {
                 }
             }
         }
+        gameBus.publish(sightUpdated({}));
     }
     startingPosition() {
         for (let room of this.graph.rooms) {

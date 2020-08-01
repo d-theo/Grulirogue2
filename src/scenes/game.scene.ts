@@ -2,13 +2,12 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage} from '../eventBus/game-bus';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,doorOpened,gameStarted,itemPickedUp,playerHealed,itemDropped,logPublished,nextLevelCreated,xpHasChanged,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
 import {Hero} from '../game/hero/hero';
 import {UIEffect} from '../UIEntities/ui-effect';
-import {SkillNames} from '../game/hero/hero-skills';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
 import {EffectTarget} from '../game/effects/spells';
@@ -18,6 +17,13 @@ import { Keyboard } from '../phaser-addition/keyboard';
 import { CellSize } from '../main';
 import { UIDamages } from '../UIEntities/ui-damages';
 import { DamageQueue } from '../phaser-addition/damage-queue';
+import { AttackAction } from '../game/actions/attack';
+import { PlayerMoveAction } from '../game/actions/move';
+import { UseItemAction } from '../game/actions/use-item';
+import { DescendAction } from '../game/actions/descend';
+import { RestAction } from '../game/actions/rest';
+import { LearnSkillAction } from '../game/actions/learn-skill';
+import { UseSkillAction } from '../game/actions/use-skill';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;
@@ -135,7 +141,7 @@ class GameScene extends Phaser.Scene {
 		this.hideRange();
 		const mob = this.gameEngine.getAttackable(this.getTargetPos());
 		if (mob) {
-			gameBus.publish(playerAttemptAttackMonster({
+			this.gameEngine.setNextAction(new AttackAction({
 				monster: mob
 			}));
 		}
@@ -154,11 +160,11 @@ class GameScene extends Phaser.Scene {
 			gameBus.publish(logPublished({data: 'You cannot see that far !'}));
 			return;
 		}
-		gameBus.publish(playerUseItem({
+		this.gameEngine.setNextAction(new UseItemAction({
 			item: this.actionContext.item,
 			target: pos,
 			action: this.actionContext.key
-		}));
+		}))
 	}
 
 	enterMovable() {
@@ -171,7 +177,7 @@ class GameScene extends Phaser.Scene {
 			t = this.gameEngine.getAttackable(pos);
 			if (!t) return;
 		}
-		gameBus.publish(playerUseItem({
+		this.gameEngine.setNextAction(new UseItemAction({
 			item: this.actionContext.item,
 			target: t,
 			action: this.actionContext.key
@@ -215,12 +221,10 @@ class GameScene extends Phaser.Scene {
 	}
 
 	tryStairs() {
-		if (this.gameEngine.canGoToNextLevel()) {
-			gameBus.publish(nextLevel({}));
-		}
+		this.gameEngine.setNextAction(new DescendAction());
 	}
 	waitATurn() {
-		gameBus.publish(waitATurn({}));
+		this.gameEngine.setNextAction(new RestAction());
 	}
 	moveTarget(direction: string) {
 		if (direction === 'ArrowUp') this.target.y -= CellSize;
@@ -277,11 +281,11 @@ class GameScene extends Phaser.Scene {
 		} | undefined) => {
 			this.keyboard.resume();
 			if (data && data.action === 'pickItem') {
-				gameBus.publish(playerUseItem({
+				this.gameEngine.setNextAction(new UseItemAction({
 					item: this.actionContext.item,
 					target: this.gameEngine.hero.getItem(data.item),
 					action: this.actionContext.key
-				}));
+				}))
 			} else if (data && data.action === 'useItem') {
 				const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
 				switch (itemNeedsTarget) {
@@ -340,7 +344,7 @@ class GameScene extends Phaser.Scene {
 						break;
 					case EffectTarget.Hero:
 					case EffectTarget.None:
-						gameBus.publish(playerUseItem({
+						this.gameEngine.setNextAction(new UseItemAction({
 							item: data.item,
 							target: this.hero.subject as Hero,
 							action: data.key,
@@ -350,12 +354,12 @@ class GameScene extends Phaser.Scene {
 						throw new Error(`Not implemented [${itemNeedsTarget}]`)
 				}
 			} else if (data && data.action === 'pickSkill') {
-				gameBus.publish(playerChoseSkill({
+				this.gameEngine.setNextAction(new LearnSkillAction({
 					name: data.item.name
 				}));
 			} else if (data && data.action === 'useSkill') {
-				gameBus.publish(playerUseSkill({
-					name: data.item.name as SkillNames
+				this.gameEngine.setNextAction(new UseSkillAction({
+					name: data.item.name
 				}));
 			}
 		});
@@ -542,9 +546,7 @@ class GameScene extends Phaser.Scene {
 		this.moveAllowed = false;
 		this.delta = 0;
 		this.hideTarget();
-		gameBus.publish(playerActionMove({
-			to: newPos
-		}));
+		this.gameEngine.setNextAction(new PlayerMoveAction({to: newPos}));
 	}
 
 	update(time: number, delta: number) {

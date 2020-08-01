@@ -3,7 +3,6 @@ import { createEventDefinition, EventBus } from "ts-bus";
 import { Monster } from "../game/monsters/monster";
 import { Coordinate } from "../game/utils/coordinate";
 import { Item } from "../game/entitybase/item";
-import { Hero } from "../game/hero/hero";
 import { MapEffect } from '../map/map-effect';
 import { SkillNames } from "../game/hero/hero-skills";
 import { Weapon } from "../game/items/weapon";
@@ -85,7 +84,6 @@ export const effectSet = createEventDefinition<MapEffects>()('effectSet');
 export const effectUnset = createEventDefinition<{
     id: string;
 }>()('effectUnset');
-export const heroGainedXp = createEventDefinition<{amount: number}>()('heroGainedXp');
 export const playerUseSkill = createEventDefinition<{
     name: SkillNames
 }>()('playerUseSkill');

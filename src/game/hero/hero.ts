@@ -7,12 +7,13 @@ import { BuffDefinition } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
-import { gameBus, itemEquiped } from "../../eventBus/game-bus";
+import { gameBus, itemEquiped, xpHasChanged } from "../../eventBus/game-bus";
 import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 import { EnchantSolver } from "../effects/affects";
 import { DamageResolution } from "../fight/damages";
+import { report } from "process";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -109,11 +110,13 @@ export class Hero implements Entity {
             this.levelUp();
             status = 'level_up';
         }
-        return {
+        const report = {
             total: this.nextXp,
             current: this.xp,
             status
         };
+        gameBus.publish(xpHasChanged(report));
+        return report;
     }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);

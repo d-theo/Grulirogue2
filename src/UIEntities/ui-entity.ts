@@ -7,6 +7,7 @@ import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
 import * as _ from 'lodash';
+import { off } from "process";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;
@@ -45,8 +46,9 @@ export class UIEntity {
 		this.affects.forEach(a => a.sprite.destroy());
 		if (this.outline != null) this.outline.destroy();
 	}
-
+	x = 0;
 	updateStatus() {
+		this.x++;
 		const report = this.subject.enchants.report();
 
 		const currentStatus = new Set<string>();
@@ -69,14 +71,15 @@ export class UIEntity {
 
 	addAffect(affect: string) {
 		const status = {
-			Bleeding:'bleeding',
-			Poisoned:'poisoning',
+			'Bleeding':'bleeding',
+			'Poisoned':'poisoning',
 			'Movement+':'movement_plus',
 			'Range+':'range_plus',
 			'Absorb+':'absorb_plus',
 		};
-		const offset = this.affects.length * 10;
-		const sprite = this.parentScene.add.sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y) + offset, status[affect]);
+		const offsetX = this.affects.length > 3 ? 32 : 0;
+		const offsetY = this.affects.length % 4 * 10;
+		const sprite = this.parentScene.add.sprite(toPix(this.subject.pos.x) + offsetX, toPix(this.subject.pos.y) + offsetY, status[affect]);
 		this.sprite.setOrigin(0,0);
 		this.affects.push({
 			type: affect,
@@ -84,7 +87,6 @@ export class UIEntity {
 		});
 	}
 	removeAffect(affect: {type, sprite}) {
-		//const index = _.findIndex(this.affects, (a => affect.type === a.type));
 		affect.sprite.destroy();
 		this.affects = this.affects.filter(a => a.type !== affect.type);
 	}

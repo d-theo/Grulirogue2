@@ -3,7 +3,7 @@ import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {gameBus, nextLevelCreated, heroGainedXp, xpHasChanged, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
+import {gameBus, nextLevelCreated, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
@@ -124,15 +124,11 @@ export class Game {
             this.level = this.savedLevel+1;
             this.reInitLevel();
         });
-        gameBus.subscribe(heroGainedXp, event => {
-            const report = this.hero.gainXP(event.payload.amount);
-            gameBus.publish(xpHasChanged(report));
-        });
     }
     adjustSight() {
         this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
     }
-
+    
     nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());

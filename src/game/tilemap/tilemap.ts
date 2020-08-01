@@ -66,6 +66,17 @@ export class TileMap {
 
         return thingsToPlace;
     }
+    isInsideMapBorder(pos: Coordinate) {
+        const rect = this.getBorders();
+        if (pos.x < rect.x) return false;
+        if (pos.y < rect.y) return false;
+        if (pos.x >= rect.width) return false;
+        if (pos.y >= rect.height) return false;
+        return true;
+    }
+    isWalkable(pos: Coordinate):boolean {
+        return this.getAt(pos).isWalkable();
+    }
     getBorders(): Rect {
         return {
             x: 0,

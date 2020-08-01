@@ -366,7 +366,7 @@ class GameScene extends Phaser.Scene {
 	}
 
 	initGameEvents() {
-		gameBus.subscribe(sightUpdated, event => {
+		gameBus.subscribe(sightUpdated, _ => {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});

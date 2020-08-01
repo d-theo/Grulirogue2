@@ -10,7 +10,7 @@ export class DamageQueue {
         for (let i = 0; i < this.queue.length; i++) {
             this.queue[i].addOffset(i);
         }
-        this.queue.forEach(q => q.showDamage({delay:150}));
+        this.queue.forEach(q => q.showDamage({delay:200}));
         this.queue = [];
     }
 }

@@ -5,6 +5,6 @@ export class LearnSkillAction extends Action {
         super();
     }
     execute() {
-        this.game.hero.heroSkills.learnSkill(name);
+        this.game.hero.heroSkills.learnSkill(this.args.name);
     }
 }

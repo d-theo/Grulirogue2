@@ -1,7 +1,7 @@
 import { Game } from "../game";
-import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder} from "./preconditions/moveAllowed";
+import { isTileEmpty} from "../utils/moveAllowed";
 import { MessageResponseStatus } from "../utils/types";
-import { Monster } from "../monsters/monster";
+import { Monster } from "./monster";
 import { Coordinate } from "../utils/coordinate";
 import { gameBus, monsterMoved } from "../../eventBus/game-bus";
 
@@ -10,8 +10,8 @@ export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordi
     const pos = nextPos;
     if (
         isTileEmpty(pos, game.monsters.monstersArray())
-        && isSurroundingClear(pos, game.tilemap)
-        && isInsideMapBorder(pos, game.tilemap.getBorders())
+        && game.tilemap.isWalkable(pos)
+        && game.tilemap.isInsideMapBorder(pos)
     ) {
         monster.pos = pos;
         gameBus.publish(monsterMoved({monster: monster}));

@@ -97,6 +97,7 @@ function createSpell(name: SpellNames) {
                 affect: () => new Affect('blind').params(7).create(),
                 mapEffect:  MapEffect.Shadow,
                 duration: 40,
+                addition: () => effect.adjustSight()
             });
         case SpellNames.ColdCloud:
             return createElementalSpell(effect, {
@@ -231,5 +232,8 @@ export class WorldEffect {
     }
     getNearestAttackables() {
         return this.game.getNearestAttackables();
+    }
+    adjustSight() {
+        return this.game.adjustSight();
     }
 }

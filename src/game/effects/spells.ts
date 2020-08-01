@@ -1,6 +1,6 @@
 import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
-import { gameBus, logPublished, effectSet, playerMoved, itemEquiped, sightUpdated, heroGainedXp, rogueEvent, endRogueEvent } from "../../eventBus/game-bus";
+import { gameBus, logPublished, effectSet, playerMoved, itemEquiped, sightUpdated, rogueEvent, endRogueEvent, xpHasChanged } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect, BuffDefinition } from "./effect";
 import { MapEffect } from "../../map/map-effect";
@@ -231,9 +231,7 @@ export class XPEffect implements IEffect {
     type = EffectTarget.Movable;
     cast(target: Hero | Monster) {
         if (target instanceof Hero) {
-            gameBus.publish(heroGainedXp({
-                amount: 999999
-            }));
+            target.gainXP(999999);
             gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
         } else {
             gameBus.publish(logPublished({data:'nothing happens'}));
@@ -300,6 +298,7 @@ interface ElementSpell {
     affect: () => BuffDefinition;
     mapEffect: MapEffect;
     duration: number;
+    addition?: Function; // additionnal effects
 }
 
 export function createElementalSpell (world: WorldEffect, builder: ElementSpell) {
@@ -316,7 +315,9 @@ export function createElementalSpell (world: WorldEffect, builder: ElementSpell)
             break;
         default: throw new Error('not implemented Spell shape');
     }
+    builder.addition && builder.addition();
     return new ElementalSpell(world, strategy, builder);
+    
     function aroundStrategy(builder: ElementSpell) {
         return (pos: Coordinate) => {
             around(pos, 1).forEach(p => {

@@ -132,7 +132,7 @@ export class EnchantTable {
     getBurned() {
         return this.burned;
     }
-    report() {
+    report(): string[] {
         let r = [];
         if (this.stuned) {
             r.push('Stuned');

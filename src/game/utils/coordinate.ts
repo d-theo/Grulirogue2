@@ -23,3 +23,9 @@ export function around (pos: Coordinate, n: number): Coordinate[] {
     }
     return r;
 }
+
+export function isMovingOnlyOneCase(a: Coordinate, b: Coordinate) :boolean{
+    const xd = Math.abs(a.x - b.x);
+    const xy = Math.abs(a.y - b.y);
+    return Math.max(xd, xy) === 1;
+}

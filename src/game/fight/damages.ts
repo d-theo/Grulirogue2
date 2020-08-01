@@ -1,7 +1,8 @@
 import { Monster } from "../monsters/monster";
-import { gameBus, playerTookDammage, heroGainedXp, monsterDead, monsterTookDamage } from "../../eventBus/game-bus";
+import { gameBus, playerTookDammage, monsterDead, monsterTookDamage } from "../../eventBus/game-bus";
 import { HealthReport, HealthStatus } from "../entitybase/health";
 import { Entity } from "../entitybase/entity";
+import { Hero } from "../hero/hero";
 
 export class DamageResolution {
     private report: HealthReport;
@@ -34,11 +35,11 @@ export class DamageResolution {
                 monster: monster
             }));
             if (this.target.getAligment() === 'bad') {
-                gameBus.publish(heroGainedXp({
-                    amount: monster.xp
-                }));
+                if(this.source instanceof Hero) {
+                    this.source.gainXP(monster.xp);
+                }
             }
-        }   
+        }
     }
 }
 

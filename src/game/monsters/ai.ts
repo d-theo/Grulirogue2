@@ -1,11 +1,11 @@
 import {Monster} from './monster';
 import { GameRange } from '../utils/range';
 import { Game } from '../game';
-import { monsterMove } from '../use-cases/monsterMove';
-import { monsterAttack } from '../use-cases/monsterAttack';
+import { monsterMove } from './monsterMove';
+import { monsterAttack } from './monsterAttack';
 import { astar } from '../tilemap/astar';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
-import { isTileEmpty } from '../use-cases/preconditions/moveAllowed';
+import { isTileEmpty } from '../utils/moveAllowed';
 import { Hero } from '../hero/hero';
 import * as _ from 'lodash';
 

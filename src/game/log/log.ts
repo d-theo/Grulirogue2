@@ -16,10 +16,14 @@ export class Log {
             }
         });
         gameBus.subscribe(monsterTookDamage, event => {
-            if (event.payload.externalSource) {
-                Log.log(`${event.payload.externalSource.name} deals ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
+            if (event.payload.amount < 0 && event.payload.currentHp !== event.payload.baseHp) { // heal
+                Log.log(`${event.payload.monster.name} feels better`);
             } else {
-                Log.log(`You deal ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
+                if (event.payload.externalSource) {
+                    Log.log(`${event.payload.externalSource.name} deals ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
+                } else {
+                    Log.log(`You deal ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
+                }
             }
         });
         gameBus.subscribe(itemPickedUp, event => {

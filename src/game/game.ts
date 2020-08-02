@@ -115,12 +115,12 @@ export class Game {
         action.execute();
     }
     initBus() {
-        gameBus.subscribe(rogueEvent, event => {
+        gameBus.subscribe(rogueEvent, _ => {
             this.savedLevel = this.level;
             this.level = RogueEventLevel;
             this.reInitLevel();
         });
-        gameBus.subscribe(endRogueEvent, event => {
+        gameBus.subscribe(endRogueEvent, _ => {
             this.level = this.savedLevel+1;
             this.reInitLevel();
         });

@@ -7,7 +7,7 @@ import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
 import * as _ from 'lodash';
-import { off } from "process";
+
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;

@@ -161,7 +161,8 @@ export class Affect {
                 t.health.take(-bonus);
                 gameBus.publish(playerHealed({
                     baseHp: t.health.baseHp,
-                    currentHp: t.health.currentHp
+                    currentHp: t.health.currentHp,
+                    amount: -bonus
                 }));
             },
             start: null,
@@ -420,7 +421,8 @@ export class Affect {
                     t.health.take(-this.param1);
                     gameBus.publish(playerHealed({
                         baseHp: t.health.baseHp,
-                        currentHp: t.health.currentHp
+                        currentHp: t.health.currentHp,
+                        amount: -this.param1
                     }));
                 }
             },
@@ -492,7 +494,8 @@ export class EnchantSolver {
             if (this.t instanceof Hero) {
                 gameBus.publish(playerHealed({
                     baseHp: this.t.health.baseHp,
-                    currentHp: this.t.health.currentHp
+                    currentHp: this.t.health.currentHp,
+                    amount: -1
                 }));
             } else {
                 gameBus.publish(monsterTookDamage({

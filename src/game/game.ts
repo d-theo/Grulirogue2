@@ -3,7 +3,7 @@ import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {gameBus, nextLevelCreated, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
+import {gameBus, nextLevelCreated, logPublished, gameFinished, rogueEvent, endRogueEvent, turnEnded} from '../eventBus/game-bus';
 import { Log } from "./log/log";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
@@ -136,6 +136,7 @@ export class Game {
             this.hero.heroSkills.update(); // TODO REFACTO
             this.monsters.update();
             this.items.update();
+            gameBus.publish(turnEnded({}));
         }
 
         if (this.hero.enchants.getStuned()) {

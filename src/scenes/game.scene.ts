@@ -2,8 +2,8 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,doorOpened,gameStarted,itemPickedUp,playerHealed,itemDropped,logPublished,nextLevelCreated,xpHasChanged,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage} from '../eventBus/game-bus';
-import {UIEntity} from '../UIEntities/ui-entity';
+import {gameBus,sightUpdated,monsterMoved,playerMoved,doorOpened,gameStarted,itemPickedUp,playerHealed,itemDropped,logPublished,nextLevelCreated,xpHasChanged,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage, turnEnded} from '../eventBus/game-bus';
+import {UIEntity, UIHero, UIMonster} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
 import {Hero} from '../game/hero/hero';
@@ -16,7 +16,6 @@ import { GameContext, Modes } from './states';
 import { Keyboard } from '../phaser-addition/keyboard';
 import { CellSize } from '../main';
 import { UIDamages } from '../UIEntities/ui-damages';
-import { DamageQueue } from '../phaser-addition/damage-queue';
 import { AttackAction } from '../game/actions/attack';
 import { PlayerMoveAction } from '../game/actions/move';
 import { UseItemAction } from '../game/actions/use-item';
@@ -33,7 +32,6 @@ class GameScene extends Phaser.Scene {
 	gameMonsters: {[id: string]: UIEntity} = {};
 	gameItems: {[id: string]: UIItem} = {};
 	gameEffects: {[id: string]: UIEffect} = {};
-	damageQueue: DamageQueue = new DamageQueue();
 
 	tilemap;
 	layer;
@@ -94,7 +92,7 @@ class GameScene extends Phaser.Scene {
 		const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
 		this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 
-		this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
+		this.hero = new UIHero(this, this.gameEngine.hero, 'hero');
 		this.target = this.physics.add.sprite(0, 0, 'target');
 		this.target.setOrigin(0, 0);
 		this.target.setDepth(5);
@@ -370,31 +368,23 @@ class GameScene extends Phaser.Scene {
 			this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
 			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
 		});
+		gameBus.subscribe(turnEnded, _ => {
+			this.hero.updateStatus();
+			Object.values(this.gameMonsters).forEach(v => v.updateStatus());
+			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
+		});
 		gameBus.subscribe(monsterMoved, event => {
 			const { monster } = event.payload;
 			const m = this.gameMonsters[monster.id];
-
-			this.hero.updateHp(true);
-			this.damageQueue.resolve();
-
-			// TODO REFACTO
 			m.move();
-
-			this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
-		});
-		gameBus.subscribe(monsterDead, event => {
-			const { monster } = event.payload;
-			const m = this.gameMonsters[monster.id];
-			m.updateHp();
 		});
 		gameBus.subscribe(monsterTookDamage, event => {
 			const monster = event.payload.monster;
 			const m = this.gameMonsters[monster.id];
-			new UIDamages(this, monster, event.payload.amount).showDamage();
-			m.updateHp();
+			m.updateHp(event.payload.amount);
 		});
 		gameBus.subscribe(playerTookDammage, event => {
-			this.damageQueue.add(new UIDamages(this, this.hero.subject as Hero, event.payload.amount));
+			this.hero.updateHp(event.payload.amount);
 		});
 		gameBus.subscribe(playerMoved, event => {
 			this.hero.move();
@@ -413,7 +403,7 @@ class GameScene extends Phaser.Scene {
 			this.gameItems[item.id].pickedUp();
 		});
 		gameBus.subscribe(playerHealed, event => {
-			this.hero.updateHp();
+			if (!event.payload.isSilent) this.hero.updateHp(-event.payload.amount);
 		});
 		gameBus.subscribe(itemDropped, event => {
 			const { item } = event.payload;
@@ -425,11 +415,11 @@ class GameScene extends Phaser.Scene {
 			gameItem.destroy();
 		});
 		gameBus.subscribe(rogueEvent, () => {
-			this.hero.updateHeroSprite('@');
+			this.hero.updateSprite('@');
 		});
 		gameBus.subscribe(monsterSpawned, (event) => {
 			const mob = event.payload.monster;
-			const monster = new UIEntity(this, mob, mob.name)
+			const monster = new UIMonster(this, mob, mob.name)
 			this.gameMonsters[mob.id] = monster;
 		});
 		gameBus.subscribe(xpHasChanged, event => {
@@ -467,10 +457,10 @@ class GameScene extends Phaser.Scene {
 			this.gameEffects[id].destroy();
 			delete this.gameEffects[id];
 		});
-		gameBus.subscribe(gameOver, event => {
+		gameBus.subscribe(gameOver, _ => {
 			this.scene.pause().launch(SceneName.GameOver);
 		});
-		gameBus.subscribe(gameFinished, event => {
+		gameBus.subscribe(gameFinished, _ => {
 			this.scene.pause().launch(SceneName.GameFinished);
 		});
 		gameBus.subscribe(itemEquiped, event => {
@@ -478,7 +468,7 @@ class GameScene extends Phaser.Scene {
 				armour
 			} = event.payload;
 			if (armour) {
-				this.hero.updateHeroSprite(armour.skin);
+				this.hero.updateSprite(armour.skin);
 			}
 		});
 		gameBus.subscribe(nextLevelCreated, event => {
@@ -489,7 +479,7 @@ class GameScene extends Phaser.Scene {
 	placeMonsters() {
 		const mobToPlace = this.gameEngine.monsters.monstersArray();
 		for (const mob of mobToPlace) {
-			const monster = new UIEntity(this, mob, mob.name)
+			const monster = new UIMonster(this, mob, mob.name)
 			this.gameMonsters[mob.id] = monster;
 		}
 	}

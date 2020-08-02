@@ -112,18 +112,21 @@ export class HeroSkills {
             return {
                 timeSpent: 0,
                 status: MessageResponseStatus.NotAllowed,
+                data: 'the skill '+ name +' does not exist'
             };
         }
         if (skill.level === 0) {
             return {
                 timeSpent: 0,
                 status: MessageResponseStatus.NotAllowed,
+                data: 'You have not learn that yet',
             };
         }
         if (this.heroCooldowns[name] > 0) {
             return {
                 timeSpent: 0,
                 status: MessageResponseStatus.NotAllowed,
+                data: 'cooldown not ready'
             };
         }
         return {

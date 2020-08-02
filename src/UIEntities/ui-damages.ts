@@ -26,7 +26,7 @@ export class UIDamages {
 		} else if (number < 0) {
 			this.txt = ''+Math.abs(number);
 			this.Font.color =  `#${this.rainbow.colourAt(Math.abs(number))}`;
-		} else if (number > 0) {
+		} else if (number > 0) { // heal
 			this.txt = '+'+number;
 			this.Font.color = '#83F52C'
 		}

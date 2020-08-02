@@ -16,6 +16,8 @@ export const nextLevelCreated = createEventDefinition<{
     level: number
 }>()('nextLevelCreated');
 
+export const turnEnded = createEventDefinition<{}>()('turnEnded');
+
 export const xpHasChanged = createEventDefinition<{
     current: number;
     total: number;
@@ -61,6 +63,7 @@ export const playerTookDammage = createEventDefinition<{
 
 export const playerHealed = createEventDefinition<{
     baseHp: number,
+    amount: number,
     currentHp: number,
     isSilent?: boolean,
 }>()("playerHealed");

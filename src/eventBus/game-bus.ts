@@ -25,7 +25,8 @@ export const xpHasChanged = createEventDefinition<{
 }>()('xpHasChanged');
 
 export const doorOpened = createEventDefinition<{
-    pos: Coordinate
+    pos: Coordinate,
+    terrainType: number,
 }>()('doorOpened');
 
 export const logPublished = createEventDefinition<{

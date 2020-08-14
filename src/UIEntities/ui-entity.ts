@@ -8,9 +8,7 @@ import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
 import * as _ from 'lodash';
 import { UIStatus } from "./ui-status";
-import { UIDamages } from "./ui-damages";
-import { DamageQueue } from "../phaser-addition/damage-queue";
-
+import { UIDamages, DamageQueue } from "./ui-damages";
 
 export abstract class UIEntity {
     sprite: Phaser.GameObjects.Sprite;

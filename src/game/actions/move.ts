@@ -60,11 +60,20 @@ function hasOpenedDoors(pos: Coordinate, tilemap: TileMap) {
     const tile = tilemap.getAt(pos);
     if (tile.isType(Terrain.DoorOpen) || tile.isType(Terrain.DoorRogue)) {
         tile.type[0] = Terrain.DoorOpened; // fixme should be floor + doorOpen on top
-        gameBus.publish(doorOpened({pos}));
+        gameBus.publish(doorOpened({
+            pos,
+            terrainType: getDoorOpenedStyleType(tile)
+        }));
         return true;
     }
     return false;
 }
+
+function getDoorOpenedStyleType(tile) {
+    if (tile.isType(Terrain.DoorRogue)) return Terrain.DoorOpenedRogue;
+    if (tile.isType(Terrain.DoorOpen)) return Terrain.DoorOpenedRogue;
+}
+
 function itemOnGround(pos: Coordinate, items: ItemCollection) {
     return items.getAt(pos);
 }

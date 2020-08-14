@@ -390,8 +390,8 @@ class GameScene extends Phaser.Scene {
 			this.hero.move();
 		});
 		gameBus.subscribe(doorOpened, event => {
-			const { pos } = event.payload;
-			this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
+			const { pos, terrainType } = event.payload;
+			this.layer.putTileAt(terrainType, pos.x, pos.y);
 		});
 		gameBus.subscribe(itemPickedUp, event => {
 			const { item } = event.payload;

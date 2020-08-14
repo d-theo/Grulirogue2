@@ -3,7 +3,7 @@ import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
 import { EnchantTable } from "../entitybase/enchantable";
 import { Inventory } from "./inventory";
-import { BuffDefinition } from "../effects/effect";
+import { BuffDefinition, EffectMaker, SpellNames } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
@@ -13,6 +13,7 @@ import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
 import { EnchantSolver } from "../effects/affects";
 import { DamageResolution } from "../fight/damages";
+import { IdentifiySpell } from "../effects/spells";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -141,7 +142,20 @@ export class Hero implements Entity {
     update() {
         this.regenHealth();
         this.resolveBuffs();
+        this.updateInventory();
         this.enchantSolver.solve();
+    }
+    updateInventory() {
+        this.weapon.hitBeforeIdentified --;
+        this.armour.hitBeforeIdentified --;
+        if (this.weapon.hitBeforeIdentified === 0 && !this.weapon.identified) {
+            const identify = EffectMaker.createSpell(SpellNames.Identify) as IdentifiySpell;
+            identify.cast(this.weapon);
+        }
+        if (this.armour.hitBeforeIdentified === 0 && !this.armour.identified) {
+            const identify = EffectMaker.createSpell(SpellNames.Identify) as IdentifiySpell;;
+            identify.cast(this.armour);
+        }
     }
     takeDamages(fight: DamageResolution) {
         fight.heroTakesDamages();

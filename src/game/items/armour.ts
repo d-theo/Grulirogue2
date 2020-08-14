@@ -19,6 +19,7 @@ export class Armour extends Item implements ItemArgument{
     public additionalDescription: string[] = [];
     public bulky: number;
     public onEquipBuffs: BuffDefinition[] = [];
+    public hitBeforeIdentified = 200;
     constructor(arg: any) { // Todo
         super(arg);
         this.isConsumable = false;

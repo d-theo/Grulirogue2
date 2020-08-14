@@ -14,6 +14,7 @@ export class Weapon extends Item implements ItemArgument {
     onEquipBuffs: BuffDefinition[];
     additionalName: string[]=[];
     maxRange: number;
+    public hitBeforeIdentified = 200;
     constructor(arg: any) { // FIXME
         super(arg);
         this.isConsumable = false;

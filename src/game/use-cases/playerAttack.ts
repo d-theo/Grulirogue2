@@ -5,9 +5,10 @@ import { TileMap } from "../tilemap/tilemap";
 import { Log } from "../log/log";
 import { Monster } from "../monsters/monster";
 import { distance } from "../utils/coordinate";
-import { gameBus, effectSet } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { MapEffect } from "../../map/map-effect";
 import { DamageResolution } from "../fight/damages";
+import { effectSet } from "../../events/effect-set";
 
 export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilemap: TileMap}): MessageResponse {
     const {hero, attacked, tilemap} = args; 

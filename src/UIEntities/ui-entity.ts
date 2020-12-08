@@ -1,12 +1,13 @@
 import { Scene } from "phaser";
 import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
-import { gameBus, gameOver } from "../eventBus/game-bus";
+import { gameBus } from "../eventBus/game-bus";
 import { pickInRange } from "../game/utils/random";
 import { Entity } from "../game/entitybase/entity";
 import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
 import * as _ from 'lodash';
+import { gameOver } from "../events";
 
 export class UIEntity {
     sprite: Phaser.GameObjects.Sprite;

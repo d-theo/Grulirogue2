@@ -1,7 +1,8 @@
 import { Item } from "../entitybase/item";
 import { Coordinate, equalsCoordinate } from "../utils/coordinate";
-import { gameBus, itemRemoved } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { Wand } from "./wands";
+import { itemRemoved } from "../../events";
 
 export class ItemCollection {
     private items: Item[] = [];

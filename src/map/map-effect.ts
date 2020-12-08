@@ -1,3 +1,5 @@
+import { Coordinate } from "../game/utils/coordinate";
+
 export enum MapEffect {
     Spike = 'Spikes',
     Projectile = 'rock',
@@ -11,3 +13,18 @@ export enum MapEffect {
     Light = 'Light',
     Floral = 'Floral'
 }
+
+export type StaticEffet = {
+    id: string,
+    animation: 'static';
+    pos: Coordinate;
+    type: MapEffect;
+}
+export type ThrowEffet = {
+    animation: 'throw';
+    from: Coordinate;
+    to: Coordinate;
+    type: MapEffect;
+}
+
+export type MapEffects = StaticEffet | ThrowEffet;

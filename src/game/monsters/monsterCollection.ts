@@ -1,6 +1,7 @@
 import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
-import { gameBus, monsterDead } from '../../eventBus/game-bus';
+import { gameBus } from '../../eventBus/game-bus';
+import { monsterDead } from '../../events';
 
 export class MonsterCollection {
     monsters: Monster[] = [];

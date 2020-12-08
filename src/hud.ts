@@ -1,5 +1,6 @@
-import { gameBus, playerMoved, gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged, itemEquiped, enchantChanged } from "./eventBus/game-bus";
 import $ from 'jquery';
+import { gameBus } from './eventBus/game-bus';
+import { gameStarted, logPublished, playerTookDammage, playerHealed, xpHasChanged, itemEquiped, enchantChanged, playerMoved } from './events';
 
 export function hud() {
     $('#log').keydown(function(e) {

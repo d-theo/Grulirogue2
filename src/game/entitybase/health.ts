@@ -1,5 +1,6 @@
-import { gameBus, playerHealed } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { pickInRange } from "../utils/random";
+import { playerHealed } from "../../events";
 
 export class Health {
     currentHp: number;

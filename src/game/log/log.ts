@@ -1,4 +1,5 @@
-import { gameBus, logPublished, playerTookDammage, itemPickedUp, playerHealed, itemEquiped, monsterTookDamage } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
+import { playerTookDammage, monsterTookDamage, itemPickedUp, playerHealed, logPublished } from "../../events";
 
 export class Log {
     static initialized = false;

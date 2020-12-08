@@ -1,6 +1,6 @@
 import { Item } from "../entitybase/item";
 import { Hero } from "../hero/hero";
-import { gameBus, itemDropped, monsterSpawned } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { Coordinate, equalsCoordinate } from "../utils/coordinate";
 import { ItemCollection } from "../items/item-collection";
 import { Place } from "./place-interface";
@@ -8,6 +8,7 @@ import { PlaceKind } from "./place-definitions";
 import { BloodFountain, HolyFountain, PoisonPot, CatAltar } from "./places";
 import { Monster } from "../monsters/monster";
 import { MonsterCollection } from "../monsters/monsterCollection";
+import { itemDropped, monsterSpawned } from "../../events";
 
 
 export class SpecialPlaces {

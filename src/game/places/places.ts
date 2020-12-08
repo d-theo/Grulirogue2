@@ -2,7 +2,7 @@ import { Place } from "./place-interface";
 import { Coordinate } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
 import { Potion } from "../items/potion";
-import { gameBus, logPublished, itemRemoved } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { Weapon } from "../items/weapon";
 import { Armour } from "../items/armour";
 import { Hero } from "../hero/hero";
@@ -10,10 +10,9 @@ import { createSmellyBottle, CatStatue } from "../loot/loot-mics";
 import { Scroll } from "../items/scroll";
 import { Affect } from "../effects/affects";
 import { Scrolls } from "../loot/loot-scrolls";
-import { EffectMaker, SpellNames } from "../effects/effect";
 import { Bestiaire } from "../monsters/bestiaire";
 import { Monster } from "../monsters/monster";
-import { AIBehavior } from "../monsters/ai";
+import { logPublished, itemRemoved } from "../../events";
 
 export class BloodFountain implements Place {
     cursed = true;

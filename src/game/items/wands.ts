@@ -1,8 +1,9 @@
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "./item-visitor";
 import * as _ from 'lodash';
-import { gameBus, logPublished } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { IEffect, EffectTarget } from "../effects/spells";
+import { logPublished } from "../../events";
 
 export class Wand extends Item implements ItemArgument {
     effect: IEffect;

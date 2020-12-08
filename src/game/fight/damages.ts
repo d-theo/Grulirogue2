@@ -1,7 +1,8 @@
 import { Monster } from "../monsters/monster";
-import { gameBus, playerTookDammage, heroGainedXp, monsterDead, monsterTookDamage } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { HealthReport, HealthStatus } from "../entitybase/health";
 import { Entity } from "../entitybase/entity";
+import { playerTookDammage, monsterTookDamage, monsterDead, heroGainedXp } from "../../events";
 
 export class DamageResolution {
     private report: HealthReport;

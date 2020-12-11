@@ -75,7 +75,7 @@ export class HeroSkills {
                 this.hero.health.getStronger(this.hero.skillFlags.gainHpPerLevel);
                 break;
             case 'alchemist': return this.hero.skillFlags.improvedPotionEffect ++;
-            case 'monk': return this.hero.fightModifier.fistAdditionnalDmg += 3;
+            case 'monk': return this.hero.fightModifier.fistAdditionnalDmg += 2;
             case 'explorer': return this.hero.skillFlags.additionnalItemPerLevel ++;
             case 'overseer': return this.hero.sight ++;
             case 'snake': return this.hero.dodge += 0.05;

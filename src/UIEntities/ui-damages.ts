@@ -1,8 +1,11 @@
 import { Scene } from "phaser";
 import { toPix } from "../maths/maps-utils";
 import { Coordinate } from "../game/utils/coordinate";
+import { uniqueId } from "lodash";
 const Rainbow = require('rainbowvis.js');
 export class UIDamages {
+	uuid = uniqueId();
+	markAsPlayed = false; // has been shown
 	textObj;
 	offset: number = 0;
 	Font = {
@@ -52,9 +55,16 @@ export class UIDamages {
 			delay: option.delay,
 			repeat: 0,
 			yoyo: false,
-			onComplete: () => this.textObj.destroy(),
+			onComplete: () => {
+				this.textObj.setActive(false);
+				this.textObj.setVisible(false);
+				this.textObj.destroy();
+				console.log(this.uuid);
+			},
 			x: { from: this.textObj.x, to:this.textObj.x },
 			y: { from: this.textObj.y-this.offset, to: this.textObj.y - 30 - this.offset }
 		});
+		
+		this.markAsPlayed = true;
 	};
 }

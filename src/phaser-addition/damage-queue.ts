@@ -11,6 +11,6 @@ export class DamageQueue {
             this.queue[i].addOffset(i);
         }
         this.queue.forEach(q => q.showDamage({delay:150}));
-        setTimeout(() => this.queue = this.queue.filter(dmg => dmg.markAsPlayed === false), 200);
+        this.queue = this.queue.filter(dmg => dmg.markAsPlayed === false);
     }
 }

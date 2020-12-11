@@ -36,6 +36,12 @@ export class UIDamages {
 		}
 		this.textObj = this.parentScene.add.text(toPix(subject.pos.x), toPix(subject.pos.y), txt, this.Font);
 		this.textObj.setOrigin(0,0);
+
+		setTimeout(() => {
+			if (!this.markAsPlayed) {
+				this.showDamage();
+			}
+		}, 300);
 	}
 
 	public addOffset(i: number) {
@@ -43,14 +49,16 @@ export class UIDamages {
 	}
 
 	public showDamage(option?: {delay: number}) {
-		if (this.once) {
-			return;
-		}
 		if (!option) {
 			option = {
 				delay: 0
 			}
 		}
+
+		if (!this.parentScene || !this.textObj) {
+			return;
+		}
+
 		this.textObj.setDepth(3);
 		this.parentScene.tweens.add({
 			targets: this.textObj,
@@ -62,14 +70,10 @@ export class UIDamages {
 			onComplete: () => {
 				this.textObj.setActive(false);
 				this.textObj.setVisible(false);
-				this.textObj.destroy();
-				console.log(this.uuid);
-				this.markAsPlayed = true;
 			},
 			x: { from: this.textObj.x, to:this.textObj.x },
 			y: { from: this.textObj.y-this.offset, to: this.textObj.y - 30 - this.offset }
-		});
-		
-		this.once = true;
+		});	
+		this.markAsPlayed = true;
 	};
 }

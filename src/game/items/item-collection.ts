@@ -24,7 +24,7 @@ export class ItemCollection {
         return this.items.find(i => id === i.id);
     }
     getAt(pos: Coordinate) {
-        const item = this.items.find(i => i.pos && equalsCoordinate(i.pos, pos));
+        const item = this.items.reverse().find(i => i.pos && equalsCoordinate(i.pos, pos));
         if  (!item) {
             return null;
         } else {

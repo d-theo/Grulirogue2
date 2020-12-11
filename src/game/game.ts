@@ -18,8 +18,9 @@ import { getUniqLoot } from "./loot/loot-uniq";
 import * as _ from 'lodash';
 import { gameBus } from "../eventBus/game-bus";
 import { gameFinished, logPublished, nextLevelCreated, playerMoved, rogueEvent, endRogueEvent, heroGainedXp, xpHasChanged, sightUpdated, timePassed } from "../events";
-import { sightHasChanged } from "../events/sight-has-changed";
+import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
+import { sightHasChanged } from "../events/sight-has-changed";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -49,7 +50,8 @@ export class Game {
         99: 10
     };
     places: SpecialPlaces;
-    dispatcher: CommandDispatcher;
+    commandDispatcher: CommandDispatcher;
+    eventDispatcher: EventDispatcher;
 
     public getHero(): Hero {
         return this.hero;
@@ -79,7 +81,8 @@ export class Game {
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         EffectMaker.set(this);
-        this.dispatcher = new CommandDispatcher(this);
+        this.commandDispatcher = new CommandDispatcher(this);
+        this.eventDispatcher = new EventDispatcher(this);
         this.initBus();
         this.reInitLevel();
     }

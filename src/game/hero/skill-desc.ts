@@ -14,9 +14,9 @@ Each level grants you a random extra HP according to the forumula: random(1,2) +
 export const MonkDesc = 
 `You are a beast with your fists. More expertise in this path will automatically improve your damages.
 
-level 1 : +3 dmg
-level 2 : +6 dmg
-level 3 : +9 dmg
+level 1 : +2 dmg
+level 2 : +4 dmg
+level 3 : +6 dmg
 `;
 
 export const SnakeDesc = 

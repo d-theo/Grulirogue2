@@ -6,6 +6,7 @@ const Rainbow = require('rainbowvis.js');
 export class UIDamages {
 	uuid = uniqueId();
 	markAsPlayed = false; // has been shown
+	once = false; // has been shown
 	textObj;
 	offset: number = 0;
 	Font = {
@@ -42,6 +43,9 @@ export class UIDamages {
 	}
 
 	public showDamage(option?: {delay: number}) {
+		if (this.once) {
+			return;
+		}
 		if (!option) {
 			option = {
 				delay: 0
@@ -60,11 +64,12 @@ export class UIDamages {
 				this.textObj.setVisible(false);
 				this.textObj.destroy();
 				console.log(this.uuid);
+				this.markAsPlayed = true;
 			},
 			x: { from: this.textObj.x, to:this.textObj.x },
 			y: { from: this.textObj.y-this.offset, to: this.textObj.y - 30 - this.offset }
 		});
 		
-		this.markAsPlayed = true;
+		this.once = true;
 	};
 }

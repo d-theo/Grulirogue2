@@ -3,7 +3,8 @@ import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder
 import { MessageResponseStatus } from "../utils/types";
 import { Monster } from "../monsters/monster";
 import { Coordinate } from "../utils/coordinate";
-import { gameBus, monsterMoved } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
+import { monsterMoved } from "../../events";
 
 export function monsterMove(args: {game: Game, monster: Monster, nextPos: Coordinate}) {
     const {game, monster, nextPos} = args;

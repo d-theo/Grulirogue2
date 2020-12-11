@@ -1,12 +1,12 @@
 import { MessageResponse, MessageResponseStatus } from "../utils/types";
 import { Attack } from "../fight/fight";
-import { HealthStatus } from "../entitybase/health";
 import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
-import { gameBus, playerTookDammage, effectSet, monsterTookDamage, monsterDead, heroGainedXp } from "../../eventBus/game-bus";
 import { distance } from "../utils/coordinate";
 import { MapEffect } from "../../map/map-effect";
 import { DamageResolution } from "../fight/damages";
+import { gameBus } from "../../eventBus/game-bus";
+import { effectSet } from "../../events";
 
 export function monsterAttack(args: {target: Hero | Monster, monster: Monster}): MessageResponse {
     const {target, monster} = args; 

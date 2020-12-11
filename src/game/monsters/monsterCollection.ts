@@ -1,15 +1,10 @@
 import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
-import { gameBus, monsterDead } from '../../eventBus/game-bus';
+import { gameBus } from '../../eventBus/game-bus';
+import { monsterDead } from '../../events';
 
 export class MonsterCollection {
     monsters: Monster[] = [];
-    constructor() {
-        gameBus.subscribe(monsterDead, event => {
-            const {monster} = event.payload;
-            this.monsters = this.monsters.filter(m => m.id !== monster.id);
-        });
-    }
 
     monstersArray() {
         return this.monsters;
@@ -26,6 +21,9 @@ export class MonsterCollection {
         } else {
             return m;
         }
+    }
+    removeMonster(monster: Monster) {
+        this.monsters = this.monsters.filter(m => m.id !== monster.id);
     }
     update() {
         this.resolveBuffs();

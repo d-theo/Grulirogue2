@@ -1,13 +1,9 @@
 import { TileMap } from "./tilemap/tilemap";
 import { Hero } from "./hero/hero";
 import { MonsterCollection } from "./monsters/monsterCollection";
-import { playerMove } from "./use-cases/playerMove";
-import { MessageResponse, MessageResponseStatus } from "./utils/types";
 import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
-import {sightUpdated, gameBus, playerActionMove, playerMoved, playerAttemptAttackMonster, playerUseItem, waitATurn, nextLevel, nextLevelCreated, playerChoseSkill, heroGainedXp, xpHasChanged, playerUseSkill, logPublished, gameFinished, rogueEvent, endRogueEvent} from '../eventBus/game-bus';
 import { Log } from "./log/log";
-import { playerAttack } from "./use-cases/playerAttack";
 import { ItemCollection } from "./items/item-collection";
 import { EffectMaker } from "./effects/effect";
 import { Monster } from "./monsters/monster";
@@ -20,7 +16,11 @@ import { RogueEventLevel } from "../eventBus/event-rogue";
 import { randomIn } from "./utils/rectangle";
 import { getUniqLoot } from "./loot/loot-uniq";
 import * as _ from 'lodash';
-
+import { gameBus } from "../eventBus/game-bus";
+import { gameFinished, logPublished, nextLevelCreated, playerMoved, rogueEvent, endRogueEvent, heroGainedXp, xpHasChanged, sightUpdated, timePassed } from "../events";
+import { EventDispatcher } from "./event-handlers/dispatcher";
+import { CommandDispatcher } from "./command-handlers/dispatcher";
+import { sightHasChanged } from "../events/sight-has-changed";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -50,6 +50,25 @@ export class Game {
         99: 10
     };
     places: SpecialPlaces;
+    commandDispatcher: CommandDispatcher;
+    eventDispatcher: EventDispatcher;
+
+    public getHero(): Hero {
+        return this.hero;
+    }
+    public getTilemap(): TileMap {
+        return this.tilemap;
+    }
+    public getItems() {
+        return this.items;
+    }
+    public getPlaces() {
+        return this.places;
+    }
+    public getMonsters() {
+        return this.monsters;
+    }
+
     constructor() {
         Log.init();
         this.tilemap = new TileMap();
@@ -62,6 +81,8 @@ export class Game {
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         EffectMaker.set(this);
+        this.commandDispatcher = new CommandDispatcher(this);
+        this.eventDispatcher = new EventDispatcher(this);
         this.initBus();
         this.reInitLevel();
     }
@@ -75,14 +96,20 @@ export class Game {
         }
     }
 
-    reInitLevel() {
+    nextLevelIfAllowed() {
+        if (this.canGoToNextLevel()) {
+            this.level ++;
+            this.reInitLevel();
+        }
+    }
+    private reInitLevel() {
         if (this.level === 6) gameBus.publish(gameFinished({}));
         
         this.places.clear();
         let additionalThingsToPlace: ThingToPlace[] = [];
         additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
-        this.adjustSight();
+        gameBus.publish(sightHasChanged({}));
 
         const friendlies = this.monsters.monstersArray().filter(m => m.getFriendly());
         friendlies.forEach(f => f.pos = {x: this.hero.pos.x, y: this.hero.pos.y+1});
@@ -101,7 +128,7 @@ export class Game {
             gameBus.publish(nextLevelCreated({level: this.level}));
         }
     }
-    mayAddUniqItem() {
+    private mayAddUniqItem() {
         const p = randomIn(_.sample(this.tilemap.graph.rooms)!.rect);
         const uniq = getUniqLoot();
 
@@ -112,52 +139,6 @@ export class Game {
         }
     }
     initBus() {
-        gameBus.subscribe(playerActionMove, event => {
-            const {to} = event.payload;
-            const result: MessageResponse = playerMove({
-                monsters: this.monsters,
-                pos: to,
-                hero: this.hero,
-                tilemap: this.tilemap,
-                items: this.items,
-                places: this.places
-            });
-            if (result.status === MessageResponseStatus.Ok) {
-                gameBus.publish(playerMoved({}));
-                this.nextTurn(result.timeSpent);
-                this.adjustSight();
-            }
-        });
-        gameBus.subscribe(playerAttemptAttackMonster, event => {
-            const {monster} = event.payload;
-            const result: MessageResponse = playerAttack({
-                hero: this.hero,
-                attacked: monster,
-                tilemap: this.tilemap
-            });
-            if (result.status === MessageResponseStatus.Ok) {
-                this.nextTurn(result.timeSpent);
-            }
-        });
-        gameBus.subscribe(playerUseItem, event => {
-            const {target, item, action} = event.payload;
-            const usedItem = this.hero.getItem(item);
-            if (usedItem !== undefined) {
-                usedItem.keyMapping[action](target);
-                this.hero.consumeItem(usedItem);
-                this.places.checkForItem(usedItem);
-            }
-            this.nextTurn(1);
-        });
-        gameBus.subscribe(waitATurn, event => {
-            this.nextTurn(1);
-        });
-        gameBus.subscribe(nextLevel, event => {
-            if (this.canGoToNextLevel()) {
-                this.level ++;
-                this.reInitLevel();
-            }
-        });
         gameBus.subscribe(rogueEvent, event => {
             this.savedLevel = this.level;
             this.level = RogueEventLevel;
@@ -167,34 +148,12 @@ export class Game {
             this.level = this.savedLevel+1;
             this.reInitLevel();
         });
-        gameBus.subscribe(playerChoseSkill, event => {
-            const {name} = event.payload;
-            this.hero.heroSkills.learnSkill(name);
+        gameBus.subscribe(timePassed, event => {
+            this.nextTurn(event.payload.timeSpent);
         });
-        gameBus.subscribe(heroGainedXp, event => {
-            const report = this.hero.gainXP(event.payload.amount);
-            gameBus.publish(xpHasChanged(report));
-        })
-        gameBus.subscribe(playerUseSkill, event => {
-            const {name} = event.payload;
-            const res = this.hero.heroSkills.canCastSkill(name);
-            if (res.status === MessageResponseStatus.Ok) {
-                this.nextTurn(res.timeSpent); // Traps resolve too early if nextTurn is after cast()
-                this.hero.heroSkills.castSkill(name);
-            } else {
-                gameBus.publish(logPublished({level: 'neutral', data:'You cannot do that.'}));
-            }
-        });
-    }
-    canGoToNextLevel() {
-        return this.tilemap.getAt(this.hero.pos).isExit;
-    }
-    adjustSight() {
-        this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
-        gameBus.publish(sightUpdated({}));
     }
 
-    nextTurn(timeSpent: number) {
+    private nextTurn(timeSpent: number) {
         if (this.isNextTurn(timeSpent)) {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
             this.hero.update();
@@ -208,7 +167,7 @@ export class Game {
         }
     }
 
-    isNextTurn(timeSpent: number) {
+    private isNextTurn(timeSpent: number) {
         this.currentTurn += timeSpent;
         if (this.currentTurn >= 1) {
             this.currentTurn = 0;
@@ -217,17 +176,19 @@ export class Game {
             return false;
         }
     }
-
-    getAttackable(pos: Coordinate) {
-        return this.monsters.getAt(pos);
-    }
-
-    startingPosition() {
+    private startingPosition() {
         const heroPos = this.tilemap.startingPosition();
         this.hero.pos = heroPos;
     }
 
-	getNearestAttackables(): Monster[] {
+    // queries
+    public canGoToNextLevel() {
+        return this.tilemap.getAt(this.hero.pos).isExit;
+    }
+    public getAttackable(pos: Coordinate) {
+        return this.monsters.getAt(pos);
+    }
+	public getNearestAttackables(): Monster[] {
         let nearest = [];
 		for (const mob of this.monsters.monstersArray()) {
             const posA = mob.pos;

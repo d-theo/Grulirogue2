@@ -2,7 +2,6 @@ import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
 import {TilemapVisibility} from '../map/TilemapVisibility';
-import {gameBus,sightUpdated,monsterMoved,playerMoved,playerActionMove,doorOpened,gameStarted,playerAttemptAttackMonster,itemPickedUp,playerHealed,playerUseItem,itemDropped,logPublished,waitATurn,nextLevel,nextLevelCreated,xpHasChanged,playerChoseSkill,effectSet,effectUnset,playerUseSkill,gameOver,monsterDead,itemEquiped,gameFinished, itemRemoved, rogueEvent, monsterTookDamage, monsterSpawned, playerTookDammage} from '../eventBus/game-bus';
 import {UIEntity} from '../UIEntities/ui-entity';
 import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
@@ -18,6 +17,9 @@ import { Keyboard } from '../phaser-addition/keyboard';
 import { CellSize } from '../main';
 import { UIDamages } from '../UIEntities/ui-damages';
 import { DamageQueue } from '../phaser-addition/damage-queue';
+import { gameBus } from '../eventBus/game-bus';
+import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, monsterTookDamage, playerTookDammage, playerMoved, doorOpened, itemPickedUp, playerHealed, itemDropped, itemRemoved, rogueEvent, monsterSpawned, xpHasChanged, effectSet, effectUnset, gameOver, gameFinished, itemEquiped, nextLevelCreated } from '../events';
+import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerUseSkill, playerActionMove } from '../commands';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;

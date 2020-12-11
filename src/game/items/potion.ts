@@ -2,8 +2,9 @@ import { Item, ItemArgument } from "../entitybase/item";
 import * as _ from 'lodash';
 import { ItemVisitor } from "./item-visitor";
 import { Hero } from "../hero/hero";
-import { gameBus, logPublished } from "../../eventBus/game-bus";
+import { gameBus } from "../../eventBus/game-bus";
 import { EffectTarget } from "../effects/spells";
+import { logPublished } from "../../events";
 
 export const PotionColors = [
     'blue',

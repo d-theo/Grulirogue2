@@ -106,7 +106,7 @@ export class Game {
         let additionalThingsToPlace: ThingToPlace[] = [];
         additionalThingsToPlace = this.tilemap.init(this.level);
         this.startingPosition();
-        this.adjustSight();
+        gameBus.publish(sightHasChanged({}));
 
         const friendlies = this.monsters.monstersArray().filter(m => m.getFriendly());
         friendlies.forEach(f => f.pos = {x: this.hero.pos.x, y: this.hero.pos.y+1});
@@ -145,20 +145,9 @@ export class Game {
             this.level = this.savedLevel+1;
             this.reInitLevel();
         });
-        gameBus.subscribe(heroGainedXp, event => {
-            const report = this.hero.gainXP(event.payload.amount);
-            gameBus.publish(xpHasChanged(report));
-        });
         gameBus.subscribe(timePassed, event => {
             this.nextTurn(event.payload.timeSpent);
         });
-        gameBus.subscribe(sightHasChanged, event => {
-            this.adjustSight();
-        });
-    }
-    private adjustSight() {
-        this.tilemap.computeSight({from: this.hero.pos, range: this.hero.sight});
-        gameBus.publish(sightUpdated({}));
     }
 
     private nextTurn(timeSpent: number) {

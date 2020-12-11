@@ -13,7 +13,7 @@ import { gameBus } from "../../eventBus/game-bus";
 import { Terrain } from "../../map/terrain.greece";
 import { BuffDefinition } from "../effects/effect";
 import { Affect } from "../effects/affects";
-import { effectUnset } from "../../events";
+import { effectUnset, sightUpdated } from "../../events";
 let short = require('short-uuid');
 
 type DebuffDuration = {debugId?: string, id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -230,6 +230,7 @@ export class TileMap {
                 }
             }
         }
+        gameBus.publish(sightUpdated({}));
     }
     startingPosition() {
         for (let room of this.graph.rooms) {

@@ -7,7 +7,7 @@ import { BuffDefinition, EffectMaker, SpellNames } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
 import  HeroSkills from "./hero-skills";
-import { gameBus, itemEquiped } from "../../eventBus/game-bus";
+import { gameBus, itemEquiped, itemPickedUp } from "../../eventBus/game-bus";
 import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
@@ -65,6 +65,7 @@ export class Hero implements Entity {
     }
     addToBag(item: Item) {
         this.inventory.add(item);
+        gameBus.publish(itemPickedUp({item: item}));
     }
     dropItem(item: Item) {
         item.pos = this.pos;

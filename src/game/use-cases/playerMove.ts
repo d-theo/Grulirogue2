@@ -27,7 +27,6 @@ export function playerMove(args: {
         const maybeItem = itemOnGround(pos, items);
         if (maybeItem) {
             hero.addToBag(maybeItem);
-            gameBus.publish(itemPickedUp({item: maybeItem}));
         }
         places.checkForHero(hero);
         return {

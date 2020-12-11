@@ -56,7 +56,6 @@ function paintWater(room, tilemap1, tilemap2) {
     boatWaterPainter(room, tilemap1, tilemap2);
 }
 function crabRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
-    console.log('generating special room');
     thingsToPlace.push({
         pos: {x: Math.floor(room.rect.x + room.rect.width/2), y: Math.floor(room.rect.y + room.rect.height/2)},
         type: 'crabBoss'

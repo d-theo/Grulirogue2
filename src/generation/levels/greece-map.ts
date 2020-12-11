@@ -9,7 +9,6 @@ import { randomIn } from "../../game/utils/rectangle";
 import { Terrain } from "../../map/terrain.greece";
 import * as _ from 'lodash';
 import { MapGraph } from "../map_definition";
-import { PlaceTypes, availablePlaceType } from "../../game/places/place-definitions";
 import { placePainter } from "../painters/place-painter";
 
 const config: TilerConfig = {
@@ -35,7 +34,7 @@ const config: TilerConfig = {
     ],
     boss: {chance: 0.3, painter: paintSnakeBoss},
     miniRoom: {chance: 0.3, painter: stash},
-    specialRoom: {chance: 0.15, painter: specialRoom},
+    specialRoom: {chance: 1, painter: specialRoom},
 }
 
 export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {

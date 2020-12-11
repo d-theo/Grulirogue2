@@ -9,14 +9,14 @@ export const PlaceTypesDependency = [
     {place:'PoisonPot', need: null},
     {place:'CatAltar', need: 'CatStatue'}];
 
-export function availablePlaceType () {
+export function availablePlaceType (): PlaceKind | null {
     const places = (PlaceTypesDependency.filter(p => {
         if (p.need == null) return true;
         return Uniqs.find(u => u.name === p.need) === undefined;
     }));
     const place = _.sample(places);
     if (place) {
-        return place.place;
+        return place.place as PlaceKind;
     } else {
         return null;
     }

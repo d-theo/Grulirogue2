@@ -46,6 +46,7 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
             break;
     }
     const {tilemapBG, tilemapFG, mapObject, thingsToPlace} = painterFn(mapGeneratorFn, overrides);
+    
     return {
         tilemap: tilemapBG,
         tilemap2: tilemapFG,

@@ -34,7 +34,7 @@ const config: TilerConfig = {
     ],
     boss: {chance: 0.3, painter: paintSnakeBoss},
     miniRoom: {chance: 0.3, painter: stash},
-    specialRoom: {chance: 1, painter: specialRoom},
+    specialRoom: {chance: 0.1, painter: specialRoom},
 }
 
 export function greeeceMap(mapGenerator: () => MapGraph, configOverride: {path: string, value: string}[]) {

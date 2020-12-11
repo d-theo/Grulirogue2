@@ -25,7 +25,8 @@ export class SkillView extends Phaser.GameObjects.Container {
         let currLetter = 'a'.charCodeAt(0);
         this.scroller = this.scene.add.group();
         if (action === 'pickSkill') {
-            this.add(this.scene.add.text(viewW / 2, y, 'Congrutalation, you level up ! Choose a specialization wisely', SkillFont).setOrigin(0.5, 0));
+            SkillFont.fontSize = '10px';
+            this.add(this.scene.add.text(viewW / 2, y, 'Congratulation, you level up ! Choose a specialization wisely', SkillFont).setOrigin(0.5, 0));
         }
         if (action === 'useSkill') {
             this.add(this.scene.add.text(viewW / 2, y, 'What do you want to do ?', SkillFont).setOrigin(0.5, 0));

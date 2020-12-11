@@ -1,10 +1,6 @@
 import { gameBus } from "../../eventBus/game-bus";
 import { Game } from "../game";
-import { EventHandler } from "./event-handler";
 import { itemRemoved, monsterDead, heroGainedXp, rogueEvent, endRogueEvent } from "../../events";
-import { PlayerAttemptAttackMonsterHandler } from "../command-handlers/player-attack";
-import { PlayerActionMoveHandler } from "../command-handlers/player-move";
-import { Hero } from "../hero/hero";
 import { HeroGainedXPHandler } from "./hero-gained-xp";
 import { ItemRemovedHandler } from "./item-removed";
 import { MonsterDeadHandler } from "./monster-dead";

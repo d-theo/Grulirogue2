@@ -21,6 +21,7 @@ import { gameFinished, logPublished, nextLevelCreated, playerMoved, rogueEvent, 
 import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";
+import { UseCustomBuild } from "./loot/custom-build";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -71,6 +72,7 @@ export class Game {
 
     constructor() {
         Log.init();
+        UseCustomBuild(this.Loots); // tests
         this.tilemap = new TileMap();
         this.hero = new Hero();
         this.loopNb = 0;

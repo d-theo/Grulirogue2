@@ -45,5 +45,15 @@ export const Scrolls = {
         name: 'Scroll of asservissement',
         description: 'This scroll will turn an hostile monster into a slave. It might not work against strong monsters',
         effect: () => EffectMaker.createSpell(SpellNames.AsservissementSpell)
+    },
+    Weakness: {
+        name: 'Scroll of weakness',
+        description: 'This scroll will weaken the target of your spell',
+        effect: () => EffectMaker.createSpell(SpellNames.Weakness)
+    },
+    SummoningWeak: {
+        name: 'Scroll of minor summoning',
+        description: 'This scroll will summon allies that fight by your side',
+        effect: () => EffectMaker.createSpell(SpellNames.SummonWeak)
     }
 }

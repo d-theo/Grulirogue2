@@ -14,7 +14,9 @@ import { BloodFountain } from "../places/places";
 import { Affect } from "./affects";
 import { line } from "../tilemap/sight";
 import { DamageResolution } from "../fight/damages";
-import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent } from "../../events";
+import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned } from "../../events";
+import { Bestiaire } from "../monsters/bestiaire";
+import { TileMap } from "../tilemap/tilemap";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -215,6 +217,30 @@ export class ImproveWeaponSpell implements IEffect  {
         target.additionnalDmg += 1;
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
         gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}))
+    }
+}
+
+export class WeaknessSpell implements IEffect  {
+    type = EffectTarget.Movable;
+    constructor(private readonly world: WorldEffect) {}
+    cast(t: Hero|Monster) {
+        new Affect('weak').turns(15).target(t).cast();
+    }
+}
+export class SummonWeakSpell implements IEffect  {
+    type = EffectTarget.None;
+    constructor(private readonly world: WorldEffect) {}
+    cast() {
+        const pos = this.world.getHero().pos;
+        const mobs = [Bestiaire.Greece.Bat, Bestiaire.Greece.Rat, Bestiaire.Greece.Rat];
+        for (let i = 0; i < 3; i++) {
+            const posMob = this.world.nearestEmptyTileFrom(pos);
+            const friend = Monster
+                .makeMonster({...mobs[i], pos: {x: posMob.x, y: posMob.y}})
+                .setAligment('good');
+            this.world.addMonster(friend);
+            gameBus.publish(monsterSpawned({monster: friend}));
+        }
     }
 }
 

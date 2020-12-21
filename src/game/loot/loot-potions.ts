@@ -52,6 +52,11 @@ export const Potions = {
         description: 'A potion that makes you enter in a big rage. Your attacks are stronger but at the cost of your defense',
         effect: (t: Hero) => new Affect('rage').turns(15).target(t).cast(),
     },
+    Berkserk: {
+        name:'Potion of berserker',
+        description: 'A potion that transforms you into a powerfull Berserker for a while. When the effect ends, your body will need to rest.',
+        effect: (t: Hero) => new Affect('berserk').turns(15).target(t).cast(),
+    },
     Curring: {
         name:'Potion of curring',
         description: 'A potion that cure all the magic',

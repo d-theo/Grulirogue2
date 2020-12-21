@@ -34,6 +34,8 @@ export type AffectType =
 | 'weakness'
 | 'fear'
 | 'floral'
+| 'berserk'
+| 'weak'
 | 'procChance';
 
 export class Affect {
@@ -470,6 +472,36 @@ export class Affect {
             },
             end: (t: Monster) => {
                 t.setBehavior(AIBehavior.Default());
+            },
+        }
+    }
+    private weak() {
+        return {
+            start: (t: Hero|Monster) => {
+                t.armour.baseAbsorb -= 3
+                t.enchants.setMoreVulnerable(true);
+            },
+            end: (t: Hero|Monster) => {
+                t.armour.baseAbsorb += 3
+                t.enchants.setMoreVulnerable(false);
+            },
+        }
+    }
+    private berserk() {
+        return {
+            start: (t: Hero|Monster) => {
+                // todo fixme refacto en event ?
+                t.weapon.additionnalDmg += 5;
+                t.enchants.setMoreDamage(true);
+            },
+            end: (t: Hero|Monster) => {
+                t.weapon.additionnalDmg -= 5;
+                t.enchants.setMoreDamage(false);
+                new Affect('weak')
+                    .isStackable(true)
+                    .turns(15)
+                    .target(t)
+                    .cast();
             },
         }
     }

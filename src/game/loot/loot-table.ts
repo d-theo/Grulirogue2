@@ -10,7 +10,6 @@ import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
 import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome, createTomeOfVegetation } from "./loot-mics";
 import * as _ from 'lodash';
-import { randomWand } from "../../eventBus/event-rogue";
 
 export const ArmoursTable: XTable[] = [
     [{chance: 100, type: Armours.Classic}, {chance: 0, type: Armours.Heavy}],
@@ -43,7 +42,7 @@ export const MiscTable: XTable = [
 ];
 
 export const PotionTable: XTable = [
-    {chance: 25, type: Potions.Health},
+    {chance: 20, type: Potions.Health},
     {chance: 12, type: Potions.Thickness},
     {chance: 12, type: Potions.Speed},
     {chance: 12, type: Potions.Accuracy},
@@ -53,17 +52,20 @@ export const PotionTable: XTable = [
     {chance: 5, type: Potions.Rage},
     {chance: 5, type: Potions.Blindness},
     {chance: 2, type: Potions.XP},
+    {chance: 5, type: Potions.Berkserk}
 ];
 
 export const ScrollTable: XTable = [
-    {chance: 25, type: Scrolls.Identification},
+    {chance: 15, type: Scrolls.Identification},
     {chance: 15, type: Scrolls.Teleportation},
     {chance: 15, type: Scrolls.EnchantWeapon},
     {chance: 15, type: Scrolls.EnchantArmour},
     {chance: 10, type: Scrolls.Knowledge},
     {chance: 10, type: Scrolls.Blink},
     {chance: 8, type: Scrolls.Fear},
+    {chance: 5, type: Scrolls.Weakness},
     {chance: 2, type: Scrolls.Asservissement},
+    {chance: 5, type: Scrolls.SummoningWeak}
 ];
 
 export function getRandomLoot(level: number): Item {

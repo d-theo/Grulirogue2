@@ -1,13 +1,14 @@
 import {TileMap} from '../tilemap/tilemap';
 import {Hero} from '../hero/hero';
 import {MonsterCollection} from '../monsters/monsterCollection';
-import { Coordinate } from '../utils/coordinate';
+import { Coordinate, around, equalsCoordinate } from '../utils/coordinate';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
-import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell } from './spells';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell, WeaknessSpell, SummonWeakSpell } from './spells';
 import { Game } from '../game';
 import { Affect } from './affects';
 import { MapEffect } from '../../map/map-effect';
+import { Monster } from '../monsters/monster';
 
 export type BuffDefinition = {
     start: Function | null;
@@ -48,7 +49,9 @@ export enum SpellNames {
     WaterLine = 'WaterLine',
     FireLine = 'FireLine',
     FloralLine = 'FloralLine',
-    FloralCloud = 'FloralCloud'
+    FloralCloud = 'FloralCloud',
+    Weakness = 'Weakness',
+    SummonWeak = 'SummonWeak',
 }
 
 let tilemap: TileMap;
@@ -188,6 +191,10 @@ function createSpell(name: SpellNames) {
             return new RealityEventSpell();
         case SpellNames.AsservissementSpell:
             return new AsservissementSpell();
+        case SpellNames.Weakness:
+            return new WeaknessSpell(effect);
+        case SpellNames.SummonWeak: 
+            return new SummonWeakSpell(effect);
         default:
             throw new Error(`${name} spell not impl`);
     }
@@ -213,6 +220,25 @@ export class WorldEffect {
     }
     tileIsEmpty(pos: Coordinate) {
         return this.tilemap.getAt(pos).isEmpty();
+    }
+    nearestEmptyTileFrom(pos: Coordinate) {
+        let i = 1;
+        let found = false;
+        while(! found) {
+            const positions = around(pos, i);
+            for (const p of positions) {
+                const isEmpty = this.tilemap.getAt(p).isEmpty();
+                const noEnemy = this.monsters.getAt(p) === null;
+                if (isEmpty && noEnemy && !equalsCoordinate(pos, p)) {
+                    return p;
+                }
+            }
+            i++;
+        }
+        
+    }
+    addMonster(m: Monster) {
+        this.monsters.monstersArray().push(m);
     }
     getHero() {
         return this.hero;

@@ -55,7 +55,7 @@ export class BloodFountain implements Place {
                     data: `${item.name} is cursed !`,
                     level: 'warning'
                 }));
-                item.additionnalDmg -= 3;
+                item.modifyAdditionnalDmg(-3);
             } else {
                 if (!this.used) {
                     gameBus.publish(logPublished({
@@ -78,14 +78,14 @@ export class BloodFountain implements Place {
                     data: `${item.name} is tainted with blood...`,
                     level: 'warning'
                 }));
-                item.baseAbsorb -= 2;
+                item.modifyAbsorb(-2);
             } else {
                 if (!this.used) {
                     gameBus.publish(logPublished({
                         data: `${item.name} is bloody terrifying !`,
                         level: 'warning'
                     }));
-                    item.baseAbsorb += 2;
+                    item.modifyAbsorb(+2);
                     this.used = true;
                 }
             }
@@ -134,7 +134,7 @@ export class HolyFountain implements Place {
             item.reveal();
             this.used -= 2;
         } else if (item instanceof Weapon) {
-            item.additionnalDmg += 1;
+            item.modifyAdditionnalDmg(1);
             gameBus.publish(logPublished({
                 data: `${item.name} is blessed`,
                 level: 'success'

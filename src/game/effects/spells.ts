@@ -205,7 +205,7 @@ export class ImproveArmourSpell implements IEffect  {
     type = EffectTarget.Armour;
     constructor(private world: WorldEffect){}
     cast(target: Armour) {
-        target.baseAbsorb += 1;
+        target.addAbsorbEnchant(1);
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
         gameBus.publish(itemEquiped({armour: this.world.getHero().armour}))
     }
@@ -214,7 +214,7 @@ export class ImproveWeaponSpell implements IEffect  {
     type = EffectTarget.Weapon;
     constructor(private world: WorldEffect){}
     cast(target: Weapon) {
-        target.additionnalDmg += 1;
+        target.modifyAdditionnalDmg(+1);
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
         gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}))
     }

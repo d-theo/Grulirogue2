@@ -3,6 +3,7 @@ import { EffectTarget } from "../effects/spells";
 import { Item, ItemArgument } from "../entitybase/item";
 import { BuffDefinition } from "../effects/effect";
 import { Hero } from "../hero/hero";
+import { add } from "lodash";
 
 /*
 regen
@@ -13,8 +14,8 @@ bulky
 */
 
 export class Armour extends Item implements ItemArgument{
-    public baseAbsorb: number;
-    public additionalAbsorb: number= 0;
+    private baseAbsorb: number;
+    private additionalAbsorb: number= 0;
     public additionalName: string[] = [];
     public additionalDescription: string[] = [];
     public bulky: number;
@@ -32,7 +33,7 @@ export class Armour extends Item implements ItemArgument{
     get description(): string {
         if (this.identified) {
             let s = '';
-            s += `Armour class: ${this.baseAbsorb} ${this.additionalAbsorb > 0? '+':''}${this.additionalAbsorb !== 0 ? this.additionalAbsorb : ''}`;
+            s += `Armour class: ${this.baseAbsorb} ${this.formatAbsorbBonus()}`;
             s += '\n\n';
             s += `${this.additionalDescription.join("\n")}`;
             return s;
@@ -43,12 +44,29 @@ export class Armour extends Item implements ItemArgument{
     
     get name() {
         if (this.identified) {
-            return this._name + ' '+ this.additionalName.join(' ');
+            return this._name + ' '+ this.additionalName.join(' ') + ' ' + this.formatAbsorbBonus();
         } else {
             return `An unidentified ${this._name}`
         }
     }
-    use(target: Hero) {
+    get absorb() {
+        return this.baseAbsorb + this.additionalAbsorb;
+    }
+
+    private formatAbsorbBonus(): string {
+        if (this.additionalAbsorb === 0) return '';
+        else if (this.additionalAbsorb > 0) return '+'+this.additionalAbsorb
+        else if (this.additionalAbsorb < 0) return ''+this.additionalAbsorb;
+    }
+    
+    public modifyAbsorb(modifier: number) {
+        this.baseAbsorb += modifier;
+    }
+    public addAbsorbEnchant(add: number) {
+        this.additionalAbsorb += add;
+    }
+
+    public use(target: Hero) {
         target.equip(this);
         this.onEquipBuffs.forEach(b => {
             b.source = this.id;

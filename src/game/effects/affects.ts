@@ -142,13 +142,13 @@ export class Affect {
     private thicc() {
         return {
             start: (t: Hero|Monster) => {
-                t.armour.baseAbsorb += 5;
+                t.armour.modifyAbsorb(5);
                 t.speed = t.speed * 2;
                 t.enchants.setAbsorb(true);
                 gameBus.publish(itemEquiped({armour: t.armour}));
             },
             end: (t: Hero|Monster) => {
-                t.armour.baseAbsorb -= 5;
+                t.armour.modifyAbsorb(-5);
                 t.speed = t.speed / 2;
                 t.enchants.setAbsorb(false);
                 gameBus.publish(itemEquiped({armour: t.armour}));
@@ -248,16 +248,16 @@ export class Affect {
         const rageLevel = pickInRange('3-5');;
         return {
             start: (t: Hero|Monster) => {
-                t.armour.baseAbsorb -= rageLevel;
-                t.weapon.additionnalDmg += rageLevel;
+                t.armour.modifyAbsorb(- rageLevel);
+                t.weapon.modifyAdditionnalDmg(rageLevel);
                 t.enchants.setMoreDamage(true);
                 t.enchants.setMoreVulnerable(true);
             },
             end: (t: Hero|Monster) => {
                 t.enchants.setMoreDamage(false);
                 t.enchants.setMoreVulnerable(false);
-                t.weapon.additionnalDmg -= rageLevel;
-                t.armour.baseAbsorb += rageLevel;
+                t.weapon.modifyAdditionnalDmg(-rageLevel);
+                t.armour.modifyAbsorb(rageLevel)
             },
         }
     }
@@ -446,8 +446,8 @@ export class Affect {
         this.paramsNb = 1;
         return {
             start: null,
-            tick: (t: Hero|Monster) => t.armour.baseAbsorb += this.param1,
-            end: (t: Hero|Monster) => t.armour.baseAbsorb -= this.param1,
+            tick: (t: Hero|Monster) => t.armour.modifyAbsorb(this.param1),
+            end: (t: Hero|Monster) => t.armour.modifyAbsorb(-this.param1),
         }
     }
     private procChance() {
@@ -478,11 +478,11 @@ export class Affect {
     private weak() {
         return {
             start: (t: Hero|Monster) => {
-                t.armour.baseAbsorb -= 3
+                t.armour.modifyAbsorb(- 3)
                 t.enchants.setMoreVulnerable(true);
             },
             end: (t: Hero|Monster) => {
-                t.armour.baseAbsorb += 3
+                t.armour.modifyAbsorb(+3);
                 t.enchants.setMoreVulnerable(false);
             },
         }
@@ -491,11 +491,11 @@ export class Affect {
         return {
             start: (t: Hero|Monster) => {
                 // todo fixme refacto en event ?
-                t.weapon.additionnalDmg += 5;
+                t.weapon.modifyAdditionnalDmg(5);
                 t.enchants.setMoreDamage(true);
             },
             end: (t: Hero|Monster) => {
-                t.weapon.additionnalDmg -= 5;
+                t.weapon.modifyAdditionnalDmg(-5);
                 t.enchants.setMoreDamage(false);
                 new Affect('weak')
                     .isStackable(true)

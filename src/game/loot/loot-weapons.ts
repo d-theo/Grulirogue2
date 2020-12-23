@@ -116,35 +116,35 @@ export const craftWeapon = (tier: number): Weapon => {
             case 'nothing':
                 break;
             case 'plus_one':
-                w.additionnalDmg += 1;
+                w.modifyAdditionnalDmg(+ 1);
                 w.identified = false;
                 break;
             case 'minus_one':
-                w.additionnalDmg -= 1;
+                w.modifyAdditionnalDmg(- 1);
                 w.identified = false;
                 break;
             case 'minus_two':
-                w.additionnalDmg -= 2;
+                w.modifyAdditionnalDmg(- 2);
                 w.identified = false;
                 break;
             case 'minus_three':
-                w.additionnalDmg -= 3;
+                w.modifyAdditionnalDmg(- 3);
                 w.identified = false;
                 break;
             case 'plus_two':
-                w.additionnalDmg += 1;
+                w.modifyAdditionnalDmg(+ 1);
                 w.identified = false;
                 break;
             case 'plus_three':
-                w.additionnalDmg += 1;
+                w.modifyAdditionnalDmg(+ 1);
                 w.identified = false;
                 break;
             case 'plus_four':
-                w.additionnalDmg += 1;
+                w.modifyAdditionnalDmg(+ 1);
                 w.identified = false;
                 break;
             case 'plus_five':
-                w.additionnalDmg += 1;
+                w.modifyAdditionnalDmg(+ 1);
                 w.identified = false;
                 break;
             case 'stun':

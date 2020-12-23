@@ -42,7 +42,7 @@ export function hud() {
     gameBus.subscribe(itemEquiped, event => {
         const {weapon, armour} = event.payload;
         if (weapon) $('#weapon1').text(weapon.name);
-        if (armour) $('#armour').text(armour.baseAbsorb);
+        if (armour) $('#armour').text(armour.absorb);
         if (armour) $('#armour-name').text(armour.name);
     });
     gameBus.subscribe(enchantChanged, event => {

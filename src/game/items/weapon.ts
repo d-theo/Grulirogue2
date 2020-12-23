@@ -7,14 +7,16 @@ import { Hero } from "../hero/hero";
 import * as _ from 'lodash';
 
 export class Weapon extends Item implements ItemArgument {
-    baseDamage: string;
-    additionnalDmg: number = 0;
+    private baseDamage: string; // eg : '2-4'
+    private additionnalDmg: number = 0;
+
     additionnalEffects: {chance: number, effect: BuffDefinition, target: 'attacker' | 'target'}[] = [];
     additionalDescription: string[]=[];
     onEquipBuffs: BuffDefinition[];
     additionalName: string[]=[];
     maxRange: number;
     public hitBeforeIdentified = 200;
+
     constructor(arg: any) { // FIXME
         super(arg);
         this.isConsumable = false;
@@ -31,7 +33,7 @@ export class Weapon extends Item implements ItemArgument {
             str += "\n";
             str += "kind: "+this.skin;
             str += "\n";
-            str += `damages: ${this.baseDamage} ${this.additionnalDmg > 0? '+':''}${this.additionnalDmg}`;
+            str += `damages: ${this.baseDamage} ${this.formatAdditionnalDmg()}`;
             str += "\n";
             str += `range: ${this.maxRange}`;
             str += "\n";
@@ -58,12 +60,20 @@ export class Weapon extends Item implements ItemArgument {
             if (this.additionalName.length > 0) {
                 str += ' of ';
                 str += this.additionalName.join(' and ');
-                str += ` ${this.additionnalDmg > 0? '+':''}${this.additionnalDmg}`;
+                str += ` ${this.formatAdditionnalDmg()}`;
             }
             return str;
         } else {
             return `${this.skin} (unidentified)`;
         }
+    }
+    modifyAdditionnalDmg(modifier: number) {
+
+    }
+    formatAdditionnalDmg(): string {
+        if (this.additionnalDmg === 0) return '';
+        else if (this.additionnalDmg > 0) return '+'+this.additionnalDmg;
+        else if (this.additionnalDmg < 0) return ''+this.additionnalDmg;
     }
     onUnEquip(target: Hero) {
         this.onEquipBuffs.forEach(b => target.buffs.cleanBuffSource(this.id));

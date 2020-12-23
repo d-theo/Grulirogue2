@@ -109,8 +109,7 @@ export function getRandomLoot(level: number): Item {
             }
             if (Math.random() < 0.1) {
                 const add = getInTable(armourLevel);
-                (loot as Armour).additionalName.push(`+${add}`);
-                (loot as Armour).additionalAbsorb += add;
+                (loot as Armour).addAbsorbEnchant(add);
                 loot.identified = false;
             }
             break;

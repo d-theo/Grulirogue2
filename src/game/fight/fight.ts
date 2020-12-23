@@ -32,6 +32,6 @@ export class Attack {
                 dealt += this.attacker.fightModifier.fistAdditionnalDmg;
             }
         }
-        return Math.max(0, dealt - armour.baseAbsorb);
+        return Math.max(0, dealt - armour.absorb);
     }
 }

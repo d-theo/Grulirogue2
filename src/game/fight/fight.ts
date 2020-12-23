@@ -5,9 +5,9 @@ export class Attack {
     constructor(private attacker: Entity, private target: Entity) {}
     do() {
         let dodge = this.target.dodge;
-        dodge -= (this.attacker.level - this.target.level) * 0.10;        
+        dodge += (this.attacker.level - this.target.level) * 0.10;        
         dodge -= this.target.armour.bulky;
-        dodge -= this.target.precision;
+        dodge += this.attacker.precision;
 
         if (Math.random() < dodge) {
             return 0;

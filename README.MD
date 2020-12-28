@@ -54,3 +54,48 @@ https://grulirogue2.s3-eu-west-1.amazonaws.com/index.html
 ##### pay me a coffee !
 
 I spent hundreds of hours making this game, if you enjoy(ed) and you want to encourage me, you can donate via paypal at theo851@hotmail.com
+
+
+##### design
+
+++ idées liés au voyage temporel
+Skills  => miscs / uniq effects
+Scrolls => space cristals + change wording
+
+- Comme DCSS : monter les 2 compétences parmis un set :
+Health, Regen, Esquive, Bidouillage, Armes CaC, Armes Distance, Armure
+
+SkillManager()
+    Hero;
+    Componsants[];
+    addXp();
+
+Composant [Skill]
+xp
+level
+name
+description
+onLevelUp()
+addXp()
+
+Zapper
+    level
+    zap(Skill) => skill.try();
+Skill
+    name
+    description
+    getFailure(zapperLevel)
+    cast() {}
+
+Zappeur (chaque zap peut échouer en fonction du skill)
+Si le zap échoue, echec critique ca stun
+  -> zap pourri
+  -> zap moyen
+  -> zap electrique
+  -> zap feu
+  -> zap tp random
+  -> zap arrière
+  -> zap invocation mineur
+  -> zap invocation majeur
+  -> zap smoke
+  -> zap dimensionnel (mob lost)

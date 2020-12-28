@@ -1,4 +1,3 @@
-import { createEventDefinition, EventBus } from "ts-bus";
 import { Hero } from "../hero/hero";
 import { playerChoseSkill } from "../../commands";
 import { CommandHandler } from "./commands";
@@ -8,7 +7,7 @@ export class PlayerChoseSkillhandler extends CommandHandler {
         super();
     }
     handle(event: ReturnType<typeof playerChoseSkill>) {
-        const {name} = event.payload;
-        this.hero.heroSkills.learnSkill(name);
+        const {skills} = event.payload;
+        this.hero.skills.setActiveSkills(skills);
     }
 }

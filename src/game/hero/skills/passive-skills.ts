@@ -1,0 +1,42 @@
+import { Hero } from './../hero';
+import { gameBus } from "../../../eventBus/game-bus";
+import { logPublished } from "../../../events";
+
+export abstract class PassiveSkill {
+    private xp = 0;
+    private _level = 0;
+    private xpTable = [50, 100, 150, 250, 450, 700, 1000, 1500, 3000, 10000];
+    abstract name: string;
+    abstract description: string;
+    constructor(private readonly hero: Hero) {}
+    abstract onLevelUp(level: number);
+    public get level() {
+        return this._level;   
+    }
+    public addXp(xp: number) {
+        const oldLevel = this.calcLevel();
+        this.xp += xp;
+        const newLevel = this.calcLevel();
+        const delta = newLevel - oldLevel;
+        if (delta > 0) {
+            for (let i = oldLevel; i < newLevel; i++) {
+                this.onLevelUp(i);
+                gameBus.publish(logPublished({data: `Your skill ${this.name} is now level ${i}`}));
+            }
+        }
+    }
+    public report() {
+        return {
+            level: this.level,
+            name: this.name,
+            description: this.description,
+        };
+    }
+    private calcLevel() {
+        for (let i = 0; i < this.xpTable.length; i++) {
+            if (this.xp < this.xpTable[i]) {
+                return i;
+            }
+        }
+    }
+}

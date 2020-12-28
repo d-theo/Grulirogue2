@@ -18,8 +18,9 @@ import { CellSize } from '../main';
 import { UIDamages } from '../UIEntities/ui-damages';
 import { DamageQueue } from '../phaser-addition/damage-queue';
 import { gameBus } from '../eventBus/game-bus';
-import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, monsterTookDamage, playerTookDammage, playerMoved, doorOpened, itemPickedUp, playerHealed, itemDropped, itemRemoved, rogueEvent, monsterSpawned, xpHasChanged, effectSet, effectUnset, gameOver, gameFinished, itemEquiped, nextLevelCreated } from '../events';
+import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, monsterTookDamage, playerTookDammage, playerMoved, doorOpened, itemPickedUp, playerHealed, itemDropped, itemRemoved, rogueEvent, monsterSpawned, effectSet, effectUnset, gameOver, gameFinished, itemEquiped, nextLevelCreated } from '../events';
 import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerUseSkill, playerActionMove } from '../commands';
+import { PassiveSkill } from '../game/hero/skills/passive-skills';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;
@@ -199,13 +200,11 @@ class GameScene extends Phaser.Scene {
 	}
 
 	displaySkill() {
-		if (this.gameEngine.hero.heroSkills.usableSkills().length > 0) {
-			this.keyboard.pause();
-			this.scene.pause().launch(SceneName.SkillTreeScene, {
-				data: this.gameEngine.hero.heroSkills.usableSkills(),
-				action: 'useSkill'
-			});
-		}
+		this.keyboard.pause();
+		this.scene.pause().launch(SceneName.SkillTreeScene, {
+			data: this.gameEngine.hero.skills.report(),
+			action: 'pickSkill'
+		});
 	}
 
 	escape() {
@@ -275,7 +274,8 @@ class GameScene extends Phaser.Scene {
 		this.events.on('resume', (sys, data: {
 			action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
 			key: string,
-			item: Item
+			item: Item,
+			skills?: PassiveSkill[]
 		} | undefined) => {
 			this.keyboard.resume();
 			if (data && data.action === 'pickItem') {
@@ -353,7 +353,7 @@ class GameScene extends Phaser.Scene {
 				}
 			} else if (data && data.action === 'pickSkill') {
 				gameBus.publish(playerChoseSkill({
-					name: data.item.name
+					skills: data.skills
 				}));
 			} else if (data && data.action === 'useSkill') {
 				gameBus.publish(playerUseSkill({
@@ -429,16 +429,6 @@ class GameScene extends Phaser.Scene {
 			const mob = event.payload.monster;
 			const monster = new UIEntity(this, mob, mob.name)
 			this.gameMonsters[mob.id] = monster;
-		});
-		gameBus.subscribe(xpHasChanged, event => {
-			const { status } = event.payload;
-			if (status === 'level_up') {
-				this.keyboard.pause();
-				this.scene.pause().launch(SceneName.SkillTreeScene, {
-					data: this.gameEngine.hero.heroSkills.AllSkills,
-					action: 'pickSkill'
-				});
-			}
 		});
 		gameBus.subscribe(effectSet, event => {
 			switch (event.payload.animation) {

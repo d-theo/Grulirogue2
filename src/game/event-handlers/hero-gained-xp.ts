@@ -8,7 +8,6 @@ export class HeroGainedXPHandler extends EventHandler {
         super();
     }
     handle(event: ReturnType<typeof heroGainedXp>) {
-        const report = this.hero.gainXP(event.payload.amount);
-        gameBus.publish(xpHasChanged(report));
+        this.hero.gainXP(event.payload.amount);
     }
 }

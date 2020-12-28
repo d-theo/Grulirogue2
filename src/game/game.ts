@@ -17,7 +17,7 @@ import { randomIn } from "./utils/rectangle";
 import { getUniqLoot } from "./loot/loot-uniq";
 import * as _ from 'lodash';
 import { gameBus } from "../eventBus/game-bus";
-import { gameFinished, logPublished, nextLevelCreated, playerMoved, rogueEvent, endRogueEvent, heroGainedXp, xpHasChanged, sightUpdated, timePassed } from "../events";
+import { gameFinished, logPublished, nextLevelCreated, rogueEvent, endRogueEvent, timePassed } from "../events";
 import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";

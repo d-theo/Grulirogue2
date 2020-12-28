@@ -1,3 +1,4 @@
+import { SkillManager } from './skill-manager';
 import { Health } from "../entitybase/health";
 import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
@@ -16,8 +17,7 @@ import { IdentifiySpell } from "../effects/spells";
 import { gameBus } from "../../eventBus/game-bus";
 import { itemPickedUp, itemEquiped } from "../../events";
 
-
-const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
+//const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
 export class Hero implements Entity {
     name: string;
@@ -28,15 +28,15 @@ export class Hero implements Entity {
     pos!: Coordinate;
     precision: number = 0;
     enchants: EnchantTable = new EnchantTable(true);
-    xp: number;
-    nextXp!: number;
     buffs: Buffs = new Buffs();
-    level: number = 1;
     private inventory = new Inventory();
     public sight: number;
     speed: number = 1;
     fightModifier = new FightModifier();
     enchantSolver: EnchantSolver;
+
+    skills: SkillManager;
+
     skillFlags = {
         regenHpOverTime: 0,
         gainHpPerLevel: 0,
@@ -49,8 +49,6 @@ export class Hero implements Entity {
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'Pyjamas', description: 'Your favorite pair of pyjamas for spleeping'});
         this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this', kind: "Fist", skin: "Fist"});
-        this.xp = 0;
-        this.calcNextXp();
         this.sight = 8;
         this.addToBag(this.armour);
         this.addToBag(this.weapon);
@@ -58,9 +56,12 @@ export class Hero implements Entity {
         this.equip(this.weapon);
         this.heroSkills = new HeroSkills(this);
         this.enchantSolver = new EnchantSolver(this);
+        this.skills = new SkillManager(this);
     }
-    calcNextXp() {
-        this.nextXp = XP[this.level] - XP[this.level-1];
+    get level(): number {
+        return this.skills.report().reduce((acc, cur) => {
+            return acc+cur.level;
+        }, 0);
     }
     openBag(filters?: string[]) {
         return this.inventory.openBag(filters);
@@ -106,18 +107,8 @@ export class Hero implements Entity {
         }));
         this.inventory.flagEquiped(item);
     }
-    gainXP(amount: number): {total: number, current: number, status: 'xp_gained' | 'level_up'} {
-        let status: 'xp_gained' | 'level_up' = 'xp_gained';
-        this.xp += amount;
-        if (this.nextXp <= this.xp) {
-            this.levelUp();
-            status = 'level_up';
-        }
-        return {
-            total: this.nextXp,
-            current: this.xp,
-            status
-        };
+    gainXP(amount: number): void{
+        this.skills.addXp(amount);
     }
     addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
@@ -127,12 +118,6 @@ export class Hero implements Entity {
     }
     getItem(item: Item) {
         return this.inventory.getItem(item);
-    }
-    levelUp() {
-        this.level ++;
-        this.calcNextXp();
-        this.xp = 0;
-        this.health.getStronger(this.skillFlags.gainHpPerLevel);
     }
     consumeItem(item: Item) {
         if (item.isConsumable) {

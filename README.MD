@@ -62,22 +62,6 @@ I spent hundreds of hours making this game, if you enjoy(ed) and you want to enc
 Skills  => miscs / uniq effects
 Scrolls => space cristals + change wording
 
-- Comme DCSS : monter les 2 compétences parmis un set :
-Health, Regen, Esquive, Bidouillage, Armes CaC, Armes Distance, Armure
-
-SkillManager()
-    Hero;
-    Componsants[];
-    addXp();
-
-Composant [Skill]
-xp
-level
-name
-description
-onLevelUp()
-addXp()
-
 Zapper
     level
     zap(Skill) => skill.try();

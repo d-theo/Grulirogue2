@@ -5,7 +5,7 @@ import { logPublished } from "../../../events";
 export abstract class PassiveSkill {
     private xp = 0;
     private _level = 0;
-    private xpTable = [50, 100, 150, 250, 450, 700, 1000, 1500, 3000, 10000];
+    private xpTable = [30, 100, 150, 250, 450, 700, 1000, 1500, 3000, 10000];
     abstract name: string;
     abstract description: string;
     constructor(private readonly hero: Hero) {}
@@ -24,6 +24,7 @@ export abstract class PassiveSkill {
                 gameBus.publish(logPublished({data: `Your skill ${this.name} is now level ${i}`}));
             }
         }
+        this._level = newLevel;
     }
     public report() {
         return {

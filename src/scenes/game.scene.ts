@@ -1,3 +1,4 @@
+import { ZapView } from './zap/zap.scene';
 import {SceneName} from './scenes.constants';
 import {Game as GameEngine} from '../game/game';
 import {Coordinate, around} from '../game/utils/coordinate';
@@ -207,6 +208,16 @@ class GameScene extends Phaser.Scene {
 		});
 	}
 
+	displayZaps() {
+		console.log('zap');
+		this.keyboard.pause();
+		const data = new ZapView(this.gameEngine.hero.zapper.report());
+		this.scene.pause().launch(SceneName.Zap, {
+			data,
+			action: 'useZap'
+		});
+	}
+
 	escape() {
 		gameBus.publish(logPublished({
 			data: 'forget that'
@@ -261,6 +272,8 @@ class GameScene extends Phaser.Scene {
 					return this.gameContext.enter();
 				case 'g': 
 					return this.gameContext.g();
+				case 'm': 
+					return this.gameContext.m();
 				case 'z': 
 					return this.gameContext.z();
 				case 'Escape':

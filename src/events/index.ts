@@ -19,7 +19,6 @@ export * from './monster-moved';
 export * from './monster-spawned';
 export * from './monster-took-dmg';
 export * from './next-lvl-created';
-export * from './player-gained-xp';
 export * from './player-healed';
 export * from './player-moved';
 export * from './player-took-dmg';

@@ -7,6 +7,7 @@ import SkillTreeScene from './scenes/skilltree.scene';
 import GameOverScene from './scenes/gameover.scene';
 import GameFinishedScene from './scenes/game-finished.scene';
 import PreLoadScene from './scenes/preload.scene';
+import { ZapScene } from './scenes/zap/zap.scene';
 
 export const CellSize = 32;
 export const W = CellSize*23;
@@ -26,7 +27,8 @@ export const config = {
       InventoryScene,
       SkillTreeScene,
       GameOverScene,
-      GameFinishedScene
+      GameFinishedScene,
+      ZapScene,
     ],
     physics: {
       default: 'arcade',

@@ -10,14 +10,16 @@ export enum Modes {
 export abstract class State {
     protected gameContext: GameContext
 
-    public abstract f();
+    public abstract f(); // [f] fire
     public abstract esc();
     public abstract z() ;
     public abstract arrow(direction: string);
-    public abstract g();
-    public abstract i();
+    public abstract g(); // [passive skills]
+    public abstract i(); // [inventory]
     public abstract enter();
     public abstract w();
+    public abstract m(); // [magic] => zap
+    //public abstract c(); // [cast] => cast last zap
     public abstract stair();
 
     setContext(ctx: GameContext) {
@@ -71,6 +73,9 @@ export class GameContext {
     w() {
         this.state.w();
     }
+    m() {
+        this.state.m();
+    }
     stair(){
         this.state.stair();
     }
@@ -92,6 +97,9 @@ export class PlayState extends State {
     }
     w() {
         this.gameContext.gameScene.waitATurn();
+    }
+    m() {
+        this.gameContext.gameScene.displayZaps();
     }
     enter() {}
     z() {}
@@ -117,6 +125,7 @@ export class SelectFireState extends State {
     }
 
     g() {}
+    m() {}
     i() {}
     enter() {}
     w() {}
@@ -140,6 +149,7 @@ export class SelectLocationState extends State {
     i() {}
     f() {}
     w() {}
+    m() {}
     stair(){}
     
 }
@@ -161,5 +171,6 @@ export class SelectMovableState extends State {
     i() {}
     z() {}
     w() {}
+    m() {}
     stair(){}
 }

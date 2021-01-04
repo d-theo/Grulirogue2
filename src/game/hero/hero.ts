@@ -1,3 +1,4 @@
+import { Zapper } from './zap/zaper';
 import { SkillManager } from './skill-manager';
 import { Health } from "../entitybase/health";
 import { Coordinate } from "../utils/coordinate";
@@ -34,6 +35,7 @@ export class Hero implements Entity {
     speed: number = 1;
     fightModifier = new FightModifier();
     enchantSolver: EnchantSolver;
+    zapper: Zapper;
 
     skills: SkillManager;
 
@@ -57,6 +59,7 @@ export class Hero implements Entity {
         this.heroSkills = new HeroSkills(this);
         this.enchantSolver = new EnchantSolver(this);
         this.skills = new SkillManager(this);
+        this.zapper = new Zapper(this);
     }
     get level(): number {
         return this.skills.report().reduce((acc, cur) => {
@@ -132,6 +135,7 @@ export class Hero implements Entity {
         this.resolveBuffs();
         this.updateInventory();
         this.enchantSolver.solve();
+        this.zapper.update();
     }
     updateInventory() {
         this.weapon.hitBeforeIdentified --;

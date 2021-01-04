@@ -82,6 +82,29 @@ import { SkillView } from "./skills/skill-view";
     getCurrentItem() : Skill {
       return this.letters[this.currentSelected].item;
     }
+
+    updateItem(selectedItem) {
+      switch(selectedItem.specialization) {
+        case 0:
+        case 1:
+          selectedItem.specialization ++;
+          break;
+        case 2: 
+          selectedItem.specialization = 0;
+          break;
+      }
+      let remainingPoint = 2;
+      remainingPoint -= selectedItem.specialization;
+      for (let d of this.config) {
+        if (d.name === selectedItem.name) continue;
+        if (remainingPoint - d.specialization < 0) {
+          d.specialization = 0;
+        } else {
+          remainingPoint -= d.specialization;
+        }
+      }
+      this.refreshLine(this.currentSelected, selectedItem);
+    }
   
     registerInputs() {
       const listener = this.input.keyboard.on('keyup', (event) => {
@@ -111,28 +134,8 @@ import { SkillView } from "./skills/skill-view";
               }
               break;
             case 'Enter':
-              listener.clearCaptures();
               const selectedItem = this.getCurrentItem();
-              switch(selectedItem.specialization) {
-                case 0:
-                case 1:
-                  selectedItem.specialization ++;
-                  break;
-                case 2: 
-                  selectedItem.specialization = 0;
-                  break;
-              }
-              let remainingPoint = 2;
-              remainingPoint -= selectedItem.specialization;
-              for (let d of this.config) {
-                if (d.name === selectedItem.name) continue;
-                if (remainingPoint - d.specialization < 0) {
-                  d.specialization = 0;
-                } else {
-                  remainingPoint -= d.specialization;
-                }
-              }
-              this.refreshLine(this.currentSelected, selectedItem);
+              this.updateItem(selectedItem);
               break;
             case 'Escape':
                 listener.clearCaptures();
@@ -141,17 +144,11 @@ import { SkillView } from "./skills/skill-view";
                 this.inputOk = false;
                 break;
             default:
-              /*try {
-                this.selectedItem = this.letters[event.key].item;
-                if (!this.inputOk || !selectedItem) throw new Error('no letter');
-                const data = {action: this.action, item: selectedItem};
-                if (this.action === 'pickSkill' && selectedItem.level === selectedItem.maxLevel) return;
-                listener.clearCaptures();
-                this.scene.stop(SceneName.SkillTreeScene);
-                this.scene.resume(SceneName.Game, data);
-                this.inputOk = false;
-              } catch(e){}
-              break;     */
+              try {
+                const selectedItem = this.letters[event.key].item;
+                this.updateItem(selectedItem);
+              } catch(e) {}
+              break;
         }
       });
     }

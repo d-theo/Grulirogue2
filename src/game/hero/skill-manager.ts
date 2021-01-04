@@ -37,12 +37,18 @@ export class SkillManager {
                 this.selectedSkills.push(this.skills.find(s => s.name === skill.name));
             }
         }
-        console.log(this.selectedSkills);
     }
     public report() {
         return this.skills.map(skill => {
             const spe = this.selectedSkills.filter(s => s.name === skill.name).length;
             return {...skill.report(), specialization: spe};
         });
+    }
+    public levelOfSkill(className) {
+        for (const s of this.skills) {
+            if (s instanceof className) {
+                return s.level;
+            }
+        }
     }
 }

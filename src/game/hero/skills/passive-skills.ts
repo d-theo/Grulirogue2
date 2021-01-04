@@ -10,8 +10,13 @@ export abstract class PassiveSkill {
     abstract description: string;
     constructor(private readonly hero: Hero) {}
     abstract onLevelUp(level: number);
-    public get level() {
-        return this._level;   
+    _modifier = 0;
+
+    public get modifier () {return this._modifier;}
+    public get level() {return this._level + this.modifier;}
+
+    public addModifier(n: number) {
+        this._modifier += n;
     }
     public addXp(xp: number) {
         const oldLevel = this.calcLevel();

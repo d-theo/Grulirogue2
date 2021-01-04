@@ -20,8 +20,9 @@ import { UIDamages } from '../UIEntities/ui-damages';
 import { DamageQueue } from '../phaser-addition/damage-queue';
 import { gameBus } from '../eventBus/game-bus';
 import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, monsterTookDamage, playerTookDammage, playerMoved, doorOpened, itemPickedUp, playerHealed, itemDropped, itemRemoved, rogueEvent, monsterSpawned, effectSet, effectUnset, gameOver, gameFinished, itemEquiped, nextLevelCreated } from '../events';
-import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerUseSkill, playerActionMove } from '../commands';
-import { PassiveSkill } from '../game/hero/skills/passive-skills';
+import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerActionMove, playerUseZap } from '../commands';
+import { SkillView } from './skills/passive-skill.scene';
+import { Zap } from '../game/hero/zap/zaper';
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;
@@ -158,11 +159,19 @@ class GameScene extends Phaser.Scene {
 			gameBus.publish(logPublished({data: 'You cannot see that far !'}));
 			return;
 		}
-		gameBus.publish(playerUseItem({
-			item: this.actionContext.item,
-			target: pos,
-			action: this.actionContext.key
-		}));
+		
+		if (this.actionContext.action === 'useItem') {
+			gameBus.publish(playerUseItem({
+				item: this.actionContext.item,
+				target: pos,
+				action: this.actionContext.key
+			}));
+		} else if (this.actionContext.action === 'useZap') {
+			gameBus.publish(playerUseZap({
+				name: this.actionContext.data.name,
+				target: pos,
+			}));
+		}
 	}
 
 	enterMovable() {
@@ -175,11 +184,19 @@ class GameScene extends Phaser.Scene {
 			t = this.gameEngine.getAttackable(pos);
 			if (!t) return;
 		}
-		gameBus.publish(playerUseItem({
-			item: this.actionContext.item,
-			target: t,
-			action: this.actionContext.key
-		}));
+
+		if (this.actionContext.action === 'useItem') {
+			gameBus.publish(playerUseItem({
+				item: this.actionContext.item,
+				target: t,
+				action: this.actionContext.key
+			}));
+		} else if (this.actionContext.action === 'useZap') {
+			gameBus.publish(playerUseZap({
+				name: this.actionContext.data.name,
+				target: t,
+			}));
+		}
 	}
 
 	displayInventory(action: 'useItem'|'pickItem', timeoutMs?: number, displayCategories?: string[]) {
@@ -203,13 +220,12 @@ class GameScene extends Phaser.Scene {
 	displaySkill() {
 		this.keyboard.pause();
 		this.scene.pause().launch(SceneName.SkillTreeScene, {
-			data: this.gameEngine.hero.skills.report(),
+			data: new SkillView(this.gameEngine.hero.skills.report()),
 			action: 'pickSkill'
 		});
 	}
 
 	displayZaps() {
-		console.log('zap');
 		this.keyboard.pause();
 		const data = new ZapView(this.gameEngine.hero.zapper.report());
 		this.scene.pause().launch(SceneName.Zap, {
@@ -285,10 +301,10 @@ class GameScene extends Phaser.Scene {
 			}
 		});
 		this.events.on('resume', (sys, data: {
-			action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
+			action: 'pickSkill' | 'useItem' | 'pickItem' | 'useZap',
 			key: string,
 			item: Item,
-			skills?: PassiveSkill[]
+			data: any
 		} | undefined) => {
 			this.keyboard.resume();
 			if (data && data.action === 'pickItem') {
@@ -297,6 +313,73 @@ class GameScene extends Phaser.Scene {
 					target: this.gameEngine.hero.getItem(data.item),
 					action: this.actionContext.key
 				}));
+			} else if (data && data.action === 'useZap') {
+				const zap = data.data as Zap;
+				const spellNeedsTarget = this.gameEngine.hero.zapper.getZap(zap.name).targetType();
+				switch (spellNeedsTarget) {
+					case EffectTarget.AoE:
+					case EffectTarget.Location:
+						this.putTargetOnHero();
+						this.actionContext = {
+							...data,
+							target: spellNeedsTarget
+						};
+						gameBus.publish(logPublished({
+							data: 'where do you want to target ?'
+						}));
+						this.gameContext.transitionTo(Modes.SelectLocation);
+						break;
+					case EffectTarget.Movable:
+						this.putTargetOnHero();
+						this.actionContext = {
+							...data,
+							target: spellNeedsTarget
+						};
+						gameBus.publish(logPublished({
+							data: 'who do you want to target ?'
+						}));
+						this.gameContext.transitionTo(Modes.SelectMovable);
+						break;
+					case EffectTarget.Item:
+						gameBus.publish(logPublished({
+							data: 'Select an item'
+						}));
+						this.actionContext = {
+							...data,
+							target: spellNeedsTarget
+						};
+						this.displayInventory('pickItem', 500, ['Weapons', 'Armours', 'Consumables']);
+						break;
+					case EffectTarget.Weapon:
+						this.actionContext = {
+							...data,
+							target: spellNeedsTarget
+						};
+						this.displayInventory('pickItem', 500, ['Weapons']);
+						gameBus.publish(logPublished({
+							data: 'Select a weapon'
+						}));
+						break;
+					case EffectTarget.Armour:
+						gameBus.publish(logPublished({
+							data: 'Select an item'
+						}));
+						this.actionContext = {
+							...data,
+							target: spellNeedsTarget
+						};
+						this.displayInventory('pickItem', 500, ['Armours']);
+						break;
+					case EffectTarget.Hero:
+					case EffectTarget.None:
+						gameBus.publish(playerUseZap({
+							name: this.actionContext.data.name,
+							target: this.hero.subject as Hero,
+						}));
+						break;
+					default:
+						throw new Error(`Not implemented [${spellNeedsTarget}]`)
+				}
 			} else if (data && data.action === 'useItem') {
 				const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
 				switch (itemNeedsTarget) {
@@ -366,11 +449,7 @@ class GameScene extends Phaser.Scene {
 				}
 			} else if (data && data.action === 'pickSkill') {
 				gameBus.publish(playerChoseSkill({
-					skills: data.skills
-				}));
-			} else if (data && data.action === 'useSkill') {
-				gameBus.publish(playerUseSkill({
-					name: data.item.name as SkillNames
+					skills: data.data
 				}));
 			}
 		});

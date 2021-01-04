@@ -1,4 +1,4 @@
-import { SkillFont } from "../skilltree.scene";
+import { Font } from "../popup-seed/popup-seed.scene";
 
 export interface ConfigPopup<T> {
     header?: string;
@@ -31,12 +31,12 @@ export class PopupSeedView<T> extends Phaser.GameObjects.Container {
         this.letters = {};
         let currLetter = 'a'.charCodeAt(0);
         this.scroller = this.scene.add.group();
-        SkillFont.fontSize = '10px';
-        this.add(this.scene.add.text(viewW / 2, y, this.config.title, SkillFont).setOrigin(0.5, 0));
+        Font.fontSize = '10px';
+        this.add(this.scene.add.text(viewW / 2, y, this.config.title, Font).setOrigin(0.5, 0));
         nextLine();
         nextLine();
 
-        const skillLine = this.scene.add.text(x, y, this.config.header, Object.assign({}, SkillFont, {wordWrap: {width: 300}})).setOrigin(0);
+        const skillLine = this.scene.add.text(x, y, this.config.header, Object.assign({}, Font, {wordWrap: {width: 300}})).setOrigin(0);
         this.add(skillLine);
         this.scroller.add(skillLine);
         nextLine();
@@ -47,7 +47,7 @@ export class PopupSeedView<T> extends Phaser.GameObjects.Container {
             txt = this.config.rowFormatter(letter, element);
             
             
-            const skillLine = this.scene.add.text(x, y, txt, Object.assign({}, SkillFont, {wordWrap: {width: 300}})).setOrigin(0);
+            const skillLine = this.scene.add.text(x, y, txt, Object.assign({}, Font, {wordWrap: {width: 300}})).setOrigin(0);
             this.add(skillLine);
             this.scroller.add(skillLine);
             this.letters[letter] = {

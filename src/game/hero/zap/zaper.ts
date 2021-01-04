@@ -1,11 +1,12 @@
 import { CastPassiveSkill } from './../skills/cast';
 import { logPublished } from './../../../events/log';
 import { gameBus } from "../../../eventBus/game-bus";
-import { IEffect } from '../../effects/spells';
+import { IEffect, TeleportationSpell, EffectTarget } from '../../effects/spells';
 import { EffectMaker, SpellNames } from '../../effects/effect';
 import { Hero } from '../hero';
+import { MessageResponse, MessageResponseStatus } from '../../utils/types';
 
-export type ZapReport = Zap & {failChance: number};
+export type ZapReport = Omit<Zap & {failChance: number}, 'cast'>;
 
 export class Zapper {
     private stored: Zap[] = [];
@@ -44,13 +45,21 @@ export class Zapper {
     hasZap(name: string) {
         return this.stored.find(z => z.name === name) !== null;
     }
-    tryZap(zapLevel: number, zapName: string, target: any) {
+    tryZap(zapLevel: number, zapName: string, target: any): MessageResponse {
         const zap = this.getZap(zapName);
         if (zap == null) {
-            return;
+            return {
+                status: MessageResponseStatus.NotAllowed,
+                data: "You don't know how to do that",
+                timeSpent: 0,
+            };
         }
         if (zap.energyNeeded > this.energy) {
-            return;
+            return {
+                status: MessageResponseStatus.NotAllowed,
+                data: "You don't have enought energy to do that",
+                timeSpent: 0,
+            };
         }
 
         this.energyLevel -= zap.energyNeeded;
@@ -59,19 +68,27 @@ export class Zapper {
 
         if (Math.random()*100 > fail) {
             zap.cast(target);
+            return {
+                status: MessageResponseStatus.Ok,
+                timeSpent: 1,
+            };
         } else {
             // fail
             gameBus.publish(logPublished({data: `Your ${zap.name} failed.`}));
+            return {
+                status: MessageResponseStatus.Error,
+                timeSpent: 1,
+            };
         }
     }
 
     private calcFail(zapLevel, zap): number {
         let fail = 0;
         if (zapLevel < zap.level) {
-            fail = 100;
+            fail = 70;
         } else {
             const delta = zap.level - zapLevel;
-            fail = Math.max(0, 50 - (delta*10));
+            fail = Math.max(0, 20 - (delta*10));
         }
         return fail;
     }
@@ -88,6 +105,7 @@ export class Zapper {
         return this.stored.map(zap => {
             return {
                 ...zap,
+                targetType: zap.targetType,
                 failChance: this.calcFail(this.hero.skills.levelOfSkill(CastPassiveSkill), zap)}
         });
     }
@@ -110,21 +128,28 @@ export class ZapStore  {
     }
 }
 
+export enum ZapName { 
+    DimensionalJump = 'Dimensional jump'
+};
+
 export abstract class Zap {
     abstract level: number;
-    abstract name: string;
+    abstract name: ZapName;
     abstract description: string;
     abstract effect: IEffect;
     abstract energyNeeded: number;
     cast(target) {
         this.effect.cast(target);
     }
+    targetType(): EffectTarget {
+        return this.effect.type;
+    }
 }
 
 export class DashZap extends Zap {
-    level = 3;
-    name = 'Dimensional jump';
+    level = 1;
+    name = ZapName.DimensionalJump;
     description = 'Accelerate time to dash foward';
-    energyNeeded = 10;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation);
+    energyNeeded = 0;
+    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
 }

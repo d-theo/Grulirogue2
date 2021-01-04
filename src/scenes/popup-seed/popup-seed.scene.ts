@@ -1,5 +1,5 @@
 import { SceneName } from "../scenes.constants";
-import { PopupSeedView } from "./seedl-view";
+import { PopupSeedView, ConfigPopup } from "./seedl-view";
 
 export const Font = {
   fontSize: '11px',
@@ -13,8 +13,8 @@ export interface ItemData {
 }
 
 export abstract class PopupSeedScene<T> extends Phaser.Scene {
-  config;
-  action = 'zap';
+  config: ConfigPopup<T>;
+  abstract action: string;
   letters: any;
   currentSelected: string;
   alreadyLoaded = false;
@@ -74,7 +74,7 @@ export abstract class PopupSeedScene<T> extends Phaser.Scene {
   refresh() {
     let idx = 0;
     for (let letter in this.letters) {
-      this.viewPanel.refreshText(this.letters[letter].txt, letter, this.config[idx]);
+      this.viewPanel.refreshText(this.letters[letter].txt, letter, this.config.data[idx]);
       idx ++;
     }
   }
@@ -89,10 +89,17 @@ export abstract class PopupSeedScene<T> extends Phaser.Scene {
 
   abstract onSelectItem(item: T);
 
+  leaveWithData(data) {
+    this.listener.clearCaptures();
+    this.scene.stop(this.scene.key);
+    this.scene.resume(SceneName.Game, {action: this.action, data});
+    this.inputOk = false;
+  }
+
   leave() {
     this.listener.clearCaptures();
     this.scene.stop(this.scene.key);
-    this.scene.resume(SceneName.Game, {action: this.action, skills:this.config});
+    this.scene.resume(SceneName.Game);
     this.inputOk = false;
   }
 

@@ -3,7 +3,7 @@ import GameScene from './scenes/game.scene';
 
 import {hud} from './hud';
 import InventoryScene from './scenes/inventory.scene';
-import SkillTreeScene from './scenes/skilltree.scene';
+import SkillTreeScene from './scenes/skills/passive-skill.scene';
 import GameOverScene from './scenes/gameover.scene';
 import GameFinishedScene from './scenes/game-finished.scene';
 import PreLoadScene from './scenes/preload.scene';

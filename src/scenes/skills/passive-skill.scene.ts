@@ -5,8 +5,8 @@ import { SceneName } from "../scenes.constants";
 export type Skill = {name: string, description: string; level:number, specialization: number};
 
 export class SkillView implements ConfigPopup<Skill>{
-    header = 'Skill | energy | chance to fail';
-    title = 'Choose a skill to zap';
+    header = 'skill | level | train';
+    title = 'Choose a skill to train';
     data: Skill[];
     rowFormatter (letter: string, element: Skill): string {
         return `${letter} - ${element.name} | ${element.level} | ${this.formatSpecialization(element.specialization)}`
@@ -52,6 +52,9 @@ export class SkillTreeScene extends PopupSeedScene<Skill> {
             }
           }
           this.refresh();
+    }
+    onLeave() {
+        this.leaveWithData(this.config.data);
     }
 }
 

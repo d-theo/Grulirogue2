@@ -4,7 +4,7 @@ import { PopupSeedScene } from "../popup-seed/popup-seed.scene";
 import { SceneName } from "../scenes.constants";
 
 export class ZapView implements ConfigPopup<ZapReport>{
-    header = 'Skill | energy | chance to fail';
+    header = 'zap | energy | fail %';
     title = 'Choose a skill to zap';
     data: ZapReport[];
     rowFormatter (letter: string, element: ZapReport): string {
@@ -26,5 +26,8 @@ export class ZapScene extends PopupSeedScene<ZapReport> {
     onSelectItem(zap: ZapReport) {
         console.log(zap);
         this.leaveWithData(zap);
+    }
+    onLeave() {
+        this.leave();
     }
 }

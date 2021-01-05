@@ -8,6 +8,7 @@ export class PlayerChoseSkillhandler extends CommandHandler {
     }
     handle(event: ReturnType<typeof playerChoseSkill>) {
         const {skills} = event.payload;
+        console.log(event.payload)
         this.hero.skills.setActiveSkills(skills);
     }
 }

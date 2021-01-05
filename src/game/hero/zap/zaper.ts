@@ -5,6 +5,12 @@ import { IEffect, TeleportationSpell, EffectTarget } from '../../effects/spells'
 import { EffectMaker, SpellNames } from '../../effects/effect';
 import { Hero } from '../hero';
 import { MessageResponse, MessageResponseStatus } from '../../utils/types';
+import { Zap } from './zap';
+import { DashZap } from './dash';
+import { SlowZap } from './slow';
+import { TimeFractureZap } from './fracture';
+import { AgeZap } from './age';
+import { FlashbackZap } from './flashback';
 
 export type ZapReport = Omit<Zap & {failChance: number}, 'cast'>;
 
@@ -22,7 +28,13 @@ export class Zapper {
     init() {
         if (this.inited) {return}
         else {
-            this.stored.push(new DashZap());
+            this.stored.push(
+                new DashZap(),
+                new SlowZap(),
+                new TimeFractureZap(),
+                new AgeZap(),
+                new FlashbackZap(),
+            );
             this.inited = true;
         }
     }
@@ -85,9 +97,10 @@ export class Zapper {
     private calcFail(zapLevel, zap): number {
         let fail = 0;
         if (zapLevel < zap.level) {
-            fail = 70;
-        } else {
             const delta = zap.level - zapLevel;
+            fail = Math.min(100, 70 + (delta*10));
+        } else {
+            const delta =  zapLevel - zap.level;
             fail = Math.max(0, 20 - (delta*10));
         }
         return fail;
@@ -102,12 +115,17 @@ export class Zapper {
 
     report(): ZapReport[] {
         this.init();
-        return this.stored.map(zap => {
-            return {
-                ...zap,
-                targetType: zap.targetType,
-                failChance: this.calcFail(this.hero.skills.levelOfSkill(CastPassiveSkill), zap)}
-        });
+        return this.stored
+            .sort((a: Zap,b: Zap) => {
+                return a.level < b.level ? -1 : 1;
+            })
+            .map(zap => {
+                return {
+                    ...zap,
+                    targetType: zap.targetType,
+                    failChance: this.calcFail(this.hero.skills.levelOfSkill(CastPassiveSkill), zap)}
+                }
+        );
     }
 }
 
@@ -126,30 +144,4 @@ export class ZapStore  {
     deleteOne(name: string) {
         delete this.zaps[name];
     }
-}
-
-export enum ZapName { 
-    DimensionalJump = 'Dimensional jump'
-};
-
-export abstract class Zap {
-    abstract level: number;
-    abstract name: ZapName;
-    abstract description: string;
-    abstract effect: IEffect;
-    abstract energyNeeded: number;
-    cast(target) {
-        this.effect.cast(target);
-    }
-    targetType(): EffectTarget {
-        return this.effect.type;
-    }
-}
-
-export class DashZap extends Zap {
-    level = 1;
-    name = ZapName.DimensionalJump;
-    description = 'Accelerate time to dash foward';
-    energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
 }

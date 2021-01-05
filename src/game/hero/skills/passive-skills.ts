@@ -26,7 +26,7 @@ export abstract class PassiveSkill {
         if (delta > 0) {
             for (let i = oldLevel; i < newLevel; i++) {
                 this.onLevelUp(i);
-                gameBus.publish(logPublished({data: `Your skill ${this.name} is now level ${i}`}));
+                gameBus.publish(logPublished({data: `Your skill ${this.name} is now level ${i+1}`, level: 'success'}));
             }
         }
         this._level = newLevel;

@@ -88,6 +88,7 @@ export abstract class PopupSeedScene<T> extends Phaser.Scene {
   }
 
   abstract onSelectItem(item: T);
+  abstract onLeave();
 
   leaveWithData(data) {
     this.listener.clearCaptures();
@@ -135,7 +136,7 @@ export abstract class PopupSeedScene<T> extends Phaser.Scene {
             this.onSelectItem(selectedItem);
             break;
           case 'Escape':
-              this.leave();
+              this.onLeave();
               break;
           default:
             try {

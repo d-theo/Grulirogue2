@@ -22,7 +22,8 @@ import { gameBus } from '../eventBus/game-bus';
 import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, monsterTookDamage, playerTookDammage, playerMoved, doorOpened, itemPickedUp, playerHealed, itemDropped, itemRemoved, rogueEvent, monsterSpawned, effectSet, effectUnset, gameOver, gameFinished, itemEquiped, nextLevelCreated } from '../events';
 import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerActionMove, playerUseZap } from '../commands';
 import { SkillView } from './skills/passive-skill.scene';
-import { Zap } from '../game/hero/zap/zaper';
+import { Zap } from '../game/hero/zap/zap';
+
 
 class GameScene extends Phaser.Scene {
 	keyboard: Keyboard;

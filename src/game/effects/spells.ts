@@ -14,9 +14,12 @@ import { BloodFountain } from "../places/places";
 import { Affect } from "./affects";
 import { line } from "../tilemap/sight";
 import { DamageResolution } from "../fight/damages";
-import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned } from "../../events";
+import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned, playerHealed } from "../../events";
 import { Bestiaire } from "../monsters/bestiaire";
 import { TileMap } from "../tilemap/tilemap";
+import { isTileEmpty, isSurroundingClear } from "../use-cases/preconditions/moveAllowed";
+import { stat } from "fs";
+import { sightHasChanged } from "../../events/sight-has-changed";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -200,6 +203,24 @@ export class BlinkSpell implements IEffect  {
         gameBus.publish(playerMoved({}));
     }
 }
+export class DashSpell implements IEffect {
+    type = EffectTarget.Location;
+    constructor(private readonly world: WorldEffect) {}
+    cast(target: Coordinate) {
+        const l = line({from: this.world.getHero().pos, to: target});
+        const n = Math.min(4, l.length);
+        for (let i = 1; i < n; i ++) {
+            const pos = l[i];
+            if (this.world.monsterAt(pos) != null || !this.world.tileIsEmpty(pos)) {
+                this.world.getHero().pos = l[i - i];
+                gameBus.publish(playerMoved({}));
+                return;
+            }
+        }
+        this.world.getHero().pos = l[n-1];
+        gameBus.publish(playerMoved({}));
+    }
+}
 
 export class ImproveArmourSpell implements IEffect  {
     type = EffectTarget.Armour;
@@ -225,6 +246,31 @@ export class WeaknessSpell implements IEffect  {
     constructor(private readonly world: WorldEffect) {}
     cast(t: Hero|Monster) {
         new Affect('weak').turns(15).target(t).cast();
+    }
+}
+export class AgeSpell implements IEffect  {
+    type = EffectTarget.Movable;
+    cast(t: Hero|Monster) {
+        const halfCurr = t.health.currentHp / 2;
+        new DamageResolution(null, t, halfCurr, 'fast aging');
+    }
+}
+export class FlashbackSpell implements IEffect  {
+    type = EffectTarget.Hero;
+    constructor(private readonly world: WorldEffect) {}
+    cast() {
+        const state = this.world.getHero().pastStates[0];
+        this.world.getHero().pos = state.pos;
+        this.world.getHero().health.currentHp = state.hp;
+        gameBus.publish(playerMoved({}));
+        gameBus.publish(sightHasChanged({}));
+        gameBus.publish(playerHealed({baseHp:this.world.getHero().health.baseHp, currentHp: state.hp}));
+    }
+}
+export class SlowSpell implements IEffect {
+    type = EffectTarget.Movable;
+    cast(t: Hero|Monster) {
+        new Affect('slow').turns(15).target(t).cast();
     }
 }
 export class SummonWeakSpell implements IEffect  {
@@ -341,6 +387,9 @@ export function createElementalSpell (world: WorldEffect, builder: ElementSpell)
         case 'line': 
             strategy = lineStategy(builder)
             break;
+        case 'custom':
+            strategy = customStrategy(builder)
+            break;
         default: throw new Error('not implemented Spell shape');
     }
     return new ElementalSpell(world, strategy, builder);
@@ -387,6 +436,29 @@ export function createElementalSpell (world: WorldEffect, builder: ElementSpell)
         }
     }
     function lineStategy(builder: ElementSpell) {
+        return (pos: Coordinate) => {
+            const l: Coordinate[] = line({from: world.getHero().pos, to: pos});
+            l.shift();
+            l.forEach((p: Coordinate) => {
+                const id = world.getTilemap().addTileEffects({
+                    debuff: builder.affect,
+                    pos: p,
+                    duration: builder.duration,
+                    stayOnWalk: true,
+                    debugId: builder.mapEffect
+                });
+                if (id !== null) {
+                    gameBus.publish(effectSet({
+                        id: id,
+                        type: builder.mapEffect,
+                        pos: p,
+                        animation: 'static'
+                    }));
+                }
+            });
+        }
+    }
+    function customStrategy(builder: ElementSpell) {
         return (pos: Coordinate) => {
             const l: Coordinate[] = line({from: world.getHero().pos, to: pos});
             l.shift();

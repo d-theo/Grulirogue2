@@ -7,6 +7,6 @@ export class SlowZap extends Zap {
     level = 2;
     name = ZapName.TimeSlow;
     description = 'Slow an ennemy';
-    energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
+    energyNeeded = 10;
+    effect = EffectMaker.createSpell(SpellNames.Slow);
 }

@@ -21,6 +21,8 @@ import { itemPickedUp, itemEquiped } from "../../events";
 //const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
 export class Hero implements Entity {
+    pastStates = [];
+
     name: string;
     health: Health;
     armour: Armour;
@@ -136,6 +138,16 @@ export class Hero implements Entity {
         this.updateInventory();
         this.enchantSolver.solve();
         this.zapper.update();
+        this.saveState();
+    }
+    private saveState() {
+        this.pastStates.push({
+            hp: this.health.currentHp,
+            pos: this.pos
+        });
+        if (this.pastStates.length > 10) {
+            this.pastStates.shift();
+        }
     }
     updateInventory() {
         this.weapon.hitBeforeIdentified --;

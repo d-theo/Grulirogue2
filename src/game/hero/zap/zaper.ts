@@ -76,8 +76,8 @@ export class Zapper {
 
         this.energyLevel -= zap.energyNeeded;
         
-        const fail = this.calcFail(zapLevel, zap);
-
+        //const fail = this.calcFail(zapLevel, zap);
+        const fail = 0;
         if (Math.random()*100 > fail) {
             zap.cast(target);
             return {

@@ -7,6 +7,6 @@ export class DashZap extends Zap {
     level = 1;
     name = ZapName.DimensionalJump;
     description = 'Accelerate time to dash foward';
-    energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
+    energyNeeded = 10;
+    effect = EffectMaker.createSpell(SpellNames.Dash);
 }

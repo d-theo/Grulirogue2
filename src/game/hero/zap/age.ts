@@ -8,5 +8,5 @@ export class AgeZap extends Zap {
     name = ZapName.Aging;
     description = 'Accelerate time around an ennemy, aging him and causing 50% of current HP damages';
     energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
+    effect = EffectMaker.createSpell(SpellNames.Age) as TeleportationSpell;
 }

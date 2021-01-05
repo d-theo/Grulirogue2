@@ -4,7 +4,7 @@ import {MonsterCollection} from '../monsters/monsterCollection';
 import { Coordinate, around, equalsCoordinate } from '../utils/coordinate';
 import { microValidator } from '../utils/micro-validator';
 import { SpecialPlaces } from '../places/special-places';
-import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell, WeaknessSpell, SummonWeakSpell } from './spells';
+import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell, WeaknessSpell, SummonWeakSpell, SlowSpell, DashSpell, AgeSpell, FlashbackSpell } from './spells';
 import { Game } from '../game';
 import { Affect } from './affects';
 import { MapEffect } from '../../map/map-effect';
@@ -52,6 +52,11 @@ export enum SpellNames {
     FloralCloud = 'FloralCloud',
     Weakness = 'Weakness',
     SummonWeak = 'SummonWeak',
+    Fracture = 'Fracture',
+    Slow = 'Slow',
+    Dash = 'Dash',
+    Age = 'Age',
+    FlashBack = 'FlashBack'
 }
 
 let tilemap: TileMap;
@@ -75,6 +80,22 @@ function initEffects(game: Game) {
 function createSpell(name: SpellNames) {
     microValidator([tilemap, hero, monsters, places], 'createSpell failure: null');
     switch(name) {
+        case SpellNames.FlashBack:
+            return new FlashbackSpell(effect);
+        case SpellNames.Age:
+            return new AgeSpell();
+        case SpellNames.Dash:
+            return new DashSpell(effect);
+        case SpellNames.Slow:
+            return new SlowSpell();
+        case SpellNames.Fracture:
+            return createElementalSpell(effect, {
+                shapeStrategy: 'line',
+                type: EffectTarget.Location,
+                affect: () => new Affect('cold').create(),
+                mapEffect:  MapEffect.Cold,
+                duration: 10,
+            });
         case SpellNames.SpikeTrap: 
             return new TrapSpell(effect);
         case SpellNames.Teleportation:

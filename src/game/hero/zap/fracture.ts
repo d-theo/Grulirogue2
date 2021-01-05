@@ -7,6 +7,6 @@ export class TimeFractureZap extends Zap {
     level = 3;
     name = ZapName.TimeFracture;
     description = 'Create a time breach, dealing damages and slow enemies in an area';
-    energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
+    energyNeeded = 1;
+    effect = EffectMaker.createSpell(SpellNames.Fracture);
 }

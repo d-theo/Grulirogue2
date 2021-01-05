@@ -7,6 +7,6 @@ export class FlashbackZap extends Zap {
     level = 4;
     name = ZapName.Flashback;
     description = 'Return 10 turns behind';
-    energyNeeded = 0;
-    effect = EffectMaker.createSpell(SpellNames.Teleportation) as TeleportationSpell;
+    energyNeeded = 5;
+    effect = EffectMaker.createSpell(SpellNames.FlashBack);
 }

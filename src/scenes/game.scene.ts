@@ -374,7 +374,7 @@ class GameScene extends Phaser.Scene {
 					case EffectTarget.Hero:
 					case EffectTarget.None:
 						gameBus.publish(playerUseZap({
-							name: this.actionContext.data.name,
+							name: data.data.name,
 							target: this.hero.subject as Hero,
 						}));
 						break;

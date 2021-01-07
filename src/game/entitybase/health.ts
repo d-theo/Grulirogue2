@@ -5,6 +5,7 @@ import { playerHealed } from "../../events";
 export class Health {
     currentHp: number;
     regenerationRate = 15;
+    tickPerRegen = 1;
     nextRegen = 0;
     constructor(public baseHp: number) {
         this.currentHp = baseHp;
@@ -18,7 +19,7 @@ export class Health {
             this.nextRegen ++;
             if (this.nextRegen >= this.regenerationRate) {
                 this.nextRegen = 0;
-                this.take(-1);
+                this.take(-this.tickPerRegen);
                 gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp, isSilent: true}));
             }
         }

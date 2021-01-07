@@ -92,9 +92,9 @@ function createSpell(name: SpellNames) {
             return createElementalSpell(effect, {
                 shapeStrategy: 'line',
                 type: EffectTarget.Location,
-                affect: () => new Affect('cold').create(),
+                affect: () => new Affect('timed').create(),
                 mapEffect:  MapEffect.Cold,
-                duration: 10,
+                duration: 5,
             });
         case SpellNames.SpikeTrap: 
             return new TrapSpell(effect);

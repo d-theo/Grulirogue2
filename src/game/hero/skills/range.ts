@@ -4,7 +4,7 @@ export class RangePassiveSkill extends PassiveSkill {
     name: string = 'Ranged weapons';
     description: string = 'Increase the damage and the accuracy of your ranged weapons';
     onLevelUp(level: number) {
-        throw new Error('Method not implemented.');
+        
     }
 
 }

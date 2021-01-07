@@ -8,7 +8,7 @@ export abstract class PassiveSkill {
     private xpTable = [30, 100, 150, 250, 450, 700, 1000, 1500, 3000, 10000];
     abstract name: string;
     abstract description: string;
-    constructor(private readonly hero: Hero) {}
+    constructor(protected readonly hero: Hero) {}
     abstract onLevelUp(level: number);
     _modifier = 0;
 

@@ -36,6 +36,7 @@ export type AffectType =
 | 'floral'
 | 'berserk'
 | 'weak'
+| 'timed'
 | 'procChance';
 
 export class Affect {
@@ -503,6 +504,19 @@ export class Affect {
                     .target(t)
                     .cast();
             },
+        }
+    }
+    private timed() {
+        return {
+            start: (t: Hero | Monster) => {
+                new DamageResolution(null, t, 10, '');
+                new Affect('weak')
+                    .isStackable(true)
+                    .turns(3)
+                    .target(t)
+                    .cast();
+            },
+            end: NullFunc
         }
     }
 }

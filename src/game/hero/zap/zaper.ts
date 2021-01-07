@@ -1,8 +1,6 @@
 import { CastPassiveSkill } from './../skills/cast';
 import { logPublished } from './../../../events/log';
 import { gameBus } from "../../../eventBus/game-bus";
-import { IEffect, TeleportationSpell, EffectTarget } from '../../effects/spells';
-import { EffectMaker, SpellNames } from '../../effects/effect';
 import { Hero } from '../hero';
 import { MessageResponse, MessageResponseStatus } from '../../utils/types';
 import { Zap } from './zap';
@@ -48,10 +46,16 @@ export class Zapper {
     erase(name: string) {
         this.stored = this.stored.filter(z => z.name !== name);
     }
-    update() {
+    public improveEnergyPerTickRate(n: number) {
+        this.energyPerTick += n;
+    }
+    public addMaxEnergy(add: number) {
+        this.energyLevel += add;
+    }
+    public update() {
         this.turn += 1;
         if (this.turn % this.energyRegenerationRate === 0) {
-            this.energyLevel += this.energyPerTick;
+            this.energyLevel = Math.max(this.energy, this.energyLevel+this.energyPerTick);
         }
     }
     hasZap(name: string) {

@@ -8,7 +8,6 @@ import {Item} from '../game/entitybase/item';
 import {UIItem} from '../UIEntities/ui-item';
 import {Hero} from '../game/hero/hero';
 import {UIEffect} from '../UIEntities/ui-effect';
-import {SkillNames} from '../game/hero/hero-skills';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
 import {EffectTarget} from '../game/effects/spells';
@@ -439,6 +438,7 @@ class GameScene extends Phaser.Scene {
 						break;
 					case EffectTarget.Hero:
 					case EffectTarget.None:
+					case EffectTarget.Trap:
 						gameBus.publish(playerUseItem({
 							item: data.item,
 							target: this.hero.subject as Hero,

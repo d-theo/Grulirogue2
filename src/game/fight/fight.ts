@@ -9,6 +9,8 @@ export class Attack {
         dodge -= this.target.armour.bulky;
         dodge += this.attacker.precision;
 
+        console.log(this.attacker, this.target, dodge);
+
         if (Math.random() < dodge) {
             return 0;
         }

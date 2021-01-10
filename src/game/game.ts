@@ -159,7 +159,6 @@ export class Game {
         if (this.isNextTurn(timeSpent)) {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
             this.hero.update();
-            this.hero.heroSkills.update(); // TODO REFACTO
             this.monsters.update();
             this.items.update();
         }

@@ -102,6 +102,33 @@ export const createRealityTome = () => {
         effectTarget: EffectTarget.Hero
     });
 }
+export const createSpikeTrap = () => {
+    return new Misc({
+        name: 'Spikes trap',
+        description: "A nice piece of work that must hurt",
+        skin: 'spike_trap_item',
+        effectTarget: EffectTarget.Trap,
+        effect: EffectMaker.createSpell(SpellNames.SpikeTrap)
+    })
+}
+export const createPoisonTrap = () => {
+    return new Misc({
+        name: 'A poisonous trap',
+        description: 'Made to slowly kill the hunted target',
+        skin: 'poison_trap_item',
+        effectTarget: EffectTarget.Trap,
+        effect: EffectMaker.createSpell(SpellNames.PoisonTrap)
+    })
+}
+export const createRootTrap = () => {
+    return new Misc({
+        name: 'Basic trap',
+        description: 'A basic trap made to temporary immobilize your ennemy',
+        skin: 'root_trap_item',
+        effectTarget: EffectTarget.Trap,
+        effect: EffectMaker.createSpell(SpellNames.RootTrap)
+    })
+}
 export class Misc extends Item implements ItemArgument {
     effect: IEffect;
     effectTarget: EffectTarget;

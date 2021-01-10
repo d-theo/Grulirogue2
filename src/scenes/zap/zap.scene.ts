@@ -8,7 +8,7 @@ export class ZapView implements ConfigPopup<ZapReport>{
     title = 'Choose a skill to zap';
     data: ZapReport[];
     rowFormatter (letter: string, element: ZapReport): string {
-        return `${letter} - ${element.name} | ${element.energyNeeded} | ${element.failChance}`
+        return `${letter}- ${element.name} | ${element.energyNeeded} | ${element.failChance}`
     };
     constructor(data: ZapReport[]) {
         this.data = data;

@@ -8,7 +8,6 @@ import { Inventory } from "./inventory";
 import { BuffDefinition, EffectMaker, SpellNames } from "../effects/effect";
 import { Item } from "../entitybase/item";
 import { FightModifier } from "../entitybase/fight-modifier";
-import  HeroSkills from "./hero-skills";
 import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
@@ -47,7 +46,6 @@ export class Hero implements Entity {
         improvedPotionEffect: 0, // alchemist
         additionnalItemPerLevel: 0
     };
-    heroSkills: HeroSkills;
     constructor() {
         this.name = "Grulito le brave";
         this.health = new Health(15);
@@ -58,7 +56,6 @@ export class Hero implements Entity {
         this.addToBag(this.weapon);
         this.equip(this.armour);
         this.equip(this.weapon);
-        this.heroSkills = new HeroSkills(this);
         this.enchantSolver = new EnchantSolver(this);
         this.skills = new SkillManager(this);
         this.zapper = new Zapper(this);

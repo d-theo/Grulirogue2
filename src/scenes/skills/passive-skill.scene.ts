@@ -9,7 +9,7 @@ export class SkillView implements ConfigPopup<Skill>{
     title = 'Choose a skill to train';
     data: Skill[];
     rowFormatter (letter: string, element: Skill): string {
-        return `${letter} - ${element.name} | ${element.level} | ${this.formatSpecialization(element.specialization)}`
+        return `${letter}- ${element.name} | ${element.level} | ${this.formatSpecialization(element.specialization)}`
     };
     formatSpecialization(n: number) {
         switch (n) {

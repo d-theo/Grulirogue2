@@ -16,9 +16,6 @@ import { line } from "../tilemap/sight";
 import { DamageResolution } from "../fight/damages";
 import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned, playerHealed } from "../../events";
 import { Bestiaire } from "../monsters/bestiaire";
-import { TileMap } from "../tilemap/tilemap";
-import { isTileEmpty, isSurroundingClear } from "../use-cases/preconditions/moveAllowed";
-import { stat } from "fs";
 import { sightHasChanged } from "../../events/sight-has-changed";
 
 export enum EffectTarget { 
@@ -30,6 +27,7 @@ export enum EffectTarget {
     Movable = 'movable',
     Hero = 'hero',
     None = '',
+    Trap = 'Trap',
 };
 
 export interface IEffect {
@@ -39,13 +37,13 @@ export interface IEffect {
 }
 
 export class TrapSpell implements IEffect {
-    type = EffectTarget.Location;
+    type = EffectTarget.Trap;
     constructor(private readonly world: WorldEffect) {}
-    cast(pos: Coordinate) {
+    cast() {
         const bleed = new Affect('bleed').turns(3).create();
         const id = this.world.getTilemap().addTileEffects({
             debuff: () => bleed,
-            pos,
+            pos: this.world.getHero().pos,
             duration: 1,
             stayOnWalk: false,
             debugId: "TrapSpell",
@@ -55,15 +53,15 @@ export class TrapSpell implements IEffect {
                 animation: 'static',
                 id: id,
                 type: MapEffect.Spike,
-                pos
+                pos: this.world.getHero().pos,
             }));
         }
-        gameBus.publish(logPublished({data: `trap has been set`}));
+        gameBus.publish(logPublished({data: `the trap has been set`}));
     }
 }
 
 export class RootTrapSpell implements IEffect {
-    type = EffectTarget.Location;
+    type = EffectTarget.Trap;
     constructor(private readonly world: WorldEffect) {}
     cast() {
         const id = this.world.getTilemap().addTileEffects({
@@ -85,7 +83,7 @@ export class RootTrapSpell implements IEffect {
 }
 
 export class PoisonTrapSpell implements IEffect {
-    type = EffectTarget.Location;
+    type = EffectTarget.Trap;
     constructor(private readonly world: WorldEffect) {}
     cast() {
         const pos = this.world.getHero().pos;

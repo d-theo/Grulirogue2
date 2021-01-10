@@ -2,7 +2,7 @@ import { SceneName } from "../scenes.constants";
 import { PopupSeedView, ConfigPopup } from "./seedl-view";
 
 export const Font = {
-  fontSize: '11px',
+  fontSize: '8px',
   fontFamily: 'square',
   color: '#FFFFFF',
 };

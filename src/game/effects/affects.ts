@@ -2,7 +2,6 @@ import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
 import { gameBus} from "../../eventBus/game-bus";
 import { BuffDefinition } from "./effect";
-import { SkillNames } from "../hero/hero-skills";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
 import { AIBehavior } from "../monsters/ai";
@@ -161,7 +160,6 @@ export class Affect {
         return {
             tick: (t: Hero) => {
                 let bonus = pickInRange('10-20');
-                bonus += 10 * t.heroSkills.getSkillLevel(SkillNames.Alchemist);
                 t.health.take(-bonus);
                 gameBus.publish(playerHealed({
                     baseHp: t.health.baseHp,

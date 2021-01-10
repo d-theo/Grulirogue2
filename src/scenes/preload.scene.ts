@@ -81,6 +81,8 @@ import TweenHelper from "../phaser-addition/tween-helper";
       this.load.image('small_torch', '/assets/sprites/small-torch.png');
       this.load.image('sphere_of_lighting', '/assets/sprites/sphere-of-lightnings.png');
       this.load.image('unholy_book', '/assets/sprites/unholy-book.png');
+      this.load.image('spike_trap_item', '/assets/sprites/spike_trap_item.png');
+      this.load.image('poison_trap_item', '/assets/sprites/poison_trap_item.png');
 
       this.load.image('bleeding', '/assets/sprites/affect-bleeding.png');
       this.load.image('poisoning', '/assets/sprites/affect-poisoning.png');

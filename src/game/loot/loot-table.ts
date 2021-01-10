@@ -8,7 +8,7 @@ import { craftWeapon } from "./loot-weapons";
 import { Potion } from "../items/potion";
 import { Scroll } from "../items/scroll";
 import { Armour } from "../items/armour";
-import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome, createTomeOfVegetation } from "./loot-mics";
+import { createWildFireBottle, createSphereOfShadow, createTomeOfRain, createSmallTorch, createSmellyBottle, createSphereOfLighting, createColdCrystal, createUnholyBook, createRogueTome, createTomeOfVegetation, createRootTrap, createPoisonTrap, createSpikeTrap } from "./loot-mics";
 import * as _ from 'lodash';
 
 export const ArmoursTable: XTable[] = [
@@ -33,12 +33,15 @@ export const ItemTable: XTable[] = [
 export const MiscTable: XTable = [
     {chance: 10, type: () => createWildFireBottle()},
     {chance: 15, type: () => createSphereOfShadow()},
-    {chance: 15, type: () => createTomeOfRain()},
+    {chance: 10, type: () => createTomeOfRain()},
     {chance: 10, type: () => createSmallTorch()},
     {chance: 10, type: () => createSmellyBottle()},
-    {chance: 15, type: () => createColdCrystal()},
+    {chance: 10, type: () => createColdCrystal()},
     {chance: 10, type: () => createSphereOfLighting()},
-    {chance: 15, type: () => createTomeOfVegetation()},
+    {chance: 10, type: () => createTomeOfVegetation()},
+    {chance: 10, type: () => createSpikeTrap()},
+    {chance: 10, type: () => createPoisonTrap()},
+    {chance: 10, type: () => createRootTrap()},
 ];
 
 export const PotionTable: XTable = [

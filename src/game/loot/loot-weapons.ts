@@ -4,6 +4,7 @@ import { GameRange } from "../utils/range";
 import { Weapon } from "../items/weapon";
 import { Affect } from "../effects/affects";
 import * as _ from 'lodash';
+import { wearAccuracy, wearMoreDodge, wearMoreHp } from "./onWear/onwear";
 
 export const DmgPerTier = [1,3,5,7,9,13,16];
 export const rangePerTier = [1,2,3,4,5,5,5];
@@ -73,9 +74,9 @@ export const WeaponEchants: XTable = [
 ];
 
 export const WeaponOnCarryBonus = [
-    {effect: new Affect('precision').params(0.1).isStackable(true).turns(Infinity).create(), name: 'of precision', description: 'this weapon is very accurate'},
-    {effect: new Affect('hp').params(pickInRange('5-15')).isStackable(true).turns(Infinity).create(), name: 'of vitality', description: 'this weapon grants you more vitality'},
-    {effect: new Affect('dodge').params(0.05).isStackable(true).turns(Infinity).create(), name: 'of agility', description: 'this weapon is easy enought to manipulate and allows to dodge better'},
+    wearAccuracy,
+    wearMoreHp,
+    wearMoreDodge
 ]
 
 const getDmgName = (dmg: number) => {

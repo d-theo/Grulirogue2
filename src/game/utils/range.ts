@@ -9,6 +9,7 @@ export class GameRange {
         } else {
             this.range = _.range(start, end+1, 1);
         }
+        console.log(start, end, _);
     }
     pick(): number {
         const r = _.sample(this.range);

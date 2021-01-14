@@ -22,6 +22,8 @@ import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";
 import { UseCustomBuild } from "./loot/custom-build";
+import { AbstractSpellShell, SpellBook } from "./effects/abstract-spell-shell";
+import { WorldEffect } from "./effects/world-effect";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -87,6 +89,7 @@ export class Game {
         this.eventDispatcher = new EventDispatcher(this);
         this.initBus();
         this.reInitLevel();
+        AbstractSpellShell.bindOnce(new WorldEffect(this.tilemap, this.hero, this.monsters, this.places, this));
     }
 
     static getInstance() {

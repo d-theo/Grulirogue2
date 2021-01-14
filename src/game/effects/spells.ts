@@ -16,10 +16,9 @@ import { line } from "../tilemap/sight";
 import { DamageResolution } from "../fight/damages";
 import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned, playerHealed } from "../../events";
 import { Bestiaire } from "../monsters/bestiaire";
-import { TileMap } from "../tilemap/tilemap";
-import { isTileEmpty, isSurroundingClear } from "../use-cases/preconditions/moveAllowed";
-import { stat } from "fs";
 import { sightHasChanged } from "../../events/sight-has-changed";
+import { AbstractSpellShell } from "./abstract-spell-shell";
+import { SpellBook } from "./spell-book";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -38,9 +37,9 @@ export interface IEffect {
     turns?: number;
 }
 
-export class TrapSpell implements IEffect {
+export class TrapSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
+    
     cast(pos: Coordinate) {
         const bleed = new Affect('bleed').turns(3).create();
         const id = this.world.getTilemap().addTileEffects({
@@ -62,9 +61,9 @@ export class TrapSpell implements IEffect {
     }
 }
 
-export class RootTrapSpell implements IEffect {
+export class RootTrapSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
+
     cast() {
         const id = this.world.getTilemap().addTileEffects({
             debuff: () => new Affect('stun').turns(5).create(),
@@ -84,9 +83,9 @@ export class RootTrapSpell implements IEffect {
     }
 }
 
-export class PoisonTrapSpell implements IEffect {
+export class PoisonTrapSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
+
     cast() {
         const pos = this.world.getHero().pos;
         const poison = new Affect('poison')
@@ -110,10 +109,10 @@ export class PoisonTrapSpell implements IEffect {
     }
 }
 
-export class WildFireSpell implements IEffect {
+export class WildFireSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
     area = 1;
-    constructor(private readonly world: WorldEffect) {}
+
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
             const dmg = new Affect('damage').params(0.5,'4-6','wild fire').create(); // FIXME
@@ -136,10 +135,10 @@ export class WildFireSpell implements IEffect {
     }
 }
 
-export class UnholySpellBook implements IEffect {
+export class UnholySpellBook extends AbstractSpellShell {
     type = EffectTarget.None;
     turns = 1;
-    constructor(private world: WorldEffect){}
+
     cast() {
         const hpos = this.world.getHero().pos;
         const place = this.world.getPlaces().getAt(hpos);
@@ -154,18 +153,18 @@ export class UnholySpellBook implements IEffect {
     }
 }
 
-export class IdentifiySpell implements IEffect {
+export class IdentifiySpell extends AbstractSpellShell {
     type = EffectTarget.Item;
-    constructor() {}
+
     cast(item: Item) {
         item.reveal();
         gameBus.publish(logPublished({level: 'success', data: `You identify a ${item.name}`}));
     }
 }
 
-export class KnowledgeSpell implements IEffect {
+export class KnowledgeSpell extends AbstractSpellShell {
     type = EffectTarget.None;
-    constructor(private readonly world: WorldEffect){}
+
     cast() {
         matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => {
             t.viewed = true;
@@ -175,9 +174,9 @@ export class KnowledgeSpell implements IEffect {
         gameBus.publish(sightUpdated({}));
     }
 }
-export class TeleportationSpell implements IEffect  {
+export class TeleportationSpell extends AbstractSpellShell  {
     type = EffectTarget.Movable;
-    constructor(private readonly world: WorldEffect) {}
+
     cast(target: Hero|Monster) {
         let done = false;
         const rX = new GameRange(0, this.world.getMapWidth());
@@ -195,17 +194,17 @@ export class TeleportationSpell implements IEffect  {
     }
 }
 
-export class BlinkSpell implements IEffect  {
+export class BlinkSpell extends AbstractSpellShell  {
     type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
+
     cast(target: Coordinate) {
         this.world.getHero().pos = target;
         gameBus.publish(playerMoved({}));
     }
 }
-export class DashSpell implements IEffect {
+export class DashSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
-    constructor(private readonly world: WorldEffect) {}
+
     cast(target: Coordinate) {
         const l = line({from: this.world.getHero().pos, to: target});
         const n = Math.min(4, l.length);
@@ -222,18 +221,18 @@ export class DashSpell implements IEffect {
     }
 }
 
-export class ImproveArmourSpell implements IEffect  {
+export class ImproveArmourSpell extends AbstractSpellShell  {
     type = EffectTarget.Armour;
-    constructor(private world: WorldEffect){}
+
     cast(target: Armour) {
         target.addAbsorbEnchant(1);
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
         gameBus.publish(itemEquiped({armour: this.world.getHero().armour}))
     }
 }
-export class ImproveWeaponSpell implements IEffect  {
+export class ImproveWeaponSpell extends AbstractSpellShell  {
     type = EffectTarget.Weapon;
-    constructor(private world: WorldEffect){}
+
     cast(target: Weapon) {
         target.modifyAdditionnalDmg(+1);
         gameBus.publish(logPublished({data: `Your ${target.name} glows magically for a moment.`}));
@@ -241,23 +240,23 @@ export class ImproveWeaponSpell implements IEffect  {
     }
 }
 
-export class WeaknessSpell implements IEffect  {
+export class WeaknessSpell extends AbstractSpellShell  {
     type = EffectTarget.Movable;
-    constructor(private readonly world: WorldEffect) {}
+
     cast(t: Hero|Monster) {
         new Affect('weak').turns(15).target(t).cast();
     }
 }
-export class AgeSpell implements IEffect  {
+export class AgeSpell extends AbstractSpellShell  {
     type = EffectTarget.Movable;
     cast(t: Hero|Monster) {
         const halfCurr = t.health.currentHp / 2;
         new DamageResolution(null, t, halfCurr, 'fast aging');
     }
 }
-export class FlashbackSpell implements IEffect  {
+export class FlashbackSpell extends AbstractSpellShell  {
     type = EffectTarget.Hero;
-    constructor(private readonly world: WorldEffect) {}
+
     cast() {
         const state = this.world.getHero().pastStates[0];
         this.world.getHero().pos = state.pos;
@@ -267,15 +266,15 @@ export class FlashbackSpell implements IEffect  {
         gameBus.publish(playerHealed({baseHp:this.world.getHero().health.baseHp, currentHp: state.hp}));
     }
 }
-export class SlowSpell implements IEffect {
+export class SlowSpell extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(t: Hero|Monster) {
         new Affect('slow').turns(15).target(t).cast();
     }
 }
-export class SummonWeakSpell implements IEffect  {
+export class SummonWeakSpell extends AbstractSpellShell  {
     type = EffectTarget.None;
-    constructor(private readonly world: WorldEffect) {}
+
     cast() {
         const pos = this.world.getHero().pos;
         const mobs = [Bestiaire.Greece.Bat, Bestiaire.Greece.Rat, Bestiaire.Greece.Rat];
@@ -291,7 +290,7 @@ export class SummonWeakSpell implements IEffect  {
 }
 
 /// SHOULD BE SPELLS
-export class CleaningEffect implements IEffect {
+export class CleaningEffect extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(target: Hero|Monster) {
         target.buffs.cleanBuff();
@@ -300,7 +299,7 @@ export class CleaningEffect implements IEffect {
     }
 }
 
-export class XPEffect implements IEffect {
+export class XPEffect extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(target: Hero | Monster) {
         if (target instanceof Hero) {
@@ -314,14 +313,14 @@ export class XPEffect implements IEffect {
     }
 }
 
-export class RogueEventSpell implements IEffect {
+export class RogueEventSpell extends AbstractSpellShell {
     type = EffectTarget.None;
     cast() {
         gameBus.publish(rogueEvent({}));
         gameBus.publish(logPublished({level: 'danger', data:'where the heck are you ?!'}));
     }
 }
-export class RealityEventSpell implements IEffect {
+export class RealityEventSpell extends AbstractSpellShell {
     type = EffectTarget.None;
     cast() {
         gameBus.publish(endRogueEvent({}));
@@ -329,9 +328,9 @@ export class RealityEventSpell implements IEffect {
     }
 }
 
-export class FearSpell implements IEffect {
+export class FearSpell extends AbstractSpellShell {
     type = EffectTarget.None;
-    constructor(private world: WorldEffect) {}
+
     cast() {
         const mobs = this.world.getNearestAttackables();
         mobs.forEach(m => {
@@ -340,9 +339,9 @@ export class FearSpell implements IEffect {
     }
 }
 
-export class SacrificeSpell implements IEffect {
+export class SacrificeSpell extends AbstractSpellShell {
     type = EffectTarget.Movable;
-    constructor(private world: WorldEffect) {}
+
     cast(t: Hero|Monster) {
         const hero = this.world.getHero();
         const sacrifice = Math.floor(hero.health.baseHp * 0.25);
@@ -355,7 +354,7 @@ export class SacrificeSpell implements IEffect {
         new DamageResolution(null, hero, sacrifice, 'sacrifice');
     }
 }
-export class AsservissementSpell implements IEffect {
+export class AsservissementSpell extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(target: Hero | Monster) {
         if (target instanceof Hero) {
@@ -375,8 +374,10 @@ interface ElementSpell {
     duration: number;
 }
 
-export function createElementalSpell (world: WorldEffect, builder: ElementSpell) {
+export function createElementalSpell (builder: ElementSpell) {
     let strategy;
+    let spell = new ElementalSpell();
+    let world = spell.getWorld();
     switch (builder.shapeStrategy) {
         case 'around':
             strategy = aroundStrategy(builder)
@@ -392,7 +393,8 @@ export function createElementalSpell (world: WorldEffect, builder: ElementSpell)
             break;
         default: throw new Error('not implemented Spell shape');
     }
-    return new ElementalSpell(world, strategy, builder);
+    spell.init(strategy, builder);
+    return spell;
     function aroundStrategy(builder: ElementSpell) {
         return (pos: Coordinate) => {
             around(pos, 1).forEach(p => {
@@ -483,15 +485,17 @@ export function createElementalSpell (world: WorldEffect, builder: ElementSpell)
     }
 }
 
-export class ElementalSpell {
+export class ElementalSpell extends AbstractSpellShell {
     type: EffectTarget;
-    constructor(
-        private readonly world: WorldEffect,
-        private readonly strategy: Function,
-        private readonly builder: ElementSpell) {
-            this.type = builder.type;
-        }
+    strategy: Function;
+    init(strategy: Function, builder: ElementSpell) {
+        this.type = builder.type;
+        this.strategy = strategy;
+    }
     cast(pos: Coordinate) {
         this.strategy(pos);
+    }
+    getWorld() {
+        return this.world;
     }
 }

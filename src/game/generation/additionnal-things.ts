@@ -10,8 +10,6 @@ import { Weapon } from "../items/weapon";
 import { craftWeapon } from "../loot/loot-weapons";
 import { SpecialPlaces } from "../places/special-places";
 import { TileMap } from "../tilemap/tilemap";
-import { randomIn } from "../utils/rectangle";
-import { CatStatue } from "../loot/loot-mics";
 import * as _ from 'lodash';
 
 export function makeThings(

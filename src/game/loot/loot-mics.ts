@@ -1,13 +1,13 @@
-import { SpellNames, EffectMaker } from "../effects/effect";
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
 import { EffectTarget, IEffect } from "../effects/spells";
+import { SpellBook } from "../effects/spell-book";
 
 export const createWildFireBottle = () => {
     return new Misc({
         name: 'Bottle of wildfire',
         description: 'The flame inside this bottle looks like it wants to get out',
-        effect: EffectMaker.createSpell(SpellNames.WildFire),
+        effect: SpellBook.WildFireSpell,
         effectTarget: EffectTarget.AoE,
         skin: 'wildfire_bottle'
     });
@@ -17,7 +17,7 @@ export const createSphereOfShadow = () => {
         name: 'Sphere of shadows',
         description: 'A back sphere that seems to be alive',
         effectTarget: EffectTarget.AoE,
-        effect: EffectMaker.createSpell(SpellNames.Shadow),
+        effect: SpellBook.Shadow,
         skin: 'sphere_of_shadows'
     });
 };
@@ -26,7 +26,7 @@ export const createTomeOfRain = () => {
         name: 'Tome of rain',
         description: 'Can invok the god of rain',
         skin: 'tome_of_rain',
-        effect: EffectMaker.createSpell(SpellNames.RainCloud),
+        effect: SpellBook.RainCloud,
         effectTarget: EffectTarget.AoE
     })
 }
@@ -35,7 +35,7 @@ export const createTomeOfVegetation = () => {
         name: 'Tome of vegetation',
         description: 'Can invok the god of vegetation',
         skin: 'tome_floral',
-        effect: EffectMaker.createSpell(SpellNames.FloralCloud),
+        effect: SpellBook.FloralCloud,
         effectTarget: EffectTarget.AoE
     })
 }
@@ -45,7 +45,7 @@ export const createSmallTorch = () => {
         description: 'A torch that could burn if throwed',
         skin: 'small_torch',
         effectTarget: EffectTarget.AoE,
-        effect: EffectMaker.createSpell(SpellNames.FireCloud)
+        effect: SpellBook.FireCloud
     })
 }
 export const createSmellyBottle = () => {
@@ -53,7 +53,7 @@ export const createSmellyBottle = () => {
         name: 'Smelly bottle',
         description: 'It has a strong gaz inside',
         skin: 'smelly_bottle',
-        effect: EffectMaker.createSpell(SpellNames.PoisonCloud),
+        effect: SpellBook.PoisonCloud,
         effectTarget: EffectTarget.AoE
     })
 }
@@ -63,14 +63,14 @@ export const createSphereOfLighting = () => {
         description: 'A blue sphere that seems to be alive',
         skin: 'sphere_of_lighting',
         effectTarget: EffectTarget.AoE,
-        effect: EffectMaker.createSpell(SpellNames.LightningCloud)
+        effect: SpellBook.LightningCloud
     })
 }
 export const createColdCrystal = () => {
     return new Misc({
         name: 'Cold crystal',
         description: 'A back sphere that seems to be alive',
-        effect: EffectMaker.createSpell(SpellNames.ColdCloud),
+        effect: SpellBook.ColdCloud,
         skin: 'cold_crystal',
         effectTarget: EffectTarget.AoE,
     })
@@ -79,7 +79,7 @@ export const createUnholyBook = () => {
     return new Misc({
         name: 'Unholy book',
         description: 'Its covered with blood and dangerous words...',
-        effect: EffectMaker.createSpell(SpellNames.UnholySpell),
+        effect: SpellBook.UnholySpellBook,
         effectTarget: EffectTarget.None,
         skin: 'unholy_book'
     });
@@ -89,7 +89,7 @@ export const createRogueTome = () => {
         name: 'Strange tome',
         description: 'Its covered with glyphs: @.+-"~mw#',
         skin: 'rogue_tome',
-        effect: EffectMaker.createSpell(SpellNames.RogueEventSpell),
+        effect: SpellBook.RogueEventSpell,
         effectTarget: EffectTarget.Hero
     });
 }
@@ -98,7 +98,7 @@ export const createRealityTome = () => {
         name: 'Strange tome',
         description: 'Should a read that ... ?',
         skin: 'reality_tome',
-        effect: EffectMaker.createSpell(SpellNames.RealityEventSpell),
+        effect: SpellBook.RealityEventSpell,
         effectTarget: EffectTarget.Hero
     });
 }

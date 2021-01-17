@@ -1,9 +1,7 @@
 import { PassiveSkill } from "./passive-skills";
 
-export class DynamoPassiveSkill extends PassiveSkill {
+export class ChargingPassiveSkill extends PassiveSkill {
+    mapLevelValue = [1, 2, 2, 3, 3, 3, 4, 4, 4, 5];
     name: string = 'Dynamo';
     description: string = 'How fast your dimensional zap is reloading its battery';
-    onLevelUp(level: number) {
-        this.hero.zapper.improveEnergyPerTickRate(level);
-    }
 }

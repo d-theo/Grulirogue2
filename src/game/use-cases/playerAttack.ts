@@ -7,7 +7,6 @@ import { Monster } from "../monsters/monster";
 import { distance } from "../utils/coordinate";
 import { gameBus } from "../../eventBus/game-bus";
 import { MapEffect } from "../../map/map-effect";
-import { DamageResolution } from "../fight/damages";
 import { effectSet } from "../../events/effect-set";
 
 export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilemap: TileMap}): MessageResponse {
@@ -45,8 +44,7 @@ export function playerAttack(args: {hero: Hero, attacked:  Monster | null, tilem
             }));
         }
     }
-    const damages = new Attack(hero, attacked).do();
-    new DamageResolution(hero, attacked, damages, '');
+    new Attack(hero, attacked).do();
     return {
         timeSpent: 1,
         status: MessageResponseStatus.Ok

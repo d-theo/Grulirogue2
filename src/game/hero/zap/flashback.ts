@@ -1,6 +1,5 @@
+import { SpellBook } from "../../effects/spell-book";
 import { ZapName } from "./allzaps";
-import { EffectMaker, SpellNames } from "../../effects/effect";
-import { TeleportationSpell } from "../../effects/spells";
 import { Zap } from "./zap";
 
 export class FlashbackZap extends Zap {
@@ -8,5 +7,5 @@ export class FlashbackZap extends Zap {
     name = ZapName.Flashback;
     description = 'Return 10 turns behind';
     energyNeeded = 5;
-    effect = EffectMaker.createSpell(SpellNames.FlashBack);
+    effect = SpellBook.FlashbackSpell;
 }

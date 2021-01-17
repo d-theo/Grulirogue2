@@ -10,13 +10,13 @@ export const Wands = {
     Fire: {
         name:'Wand of fire',
         description: 'Spans fire at the given location',
-        effect: () => EffectMaker.createSpell(SpellNames.FireLine),
+        effect: () => SpellBook.FireLine,
         skin: 'wand-fire'
     },
     Water: {
         name:'Wand of water',
         description: 'Spans water at the given location',
-        effect: () => EffectMaker.createSpell(SpellNames.WaterLine),
+        effect: () => SpellBook.WaterLine,
         skin: 'wand-water'
     },
     /*Poison: {
@@ -28,7 +28,7 @@ export const Wands = {
     Identification: {
         name:'Wand of identification',
         description: 'Identify an unknow item',
-        effect: () => EffectMaker.createSpell(SpellNames.Identify),
+        effect: () => SpellBook.IdentifiySpell,
         skin: 'wand-identification'
     }
 }

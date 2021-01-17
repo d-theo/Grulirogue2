@@ -1,59 +1,59 @@
-import { EffectMaker, SpellNames } from "../effects/effect";
+import { SpellBook } from "../effects/spell-book";
 
 export const Scrolls = {
     Blink: {
         name:'Scroll of blink',
         description: 'Allow you to teleport for a short distance',
-        effect: () => EffectMaker.createSpell(SpellNames.Blink),
+        effect: () => SpellBook.BlinkSpell,
     },
     Teleportation: {
         name:'Scroll of teleportation',
         description: 'Randomly teleport you in the level',
-        effect: () => EffectMaker.createSpell(SpellNames.Teleportation),
+        effect: () => SpellBook.TeleportationSpell,
     },
     EnchantWeapon: {
         name:'Scroll of weapon improvement',
         description: 'Improve a weapon',
-        effect: () => EffectMaker.createSpell(SpellNames.EnchantWeapon),
+        effect: () => SpellBook.ImproveWeaponSpell,
     },
     EnchantArmour: {
         name:'Scroll of armour immprovement',
         description: 'Improve your armour',
-        effect: () => EffectMaker.createSpell(SpellNames.EnchantArmour),
+        effect: () => SpellBook.ImproveArmourSpell,
     },
     Identification: {
         name:'Scroll of identification',
         description: 'Identify an unknow item',
-        effect: () => EffectMaker.createSpell(SpellNames.Identify),
+        effect: () => SpellBook.IdentifiySpell,
     },
     Knowledge: {
         name:'Scroll of knowledge',
         description: 'Reveal the stage',
-        effect: () => EffectMaker.createSpell(SpellNames.Knowledge),
+        effect: () => SpellBook.KnowledgeSpell,
     },
     Fear: {
         name:'Scroll of fear',
         description: 'Inspire fear to nearby ennemies',
-        effect: () => EffectMaker.createSpell(SpellNames.Fear),
+        effect: () => SpellBook.FearSpell,
     },
     Sacrifice: {
         name: 'Scroll of sacrifice',
         description: 'This scroll is tainted with blood. You feel very anxious each time you manipulate it.\n Reading this scroll with curse you and your target. You will lose PERMANENTLY 25% of you MAX hp and inflict twice the effect to your target.',
-        effect: () => EffectMaker.createSpell(SpellNames.Sacrifice)
+        effect: () => SpellBook.SacrificeSpell
     },
     Asservissement: {
         name: 'Scroll of asservissement',
         description: 'This scroll will turn an hostile monster into a slave. It might not work against strong monsters',
-        effect: () => EffectMaker.createSpell(SpellNames.AsservissementSpell)
+        effect: () => SpellBook.AsservissementSpell
     },
     Weakness: {
         name: 'Scroll of weakness',
         description: 'This scroll will weaken the target of your spell',
-        effect: () => EffectMaker.createSpell(SpellNames.Weakness)
+        effect: () => SpellBook.WeaknessSpell
     },
     SummoningWeak: {
         name: 'Scroll of minor summoning',
         description: 'This scroll will summon allies that fight by your side',
-        effect: () => EffectMaker.createSpell(SpellNames.SummonWeak)
+        effect: () => SpellBook.SummonWeakSpell
     }
 }

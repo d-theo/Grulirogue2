@@ -9,10 +9,7 @@ import * as _ from 'lodash';
 export class Weapon extends Item implements ItemArgument {
     private baseDamage: string; // eg : '2-4'
     private additionnalDmg: number = 0;
-
-    additionnalEffects: {chance: number, effect: BuffDefinition, target: 'attacker' | 'target'}[] = [];
     additionalDescription: string[]=[];
-    onEquipBuffs: BuffDefinition[];
     additionalName: string[]=[];
     maxRange: number;
     public hitBeforeIdentified = 200;
@@ -24,7 +21,6 @@ export class Weapon extends Item implements ItemArgument {
         this.maxRange = arg.maxRange || 1;
         this.keyMapping['w'] = this.use.bind(this);
         this.keyDescription['w'] = '(w)ield';
-        this.onEquipBuffs = arg.onEquipBuffs || [];
     }
 
     get description () {
@@ -67,26 +63,19 @@ export class Weapon extends Item implements ItemArgument {
             return `${this.skin} (unidentified)`;
         }
     }
-    modifyAdditionnalDmg(modifier: number) {
-
+    modifyAdditionnalDmg(n: number) {
+        this.additionnalDmg += n;
     }
     formatAdditionnalDmg(): string {
         if (this.additionnalDmg === 0) return '';
         else if (this.additionnalDmg > 0) return '+'+this.additionnalDmg;
         else if (this.additionnalDmg < 0) return ''+this.additionnalDmg;
     }
-    onUnEquip(target: Hero) {
-        this.onEquipBuffs.forEach(b => target.buffs.cleanBuffSource(this.id));
-    }
     deal() {
         return pickInRange(this.baseDamage)+this.additionnalDmg;
     }
     use(target: Hero) {
         target.equip(this);
-        this.onEquipBuffs.forEach(b => {
-            b.source = this.id;
-            target.buffs.addBuff(_.cloneDeep(b));
-        });
     }
     visit(itemVisitor: ItemVisitor) {
         return itemVisitor.visitWeapon(this);

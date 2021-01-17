@@ -4,6 +4,7 @@ import { gameBus } from "../../eventBus/game-bus";
 import { Hero } from "../hero/hero";
 import { EffectTarget } from "../effects/spells";
 import { itemDropped } from "../../events";
+import { Magic } from "./magic";
 let short = require('short-uuid');
 
 export interface ItemArgument {
@@ -20,6 +21,9 @@ export abstract class Item implements ItemArgument {
     keyDescription: any = {};
     isConsumable = true;
     identified = true;
+
+    magic: Magic;
+
     constructor(arg: {x?:number, y?: number, name?: string, description?: string, skin?: string}) {
         this.pos = {
             x: arg.x || 0,

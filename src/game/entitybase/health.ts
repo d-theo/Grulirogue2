@@ -7,8 +7,18 @@ export class Health {
     regenerationRate = 15;
     tickPerRegen = 1;
     nextRegen = 0;
-    constructor(public baseHp: number) {
-        this.currentHp = baseHp;
+    modifier = 0;
+    constructor(public _baseHp: number) {
+        this.currentHp = _baseHp;
+    }
+    get baseHp () {
+        return this._baseHp + this.modifier;
+    }
+    clearModifier() {
+        this.modifier = 0;
+    }
+    addModifier(n) {
+        this.modifier += n;
     }
     regenHealth() {
         if (this.regenerationRate > 0) {

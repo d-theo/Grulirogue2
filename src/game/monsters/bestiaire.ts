@@ -1,5 +1,5 @@
 import { Affect } from "../effects/affects";
-import { EffectMaker, SpellNames } from "../effects/effect";
+import { SpellBook } from "../effects/spell-book";
 
 export const Bestiaire = {
     Misc: {
@@ -74,8 +74,8 @@ export const Bestiaire = {
             range: 4,
             dodge: 0.0,
             spells: [
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
+                () => SpellBook.Shadow,
+                () => SpellBook.Shadow,
             ]
         },
         Rat:{
@@ -138,12 +138,12 @@ export const Bestiaire = {
             range: 6,
             dodge: 0.00,
             spells: [
-                () => EffectMaker.createSpell(SpellNames.FireCloud),
-                () => EffectMaker.createSpell(SpellNames.FireCloud),
-                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
-                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
+                () => SpellBook.FireCloud,
+                () => SpellBook.FireCloud,
+                () => SpellBook.PoisonCloud,
+                () => SpellBook.PoisonCloud,
+                () => SpellBook.Shadow,
+                () => SpellBook.Shadow,
             ]
         },
         Orc: {

@@ -1,24 +1,22 @@
 import { RegenPassiveSkill } from './skills/regen';
-import { RangePassiveSkill } from './skills/range';
-import { MeleePassiveSkill } from './skills/melee';
+import { DamagePassiveSkill } from './skills/damage';
 import { HealthPassiveSkill } from './skills/health';
 import { DodgePassiveSkill } from './skills/dodge';
 import { CastPassiveSkill } from './skills/cast';
 import { BatteryPassiveSkill } from './skills/battery';
-import { ArmorPassiveSkill } from './skills/armor';
+import { ArmourPassiveSkill } from './skills/armour';
 import { Hero } from './hero';
 import { PassiveSkill } from './skills/passive-skills';
-import { DynamoPassiveSkill } from './skills/dynamo';
+import { ChargingPassiveSkill } from './skills/charging';
 export class SkillManager {
     private skills: PassiveSkill[] = [
-        new ArmorPassiveSkill(this.hero),
+        new ArmourPassiveSkill(this.hero),
         new BatteryPassiveSkill(this.hero),
         new CastPassiveSkill(this.hero),
         new DodgePassiveSkill(this.hero),
-        new DynamoPassiveSkill(this.hero),
+        new ChargingPassiveSkill(this.hero),
         new HealthPassiveSkill(this.hero),
-        new MeleePassiveSkill(this.hero),
-        new RangePassiveSkill(this.hero),
+        new DamagePassiveSkill(this.hero),
         new RegenPassiveSkill(this.hero),
     ];
     private selectedSkills = [];
@@ -44,10 +42,17 @@ export class SkillManager {
             return {...skill.report(), specialization: spe};
         });
     }
-    public levelOfSkill(className) {
+    public levelOfSkill(className: typeof PassiveSkill) {
         for (const s of this.skills) {
             if (s instanceof className) {
                 return s.level;
+            }
+        }
+    }
+    public valueOfSkill(className: typeof PassiveSkill) {
+        for (const s of this.skills) {
+            if (s instanceof className) {
+                return s.value;
             }
         }
     }

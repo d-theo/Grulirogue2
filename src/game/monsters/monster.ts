@@ -1,7 +1,6 @@
-import { Health } from "../entitybase/health";
+import { Health, HealthStatus } from "../entitybase/health";
 import { Coordinate } from "../utils/coordinate";
 import { Buffs } from "../entitybase/buffable";
-import { EnchantTable } from "../entitybase/enchantable";
 import { Behavior, AIBehavior } from "./ai";
 import { pickInRange } from "../utils/random";
 import { microValidator } from "../utils/micro-validator";
@@ -9,16 +8,16 @@ import { BuffDefinition } from "../effects/effect";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
-import { EnchantSolver } from "../effects/affects";
 import { IEffect } from "../effects/spells";
 import * as _ from 'lodash';
-import { DamageResolution } from "../fight/damages";
+import { gameBus } from "../../eventBus/game-bus";
+import { monsterTookDamage, monsterDead, heroGainedXp } from "../../events";
+import { Hit } from "../fight/fight";
 
 let short = require('short-uuid');
  
-export class Monster implements Entity {
+export class Monster extends Entity {
     id = short.generate();
-    precision: number = 0;
     health!: Health;
     armour: Armour = new Armour({absorbBase: 0});
     weapon!: Weapon;
@@ -26,18 +25,14 @@ export class Monster implements Entity {
     xp!: number;
     behavior!: Behavior;
     buffs: Buffs = new Buffs();
-    enchants = new EnchantTable();
     name!: string;
     level: number = 1;
     asSeenHero: boolean = false;
     sight = 8;
-    speed = 1;
-    dodge: number = 0.15;
-    enchantSolver: EnchantSolver;
     spells: IEffect[] = [];
     aligment: 'bad'|'good' = 'bad';
     private constructor() {
-        this.enchantSolver = new EnchantSolver(this);
+        super();
     }
     setXp(xp: number) {
         this.xp = xp;
@@ -76,7 +71,7 @@ export class Monster implements Entity {
         return this;
     }
     setDodge(n: number) {
-        this.dodge = n;
+        this._dodge = n;
         return this;
     }
     setBehavior(f: Behavior) {
@@ -84,7 +79,7 @@ export class Monster implements Entity {
         return this;
     }
     setSpeed(speed: number){
-        this.speed = speed;
+        this._speed = speed;
         return this;
     }
     setSpells(spells: IEffect[]) {
@@ -98,10 +93,51 @@ export class Monster implements Entity {
         this.behavior(this);
     }
     update() {
-        this.enchantSolver.solve();
+        //todo update affects
     }
-    takeDamages(c: DamageResolution) {
-        c.monsterTakesDamages(this);
+    onBeHit(hit: Hit) {
+        this.buffs.forEachBuff(b => b.magic.onBeHit(hit));
+        const report = this.health.take(hit.damage);
+        gameBus.publish(monsterTookDamage({
+            monster: this,
+            amount: hit.damage,
+            baseHp: this.maxhp,
+            currentHp: this.hp,
+            externalSource: null,
+        }));
+        if (report.status === HealthStatus.Dead) {
+            gameBus.publish(monsterDead({
+                monster: this
+            }));
+            if (this.getAligment() === 'bad') {
+                gameBus.publish(heroGainedXp({
+                    amount: this.xp
+                }));
+            }
+        }
+    }
+    onHit(hit: Hit) {
+        this.buffs.forEachBuff(b => b.magic.onHit(hit));
+    }
+    takeDamage(dmg: number, reason: string) {
+        const report = this.health.take(dmg);
+        gameBus.publish(monsterTookDamage({
+            monster: this,
+            amount: dmg,
+            baseHp: this.maxhp,
+            currentHp: this.hp,
+            externalSource: null,
+        }));
+        if (report.status === HealthStatus.Dead) {
+            gameBus.publish(monsterDead({
+                monster: this
+            }));
+            if (this.getAligment() === 'bad') {
+                gameBus.publish(heroGainedXp({
+                    amount: this.xp
+                }));
+            }
+        }
     }
     
     static makeMonster(arg: any) : Monster {
@@ -123,13 +159,15 @@ export class Monster implements Entity {
             .setDodge(dodge)
             .setBehavior(AIBehavior.Default());
 
-        if (onHit) {
+        // TODO
+        /*if (onHit) {
             monster.weapon.additionnalEffects.push(onHit);
         }
         if (spells) {
             const sp = spells.map((s: Function) => s());
             monster.setSpells( sp );
-        }
+        }*/
+        
         return monster;
     }
 }

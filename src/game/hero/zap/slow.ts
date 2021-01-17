@@ -1,6 +1,5 @@
+import { SpellBook } from "../../effects/spell-book";
 import { ZapName } from "./allzaps";
-import { EffectMaker, SpellNames } from "../../effects/effect";
-import { TeleportationSpell } from "../../effects/spells";
 import { Zap } from "./zap";
 
 export class SlowZap extends Zap {
@@ -8,5 +7,5 @@ export class SlowZap extends Zap {
     name = ZapName.TimeSlow;
     description = 'Slow an ennemy';
     energyNeeded = 10;
-    effect = EffectMaker.createSpell(SpellNames.Slow);
+    effect = SpellBook.SlowSpell
 }

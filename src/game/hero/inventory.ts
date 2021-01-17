@@ -8,6 +8,17 @@ export class Inventory {
     constructor() {
         this.bag = [];
     }
+
+    get equipedItems () {
+        return this.bag.filter(i => this.equiped.has(i.id));
+    }
+
+    forEachEquiped(func: (f: Item) => void) {
+        this.equipedItems.forEach(i => {
+            func(i);
+        });
+    }
+
     flagEquiped(item: Item) {
         this.equiped.add(item.id);
     }

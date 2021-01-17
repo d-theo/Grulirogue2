@@ -1,6 +1,9 @@
-import { GameRange } from "./range";
 import * as _ from 'lodash';
 
+
+export function randomProc(num: number) {
+    return _.random(0, 100) < num ;
+}
 export function distribute(length: number, value: number): number[] {
     if (length <= 1)
         return [value];

@@ -1,7 +1,7 @@
-import { EffectMaker, SpellNames } from "../effects/effect";
 import { Hero } from "../hero/hero";
 import { Affect } from "../effects/affects";
 import { CleaningEffect, XPEffect } from "../effects/spells";
+import { SpellBook } from "../effects/spell-book";
 
 export const Potions = {
     Thickness: {
@@ -43,7 +43,7 @@ export const Potions = {
         name:'Potion of wisness',
         description: 'A potion that contains the wisdom of the ancien',
         effect: (t: Hero) => {
-            const xp = EffectMaker.createSpell(SpellNames.XPSpell) as XPEffect;
+            const xp = SpellBook.XPEffect as XPEffect;
             xp.cast(t);
         }
     },
@@ -61,7 +61,7 @@ export const Potions = {
         name:'Potion of curring',
         description: 'A potion that cure all the magic',
         effect: (t: Hero) => {
-            const clean = EffectMaker.createSpell(SpellNames.CleaningSpell) as CleaningEffect;
+            const clean = SpellBook.CleaningEffect as CleaningEffect;
             clean.cast(t);
         },
     }

@@ -1,9 +1,78 @@
-import { Affect } from "../../effects/affects"
+import { slowState, weakState } from "../../effects/effect";
+import { Magic } from "../../entitybase/magic"
+import { Hit } from "../../fight/fight";
+import { randomProc } from "../../utils/random";
 
-//export const onHitVamp = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitBump = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitBurn = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitBleed = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitExecute = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitBerserk = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
-//export const onHitShock = {effect: new Affect('ac').turns(1).create(), name: 'of courage', description: 'Being hit makes your more resistant',  type:'onhit'}
+export const onHitStun = new Magic({
+    name: 'stun',
+    description: 'have a small chance to stun the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(10)) {
+            hit.target.addBuff({
+                turns: 1,
+                magic: new Magic({stun: true})
+            });
+        }
+    }
+});
+export const onHitBleed = new Magic({
+    name: 'bleed',
+    description: 'have a small chance to make your target bleed',
+    onHit: (hit: Hit) => {
+        if (randomProc(5)) {
+            hit.target.addBuff({
+                turns: 3,
+                magic: new Magic({bleed: true})
+            });
+        }
+    }
+});
+export const onHitPoison = new Magic({
+    name: 'poison',
+    description: 'have a small chance to poison the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(10)) {
+            hit.target.addBuff({
+                turns: 5,
+                magic: new Magic({poison: true})
+            });
+        }
+    }
+});
+export const onHitShock = new Magic({
+    name: 'shock',
+    description: 'have a chance to stun and damage the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(10)) {
+            hit.target.addBuff({
+                turns: 1,
+                magic: new Magic({stun: true})
+            });
+            hit.damage += 5;
+        }
+    }
+});
+export const onHitCold = new Magic({
+    name: 'cold',
+    description: 'have a small chance to slow the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(10)) {
+            hit.target.addBuff({
+                turns: 1,
+                magic: slowState
+            });
+        }
+    }
+});
+export const onHitWeak = new Magic({
+    name: 'weak',
+    description: 'your attacks can weaken the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(25)) {
+            hit.target.addBuff({
+                turns: 1,
+                magic: weakState
+            });
+        }
+    }
+});

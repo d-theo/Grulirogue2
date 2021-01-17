@@ -2,7 +2,7 @@ import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { gameBus } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
-import { WorldEffect, BuffDefinition } from "./effect";
+import { AGING, BuffDefinition, SACRIFICE, SICKNESS, slowState, weakState, WILDFIRE } from "./effect";
 import { MapEffect } from "../../map/map-effect";
 import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
@@ -11,14 +11,13 @@ import { Tile, TileVisibility } from "../tilemap/tile";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { BloodFountain } from "../places/places";
-import { Affect } from "./affects";
 import { line } from "../tilemap/sight";
-import { DamageResolution } from "../fight/damages";
 import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned, playerHealed } from "../../events";
 import { Bestiaire } from "../monsters/bestiaire";
 import { sightHasChanged } from "../../events/sight-has-changed";
 import { AbstractSpellShell } from "./abstract-spell-shell";
-import { SpellBook } from "./spell-book";
+import { Magic } from "../entitybase/magic";
+import { randomProc } from "../utils/random";
 
 export enum EffectTarget { 
     Location = 'location',
@@ -41,7 +40,10 @@ export class TrapSpell extends AbstractSpellShell {
     type = EffectTarget.Location;
     
     cast(pos: Coordinate) {
-        const bleed = new Affect('bleed').turns(3).create();
+        const bleed = {
+            turns: 3,
+            magic: new Magic({bleed: true})
+        }
         const id = this.world.getTilemap().addTileEffects({
             debuff: () => bleed,
             pos,
@@ -66,7 +68,12 @@ export class RootTrapSpell extends AbstractSpellShell {
 
     cast() {
         const id = this.world.getTilemap().addTileEffects({
-            debuff: () => new Affect('stun').turns(5).create(),
+            debuff: () => {
+                return {
+                    magic: new Magic({stun: true}),
+                    turns: 3
+                }
+            },
             pos: this.world.getHero().pos,
             duration: 1,
             stayOnWalk: false,
@@ -88,9 +95,10 @@ export class PoisonTrapSpell extends AbstractSpellShell {
 
     cast() {
         const pos = this.world.getHero().pos;
-        const poison = new Affect('poison')
-            .turns(3)
-            .create();
+        const poison = {
+            magic: new Magic({poison: true}),
+            turns: 3
+        }
         const id = this.world.getTilemap().addTileEffects({
             debuff: () => poison,
             pos,
@@ -115,7 +123,14 @@ export class WildFireSpell extends AbstractSpellShell {
 
     cast(pos: Coordinate) {
         around(pos, 1).forEach(p => {
-            const dmg = new Affect('damage').params(0.5,'4-6','wild fire').create(); // FIXME
+            const dmg = {
+                magic: new Magic({onTurn: (entity) => {
+                    if (randomProc(50)) {
+                        entity.takeDamage(5, WILDFIRE);
+                    }
+                }}),
+                turns: 1,
+            }
             const id = this.world.getTilemap().addTileEffects({
                 debuff: () => dmg,
                 pos: p,
@@ -147,7 +162,7 @@ export class UnholySpellBook extends AbstractSpellShell {
             gameBus.publish(logPublished({level: 'warning', data: `The blood inside the fountain is bubbling !!`}));
             place.cursed = false;
         } else {
-            new DamageResolution(null, this.world.getHero(), 1, 'sickness');
+            this.world.getHero().takeDamage(1, SICKNESS);
             gameBus.publish(logPublished({level: 'warning', data: `Reading this book is making you nauseous`}));
         }
     }
@@ -244,14 +259,17 @@ export class WeaknessSpell extends AbstractSpellShell  {
     type = EffectTarget.Movable;
 
     cast(t: Hero|Monster) {
-        new Affect('weak').turns(15).target(t).cast();
+        t.addBuff({
+            magic: weakState,
+            turns: 10
+        });
     }
 }
 export class AgeSpell extends AbstractSpellShell  {
     type = EffectTarget.Movable;
     cast(t: Hero|Monster) {
-        const halfCurr = t.health.currentHp / 2;
-        new DamageResolution(null, t, halfCurr, 'fast aging');
+        const halfCurr = t.hp / 2;
+        t.takeDamage(halfCurr, AGING)
     }
 }
 export class FlashbackSpell extends AbstractSpellShell  {
@@ -260,16 +278,19 @@ export class FlashbackSpell extends AbstractSpellShell  {
     cast() {
         const state = this.world.getHero().pastStates[0];
         this.world.getHero().pos = state.pos;
-        this.world.getHero().health.currentHp = state.hp;
+        this.world.getHero()['health']['currentHp'] = state.hp;
         gameBus.publish(playerMoved({}));
         gameBus.publish(sightHasChanged({}));
-        gameBus.publish(playerHealed({baseHp:this.world.getHero().health.baseHp, currentHp: state.hp}));
+        gameBus.publish(playerHealed({baseHp:this.world.getHero().maxhp, currentHp: state.hp}));
     }
 }
 export class SlowSpell extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(t: Hero|Monster) {
-        new Affect('slow').turns(15).target(t).cast();
+        t.addBuff({
+            turns: 5,
+            magic: slowState
+        });
     }
 }
 export class SummonWeakSpell extends AbstractSpellShell  {
@@ -293,8 +314,7 @@ export class SummonWeakSpell extends AbstractSpellShell  {
 export class CleaningEffect extends AbstractSpellShell {
     type = EffectTarget.Movable;
     cast(target: Hero|Monster) {
-        target.buffs.cleanBuff();
-        target.enchants.clean();
+        target.cleanse();
         gameBus.publish(logPublished({level: 'success', data:`${target.name} looks purified`}));
     }
 }
@@ -304,7 +324,7 @@ export class XPEffect extends AbstractSpellShell {
     cast(target: Hero | Monster) {
         if (target instanceof Hero) {
             gameBus.publish(heroGainedXp({
-                amount: 999999
+                amount: 250
             }));
             gameBus.publish(logPublished({level: 'success', data:'you are wiser !'}));
         } else {
@@ -334,7 +354,10 @@ export class FearSpell extends AbstractSpellShell {
     cast() {
         const mobs = this.world.getNearestAttackables();
         mobs.forEach(m => {
-            new Affect('fear').turns(10).target(m).cast();
+            m.addBuff({
+                magic: new Magic({feared: true}),
+                turns: 10,
+            });
         });
     }
 }
@@ -344,14 +367,22 @@ export class SacrificeSpell extends AbstractSpellShell {
 
     cast(t: Hero|Monster) {
         const hero = this.world.getHero();
-        const sacrifice = Math.floor(hero.health.baseHp * 0.25);
-        const curse = Math.floor(t.health.baseHp * 0.5);
+        const sacrifice = Math.floor(hero.basehp * 0.25);
+        const curse = Math.floor(t.basehp * 0.5);
         const target = t;
-        hero.health.getWeakerByHp(sacrifice);
-        target.health.getWeakerByHp(curse);
+
+        hero.addBuff({
+            magic: new Magic({maxhp: -sacrifice}),
+            turns: Infinity,
+        });
+        target.addBuff({
+            magic: new Magic({maxhp: -curse}),
+            turns: Infinity,
+        });
+
         gameBus.publish(logPublished({level: 'danger', data: `You used a forbidden blood magic, hoping this sacrifice is worth the price...`}));
-        new DamageResolution(null, t, curse, 'sacrifice');
-        new DamageResolution(null, hero, sacrifice, 'sacrifice');
+        t.takeDamage(curse, SACRIFICE);
+        hero.takeDamage(sacrifice, SACRIFICE);
     }
 }
 export class AsservissementSpell extends AbstractSpellShell {

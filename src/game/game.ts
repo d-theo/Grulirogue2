@@ -5,7 +5,6 @@ import { Coordinate } from "./utils/coordinate";
 import { AI, AIBehavior } from "./monsters/ai";
 import { Log } from "./log/log";
 import { ItemCollection } from "./items/item-collection";
-import { EffectMaker } from "./effects/effect";
 import { Monster } from "./monsters/monster";
 import { makeThings } from "./generation/additionnal-things";
 import { monstersSpawn } from "./generation/monster-spawn";
@@ -22,7 +21,7 @@ import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";
 import { UseCustomBuild } from "./loot/custom-build";
-import { AbstractSpellShell, SpellBook } from "./effects/abstract-spell-shell";
+import { AbstractSpellShell } from "./effects/abstract-spell-shell";
 import { WorldEffect } from "./effects/world-effect";
 export class Game {
     static Engine: Game;
@@ -84,7 +83,6 @@ export class Game {
         this.places = new SpecialPlaces(this.items, this.monsters);
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
-        EffectMaker.set(this);
         this.commandDispatcher = new CommandDispatcher(this);
         this.eventDispatcher = new EventDispatcher(this);
         this.initBus();
@@ -123,7 +121,7 @@ export class Game {
             friendlies
                 .concat(monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level]))
         );
-        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.skillFlags.additionnalItemPerLevel + this.Loots[this.level]));
+        this.items.setItems(itemSpawn(this.tilemap.graph, this.level, this.hero.chance + this.Loots[this.level]));
         this.mayAddUniqItem();
         makeThings(additionalThingsToPlace, this.monsters, this.items, this.tilemap, this.places);
         if (this.tilemap.graph.bossRoom && this.level == 2) {
@@ -162,12 +160,11 @@ export class Game {
         if (this.isNextTurn(timeSpent)) {
             this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
             this.hero.update();
-            this.hero.heroSkills.update(); // TODO REFACTO
             this.monsters.update();
             this.items.update();
         }
 
-        if (this.hero.enchants.getStuned()) {
+        if (this.hero.isStun) {
             this.nextTurn(1);
         }
     }

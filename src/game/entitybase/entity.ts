@@ -125,6 +125,10 @@ export abstract class Entity {
         this.buffs.forEachBuff(b => {if (b.magic.wet) {return true}});
         return false;
     }
+    get isInBushes() {
+        this.buffs.forEachBuff(b => {if (b.magic.inBushes) {return true}});
+        return false;
+    }
     get isBurning() {
         this.buffs.forEachBuff(b => {if (b.magic.burn) {return true}});
         return false;
@@ -145,5 +149,9 @@ export abstract class Entity {
         let chance = 0;
         this.inventory.forEachEquiped(item => chance += item.magic.chance);
         return chance;
+    }
+
+    stopBurning() {
+        this.buffs.forEachBuff(b => b.magic.burn = false );
     }
 }

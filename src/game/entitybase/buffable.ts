@@ -14,16 +14,15 @@ export class Buffs {
             if (buf.turns != Infinity)  buf.turns = 0
         });
     }
-    apply(target: any) {
+    update(target: any) {
         const nextTurn: BuffDefinition[] = []
         for (let buff of this.buffs) {
             if (buff.turns <= 0) {
-                buff.end(target);
+                buff.end && buff.end(target);
                 continue;
             }
             buff.turns -= 1;
             nextTurn.push(buff);
-            
         }
         this.buffs = nextTurn;
     }

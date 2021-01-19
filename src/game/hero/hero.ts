@@ -12,6 +12,8 @@ import { SpellBook } from '../effects/spell-book';
 import { Monster } from '../monsters/monster';
 import { Hit } from '../fight/fight';
 import { IdentifiySpell } from '../effects/spells/identify-spell';
+import { Magic } from '../entitybase/magic';
+import { effectSolver } from '../effects/solver/solver';
 
 
 export class Hero extends Entity {
@@ -86,7 +88,9 @@ export class Hero extends Entity {
         this.buffs.addBuff(buff);
     }
     resolveBuffs() {
-        this.buffs.apply(this);
+        this.buffs.forEachBuff(b => b.magic.onTurn(this));
+        effectSolver(this);
+        this.buffs.update(this);
     }
     getItem(item: Item) {
         return this.inventory.getItem(item);

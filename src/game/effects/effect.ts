@@ -19,3 +19,8 @@ export const WILDFIRE = 'wild fire';
 export const AGING = 'aging';
 export const SACRIFICE = 'sacrifice';
 export const FRACTURE_SPELL = 'time fracture'
+export const BURNING = 'burning';
+
+export const BURN_DAMAGES = 1;
+export const POISON_DAMAGES = 3;
+export const BLEED_DAMAGES = 5;

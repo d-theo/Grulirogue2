@@ -8,6 +8,14 @@ import { ArmourPassiveSkill } from './skills/armour';
 import { Hero } from './hero';
 import { PassiveSkill } from './skills/passive-skills';
 import { ChargingPassiveSkill } from './skills/charging';
+
+export class NullSkillManager {
+    addXp(){}
+    setActiveSkills(){}
+    report(){return null}
+    levelOfSkill(){ return 0}
+    valueOfSkill(){ return 0}
+}
 export class SkillManager {
     private skills: PassiveSkill[] = [
         new ArmourPassiveSkill(this.hero),

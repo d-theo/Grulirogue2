@@ -14,6 +14,8 @@ import { monsterTookDamage, monsterDead, heroGainedXp } from "../../events";
 import { Hit } from "../fight/fight";
 import { Magic } from "../entitybase/magic";
 import { IEffect } from "../effects/definitions";
+import { NullSkillManager, SkillManager } from "../hero/skill-manager";
+import { effectSolver } from "../effects/solver/solver";
 
 let short = require('short-uuid');
  
@@ -33,6 +35,7 @@ export class Monster extends Entity {
     aligment: 'bad'|'good' = 'bad';
     private constructor() {
         super();
+        this.skills = new NullSkillManager() as any as SkillManager;
     }
     setXp(xp: number) {
         this.xp = xp;
@@ -93,7 +96,9 @@ export class Monster extends Entity {
         this.behavior(this);
     }
     update() {
-        throw new Error('update monster not implemented');
+        this.buffs.forEachBuff(b => b.magic.onTurn(this));
+        effectSolver(this);
+        this.buffs.update(this);
     }
     heal(n: number, reason: string) {
         throw new Error("Method not implemented.");
@@ -103,7 +108,7 @@ export class Monster extends Entity {
         const report = this.health.take(hit.damage);
         gameBus.publish(monsterTookDamage({
             monster: this,
-            amount: hit.damage,
+            amount: -hit.damage,
             baseHp: this.maxhp,
             currentHp: this.hp,
             externalSource: null,
@@ -126,7 +131,7 @@ export class Monster extends Entity {
         const report = this.health.take(dmg);
         gameBus.publish(monsterTookDamage({
             monster: this,
-            amount: dmg,
+            amount: -dmg,
             baseHp: this.maxhp,
             currentHp: this.hp,
             externalSource: null,

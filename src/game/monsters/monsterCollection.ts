@@ -24,14 +24,8 @@ export class MonsterCollection {
         this.monsters = this.monsters.filter(m => m.id !== monster.id);
     }
     update() {
-        this.resolveBuffs();
+        this.monsters.forEach(m => m.update());
         this.play();
-    }
-    resolveBuffs() {
-        for (const m of this.monsters) {
-            m.buffs.apply(m);
-            m.update();
-        }
     }
     play() {
         for (const m of this.monsters) {

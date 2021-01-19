@@ -1,7 +1,5 @@
 import {Monster} from './monster';
 import { Coordinate, equalsCoordinate } from '../utils/coordinate';
-import { gameBus } from '../../eventBus/game-bus';
-import { monsterDead } from '../../events';
 
 export class MonsterCollection {
     monsters: Monster[] = [];
@@ -37,7 +35,7 @@ export class MonsterCollection {
     }
     play() {
         for (const m of this.monsters) {
-            if (!m.enchants.getStuned()) {
+            if (!m.isStun) {
                 for(let i = 0; i < m.speed; i++) {
                     m.play();
                 }

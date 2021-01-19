@@ -8,11 +8,11 @@ import { Armour } from "../items/armour";
 import { Hero } from "../hero/hero";
 import { createSmellyBottle, CatStatue } from "../loot/loot-mics";
 import { Scroll } from "../items/scroll";
-import { Affect } from "../effects/affects";
 import { Scrolls } from "../loot/loot-scrolls";
 import { Bestiaire } from "../monsters/bestiaire";
 import { Monster } from "../monsters/monster";
 import { logPublished, itemRemoved } from "../../events";
+import { onHitBleed } from "../loot/onHit/onHit";
 
 export class BloodFountain implements Place {
     cursed = true;
@@ -62,12 +62,7 @@ export class BloodFountain implements Place {
                         data: `${item.name} is filled with blood of your ennemies !`,
                         level: 'warning'
                     }));
-                    const e = new Affect('bleed').turns(2).create();
-                    item.additionnalEffects.push({
-                        chance: 0.2,
-                        effect: e,
-                        target: 'target'
-                    });
+                    item.magic = onHitBleed
                     item.additionalDescription.push('This item is thristy for blood');
                     this.used = true;
                 }

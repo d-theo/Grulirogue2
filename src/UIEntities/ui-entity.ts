@@ -48,7 +48,8 @@ export class UIEntity {
 	}
 
 	updateStatus() {
-		const report = this.subject.enchants.report();
+		//TODO
+		/*const report = this.subject.enchants.report();
 
 		const currentStatus = new Set<string>();
 		for (let affect of this.affects) {
@@ -65,7 +66,7 @@ export class UIEntity {
 				currentStatus.add(affect);
 				this.addAffect(affect);
 			}
-		}	
+		}*/
 	}
 
 	addAffect(affect: string) {
@@ -93,7 +94,7 @@ export class UIEntity {
 	updateHp(isHero = false) {
 		this.updateStatus();
 		this.updateFriendyIndication();
-		if (this.subject.health.currentHp <= 0 && !this.isDead) {
+		if (this.subject.hp <= 0 && !this.isDead) {
 			this.isDead = true;
 			if (isHero) {
 				gameBus.publish(gameOver({}));
@@ -110,13 +111,13 @@ export class UIEntity {
 				}
 			}
 		}
-		if (this.subject.health.currentHp === this.subject.health.baseHp) {
+		if (this.subject.hp === this.subject.maxhp) {
 			this.healthBar.setAlpha(0);
 			this.healthBarFull.setAlpha(0);
 		} else {
 			this.healthBar.setAlpha(0.9);
 			this.healthBarFull.setAlpha(0.9);
-			const normalized = this.subject.health.currentHp / this.subject.health.baseHp;
+			const normalized = this.subject.hp / this.subject.maxhp;
 			this.healthBar.scaleX = normalized;
 		}
 	}

@@ -15,6 +15,7 @@ export class Magic {
     chance: number = 0;
 
     wet = false;
+    inBushes = false;
     burn = false;
     poison = false;
     bleed = false;

@@ -1,6 +1,4 @@
-import { Affect } from "../effects/affects"
 import { XTable } from "../monsters/mob-table";
-import { pickInRange } from "../utils/random";
 import { wearWet, wearMoreDodge, wearMoreRegen, wearMoveBrave, wearMoreSpeed, wearMoreHp } from "./onWear/onwear";
 
 export const Armours = {

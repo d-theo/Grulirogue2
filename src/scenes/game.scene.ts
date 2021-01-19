@@ -10,7 +10,6 @@ import {Hero} from '../game/hero/hero';
 import {UIEffect} from '../UIEntities/ui-effect';
 import {line} from '../game/tilemap/sight';
 import {Terrain} from '../map/terrain.greece';
-import {EffectTarget} from '../game/effects/spells';
 import {Monster} from '../game/monsters/monster';
 import { GameContext, Modes } from './states';
 import { Keyboard } from '../phaser-addition/keyboard';
@@ -22,6 +21,7 @@ import { gameStarted, logPublished, sightUpdated, monsterMoved, monsterDead, mon
 import { playerAttemptAttackMonster, playerUseItem, nextLevel, waitATurn, playerChoseSkill, playerActionMove, playerUseZap } from '../commands';
 import { SkillView } from './skills/passive-skill.scene';
 import { Zap } from '../game/hero/zap/zap';
+import { EffectTarget } from '../game/effects/definitions';
 
 
 class GameScene extends Phaser.Scene {

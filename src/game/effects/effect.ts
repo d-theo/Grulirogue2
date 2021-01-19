@@ -9,6 +9,7 @@ export type BuffDefinition = {
 
 export const weakState = new Magic({dam: -5})
 export const slowState = new Magic({speed: -0.5})
+export const ticknessState = new Magic({ac: +3});
 
 export const SICKNESS = 'sickness';
 export const POISON = 'poison';
@@ -17,3 +18,4 @@ export const SHOCK = 'shock';
 export const WILDFIRE = 'wild fire';
 export const AGING = 'aging';
 export const SACRIFICE = 'sacrifice';
+export const FRACTURE_SPELL = 'time fracture'

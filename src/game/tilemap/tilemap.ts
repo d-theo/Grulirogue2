@@ -12,8 +12,8 @@ import { Hero } from "../hero/hero";
 import { gameBus } from "../../eventBus/game-bus";
 import { Terrain } from "../../map/terrain.greece";
 import { BuffDefinition } from "../effects/effect";
-import { Affect } from "../effects/affects";
 import { effectUnset, sightUpdated } from "../../events";
+import { Magic } from "../entitybase/magic";
 let short = require('short-uuid');
 
 type DebuffDuration = {debugId?: string, id: string, duration: number, triggered: boolean, pos: Coordinate};
@@ -78,7 +78,10 @@ export class TileMap {
     setFgEffect(tile: Tile) {
         if (tile.type[1] === Terrain.WaterFloor) {
             this.addTileEffects2({
-                debuff: () => new Affect('wet').turns(3).create(),
+                debuff: () => ({
+                    magic: new Magic({wet: true}),
+                    turns: 3
+                }),
                 tile,
                 duration: Infinity,
                 stayOnWalk: true
@@ -86,7 +89,10 @@ export class TileMap {
         }
         if (tile.type[1] === Terrain.VegetalFloor) {
             this.addTileEffects2({
-                debuff: () => new Affect('floral').create(),
+                debuff: () => ({
+                    magic: new Magic({inBushes: true}),
+                    turns: 3
+                }),
                 tile,
                 duration: Infinity,
                 stayOnWalk: true

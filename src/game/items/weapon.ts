@@ -1,10 +1,9 @@
 import { pickInRange } from "../utils/random";
 import { ItemVisitor } from "../items/item-visitor";
-import { EffectTarget } from "../effects/spells";
 import { Item, ItemArgument } from "../entitybase/item";
-import { BuffDefinition } from "../effects/effect";
 import { Hero } from "../hero/hero";
 import * as _ from 'lodash';
+import { EffectTarget } from "../effects/definitions";
 
 export class Weapon extends Item implements ItemArgument {
     private baseDamage: string; // eg : '2-4'

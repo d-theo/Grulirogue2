@@ -3,8 +3,8 @@ import * as _ from 'lodash';
 import { ItemVisitor } from "./item-visitor";
 import { Hero } from "../hero/hero";
 import { gameBus } from "../../eventBus/game-bus";
-import { EffectTarget } from "../effects/spells";
 import { logPublished } from "../../events";
+import { EffectTarget } from "../effects/definitions";
 
 export const PotionColors = [
     'blue',
@@ -56,11 +56,6 @@ export class Potion extends Item implements ItemArgument {
         return 'potion-'+Potion.colors.pop();
     }
     use(target: any) {
-        /*if (target instanceof Hero && target.heroSkills.getSkillLevel(SkillNames.Alchemist) > 0) {
-            if (this.effect.turns) {
-                this.effect.turns += 5 * target.heroSkills.getSkillLevel(SkillNames.Alchemist);
-            }
-        } FIXME */
         if(! Potion.identified[this.getColor()]) {
             Potion.identified[this.getColor()] = true;
             gameBus.publish(logPublished({data: `It was a ${this._name}`, level: 'neutral'}));

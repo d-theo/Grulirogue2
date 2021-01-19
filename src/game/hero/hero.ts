@@ -6,12 +6,12 @@ import { Item } from "../entitybase/item";
 import { Armour, NullArmour } from "../items/armour";
 import { Weapon, NullWeapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";;
-import { IdentifiySpell } from "../effects/spells";
 import { gameBus } from "../../eventBus/game-bus";
-import { itemPickedUp, itemEquiped, playerTookDammage } from "../../events";
+import { itemPickedUp, itemEquiped, playerTookDammage, playerHealed } from "../../events";
 import { SpellBook } from '../effects/spell-book';
 import { Monster } from '../monsters/monster';
 import { Hit } from '../fight/fight';
+import { IdentifiySpell } from '../effects/spells/identify-spell';
 
 
 export class Hero extends Entity {
@@ -155,5 +155,12 @@ export class Hero extends Entity {
     }
     getAligment(): 'good'|'bad' {
         return 'good';
+    }
+    heal(n: number, reason: string) {
+        this.health.take(-n);
+        gameBus.publish(playerHealed({
+            baseHp: this.maxhp,
+            currentHp: this.hp
+        }));
     }
 }

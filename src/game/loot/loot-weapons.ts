@@ -1,10 +1,12 @@
 import { XTable, getInTable } from "../monsters/mob-table";
-import { pickInArray, pickInRange } from "../utils/random";
+import { pickInArray, pickInRange, randomProc } from "../utils/random";
 import { GameRange } from "../utils/range";
 import { Weapon } from "../items/weapon";
-import { Affect } from "../effects/affects";
 import * as _ from 'lodash';
 import { wearAccuracy, wearMoreDodge, wearMoreHp } from "./onWear/onwear";
+import { Magic } from "../entitybase/magic";
+import { Hit } from "../fight/fight";
+import { onHitBleed, onHitCold, onHitPoison, onHitShock, onHitStun, onHitWeak } from "./onHit/onHit";
 
 export const DmgPerTier = [1,3,5,7,9,13,16];
 export const rangePerTier = [1,2,3,4,5,5,5];
@@ -149,37 +151,37 @@ export const craftWeapon = (tier: number): Weapon => {
                 w.identified = false;
                 break;
             case 'stun':
-                w.additionnalEffects.push({effect: new Affect('stun').turns(1).create(), target: 'target', chance: 0.07});
+                w.magic = onHitStun;
                 w.additionalDescription.push('can stun the target');
                 w.additionalName.push('Stun');
                 w.identified = false;
             break;
             case 'bleed':
-                w.additionnalEffects.push({effect: new Affect('bleed').turns(3).create(), target: 'target', chance: 0.1});
+                w.magic = onHitBleed;
                 w.additionalDescription.push('inflict bleeding');
                 w.additionalName.push('Bleeding');
                 w.identified = false;
                 break;
             case 'poison':
-                w.additionnalEffects.push({effect: new Affect('poison').turns(4).create(), target: 'target', chance: 0.5});
+                w.magic = onHitPoison;
                 w.additionalDescription.push('poison the target');
                 w.additionalName.push('Poison');
                 w.identified = false;
                 break;
             case 'shock':
-                w.additionnalEffects.push({effect: new Affect('shock').create(), target: 'target', chance: 0.5});
-                w.additionalDescription.push('Can shock the target. If the target is wet, it also adds a bonus dammage');
+                w.magic = onHitShock;
+                w.additionalDescription.push('Can shock the target. If the target is wet, it adds a bonus dammage');
                 w.additionalName.push('Lightning');
                 w.identified = false;
                 break;
             case 'cold':
-                w.additionnalEffects.push({effect: new Affect('cold').create(), target: 'target', chance: 0.5});
+                w.magic = onHitCold;
                 w.additionalDescription.push('Deals additionnal cold damages. If the target is wet, it also freeze it');
                 w.additionalName.push('Cold');
                 w.identified = false;
                 break;  
             case 'weakness':
-                w.additionnalEffects.push({effect: new Affect('weakness').params(5).turns(10).isStackable(true).create(), target: 'target', chance: 0.1});
+                w.magic = onHitWeak;
                 w.additionalDescription.push('Weaken your opponent by reducing their total hp');
                 w.additionalName.push('Weakness');
                 w.identified = false;
@@ -190,7 +192,7 @@ export const craftWeapon = (tier: number): Weapon => {
     }
     if (Math.random() > 0.05) {
         const onCarryEnchant = _.sample(WeaponOnCarryBonus);
-        w.onEquipBuffs.push(onCarryEnchant!.effect);
+        w.magic = onCarryEnchant;
         w.additionalDescription.push(onCarryEnchant!.description);
         w.additionalName.push(onCarryEnchant!.name);
         w.identified = false;

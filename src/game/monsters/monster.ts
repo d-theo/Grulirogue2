@@ -8,11 +8,12 @@ import { BuffDefinition } from "../effects/effect";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Entity } from "../entitybase/entity";
-import { IEffect } from "../effects/spells";
 import * as _ from 'lodash';
 import { gameBus } from "../../eventBus/game-bus";
 import { monsterTookDamage, monsterDead, heroGainedXp } from "../../events";
 import { Hit } from "../fight/fight";
+import { Magic } from "../entitybase/magic";
+import { IEffect } from "../effects/definitions";
 
 let short = require('short-uuid');
  
@@ -28,7 +29,6 @@ export class Monster extends Entity {
     name!: string;
     level: number = 1;
     asSeenHero: boolean = false;
-    sight = 8;
     spells: IEffect[] = [];
     aligment: 'bad'|'good' = 'bad';
     private constructor() {
@@ -93,7 +93,10 @@ export class Monster extends Entity {
         this.behavior(this);
     }
     update() {
-        //todo update affects
+        throw new Error('update monster not implemented');
+    }
+    heal(n: number, reason: string) {
+        throw new Error("Method not implemented.");
     }
     onBeHit(hit: Hit) {
         this.buffs.forEachBuff(b => b.magic.onBeHit(hit));
@@ -159,14 +162,16 @@ export class Monster extends Entity {
             .setDodge(dodge)
             .setBehavior(AIBehavior.Default());
 
-        // TODO
-        /*if (onHit) {
-            monster.weapon.additionnalEffects.push(onHit);
+        if (onHit) {
+            monster.addBuff({
+                magic: new Magic({onHit: onHit}),
+                turns: Infinity
+            });
         }
         if (spells) {
             const sp = spells.map((s: Function) => s());
             monster.setSpells( sp );
-        }*/
+        }
         
         return monster;
     }

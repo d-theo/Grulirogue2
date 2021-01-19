@@ -2,8 +2,8 @@ import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "./item-visitor";
 import * as _ from 'lodash';
 import { gameBus } from "../../eventBus/game-bus";
-import { IEffect, EffectTarget } from "../effects/spells";
 import { logPublished } from "../../events";
+import { IEffect, EffectTarget } from "../effects/definitions";
 
 export const ScrollType = [
     'RFDFTY',

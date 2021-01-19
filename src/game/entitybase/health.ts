@@ -38,7 +38,7 @@ export class Health {
         let moreHp = pickInRange('2-4');
         moreHp += pickInRange('1-2')+level;
         this.currentHp += moreHp;
-        this.baseHp += moreHp;
+        this._baseHp += moreHp;
         gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
     take(hp: number): HealthReport {
@@ -66,11 +66,11 @@ export class Health {
         }
     }
     getStrongerByHp(hp: number) {
-        this.baseHp += hp;
+        this._baseHp += hp;
         gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
     getWeakerByHp(hp: number) {
-        this.baseHp -= hp;
+        this._baseHp -= hp;
         gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
 }

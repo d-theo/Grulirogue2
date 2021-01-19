@@ -1,5 +1,4 @@
 import { ZapName } from "./allzaps";
-import { TeleportationSpell } from "../../effects/spells";
 import { Zap } from "./zap";
 import { SpellBook } from "../../effects/spell-book";
 

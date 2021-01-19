@@ -14,6 +14,8 @@ import { HealthPassiveSkill } from "../hero/skills/health";
 import { RegenPassiveSkill } from "../hero/skills/regen";
 import { Hit } from "../fight/fight";
 import { BuffDefinition } from "../effects/effect";
+import { gameBus } from "../../eventBus/game-bus";
+import { logPublished } from "../../events";
 
 export abstract class Entity {
     public name: string;
@@ -36,12 +38,14 @@ export abstract class Entity {
     abstract onHit(hit: Hit);
     abstract onBeHit(hit: Hit);
     abstract takeDamage(n: number, reason: string);
+    abstract heal(n: number, reason: string);
 
     public addBuff(buff: BuffDefinition) {
         this.buffs.addBuff(buff);
     }
     public cleanse() {
         this.buffs.cleanBuff();
+        gameBus.publish(logPublished({level: 'success', data:`${this.name} looks purified`}));
     }
     get ac(): number {
         let ac = 0;
@@ -83,11 +87,11 @@ export abstract class Entity {
         this.buffs.forEachBuff(b => speed += b.magic.speed);
         return speed;
     }
-    get sigth() {
-        let sigth = this._sight;
-        this.inventory.forEachEquiped(item=> sigth += item.magic.sigth);
-        this.buffs.forEachBuff(b => sigth += b.magic.sigth);
-        return sigth;
+    get sight() {
+        let sight = this._sight;
+        this.inventory.forEachEquiped(item=> sight += item.magic.sigth);
+        this.buffs.forEachBuff(b => sight += b.magic.sigth);
+        return sight;
     }
     get dam() {
         let dam = 0;

@@ -39,6 +39,18 @@ export const onHitPoison = new Magic({
         }
     }
 });
+export const onHitSlow = new Magic({
+    name: 'poison',
+    description: 'have a chance to slow the target',
+    onHit: (hit: Hit) => {
+        if (randomProc(10)) {
+            hit.target.addBuff({
+                turns: 5,
+                magic: new Magic({speed: -0.5})
+            });
+        }
+    }
+});
 export const onHitShock = new Magic({
     name: 'shock',
     description: 'have a chance to stun and damage the target',

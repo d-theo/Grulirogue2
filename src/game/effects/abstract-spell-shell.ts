@@ -1,4 +1,4 @@
-import { EffectTarget } from "./spells";
+import { EffectTarget } from "./definitions";
 import { WorldEffect } from "./world-effect";
 
 export abstract class AbstractSpellShell {

@@ -104,7 +104,7 @@ export function getRandomLoot(level: number): Item {
                 const enchant = _.sample(ArmourEnchants);
                 (loot as Armour).additionalName.push(enchant!.name);
                 (loot as Armour).additionalDescription.push(enchant!.description);
-                (loot as Armour).onEquipBuffs.push(enchant!.effect);
+                (loot as Armour).magic = enchant;
                 loot.identified = false;
             }
             if (Math.random() < 0.1) {

@@ -1,7 +1,7 @@
 import { Item, ItemArgument } from "../entitybase/item";
 import { ItemVisitor } from "../items/item-visitor";
-import { EffectTarget, IEffect } from "../effects/spells";
 import { SpellBook } from "../effects/spell-book";
+import { EffectTarget, IEffect } from "../effects/definitions";
 
 export const createWildFireBottle = () => {
     return new Misc({

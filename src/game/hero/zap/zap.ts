@@ -1,5 +1,5 @@
+import { IEffect, EffectTarget } from "../../effects/definitions";
 import { ZapName } from "./allzaps";
-import { IEffect, EffectTarget } from "../../effects/spells";
 
 export abstract class Zap {
     abstract level: number;

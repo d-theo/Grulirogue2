@@ -2,9 +2,9 @@ import { Coordinate } from "../utils/coordinate";
 import { ItemVisitor } from "../items/item-visitor";
 import { gameBus } from "../../eventBus/game-bus";
 import { Hero } from "../hero/hero";
-import { EffectTarget } from "../effects/spells";
 import { itemDropped } from "../../events";
 import { Magic } from "./magic";
+import { EffectTarget } from "../effects/definitions";
 let short = require('short-uuid');
 
 export interface ItemArgument {
@@ -22,7 +22,7 @@ export abstract class Item implements ItemArgument {
     isConsumable = true;
     identified = true;
 
-    magic: Magic;
+    private _magic = new Magic({});
 
     constructor(arg: {x?:number, y?: number, name?: string, description?: string, skin?: string}) {
         this.pos = {
@@ -47,6 +47,16 @@ export abstract class Item implements ItemArgument {
         return this._name;
     }
     abstract reveal(): void;
+    get magic() {
+        return this._magic;
+    }
+    set magic(m: Magic) {
+        if (this._magic != null) {
+            Object.assign(this._magic, m);
+        } else {
+            this._magic = m;
+        }
+    }
     getArgumentForKey(key: string) {
         return EffectTarget.None;
     }

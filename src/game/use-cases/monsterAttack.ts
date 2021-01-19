@@ -4,7 +4,6 @@ import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
 import { distance } from "../utils/coordinate";
 import { MapEffect } from "../../map/map-effect";
-import { DamageResolution } from "../fight/damages";
 import { gameBus } from "../../eventBus/game-bus";
 import { effectSet } from "../../events";
 
@@ -21,8 +20,8 @@ export function monsterAttack(args: {target: Hero | Monster, monster: Monster}):
         };
     }
 
-    const damages = new Attack(monster, target).do();
-    new DamageResolution(monster, target, damages, null);
+    new Attack(monster, target).do();
+    
     if (distance(monster.pos, target.pos) > 1) {
         gameBus.publish(effectSet({
             animation: 'throw',

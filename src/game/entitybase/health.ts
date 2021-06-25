@@ -7,20 +7,13 @@ export class Health {
     regenerationRate = 15;
     tickPerRegen = 1;
     nextRegen = 0;
-    modifier = 0;
     constructor(public _baseHp: number) {
         this.currentHp = _baseHp;
     }
     get baseHp () {
-        return this._baseHp + this.modifier;
+        return this._baseHp;
     }
-    clearModifier() {
-        this.modifier = 0;
-    }
-    addModifier(n) {
-        this.modifier += n;
-    }
-    regenHealth() {
+    update() {
         if (this.regenerationRate > 0) {
             if (this.currentHp === this.baseHp) {
                 this.nextRegen = 0;
@@ -33,13 +26,6 @@ export class Health {
                 gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp, isSilent: true}));
             }
         }
-    }
-    getStronger(level: number) {
-        let moreHp = pickInRange('2-4');
-        moreHp += pickInRange('1-2')+level;
-        this.currentHp += moreHp;
-        this._baseHp += moreHp;
-        gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
     take(hp: number): HealthReport {
         const oldHp = this.currentHp;
@@ -64,14 +50,6 @@ export class Health {
                 return {status: HealthStatus.Unaffected, amount: 0};
             }
         }
-    }
-    getStrongerByHp(hp: number) {
-        this._baseHp += hp;
-        gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
-    }
-    getWeakerByHp(hp: number) {
-        this._baseHp -= hp;
-        gameBus.publish(playerHealed({baseHp: this.baseHp, currentHp: this.currentHp}));
     }
 }
 

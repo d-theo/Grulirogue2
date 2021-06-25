@@ -28,7 +28,7 @@ export abstract class Entity {
     protected _dodge: number = 0.30;
     protected _precision: number = 0;
     protected health: Health;
-    protected _sight: number;
+    protected _sight: number = 8;
     protected _speed: number = 1;
     protected _energy = 10;
     protected inventory = new Inventory();

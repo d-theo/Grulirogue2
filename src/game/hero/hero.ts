@@ -12,7 +12,6 @@ import { SpellBook } from '../effects/spell-book';
 import { Monster } from '../monsters/monster';
 import { Hit } from '../fight/fight';
 import { IdentifiySpell } from '../effects/spells/identify-spell';
-import { Magic } from '../entitybase/magic';
 import { effectSolver } from '../effects/solver/solver';
 
 
@@ -101,7 +100,7 @@ export class Hero extends Entity {
         }
     }
     regenHealth() {
-        this.health.regenHealth();
+        this.health.update();
     }
     update() {
         this.resolveBuffs();
@@ -134,10 +133,10 @@ export class Hero extends Entity {
     onBeHit(hit: Hit) {
         this.buffs.forEachBuff(buf => buf.magic.onBeHit(hit));
         this.inventory.forEachEquiped(item => item.magic.onBeHit(hit));
-        const report = this.health.take(hit.damage);
+        this.health.take(hit.damage);
         gameBus.publish(playerTookDammage({
             monster: hit.attacker as any as Monster,
-            amount: hit.damage,
+            amount: -hit.damage,
             source: hit.attacker.name,
             baseHp: this.maxhp,
             currentHp: this.hp,

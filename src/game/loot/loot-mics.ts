@@ -7,7 +7,7 @@ export const createWildFireBottle = () => {
     return new Misc({
         name: 'Bottle of wildfire',
         description: 'The flame inside this bottle looks like it wants to get out',
-        effect: SpellBook.WildFireSpell,
+        effect: SpellBook.WildFireSpell(),
         effectTarget: EffectTarget.AoE,
         skin: 'wildfire_bottle'
     });
@@ -17,7 +17,7 @@ export const createSphereOfShadow = () => {
         name: 'Sphere of shadows',
         description: 'A back sphere that seems to be alive',
         effectTarget: EffectTarget.AoE,
-        effect: SpellBook.Shadow,
+        effect: SpellBook.Shadow(),
         skin: 'sphere_of_shadows'
     });
 };
@@ -26,7 +26,7 @@ export const createTomeOfRain = () => {
         name: 'Tome of rain',
         description: 'Can invok the god of rain',
         skin: 'tome_of_rain',
-        effect: SpellBook.RainCloud,
+        effect: SpellBook.RainCloud(),
         effectTarget: EffectTarget.AoE
     })
 }
@@ -35,7 +35,7 @@ export const createTomeOfVegetation = () => {
         name: 'Tome of vegetation',
         description: 'Can invok the god of vegetation',
         skin: 'tome_floral',
-        effect: SpellBook.FloralCloud,
+        effect: SpellBook.FloralCloud(),
         effectTarget: EffectTarget.AoE
     })
 }
@@ -45,7 +45,7 @@ export const createSmallTorch = () => {
         description: 'A torch that could burn if throwed',
         skin: 'small_torch',
         effectTarget: EffectTarget.AoE,
-        effect: SpellBook.FireCloud
+        effect: SpellBook.FireCloud()
     })
 }
 export const createSmellyBottle = () => {
@@ -53,7 +53,7 @@ export const createSmellyBottle = () => {
         name: 'Smelly bottle',
         description: 'It has a strong gaz inside',
         skin: 'smelly_bottle',
-        effect: SpellBook.PoisonCloud,
+        effect: SpellBook.PoisonCloud(),
         effectTarget: EffectTarget.AoE
     })
 }
@@ -63,14 +63,14 @@ export const createSphereOfLighting = () => {
         description: 'A blue sphere that seems to be alive',
         skin: 'sphere_of_lighting',
         effectTarget: EffectTarget.AoE,
-        effect: SpellBook.LightningCloud
+        effect: SpellBook.LightningCloud()
     })
 }
 export const createColdCrystal = () => {
     return new Misc({
         name: 'Cold crystal',
         description: 'A back sphere that seems to be alive',
-        effect: SpellBook.ColdCloud,
+        effect: SpellBook.ColdCloud(),
         skin: 'cold_crystal',
         effectTarget: EffectTarget.AoE,
     })
@@ -79,7 +79,7 @@ export const createUnholyBook = () => {
     return new Misc({
         name: 'Unholy book',
         description: 'Its covered with blood and dangerous words...',
-        effect: SpellBook.UnholySpellBook,
+        effect: SpellBook.UnholySpellBook(),
         effectTarget: EffectTarget.None,
         skin: 'unholy_book'
     });
@@ -89,7 +89,7 @@ export const createRogueTome = () => {
         name: 'Strange tome',
         description: 'Its covered with glyphs: @.+-"~mw#',
         skin: 'rogue_tome',
-        effect: SpellBook.RogueEventSpell,
+        effect: SpellBook.RogueEventSpell(),
         effectTarget: EffectTarget.Hero
     });
 }
@@ -98,7 +98,7 @@ export const createRealityTome = () => {
         name: 'Strange tome',
         description: 'Should a read that ... ?',
         skin: 'reality_tome',
-        effect: SpellBook.RealityEventSpell,
+        effect: SpellBook.RealityEventSpell(),
         effectTarget: EffectTarget.Hero
     });
 }

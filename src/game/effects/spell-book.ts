@@ -30,32 +30,32 @@ import { WildFireSpell } from "./spells/wildfire-spell";
 import { XPEffect } from "./spells/xp-spell";
 
 export const SpellBook = {
-    AgeSpell: new AgeSpell(),
-    FlashbackSpell: new FlashbackSpell(),
-    DashSpell: new DashSpell(),
-    SlowSpell: new SlowSpell(),
-    TrapSpell: new TrapSpell(),
-    TeleportationSpell: new TeleportationSpell(),
-    ImproveArmourSpell: new ImproveArmourSpell(),
-    ImproveWeaponSpell: new ImproveWeaponSpell(),
-    BlinkSpell: new BlinkSpell(),
-    IdentifiySpell: new IdentifiySpell(),
-    KnowledgeSpell: new KnowledgeSpell(),
-    WildFireSpell: new WildFireSpell(),
-    RootTrapSpell: new RootTrapSpell(),
-    PoisonTrapSpell: new PoisonTrapSpell(),
-    UnholySpellBook: new UnholySpellBook(),
-    XPEffect: new XPEffect(),
-    RogueEventSpell: new RogueEventSpell(),
-    FearSpell: new FearSpell(),
-    SacrificeSpell: new SacrificeSpell(),
-    RealityEventSpell: new RealityEventSpell(),
-    AsservissementSpell: new AsservissementSpell(),
-    WeaknessSpell: new WeaknessSpell(),
-    SummonWeakSpell: new SummonWeakSpell(),
+    AgeSpell: () => new AgeSpell(),
+    FlashbackSpell: () => new FlashbackSpell(),
+    DashSpell: () =>new DashSpell(),
+    SlowSpell: () =>new SlowSpell(),
+    TrapSpell: () =>new TrapSpell(),
+    TeleportationSpell: () =>new TeleportationSpell(),
+    ImproveArmourSpell:() => new ImproveArmourSpell(),
+    ImproveWeaponSpell: () =>new ImproveWeaponSpell(),
+    BlinkSpell: () =>new BlinkSpell(),
+    IdentifiySpell:() => new IdentifiySpell(),
+    KnowledgeSpell:() => new KnowledgeSpell(),
+    WildFireSpell:() => new WildFireSpell(),
+    RootTrapSpell:() => new RootTrapSpell(),
+    PoisonTrapSpell:() => new PoisonTrapSpell(),
+    UnholySpellBook:() => new UnholySpellBook(),
+    XPEffect:() => new XPEffect(),
+    RogueEventSpell:() => new RogueEventSpell(),
+    FearSpell:() => new FearSpell(),
+    SacrificeSpell:() => new SacrificeSpell(),
+    RealityEventSpell:() => new RealityEventSpell(),
+    AsservissementSpell:() => new AsservissementSpell(),
+    WeaknessSpell:() => new WeaknessSpell(),
+    SummonWeakSpell:() => new SummonWeakSpell(),
 
     // Custom
-    WaterLine: createElementalSpell({
+    WaterLine:() => createElementalSpell({
         shapeStrategy: 'line',
         type: EffectTarget.Location,
         affect: () => ({
@@ -65,7 +65,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Water,
         duration: 40,
     }),
-    Fracture: createElementalSpell({
+    Fracture:() => createElementalSpell({
         shapeStrategy: 'line',
         type: EffectTarget.Location,
         affect: () => ({
@@ -77,7 +77,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Cold,
         duration: 5,
     }),
-    Shadow: createElementalSpell({
+    Shadow:() => createElementalSpell({
         shapeStrategy: 'around2',
         type: EffectTarget.Location,
         affect: () => ({
@@ -87,7 +87,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Shadow,
         duration: 40,
     }),
-    ColdCloud: createElementalSpell({
+    ColdCloud:() => createElementalSpell({
         shapeStrategy: 'around',
         type: EffectTarget.Location,
         affect: () => ({
@@ -97,7 +97,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Cold,
         duration: 10,
     }),
-    FireCloud: createElementalSpell({
+    FireCloud:() => createElementalSpell({
         shapeStrategy: 'around',
         type: EffectTarget.Location,
         affect: () => ({
@@ -107,7 +107,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Fire,
         duration: 10,
     }),
-    RainCloud: createElementalSpell({
+    RainCloud:() => createElementalSpell({
         shapeStrategy: 'around2',
         type: EffectTarget.Location,
         affect: () => ({
@@ -117,7 +117,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Water,
         duration: 10,
     }),
-    PoisonCloud: createElementalSpell({
+    PoisonCloud:() => createElementalSpell({
         shapeStrategy: 'around',
         type: EffectTarget.Location,
         affect: () => ({
@@ -127,7 +127,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Poison,
         duration: 10,
     }),
-    LightningCloud: createElementalSpell({
+    LightningCloud:() => createElementalSpell({
         shapeStrategy: 'around',
         type: EffectTarget.Location,
         affect: () => ({magic: new Magic({onTurn: (me: Entity) => {
@@ -144,7 +144,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Light,
         duration: 10,
     }),
-    FireLine: createElementalSpell({
+    FireLine:() => createElementalSpell({
         shapeStrategy: 'line',
         type: EffectTarget.Location,
         affect: () => ({magic: new Magic({onTurn: (me: Entity) => {
@@ -153,7 +153,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Fire,
         duration: 5,
     }),
-    FloralLine: createElementalSpell({
+    FloralLine:() => createElementalSpell({
         shapeStrategy: 'line',
         type: EffectTarget.Location,
         affect: () => ({
@@ -163,7 +163,7 @@ export const SpellBook = {
         mapEffect:  MapEffect.Floral,
         duration: 40,
     }),
-    FloralCloud:  createElementalSpell({
+    FloralCloud:() =>  createElementalSpell({
         shapeStrategy: 'around',
         type: EffectTarget.Location,
         affect: () => ({

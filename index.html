@@ -37,27 +37,27 @@
                 <span>Level <span id="current-level">1</span></span>
             </div>
             <div class="hud-line">
-                <span style="width: 50px;">HP : </span>
+                <span class="line-title" style="width: 50px;">HP</span>
                 <div class="hud-bar-box">
                     <div id="current-hp" class="hud-bar"></div>
                     <div id="current-hp-value" class="hud-bar-value"></div>
                 </div>
             </div>
             <div class="hud-line">
-                <span style="width: 50px;">XP : </span>
+                <span class="line-title" style="width: 50px;">BATTERY</span>
                 <div class="hud-bar-box">
-                    <div id="current-xp" class="hud-bar"></div>
-                    <div id="current-xp-value" class="hud-bar-value"></div>
+                    <div id="current-energy" class="hud-bar"></div>
+                    <div id="current-energy-value" class="hud-bar-value"></div>
                 </div>
             </div>
             <div class="hud-line">
-                <span>Weapon : </span><span id="weapon1">-</span>
+                <span class="line-title">Weapon</span><span id="weapon1">-</span>
             </div>
             <div class="hud-line">
-                <span>Armour : </span><span id="armour-name">-</span>
+                <span class="line-title">Armour</span><span id="armour-name">-</span>
             </div>
             <div class="hud-line">
-                <span>AC: </span><span id="armour">-</span>
+                <span>AC</span><span id="armour">-</span>
             </div>
             <div class="hud-line">
                 <p class="multiline" id="enchants"></p>
@@ -72,7 +72,8 @@
             <div>* [w] to pass your turn</div>
             <div>* [f] to attack, [z] or [Arrows] to switch target when attacking and [f] to fire</div>
             <div>* [i] to display inventory</div>
-            <div>* [g] to display skills, [Enter] to cast</div>
+            <div>* [g] to display passive skills, [Enter] to train</div>
+            <div>* [m] to display active skills, [Enter] to cast</div>
             <div>* [>] to go to the next level when sitting on stairs</div>
         </div>
     </div>
@@ -86,6 +87,10 @@
     html {
         font-family: "square" /*Courier New*/;
         font-size: 11px;
+    }
+    .line-title {
+        font-size: 8px;
+        margin-bottom: 3px;
     }
     .manual {
         margin-top: 30px;
@@ -129,8 +134,8 @@
     }
     .hud-line {
         display: flex;
-        align-items: center;
-        margin-bottom: 8px;
+        flex-direction: column;
+        margin-bottom: 12px;
     }
     .hud-bar-box {
         border: 1px white solid;
@@ -177,7 +182,7 @@
     #current-hp {
         background-color: red;
     }
-    #current-xp {
+    #current-energy {
         background-color: orange;
     }
 </style></body></html><script type="text/javascript" src="./dist/vendor.bundle.js"></script><script type="text/javascript" src="./dist/bundle.js"></script>

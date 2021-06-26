@@ -19,7 +19,7 @@ export const onHitBleed = new Magic({
     name: 'bleed',
     description: 'have a small chance to make your target bleed',
     onHit: (hit: Hit) => {
-        if (randomProc(5)) {
+        if (randomProc(7)) {
             hit.target.addBuff({
                 turns: 3,
                 magic: new Magic({bleed: true})
@@ -82,7 +82,7 @@ export const onHitWeak = new Magic({
     onHit: (hit: Hit) => {
         if (randomProc(25)) {
             hit.target.addBuff({
-                turns: 1,
+                turns: 2,
                 magic: weakState
             });
         }

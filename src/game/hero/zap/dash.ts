@@ -7,5 +7,5 @@ export class DashZap extends Zap {
     name = ZapName.DimensionalJump;
     description = 'Accelerate time to dash foward';
     energyNeeded = 10;
-    effect = SpellBook.DashSpell;
+    effect = SpellBook.DashSpell();
 }

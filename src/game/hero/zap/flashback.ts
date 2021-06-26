@@ -7,5 +7,5 @@ export class FlashbackZap extends Zap {
     name = ZapName.Flashback;
     description = 'Return 10 turns behind';
     energyNeeded = 5;
-    effect = SpellBook.FlashbackSpell;
+    effect = SpellBook.FlashbackSpell();
 }

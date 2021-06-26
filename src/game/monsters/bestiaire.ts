@@ -75,8 +75,8 @@ export const Bestiaire = {
             range: 4,
             dodge: 0.0,
             spells: [
-                () => SpellBook.Shadow,
-                () => SpellBook.Shadow,
+                () => SpellBook.Shadow(),
+                () => SpellBook.Shadow(),
             ]
         },
         Rat:{
@@ -139,12 +139,12 @@ export const Bestiaire = {
             range: 6,
             dodge: 0.00,
             spells: [
-                () => SpellBook.FireCloud,
-                () => SpellBook.FireCloud,
-                () => SpellBook.PoisonCloud,
-                () => SpellBook.PoisonCloud,
-                () => SpellBook.Shadow,
-                () => SpellBook.Shadow,
+                () => SpellBook.FireCloud(),
+                () => SpellBook.FireCloud(),
+                () => SpellBook.PoisonCloud(),
+                () => SpellBook.PoisonCloud(),
+                () => SpellBook.Shadow(),
+                () => SpellBook.Shadow(),
             ]
         },
         Orc: {

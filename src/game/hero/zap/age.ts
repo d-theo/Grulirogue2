@@ -7,5 +7,5 @@ export class AgeZap extends Zap {
     name = ZapName.Aging;
     description = 'Accelerate time around an ennemy, aging him and causing 50% of current HP damages';
     energyNeeded = 0;
-    effect = SpellBook.AgeSpell;
+    effect = SpellBook.AgeSpell();
 }

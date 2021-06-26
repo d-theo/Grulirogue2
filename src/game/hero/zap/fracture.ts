@@ -7,5 +7,5 @@ export class TimeFractureZap extends Zap {
     name = ZapName.TimeFracture;
     description = 'Create a time breach, dealing damages and slow enemies in an area';
     energyNeeded = 10;
-    effect = SpellBook.Fracture;
+    effect = SpellBook.Fracture();
 }

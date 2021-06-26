@@ -7,5 +7,5 @@ export class SlowZap extends Zap {
     name = ZapName.TimeSlow;
     description = 'Slow an ennemy';
     energyNeeded = 10;
-    effect = SpellBook.SlowSpell
+    effect = SpellBook.SlowSpell()
 }

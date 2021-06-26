@@ -96,6 +96,7 @@ export class Monster extends Entity {
         this.behavior(this);
     }
     update() {
+        console.log('update');
         this.buffs.forEachBuff(b => b.magic.onTurn(this));
         effectSolver(this);
         this.buffs.update(this);
@@ -127,14 +128,14 @@ export class Monster extends Entity {
     onHit(hit: Hit) {
         this.buffs.forEachBuff(b => b.magic.onHit(hit));
     }
-    takeDamage(dmg: number, reason: string) {
+    takeDamage(dmg: number, reason?: string) {
         const report = this.health.take(dmg);
         gameBus.publish(monsterTookDamage({
             monster: this,
             amount: -dmg,
             baseHp: this.maxhp,
             currentHp: this.hp,
-            externalSource: null,
+            externalSource: reason,
         }));
         if (report.status === HealthStatus.Dead) {
             gameBus.publish(monsterDead({

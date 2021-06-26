@@ -114,7 +114,7 @@ export const craftWeapon = (tier: number): Weapon => {
         skin: getRangeName(weaponRange)
     });
     const enchants = Array.from(new Set(enchantsForWeapon()));
-    for (const e of enchants) {
+    for (let e of enchants) {
         switch(e) {
             case 'nothing':
                 break;

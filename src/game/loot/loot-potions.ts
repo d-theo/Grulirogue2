@@ -62,7 +62,7 @@ export const Potions = {
         name:'Potion of wisness',
         description: 'A potion that contains the wisdom of the ancien',
         effect: (t: Hero) => {
-            const xp = SpellBook.XPEffect as XPEffect;
+            const xp = SpellBook.XPEffect() as XPEffect;
             xp.cast(t);
         }
     },

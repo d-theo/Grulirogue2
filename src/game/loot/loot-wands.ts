@@ -4,19 +4,19 @@ export const Wands = {
     Floral: {
         name:'Wand of vegetation',
         description: 'Spans vegetation at the given location',
-        effect: () => SpellBook.FloralLine,
+        effect: () => SpellBook.FloralLine(),
         skin: 'wand-herb'
     },
     Fire: {
         name:'Wand of fire',
         description: 'Spans fire at the given location',
-        effect: () => SpellBook.FireLine,
+        effect: () => SpellBook.FireLine(),
         skin: 'wand-fire'
     },
     Water: {
         name:'Wand of water',
         description: 'Spans water at the given location',
-        effect: () => SpellBook.WaterLine,
+        effect: () => SpellBook.WaterLine(),
         skin: 'wand-water'
     },
     /*Poison: {
@@ -28,7 +28,7 @@ export const Wands = {
     Identification: {
         name:'Wand of identification',
         description: 'Identify an unknow item',
-        effect: () => SpellBook.IdentifiySpell,
+        effect: () => SpellBook.IdentifiySpell(),
         skin: 'wand-identification'
     }
 }

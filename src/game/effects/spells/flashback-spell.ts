@@ -7,6 +7,11 @@ import { EffectTarget } from "../definitions";
 export class FlashbackSpell extends AbstractSpellShell  {
     type = EffectTarget.Hero;
 
+    constructor() {
+        super();
+        console.log(this.world);
+    }
+
     cast() {
         const state = this.world.getHero().pastStates[0];
         this.world.getHero().pos = state.pos;

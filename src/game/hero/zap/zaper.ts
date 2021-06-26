@@ -9,6 +9,7 @@ import { SlowZap } from './slow';
 import { TimeFractureZap } from './fracture';
 import { AgeZap } from './age';
 import { FlashbackZap } from './flashback';
+import { energyUpdated } from '../../../events/energy-updated';
 
 export type ZapReport = Omit<Zap & {failChance: number}, 'cast'>;
 
@@ -16,6 +17,7 @@ export class Zapper {
     private stored: Zap[] = [];
     private storage: ZapStore = new ZapStore();
     private energyLevel: number = 10;
+    private maxEnergy: number = 10;
     private energyRegenerationRate = 15;
     private energyPerTick = 1;
     private turn = 0;
@@ -50,12 +52,14 @@ export class Zapper {
         this.energyPerTick += n;
     }
     public addMaxEnergy(add: number) {
-        this.energyLevel += add;
+        this.maxEnergy += add;
+        this.notifyEnergyUpdated();
     }
     public update() {
         this.turn += 1;
         if (this.turn % this.energyRegenerationRate === 0) {
-            this.energyLevel = Math.max(this.energy, this.energyLevel+this.energyPerTick);
+            this.energyLevel = Math.min(this.maxEnergy, this.energyLevel+this.energyPerTick);
+            this.notifyEnergyUpdated();
         }
     }
     hasZap(name: string) {
@@ -79,6 +83,7 @@ export class Zapper {
         }
 
         this.energyLevel -= zap.energyNeeded;
+        this.notifyEnergyUpdated();
         
         //const fail = this.calcFail(zapLevel, zap);
         const fail = 0;
@@ -96,6 +101,10 @@ export class Zapper {
                 timeSpent: 1,
             };
         }
+    }
+
+    notifyEnergyUpdated() {
+        gameBus.publish(energyUpdated({current: this.energyLevel, total: this.maxEnergy}));
     }
 
     private calcFail(zapLevel, zap): number {

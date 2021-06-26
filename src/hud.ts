@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import { gameBus } from './eventBus/game-bus';
 import { gameStarted, logPublished, playerTookDammage, playerHealed, itemEquiped, enchantChanged, playerMoved } from './events';
+import { energyUpdated } from './events/energy-updated';
 
 export function hud() {
     $('#log').keydown(function(e) {
@@ -30,15 +31,12 @@ export function hud() {
         $('#current-hp').width(curr+'%');
         $('#current-hp-value').text(`${event.payload.currentHp} / ${event.payload.baseHp}`);
     });
-
-    /*
-    gameBus.subscribe(xpHasChanged, event => {
+    
+    gameBus.subscribe(energyUpdated, event => {
         const curr = (event.payload.current * 100) / event.payload.total;
-        $('#current-xp').width(curr+'%');
-        if (event.payload.status === 'level_up') {
-            $('#current-level').text(parseInt($('#current-level').text())+1);
-        }
-    });*/
+        $('#current-energy').width(curr+'%');
+        $('#current-energy-value').text(`${event.payload.current} / ${event.payload.total}`);
+    });
 
     gameBus.subscribe(itemEquiped, event => {
         const {weapon, armour} = event.payload;

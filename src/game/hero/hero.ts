@@ -13,6 +13,7 @@ import { Monster } from '../monsters/monster';
 import { Hit } from '../fight/fight';
 import { IdentifiySpell } from '../effects/spells/identify-spell';
 import { effectSolver } from '../effects/solver/solver';
+import { onHitBleed } from '../loot/onHit/onHit';
 
 
 export class Hero extends Entity {
@@ -23,7 +24,8 @@ export class Hero extends Entity {
         this.name = "Grulito le brave";
         this.health = new Health(15);
         this.armour = new Armour({baseAbsorb: 0, name: 'Pyjamas', description: 'Your favorite pair of pyjamas for spleeping'});
-        this.weapon = new Weapon({baseDamage: '2-4', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this', kind: "Fist", skin: "Fist"});
+        this.weapon = new Weapon({baseDamage: '1-3', maxRange: 1, name: 'Fist', description: 'Your fists are not prepared for this', kind: "Fist", skin: "Fist"});
+
         this._sight = 8;
         this.addToBag(this.armour);
         this.addToBag(this.weapon);
@@ -122,11 +124,11 @@ export class Hero extends Entity {
         this.weapon.hitBeforeIdentified --;
         this.armour.hitBeforeIdentified --;
         if (this.weapon.hitBeforeIdentified === 0 && !this.weapon.identified) {
-            const identify = SpellBook.IdentifiySpell as IdentifiySpell;
+            const identify = SpellBook.IdentifiySpell() as IdentifiySpell;
             identify.cast(this.weapon);
         }
         if (this.armour.hitBeforeIdentified === 0 && !this.armour.identified) {
-            const identify = SpellBook.IdentifiySpell as IdentifiySpell;;
+            const identify = SpellBook.IdentifiySpell() as IdentifiySpell;;
             identify.cast(this.armour);
         }
     }

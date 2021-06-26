@@ -122,28 +122,33 @@ export abstract class Entity {
         return energy;
     }
     get isWet() {
-        this.buffs.forEachBuff(b => {if (b.magic.wet) {return true}});
-        return false;
+        let wet = false;
+        this.buffs.forEachBuff(b => {if (b.magic.wet) {wet = true}});
+        return wet;
     }
     get isInBushes() {
-        this.buffs.forEachBuff(b => {if (b.magic.inBushes) {return true}});
-        return false;
+        let inside = false;
+        this.buffs.forEachBuff(b => {if (b.magic.inBushes) {inside = true}});
+        return inside;
     }
     get isBurning() {
         this.buffs.forEachBuff(b => {if (b.magic.burn) {return true}});
         return false;
     }
     get isPoisonned() {
-        this.buffs.forEachBuff(b => {if (b.magic.poison) {return true}});
-        return false;
+        let poison = false;
+        this.buffs.forEachBuff(b => {if (b.magic.poison) {poison = true}});
+        return poison;
     }
     get isBleeding() {
-        this.buffs.forEachBuff(b => {if (b.magic.bleed) {return true}});
-        return false;
+        let bleeding = false;
+        this.buffs.forEachBuff(b => {if (b.magic.bleed) {bleeding = true;}});
+        return bleeding;
     }
     get isStun() {
-        this.buffs.forEachBuff(b => {if (b.magic.stun) {return true}});
-        return false;
+        let stunned = false;
+        this.buffs.forEachBuff(b => {if (b.magic.stun) {stunned = true}});
+        return stunned;
     }
     get chance() {
         let chance = 0;

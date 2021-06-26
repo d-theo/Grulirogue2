@@ -22,8 +22,13 @@ export class Magic {
     stun = false;
     feared = false;
 
+    // when walking or resting
     onTurn: (me: Entity) => void = () => ({});
+
+    // when you hit an ennemy
     onHit: (hit: Hit) => void = () => ({});
+
+    // when get hit by an ennemy
     onBeHit: (hit: Hit) => void = () => ({});
 
     name: string;

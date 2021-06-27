@@ -2,7 +2,7 @@ import $ from 'jquery';
 import { gameBus } from './eventBus/game-bus';
 import { gameStarted, logPublished, playerTookDammage, playerHealed, itemEquiped, enchantChanged, playerMoved } from './events';
 import { energyUpdated } from './events/energy-updated';
-import { turnEnded } from './events/turn-ended';
+import { minimapUpdated } from './events/minimap-updated';
 
 export function hud() {
     $('#log').keydown(function(e) {
@@ -55,7 +55,7 @@ export function hud() {
         const hp = $('#hp');
         hp.text(''+i++);
     });
-    gameBus.subscribe(turnEnded, event => {
+    gameBus.subscribe(minimapUpdated, event => {
         const minimap = event.payload.minimap;
         const canvas = document.getElementById('minimap');
         const ctx = canvas['getContext']('2d');

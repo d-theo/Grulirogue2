@@ -16,14 +16,13 @@ import { randomIn } from "./utils/rectangle";
 import { getUniqLoot } from "./loot/loot-uniq";
 import * as _ from 'lodash';
 import { gameBus } from "../eventBus/game-bus";
-import { gameFinished, logPublished, nextLevelCreated, rogueEvent, endRogueEvent, timePassed } from "../events";
+import { gameFinished, logPublished, nextLevelCreated, rogueEvent, endRogueEvent, timePassed, sightUpdated } from "../events";
 import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";
 import { UseCustomBuild } from "./loot/custom-build";
 import { AbstractSpellShell } from "./effects/abstract-spell-shell";
 import { WorldEffect } from "./effects/world-effect";
-import { turnEnded } from "../events/turn-ended";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -163,7 +162,6 @@ export class Game {
             this.hero.update();
             this.monsters.update();
             this.items.update();
-            gameBus.publish(turnEnded({minimap: this.getMiniMap()}))
         }
 
         if (this.hero.isStun) {
@@ -209,10 +207,4 @@ export class Game {
             return distA > distB ? 1 : -1;
         }).filter(m => !m.getFriendly());
 	}
-    public getMiniMap(): string[][] {
-        const grid = this.tilemap.getMiniMap();
-        console.log(this.hero.pos.x, this.hero.pos.y);
-        grid[this.hero.pos.x][this.hero.pos.y] = '@';
-        return grid;
-    }
 }

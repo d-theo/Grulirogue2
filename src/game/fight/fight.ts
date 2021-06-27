@@ -16,12 +16,12 @@ export class Attack {
         }
         const weapon = this.attacker.weapon;
         const armour = this.target.armour;
-        let dealt = weapon.deal();
+        let dealt = weapon.deal() + this.attacker.dam;
 
         const hit = {
             attacker: this.attacker,
             target: this.target,
-            damage: Math.max(0, dealt - armour.absorb)
+            damage: Math.max(0, dealt - (armour.absorb + this.target.ac))
         };
 
         this.attacker.onHit(hit);

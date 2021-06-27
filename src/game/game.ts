@@ -23,6 +23,7 @@ import { sightHasChanged } from "../events/sight-has-changed";
 import { UseCustomBuild } from "./loot/custom-build";
 import { AbstractSpellShell } from "./effects/abstract-spell-shell";
 import { WorldEffect } from "./effects/world-effect";
+import { turnEnded } from "../events/turn-ended";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;
@@ -81,13 +82,13 @@ export class Game {
         this.monsters = new MonsterCollection();
         this.items = new ItemCollection();
         this.places = new SpecialPlaces(this.items, this.monsters);
+        AbstractSpellShell.bindOnce(new WorldEffect(this.tilemap, this.hero, this.monsters, this.places, this));
         const behaviors = AI(this);
         AIBehavior.init(behaviors);
         this.commandDispatcher = new CommandDispatcher(this);
         this.eventDispatcher = new EventDispatcher(this);
         this.initBus();
         this.reInitLevel();
-        AbstractSpellShell.bindOnce(new WorldEffect(this.tilemap, this.hero, this.monsters, this.places, this));
     }
 
     static getInstance() {
@@ -110,7 +111,7 @@ export class Game {
         
         this.places.clear();
         let additionalThingsToPlace: ThingToPlace[] = [];
-        additionalThingsToPlace = this.tilemap.init(this.level);
+        additionalThingsToPlace = this.tilemap.init(this.level); // 0 to test
         this.startingPosition();
         gameBus.publish(sightHasChanged({}));
 
@@ -162,6 +163,7 @@ export class Game {
             this.hero.update();
             this.monsters.update();
             this.items.update();
+            gameBus.publish(turnEnded({minimap: this.getMiniMap()}))
         }
 
         if (this.hero.isStun) {
@@ -207,4 +209,10 @@ export class Game {
             return distA > distB ? 1 : -1;
         }).filter(m => !m.getFriendly());
 	}
+    public getMiniMap(): string[][] {
+        const grid = this.tilemap.getMiniMap();
+        console.log(this.hero.pos.x, this.hero.pos.y);
+        grid[this.hero.pos.x][this.hero.pos.y] = '@';
+        return grid;
+    }
 }

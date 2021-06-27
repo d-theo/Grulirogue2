@@ -1,4 +1,6 @@
+import { Magic } from "../entitybase/magic";
 import { XTable } from "../monsters/mob-table";
+import { onBeHitAbsorb, onBeHitHeal, onBeHitReflect } from "./onBeHit/onBeHit";
 import { wearWet, wearMoreDodge, wearMoreRegen, wearMoveBrave, wearMoreSpeed, wearMoreHp } from "./onWear/onwear";
 
 export const Armours = {
@@ -25,13 +27,16 @@ export const Armours = {
     }
 }
 
-export const ArmourEnchants = [
-    wearWet,
-    wearMoreDodge,
-    wearMoreRegen,
-    wearMoveBrave,
-    wearMoreSpeed,
-    wearMoreHp,
+export const ArmourEnchants: {enchant: () => Magic}[] = [
+    {enchant: () => wearWet},
+    {enchant: () => wearMoreDodge},
+    {enchant: () => wearMoreRegen},
+    {enchant: () => wearMoveBrave},
+    {enchant: () => wearMoreSpeed},
+    {enchant: () => wearMoreHp},
+    {enchant: () => onBeHitAbsorb},
+    {enchant: () => onBeHitHeal},
+    {enchant: () => onBeHitReflect},
 ];
 
 export const armourLevel: XTable = [

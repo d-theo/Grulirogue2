@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { gameBus } from './eventBus/game-bus';
 import { gameStarted, logPublished, playerTookDammage, playerHealed, itemEquiped, enchantChanged, playerMoved } from './events';
 import { energyUpdated } from './events/energy-updated';
+import { turnEnded } from './events/turn-ended';
 
 export function hud() {
     $('#log').keydown(function(e) {
@@ -53,5 +54,31 @@ export function hud() {
     gameBus.subscribe(playerMoved, event => {
         const hp = $('#hp');
         hp.text(''+i++);
+    });
+    gameBus.subscribe(turnEnded, event => {
+        const minimap = event.payload.minimap;
+        const canvas = document.getElementById('minimap');
+        const ctx = canvas['getContext']('2d');
+        ctx.clearRect(0, 0, minimap.length, minimap.length);
+        ctx.fillStyle = 'green';
+        for (let x = 0; x < minimap.length ; x++) {
+            for (let y = 0; y < minimap.length; y++) {
+                let s = minimap[x][y];
+                if (s === '@') {
+                    ctx.fillStyle = 'green';
+                } else if (s === '#') {
+                    ctx.fillStyle = 'lightgrey';
+                } else if (s === '?') {
+                    ctx.fillStyle = 'black';
+                } else if (s === '.') {
+                    ctx.fillStyle = 'grey';
+                } else if (s === '|') {
+                    ctx.fillStyle = 'blue';
+                } else if (s === '>') {
+                    ctx.fillStyle = 'red';
+                }
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
     });
 };

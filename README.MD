@@ -8,6 +8,32 @@ https://grulirogue2.s3-eu-west-1.amazonaws.com/index.html
 * npm install
 * npm start
 
+## Testing
+
+```
+custom-build.ts
+// loot only potion of Berkserk
+const build = {
+    custom: true,
+    ItemTable: [{chance: 100, type: 'potion'}], // type a ecrire
+    ArmoursTable: [{chance: 0, type: null}],
+    MiscTable: {chance: 0, type: null}, // item a loot
+    PotionTable: {chance: 100, type: Potions.Berkserk},
+    ScrollTable: {chance: 0, type: null},
+};
+```
+
+```
+// test a little map to test
+this.tilemap.init(0); // 0 to test
+```
+
+
+```
+// add a specific monster
+todo
+```
+
 ## Features
 
 * 3 maps

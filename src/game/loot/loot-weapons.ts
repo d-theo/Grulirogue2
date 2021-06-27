@@ -190,7 +190,7 @@ export const craftWeapon = (tier: number): Weapon => {
                 break;
         }
     }
-    if (Math.random() > 0.05) {
+    if (randomProc(7)) {
         const onCarryEnchant = _.sample(WeaponOnCarryBonus);
         w.magic = onCarryEnchant;
         w.additionalDescription.push(onCarryEnchant!.description);

@@ -1,4 +1,4 @@
-import { Tile } from "./tile";
+import { Tile, TileVisibility } from "./tile";
 import { Rect, randomIn } from "../utils/rectangle";
 import { Coordinate } from "../utils/coordinate";
 import { line } from "./sight";
@@ -67,6 +67,40 @@ export class TileMap {
 
         return thingsToPlace;
     }
+
+    /*
+    # => wall
+    @ => player
+    . => terrain
+    > => exit
+    ? => unseen
+    | => door
+    */
+    public getMiniMap(): string[][] {
+        const grid = Array(100).fill(null).map(() => Array(100).fill(0));
+        for (let x = 0; x < this.height; x++) {
+            for (let y = 0; y < this.width; y++) {
+                const c = this.getAt({x,y});
+                let symb = '';
+                if (c.visibility === TileVisibility.Far || c.visibility === TileVisibility.OnSight) {
+                    if (c.isType(Terrain.DoorOpen) || c.isType(Terrain.DoorRogue)) {
+                        symb = '|';
+                    } else if (c.isExit) {
+                        symb = '>';
+                    } else if (!c.isSolid()) {
+                        symb = '.'
+                    } else {
+                        symb = '#'
+                    }
+                } else if (c.visibility === TileVisibility.Hidden) {
+                    symb = '?';
+                }
+                grid[x][y] = symb;
+            }
+        }
+        return grid;
+    }
+
     getBorders(): Rect {
         return {
             x: 0,

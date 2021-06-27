@@ -8,12 +8,17 @@ import { generatePirateMap } from '../generation/map-generators/map_generation_p
 import { generatePirateMap2 } from '../generation/map-generators/map_generation_pirate2';
 import { rogueMap } from '../generation/levels/rogue-map';
 import { RogueEventLevel } from '../eventBus/event-rogue';
+import { generateUnitMap } from '../generation/map-generators/map_generation_unit';
 
 export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap: number[][], tilemap2: number[][], mapObject: MapGraph} {
     let painterFn;
     let mapGeneratorFn;
     let overrides = [];
     switch(name) {
+        case 0: 
+            painterFn = greeeceMap;
+            mapGeneratorFn = generateUnitMap;
+            break;
         case 1:
             painterFn = greeeceMap;
             mapGeneratorFn = generateRLMap;
@@ -51,5 +56,6 @@ export function createMap(name: number): {thingsToPlace: ThingToPlace[], tilemap
         tilemap: tilemapBG,
         tilemap2: tilemapFG,
         thingsToPlace: thingsToPlace,
-        mapObject: (mapObject as any as MapGraph)};
+        mapObject: (mapObject as any as MapGraph)
+    };
 }

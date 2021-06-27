@@ -96,7 +96,6 @@ export class Monster extends Entity {
         this.behavior(this);
     }
     update() {
-        console.log('update');
         this.buffs.forEachBuff(b => b.magic.onTurn(this));
         effectSolver(this);
         this.buffs.update(this);

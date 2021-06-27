@@ -1,5 +1,5 @@
 import { XTable, getInTable } from "../monsters/mob-table"
-import { pickInRange } from "../utils/random";
+import { pickInRange, randomProc } from "../utils/random";
 import { Item } from "../entitybase/item";
 import { Armours, armourLevel, ArmourEnchants } from "./loot-armours";
 import { Potions } from "./loot-potions";
@@ -31,14 +31,14 @@ export const ItemTable: XTable[] = [
 ];
 
 export const MiscTable: XTable = [
-    {chance: 10, type: () => createWildFireBottle()},
-    {chance: 15, type: () => createSphereOfShadow()},
-    {chance: 15, type: () => createTomeOfRain()},
-    {chance: 10, type: () => createSmallTorch()},
-    {chance: 10, type: () => createSmellyBottle()},
-    {chance: 15, type: () => createColdCrystal()},
-    {chance: 10, type: () => createSphereOfLighting()},
-    {chance: 15, type: () => createTomeOfVegetation()},
+    {chance: 10, type: createWildFireBottle},
+    {chance: 15, type: createSphereOfShadow},
+    {chance: 15, type: createTomeOfRain},
+    {chance: 10, type: createSmallTorch},
+    {chance: 10, type: createSmellyBottle},
+    {chance: 15, type: createColdCrystal},
+    {chance: 10, type: createSphereOfLighting},
+    {chance: 15, type: createTomeOfVegetation},
 ];
 
 export const PotionTable: XTable = [
@@ -100,14 +100,14 @@ export function getRandomLoot(level: number): Item {
                 description: armour.description,
                 skin: armour.skin
             });
-            if (Math.random() < 0.05) {
-                const enchant = _.sample(ArmourEnchants);
+            if (randomProc(10)) {
+                const enchant = _.sample(ArmourEnchants).enchant();
                 (loot as Armour).additionalName.push(enchant!.name);
                 (loot as Armour).additionalDescription.push(enchant!.description);
                 (loot as Armour).magic = enchant;
                 loot.identified = false;
             }
-            if (Math.random() < 0.1) {
+            if (randomProc(10)) {
                 const add = getInTable(armourLevel);
                 (loot as Armour).addAbsorbEnchant(add);
                 loot.identified = false;

@@ -50,7 +50,3 @@ https://grulirogue2.s3-eu-west-1.amazonaws.com/index.html
 * western map + 4mobs + generation kind
 * modern map + 4 mobs  // use boat generation Bugs
 * create 3 boss
-
-##### pay me a coffee !
-
-I spent hundreds of hours making this game, if you enjoy(ed) and you want to encourage me, you can donate via paypal at theo851@hotmail.com

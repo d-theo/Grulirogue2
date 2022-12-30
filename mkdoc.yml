@@ -1,0 +1,5 @@
+nav:
+  - 'intro.md'
+  - 'User Guide':
+    - 'backend': 'architecture/backend.md'
+    - 'frontend': 'architecture/frontend.md'

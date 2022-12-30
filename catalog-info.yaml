@@ -4,7 +4,7 @@ metadata:
   name: Grulirogue2
   annotations:
     github.com/project-slug: d-theo/Grulirogue2
-    backstage.io/techdocs-ref: docs
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: other
   lifecycle: unknown

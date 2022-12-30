@@ -7,7 +7,7 @@ repo_url: https://github.com/mkdocs/mkdocs/
 edit_uri: blob/master/docs/
 
 nav:
-  - 'Getting Started' : 'intro.md'
+  - 'Getting Started' : 'index.md'
   - 'User Guide':
     - 'backend': 'architecture/backend.md'
     - 'frontend': 'architecture/frontend.md'

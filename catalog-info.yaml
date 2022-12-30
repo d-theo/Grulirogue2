@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Grulirogue2
+  annotations:
+    github.com/project-slug: d-theo/Grulirogue2
+spec:
+  type: other
+  lifecycle: unknown
+  owner: d-theo

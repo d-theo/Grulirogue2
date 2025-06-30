@@ -1,4 +1,4 @@
-import { UIDamages } from "../UIEntities/ui-damages";
+import { UIDamages } from "../ui/entities/ui-damages";
 
 export class DamageQueue {
     private queue: UIDamages[] = [];

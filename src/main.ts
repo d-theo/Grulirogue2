@@ -1,12 +1,12 @@
 import 'phaser';
-import GameScene from './scenes/game.scene';
+import GameScene from './ui/scenes/game.scene';
 
-import {hud} from './hud';
-import InventoryScene from './scenes/inventory.scene';
-import SkillTreeScene from './scenes/skilltree.scene';
-import GameOverScene from './scenes/gameover.scene';
-import GameFinishedScene from './scenes/game-finished.scene';
-import PreLoadScene from './scenes/preload.scene';
+import {hud} from './ui/hud';
+import InventoryScene from './ui/scenes/inventory.scene';
+import SkillTreeScene from './ui/scenes/skilltree.scene';
+import GameOverScene from './ui/scenes/gameover.scene';
+import GameFinishedScene from './ui/scenes/game-finished.scene';
+import PreLoadScene from './ui/scenes/preload.scene';
 
 export const CellSize = 32;
 export const W = CellSize*23;

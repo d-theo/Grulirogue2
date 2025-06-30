@@ -124,7 +124,7 @@ export class Monster implements Entity {
             .setBehavior(AIBehavior.Default());
 
         if (onHit) {
-            monster.weapon.additionnalEffects.push(onHit);
+            monster.weapon.additionnalEffects.push(onHit());
         }
         if (spells) {
             const sp = spells.map((s: Function) => s());

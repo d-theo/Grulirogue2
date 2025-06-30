@@ -1,4 +1,4 @@
-import { createEventDefinition, EventBus } from "ts-bus";
+import { createEventDefinition } from "ts-bus";
 import { CommandHandler } from "./commands";
 import { gameBus } from "../../eventBus/game-bus";
 import { timePassed } from "../../events";

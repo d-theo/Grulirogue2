@@ -3,7 +3,6 @@ import { Hero } from "../hero/hero";
 import { gameBus } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
 import { WorldEffect, BuffDefinition } from "./effect";
-import { MapEffect } from "../../map/map-effect";
 import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
@@ -17,6 +16,7 @@ import { DamageResolution } from "../fight/damages";
 import { effectSet, logPublished, sightUpdated, playerMoved, itemEquiped, heroGainedXp, rogueEvent, endRogueEvent, monsterSpawned } from "../../events";
 import { Bestiaire } from "../monsters/bestiaire";
 import { TileMap } from "../tilemap/tilemap";
+import { MapEffect } from "../../world/map/map-effect";
 
 export enum EffectTarget { 
     Location = 'location',

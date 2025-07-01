@@ -7,8 +7,8 @@ import { SpecialPlaces } from '../places/special-places';
 import { TrapSpell, TeleportationSpell, ImproveArmourSpell, ImproveWeaponSpell, BlinkSpell, IdentifiySpell, KnowledgeSpell, WildFireSpell, PoisonTrapSpell, UnholySpellBook, CleaningEffect, XPEffect, RogueEventSpell, FearSpell, SacrificeSpell, RealityEventSpell, AsservissementSpell, createElementalSpell, EffectTarget, RootTrapSpell, WeaknessSpell, SummonWeakSpell } from './spells';
 import { Game } from '../game';
 import { Affect } from './affects';
-import { MapEffect } from '../../map/map-effect';
 import { Monster } from '../monsters/monster';
+import { MapEffect } from '../../world/map/map-effect';
 
 export type BuffDefinition = {
     start: Function | null;

@@ -6,9 +6,9 @@ import { TileMap } from "../tilemap/tilemap";
 import { Coordinate } from "../utils/coordinate";
 import { gameBus } from "../../eventBus/game-bus";
 import { ItemCollection } from "../items/item-collection";
-import { Terrain } from "../../map/terrain.greece";
 import { SpecialPlaces } from "../places/special-places";
 import { itemPickedUp, doorOpened } from "../../events";
+import { Terrain } from "../../world/map/terrain.greece";
 
 export function playerMove(args: {
     pos: Coordinate,

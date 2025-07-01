@@ -1,4 +1,4 @@
-import { Terrain } from "../../map/terrain.greece";
+import { Terrain } from "../../world/map/terrain.greece";
 
 export function tilePropertiesForTerrain() {
     return {

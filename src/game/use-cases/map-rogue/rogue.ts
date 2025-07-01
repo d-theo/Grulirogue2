@@ -1,11 +1,11 @@
 import { XTable, getInTable } from "../../monsters/mob-table";
 import { Bestiaire } from "../../monsters/bestiaire";
 import { Wands } from "../../loot/loot-wands";
-import { MapGraph } from "../../../generation/map_definition";
 import { randomIn } from "../../utils/rectangle";
 import { createRealityTome } from "../../loot/loot-mics";
 import _ from "lodash";
 import { Wand } from "../../items/wands";
+import { MapGraph } from "../../../world/generation/map_definition";
 
 export const RogueEventLevel = 99;
 

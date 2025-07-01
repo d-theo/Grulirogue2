@@ -1,9 +1,9 @@
 import { distribute } from "../utils/random";
 import { randomIn } from "../utils/rectangle";
-import { MapGraph } from "../../generation/map_definition";
 import { Monster } from "../monsters/monster";
 import { randomMobForLevel } from "../monsters/mob-table";
 import { isRogueEventActive, rogueRandomMob } from "../../eventBus/event-rogue";
+import { MapGraph } from "../../world/generation/map_definition";
 
 export function monstersSpawn(mapGraph: MapGraph, level: number, dangerLevel: number) {
     const rooms = mapGraph.rooms;

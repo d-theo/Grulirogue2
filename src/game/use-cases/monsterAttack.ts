@@ -3,10 +3,10 @@ import { Attack } from "../fight/fight";
 import { Hero } from "../hero/hero";
 import { Monster } from "../monsters/monster";
 import { distance } from "../utils/coordinate";
-import { MapEffect } from "../../map/map-effect";
 import { DamageResolution } from "../fight/damages";
 import { gameBus } from "../../eventBus/game-bus";
 import { effectSet } from "../../events";
+import { MapEffect } from "../../world/map/map-effect";
 
 export function monsterAttack(args: {target: Hero | Monster, monster: Monster}): MessageResponse {
     const {target, monster} = args; 

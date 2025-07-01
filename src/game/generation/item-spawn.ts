@@ -1,10 +1,10 @@
 import { distribute } from "../utils/random";
 import { randomIn } from "../utils/rectangle";
 import { Item } from "../entitybase/item";
-import { MapGraph } from "../../generation/map_definition";
 import { isSpecialRoom } from "./monster-spawn";
 import { getRandomLoot } from "../loot/loot-table";
 import { RogueEventLevel, spawnRogueEventItem } from "../../eventBus/event-rogue";
+import { MapGraph } from "../../world/generation/map_definition";
 
 export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
     if (level == RogueEventLevel) {

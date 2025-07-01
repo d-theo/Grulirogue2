@@ -5,8 +5,8 @@ import { Wands } from "../game/loot/loot-wands";
 import * as _ from 'lodash';
 import { Wand } from "../game/items/wands";
 import { createRealityTome } from "../game/loot/loot-mics";
-import { MapGraph } from "../generation/map_definition";
 import { randomIn } from "../game/utils/rectangle";
+import { MapGraph } from "../world/generation/map_definition";
 
 gameBus.subscribe('rogueEvent', () => {
     isRogueEventActive = true;

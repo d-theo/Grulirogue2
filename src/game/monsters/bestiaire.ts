@@ -20,7 +20,7 @@ export const Bestiaire = {
             damage: '3-4',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.3, target: 'target', effect: new Affect('poison').turns(5).create()}
+            onHit: () =>( {chance: 0.3, target: 'target', effect: new Affect('poison').turns(5).create()})
         },
         SnakeKing: {
             kind: "Snake King",
@@ -29,7 +29,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 1, target: 'target', effect: new Affect('poison').turns(5).create()}
+            onHit: () =>( {chance: 1, target: 'target', effect: new Affect('poison').turns(5).create()})
         },
         Rat: {
             kind: "Rat",
@@ -101,7 +101,7 @@ export const Bestiaire = {
             hp: '40-55',
             dodge: 0.05,
             range: 1,
-            onHit: {chance: 1, target: 'target', effect: new Affect('slow').turns(5).create()}
+            onHit: () =>( {chance: 1, target: 'target', effect: new Affect('slow').turns(5).create()})
         },
         Sailor:{
             kind: "Sailor",
@@ -118,7 +118,7 @@ export const Bestiaire = {
             damage: '6-10',
             range: 1,
             dodge: 0.20,
-            onHit: {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()},
+            onHit: () =>( {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()})
         }
     },
     Rogue: {

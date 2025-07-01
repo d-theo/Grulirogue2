@@ -10,7 +10,6 @@ import { Monster } from "./monsters/monster";
 import { makeThings } from "./generation/additionnal-things";
 import { monstersSpawn } from "./generation/monster-spawn";
 import { itemSpawn } from "./generation/item-spawn";
-import { ThingToPlace } from "../generation/map_tiling_utils";
 import { SpecialPlaces } from "./places/special-places";
 import { RogueEventLevel } from "../eventBus/event-rogue";
 import { randomIn } from "./utils/rectangle";
@@ -22,6 +21,7 @@ import { EventDispatcher } from "./event-handlers/dispatcher";
 import { CommandDispatcher } from "./command-handlers/dispatcher";
 import { sightHasChanged } from "../events/sight-has-changed";
 import { UseCustomBuild } from "./loot/custom-build";
+import { ThingToPlace } from "../world/generation/map_tiling_utils";
 export class Game {
     static Engine: Game;
     tilemap: TileMap;

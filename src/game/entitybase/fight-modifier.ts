@@ -1,4 +1,4 @@
 export class FightModifier {
-    additionnalDmg = 0;
-    fistAdditionnalDmg = 0;
+  additionnalDmg = 0;
+  fistAdditionnalDmg = 0;
 }

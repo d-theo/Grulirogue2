@@ -1,20 +1,20 @@
-import { Health } from "../entitybase/health";
-import { Coordinate } from "../utils/coordinate";
-import { Buffs } from "../entitybase/buffable";
-import { EnchantTable } from "../entitybase/enchantable";
-import { Inventory } from "./inventory";
-import { BuffDefinition, EffectMaker, SpellNames } from "../effects/effect";
-import { Item } from "../entitybase/item";
-import { FightModifier } from "../entitybase/fight-modifier";
+import {Health} from "../entitybase/health";
+import {Coordinate} from "../utils/coordinate";
+import {Buffs} from "../entitybase/buffable";
+import {Inventory} from "./inventory";
+import {EffectMaker, SpellNames} from "../effects/effect";
+import {Item} from "../entitybase/item";
+import {FightModifier} from "../entitybase/fight-modifier";
 import HeroSkills from "./hero-skills";
-import { Armour, NullArmour } from "../items/armour";
-import { Weapon, NullWeapon } from "../items/weapon";
-import { Entity } from "../entitybase/entity";
-import { EnchantSolver } from "../effects/affects";
-import { DamageResolution } from "../fight/damages";
-import { IdentifiySpell } from "../effects/spells";
-import { gameBus } from "../../eventBus/game-bus";
-import { itemPickedUp, itemEquiped } from "../../events";
+import {Armour, NullArmour} from "../items/armour";
+import {Weapon, NullWeapon} from "../items/weapon";
+import {Entity} from "../entitybase/entity";
+import {EnchantSolver} from "../effects/affects";
+import {DamageResolution} from "../fight/damages";
+import {IdentifiySpell} from "../effects/spells";
+import {gameBus} from "../../eventBus/game-bus";
+import {itemPickedUp, itemEquiped} from "../../events";
+import {Affictions} from "../entitybase/affictions";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -26,7 +26,7 @@ export class Hero extends Entity {
   weapon: Weapon;
   pos!: Coordinate;
   precision: number = 0;
-  enchants: EnchantTable = new EnchantTable(true);
+  enchants: Affictions = new Affictions(true);
   xp: number;
   nextXp!: number;
   buffs: Buffs = new Buffs();
@@ -43,6 +43,7 @@ export class Hero extends Entity {
     additionnalItemPerLevel: 0,
   };
   heroSkills: HeroSkills;
+
   constructor() {
     super();
     this.name = "Grulito le brave";
@@ -70,22 +71,27 @@ export class Hero extends Entity {
     this.heroSkills = new HeroSkills(this);
     this.enchantSolver = new EnchantSolver(this);
   }
+
   calcNextXp() {
     this.nextXp = XP[this.level] - XP[this.level - 1];
   }
+
   openBag(filters?: string[]) {
     return this.inventory.openBag(filters);
   }
+
   addToBag(item: Item) {
     this.inventory.add(item);
-    gameBus.publish(itemPickedUp({ item: item }));
+    gameBus.publish(itemPickedUp({item: item}));
   }
+
   dropItem(item: Item) {
     item.pos = this.pos;
     const wasEquiped = this.inventory.flagUnEquiped(item);
     this.inventory.remove(item);
     wasEquiped && this.unEquip(item);
   }
+
   unEquip(item: Item) {
     if (item instanceof Weapon) {
       item.onUnEquip(this);
@@ -96,6 +102,7 @@ export class Hero extends Entity {
       this.armour = NullArmour;
     }
   }
+
   equip(item: Item) {
     if (item instanceof Weapon) {
       if (this.weapon) {
@@ -119,6 +126,7 @@ export class Hero extends Entity {
     );
     this.inventory.flagEquiped(item);
   }
+
   gainXP(amount: number): {
     total: number;
     current: number;
@@ -136,29 +144,35 @@ export class Hero extends Entity {
       status,
     };
   }
+
   getItem(item: Item) {
     return this.inventory.getItem(item);
   }
+
   levelUp() {
     this.level++;
     this.calcNextXp();
     this.xp = 0;
     this.health.getStronger(this.skillFlags.gainHpPerLevel);
   }
+
   consumeItem(item: Item) {
     if (item.isConsumable) {
       this.inventory.remove(item);
     }
   }
+
   regenHealth() {
     this.health.regenHealth();
   }
+
   update() {
     this.regenHealth();
     this.resolveBuffs();
     this.updateInventory();
     this.enchantSolver.solve();
   }
+
   updateInventory() {
     this.weapon.hitBeforeIdentified--;
     this.armour.hitBeforeIdentified--;
@@ -175,9 +189,11 @@ export class Hero extends Entity {
       identify.cast(this.armour);
     }
   }
+
   takeDamages(fight: DamageResolution) {
     fight.heroTakesDamages();
   }
+
   getAligment() {
     return "good" as const;
   }

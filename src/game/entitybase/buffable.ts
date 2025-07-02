@@ -1,9 +1,9 @@
-import { BuffDefinition } from "../effects/effect";
+import {Buff2} from "./buff";
 
 export class Buffs {
-  buffs: BuffDefinition[] = [];
+  buffs: Buff2[] = [];
 
-  addBuff(buff: BuffDefinition) {
+  addBuff(buff: Buff2) {
     let ok = true;
     for (let b of this.buffs) {
       if (b.tags === buff.tags) {
@@ -20,11 +20,13 @@ export class Buffs {
       this.buffs.push(buff);
     }
   }
+
   cleanBuff() {
     this.buffs.forEach((buf) => {
       if (buf.turns != Infinity) buf.turns = 0;
     });
   }
+
   cleanBuffType(type: string) {
     this.buffs.forEach((b) => {
       if (b.tags.indexOf(type) > -1) {
@@ -32,6 +34,7 @@ export class Buffs {
       }
     });
   }
+
   cleanBuffSource(sourceId: string) {
     this.buffs.forEach((b) => {
       if (b.source === sourceId) {
@@ -39,22 +42,23 @@ export class Buffs {
       }
     });
   }
+
   apply(target: any) {
-    const nextTurn: BuffDefinition[] = [];
+    const nextTurn: Buff2[] = [];
     for (let buff of this.buffs) {
       if (buff.turns <= 0) {
-        buff.end(target);
+        buff.condition.onRemove(target);
         continue;
       }
-      if (buff.start != null) {
-        buff.start(target);
-        buff.start = null;
+      if (!buff.started && buff.condition.onApply) {
+        buff.condition.onApply(target);
+        buff.started = true;
         buff.turns -= 1;
         nextTurn.push(buff);
         continue;
       }
-      if (buff.tick != null) {
-        buff.tick(target);
+      if (buff.condition.onTick != null) {
+        buff.condition.onTick(target);
       }
       buff.turns -= 1;
       nextTurn.push(buff);

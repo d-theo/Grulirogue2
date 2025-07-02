@@ -3,7 +3,7 @@ import { Health } from "./health";
 import { Armour } from "../items/armour";
 import { Weapon } from "../items/weapon";
 import { Buffs } from "./buffable";
-import { EnchantTable } from "./enchantable";
+import { Affictions } from "./affictions";
 import { DamageResolution } from "../fight/damages";
 import { BuffDefinition } from "../effects/effect";
 
@@ -19,7 +19,7 @@ export abstract class Entity {
   level: number;
 
   buffs: Buffs;
-  enchants: EnchantTable;
+  enchants: Affictions;
 
   precision: number;
   abstract takeDamages(c: DamageResolution);

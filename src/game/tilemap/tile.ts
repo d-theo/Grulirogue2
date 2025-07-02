@@ -1,5 +1,5 @@
-import {Coordinate} from '../utils/coordinate';
-import {BuffDefinition} from '../effects/effect';
+import { Coordinate } from "../utils/coordinate";
+import { TileTriggers } from "./tile-trigger";
 
 export enum TileVisibility {
   Unknown = -1,
@@ -17,41 +17,42 @@ export class Tile {
   isWalkableFct: (n: number) => boolean;
   isEntry = false;
   isExit = false;
-  private debuffs: { id: string, debuff: () => BuffDefinition }[] = [];
+  private tileTriggers: TileTriggers;
 
   constructor(arg: {
-    x: number,
-    y: number,
-    visibility?: TileVisibility,
-    type?: number,
-    isSolidFct: (n: number) => boolean,
-    isWalkableFct: (n: number) => boolean
+    x: number;
+    y: number;
+    visibility?: TileVisibility;
+    type?: number;
+    isSolidFct: (n: number) => boolean;
+    isWalkableFct: (n: number) => boolean;
   }) {
-    this.pos = {x: arg.x, y: arg.y}
+    this.pos = { x: arg.x, y: arg.y };
     this.visibility = arg.visibility || TileVisibility.Hidden;
     this.type = [];
     this.isSolidFct = arg.isSolidFct;
     this.isWalkableFct = arg.isWalkableFct;
+    this.tileTriggers = new TileTriggers(this);
   }
 
   isType(tileType: number) {
-    return this.type.some(t => t === tileType);
+    return this.type.some((t) => t === tileType);
   }
 
   isSolid() {
-    return this.type.some(t => this.isSolidFct(t));
+    return this.type.some((t) => this.isSolidFct(t));
   }
 
   isWalkable() {
-    return this.type.every(t => this.isWalkableFct(t));
+    return this.type.every((t) => this.isWalkableFct(t));
   }
 
   isEmpty() {
-    return this.type.every(t => this.isWalkableFct(t));
+    return this.type.every((t) => this.isWalkableFct(t));
   }
 
   isOpenDoor() {
-    return
+    return;
   }
 
   setObscurity() {
@@ -67,15 +68,7 @@ export class Tile {
     this.viewed = true;
   }
 
-  addDebuff(d: { id: string, debuff: () => BuffDefinition }) {
-    this.debuffs.push(d);
-  }
-
-  removeDebuff(id: string) {
-    this.debuffs = this.debuffs.filter(d => d.id !== id);
-  }
-
-  getDebuffs(): { id: string, debuff: () => BuffDefinition }[] {
-    return this.debuffs;
+  getTileTriggers() {
+    return this.tileTriggers;
   }
 }

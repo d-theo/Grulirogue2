@@ -1,13 +1,13 @@
-import {gameBus} from "../../eventBus/game-bus";
-import {itemEquiped, logPublished, playerHealed} from "../../events";
-import {DamageResolution} from "../../game/fight/damages";
-import {Hero} from "../../game/hero/hero";
-import {Monster} from "../../game/monsters/monster";
-import {pickInRange} from "../../game/utils/random";
-import {SkillNames} from "../../game/hero/hero-skills";
-import {AIBehavior} from "../../game/monsters/ai";
-import {NullFunc} from "../../game/utils/func";
-import {Affect} from "../../game/effects/affects";
+import { gameBus } from "../../eventBus/game-bus";
+import { itemEquiped, logPublished, playerHealed } from "../../events";
+import { DamageResolution } from "../../game/fight/damages";
+import { Hero } from "../../game/hero/hero";
+import { Monster } from "../../game/monsters/monster";
+import { pickInRange } from "../../game/utils/random";
+import { SkillNames } from "../../game/hero/hero-skills";
+import { AIBehavior } from "../../game/monsters/ai";
+import { NullFunc } from "../../game/utils/func";
+import { Buff2 } from "../../game/entitybase/buff";
 
 export const Conditions = {
   thicc: () => ({
@@ -15,89 +15,95 @@ export const Conditions = {
       t.armour.modifyAbsorb(5);
       t.speed = t.speed * 2;
       t.enchants.setAbsorb(true);
-      gameBus.publish(itemEquiped({armour: t.armour}));
+      gameBus.publish(itemEquiped({ armour: t.armour }));
     },
     onRemove: (t: Hero | Monster) => {
       t.armour.modifyAbsorb(-5);
       t.speed = t.speed / 2;
       t.enchants.setAbsorb(false);
-      gameBus.publish(itemEquiped({armour: t.armour}));
+      gameBus.publish(itemEquiped({ armour: t.armour }));
     },
-    tags: 'thicc'
+    tags: "thicc",
   }),
   heal: () => ({
     tick: (t: Hero) => {
-      let bonus = pickInRange('10-20');
+      let bonus = pickInRange("10-20");
       bonus += 10 * t.heroSkills.getSkillLevel(SkillNames.Alchemist);
       t.health.take(-bonus);
-      gameBus.publish(playerHealed({
-        baseHp: t.health.baseHp,
-        currentHp: t.health.currentHp
-      }));
+      gameBus.publish(
+        playerHealed({
+          baseHp: t.health.baseHp,
+          currentHp: t.health.currentHp,
+        })
+      );
     },
     onApply: null,
     onRemove: NullFunc,
-    tags: 'heal'
+    tags: "heal",
   }),
-  dodge: () => ({
+  dodge: ({ dodgeBonus }) => ({
     onApply: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'success', data: `${t.name} feels more agile`}));
+      gameBus.publish(
+        logPublished({ level: "success", data: `${t.name} feels more agile` })
+      );
       t.enchants.setAgile(true);
-      t.dodge += this.param1
+      t.dodge += dodgeBonus;
     },
     onRemove: (t: Hero | Monster) => {
-      t.dodge -= this.param1
+      t.dodge -= dodgeBonus;
       t.enchants.setAgile(false);
     },
-    tags: 'dodge'
+    tags: "dodge",
   }),
   stun: () => ({
-    start: (t: Hero | Monster) => {
+    onApply: (t: Hero | Monster) => {
       t.enchants.setStuned(true);
     },
     tick: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'warning', data: `${t.name} is stuned`}))
+      gameBus.publish(
+        logPublished({ level: "warning", data: `${t.name} is stuned` })
+      );
     },
     end: (t: Hero | Monster) => t.enchants.setStuned(false),
-    tags: 'stun'
+    tags: "stun",
   }),
-  blind: () => ({
-    start: (t: Hero | Monster) => {
+  blind: ({ sightMalus }) => ({
+    onApply: (t: Hero | Monster) => {
       t.enchants.setBlind(true);
-      t.sight -= this.param1;
+      t.sight -= sightMalus;
     },
     end: (t: Hero | Monster) => {
       t.enchants.setBlind(false);
-      t.sight += this.param1;
-    }
+      t.sight += sightMalus;
+    },
   }),
   wet: () => ({
-    start: (t: Hero | Monster) => {
+    onApply: (t: Hero | Monster) => {
       t.enchants.setWet(true);
     },
     end: (t: Hero | Monster) => {
-      t.enchants.setWet(false)
+      t.enchants.setWet(false);
     },
-    tags: 'wet'
-  }),
-  floral: () => ({
-    start: (t: Hero | Monster) => t.enchants.setFloral(true),
-    end: (t: Hero | Monster) => t.enchants.setFloral(false),
-    tags: 'floral'
+    tags: "wet",
   }),
   accurate: () => ({
-    start: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'success', data: `${t.name} feels more confident`}));
+    onApply: (t: Hero | Monster) => {
+      gameBus.publish(
+        logPublished({
+          level: "success",
+          data: `${t.name} feels more confident`,
+        })
+      );
       t.enchants.setConfident(true);
       t.weapon.maxRange += 1;
     },
     end: (t: Hero | Monster) => {
       t.enchants.setConfident(false);
-      t.weapon.maxRange -= 1
+      t.weapon.maxRange -= 1;
     },
   }),
-  rage: ({rageLevel = pickInRange('3-5')}) => ({
-    start: (t: Hero | Monster) => {
+  rage: ({ rageLevel = pickInRange("3-5") }) => ({
+    onApply: (t: Hero | Monster) => {
       t.armour.modifyAbsorb(-rageLevel);
       t.weapon.modifyAdditionnalDmg(rageLevel);
       t.enchants.setMoreDamage(true);
@@ -107,14 +113,14 @@ export const Conditions = {
       t.enchants.setMoreDamage(false);
       t.enchants.setMoreVulnerable(false);
       t.weapon.modifyAdditionnalDmg(-rageLevel);
-      t.armour.modifyAbsorb(rageLevel)
+      t.armour.modifyAbsorb(rageLevel);
     },
   }),
   bleed: () => ({
     onApply: (t: Hero | Monster) => {
       t.enchants.setBleeding(true);
       gameBus.publish(
-        logPublished({level: "danger", data: `${t.name} starts bleeding`})
+        logPublished({ level: "danger", data: `${t.name} starts bleeding` })
       );
     },
     onTick: (t: Hero | Monster) => {
@@ -124,69 +130,80 @@ export const Conditions = {
     tags: "bleed",
   }),
   poison: () => ({
-    start: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'danger', data: `${t.name} feels poison in his veins`}));
-      t.enchants.setPoisoned(true)
+    onApply: (t: Hero | Monster) => {
+      gameBus.publish(
+        logPublished({
+          level: "danger",
+          data: `${t.name} feels poison in his veins`,
+        })
+      );
+      t.enchants.setPoisoned(true);
     },
     tick: (t: Hero | Monster) => {
-      new DamageResolution(null, t, 2, 'poisoning');
+      new DamageResolution(null, t, 2, "poisoning");
     },
     end: (t: Hero | Monster) => t.enchants.setPoisoned(false),
-    tags: 'poison'
+    tags: "poison",
+  }),
+  precision: ({ precisionBonus }) => ({
+    onApply: (t: Hero | Monster) => {
+      gameBus.publish(
+        logPublished({ level: "success", data: "your eyes are stronger" })
+      );
+      t.precision += precisionBonus;
+    },
+    end: (t: Hero | Monster) => {
+      t.precision -= precisionBonus;
+    },
+    tags: "precision",
+  }),
+  hp: ({ bonusHp }) => ({
+    onApply: (t: Hero | Monster) => {
+      t.health.getStrongerByHp(bonusHp);
+    },
+    end: (t: Hero | Monster) => {
+      t.health.getWeakerByHp(bonusHp);
+    },
+    tags: "hp",
+  }),
+  weakness: ({ hpWeaker: malusHp }) => ({
+    onApply: (t: Hero | Monster) => {
+      t.health.getWeakerByHp(malusHp);
+    },
+    end: (t: Hero | Monster) => {
+      t.health.getStrongerByHp(malusHp);
+    },
+    tags: "weakness",
   }),
   speed: () => ({
-    start: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'success', data: 'you are boosted!'}));
+    onApply: (t: Hero | Monster) => {
+      gameBus.publish(
+        logPublished({ level: "success", data: "you are boosted!" })
+      );
       t.enchants.setSpeed(true);
-      t.speed = t.speed / 2;
+      t.speed = t.speed * 2;
     },
     end: (t: Hero | Monster) => {
       t.enchants.setSpeed(false);
-      t.speed = t.speed * 2;
+      t.speed = t.speed / 2;
     },
-    tags: 'speed'
-  }),
-  precision: () => ({
-    start: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'success', data: 'your eyes are stronger'}));
-      t.precision += this.param1;
-    },
-    end: (t: Hero | Monster) => {
-      t.precision -= this.param1;
-    },
-    tags: 'precision'
-  }),
-  hp: () => ({
-    start: (t: Hero | Monster) => {
-      t.health.getStrongerByHp(this.param1);
-    },
-    end: (t: Hero | Monster) => {
-      t.health.getWeakerByHp(this.param1);
-    },
-    tags: 'hp'
-  }),
-  weakness: () => ({
-    start: (t: Hero | Monster) => {
-      t.health.getWeakerByHp(this.param1);
-    },
-    end: (t: Hero | Monster) => {
-      t.health.getStrongerByHp(this.param1);
-    },
-    tags: 'weakness'
+    tags: "speed",
   }),
   slow: () => ({
-    start: (t: Hero | Monster) => {
-      gameBus.publish(logPublished({level: 'success', data: 'you are boosted!'}));
-      t.enchants.setSpeed(true);
-      t.speed = t.speed * 2;
+    onApply: (t: Hero | Monster) => {
+      gameBus.publish(
+        logPublished({ level: "warning", data: "you feel tired" })
+      );
+      t.enchants.setSlow(true);
+      t.speed = t.speed / 2;
     },
     end: (t: Hero | Monster) => {
       t.enchants.setSpeed(false);
-      t.speed = t.speed / 2;
+      t.speed = t.speed * 2;
     },
-    tags: 'slow'
+    tags: "slow",
   }),
-  damage: ({procChance, maxDmg, cause}) => ({
+  damage: ({ procChance, maxDmg, cause }) => ({
     onApply: null,
     onTick: (t: Hero | Monster) => {
       if (procChance > Math.random()) return;
@@ -196,40 +213,38 @@ export const Conditions = {
     onRemove: NullFunc,
   }),
   shock: () => ({
-    start: null,
+    onApply: null,
     tick: (t: Hero | Monster) => {
       if (t.enchants.getWet()) {
-        new DamageResolution(null, t, 7, 'shock');
+        new DamageResolution(null, t, 7, "shock");
       }
-      new Affect('stun')
-        .turns(1)
-        .target(t)
-        .cast();
-      gameBus.publish(logPublished({level: 'warning', data: `${t.name} is stricken by a lightning bolt`}));
+      t.addBuff(Buff2.create(Conditions.stun).setTurns(1));
+      gameBus.publish(
+        logPublished({
+          level: "warning",
+          data: `${t.name} is stricken by a lightning bolt`,
+        })
+      );
     },
     end: NullFunc,
   }),
   cold: () => ({
-    start: null,
+    onApply: Conditions.cold().onApply,
     tick: (t: Hero | Monster) => {
-      new Affect('slow')
-        .turns(1)
-        .target(t)
-        .cast();
       if (t.enchants.getWet()) {
-        new Affect('stun')
-          .turns(1)
-          .target(t)
-          .cast();
-        gameBus.publish(logPublished({level: 'warning', data: `${t.name} is froze`}));
+        t.addBuff(Buff2.create(Conditions.stun).setTurns(1));
+        gameBus.publish(
+          logPublished({ level: "warning", data: `${t.name} is froze` })
+        );
       }
     },
-    end: NullFunc
+    end: Conditions.cold().onRemove,
   }),
   fire: () => ({
-    start: (t: Hero | Monster) => {
+    onApply: (t: Hero | Monster) => {
       t.enchants.setBurned(true);
     },
+    // TODO do it!!
     /*tick: (t: Hero|Monster) => {
         gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
         doDamages(1, t, 'burning');
@@ -237,45 +252,48 @@ export const Conditions = {
     end: (t: Hero | Monster) => {
       t.enchants.setBurned(false);
     },
-    tags: 'burn'
+    tags: "burn",
   }),
-  brave: () => ({
-    start: null,
+  health: ({ amount, procChance }) => ({
+    onApply: null,
     tick: (t: Hero | Monster) => {
-      if (this.param2 > Math.random()) {
-        t.health.take(-this.param1);
-        gameBus.publish(playerHealed({
-          baseHp: t.health.baseHp,
-          currentHp: t.health.currentHp
-        }));
+      if (procChance > Math.random()) {
+        t.health.take(-amount);
+        // TODO here is the place for event?
+        gameBus.publish(
+          playerHealed({
+            baseHp: t.health.baseHp,
+            currentHp: t.health.currentHp,
+          })
+        );
       }
     },
     end: NullFunc,
-    tags: 'health'
+    tags: "health",
   }),
-  ac: () => ({
-    start: null,
-    tick: (t: Hero | Monster) => {
-      if (t.health.currentHp < t.health.currentHp / 10) {
-        new Affect('ac').isStackable(true).turns(1).params(5).target(t).cast();
-      }
-    },
-    end: NullFunc
+  // TODO add affliction ?
+  brave: () => ({
+    onApply: (t: Hero | Monster) => t.armour.modifyAbsorb(5),
+    tick: NullFunc,
+    end: (t: Hero | Monster) => t.armour.modifyAbsorb(-5),
   }),
-  procChance: () => ({
-    start: null,
+  ac: ({ absorb }) => ({
+    onApply: (t: Hero | Monster) => t.armour.modifyAbsorb(absorb),
+    tick: NullFunc,
+    end: (t: Hero | Monster) => t.armour.modifyAbsorb(-absorb),
+  }),
+  // TODO refacto pour Enchantement ?
+  procChance: ({ proc, condition, turns }) => ({
+    onApply: null,
     tick: (t: Hero | Monster) => {
-      if (this.param1 >= Math.random()) {
-        new Affect(this.param2)
-          .turns(this.param3)
-          .target(t)
-          .cast();
+      if (proc >= Math.random()) {
+        t.addBuff(Buff2.create(condition).setTurns(turns));
       }
     },
     end: NullFunc,
   }),
   fear: () => ({
-    start: (t: Monster) => {
+    onApply: (t: Monster) => {
       t.setBehavior(AIBehavior.Fearfull());
     },
     end: (t: Monster) => {
@@ -283,8 +301,8 @@ export const Conditions = {
     },
   }),
   weak: () => ({
-    start: (t: Hero | Monster) => {
-      t.armour.modifyAbsorb(-3)
+    onApply: (t: Hero | Monster) => {
+      t.armour.modifyAbsorb(-3);
       t.enchants.setMoreVulnerable(true);
     },
     end: (t: Hero | Monster) => {
@@ -293,19 +311,16 @@ export const Conditions = {
     },
   }),
   berserk: () => ({
-    start: (t: Hero | Monster) => {
-      // todo fixme refacto en event ?
+    onApply: (t: Hero | Monster) => {
       t.weapon.modifyAdditionnalDmg(5);
       t.enchants.setMoreDamage(true);
     },
     end: (t: Hero | Monster) => {
       t.weapon.modifyAdditionnalDmg(-5);
       t.enchants.setMoreDamage(false);
-      new Affect('weak')
-        .isStackable(true)
-        .turns(15)
-        .target(t)
-        .cast();
+      t.addBuff(
+        Buff2.create(Conditions.weak).setIsStackable(true).setTurns(15)
+      );
     },
-  })
+  }),
 };

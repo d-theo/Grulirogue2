@@ -1,5 +1,5 @@
-import {gameBus} from "../../eventBus/game-bus";
-import {enchantChanged} from "../../events";
+import { gameBus } from "../../eventBus/game-bus";
+import { enchantChanged } from "../../events";
 
 // Affictions class to manage various status effects on entities
 export class Affictions {
@@ -20,9 +20,9 @@ export class Affictions {
   private cold = false;
   private shocked = false;
   private floral = false;
+  private slow = false;
 
-  constructor(private readonly notif: boolean = false) {
-  }
+  constructor(private readonly notif: boolean = false) {}
 
   setFloral(x: boolean) {
     this.floral = x;
@@ -113,6 +113,15 @@ export class Affictions {
     this.update();
   }
 
+  setSlow(x: boolean) {
+    this.slow = x;
+    this.update();
+  }
+
+  getSlow() {
+    return this.slow;
+  }
+
   getAbsorb() {
     return this.lessDamage;
   }
@@ -185,6 +194,9 @@ export class Affictions {
     if (this.speed) {
       r.push("Movement+");
     }
+    if (this.slow) {
+      r.push("Movement-");
+    }
     if (this.agile) {
       r.push("Dodge+");
     }
@@ -225,6 +237,6 @@ export class Affictions {
 
   update() {
     if (this.notif === false) return;
-    gameBus.publish(enchantChanged({report: this.report().join("\n")}));
+    gameBus.publish(enchantChanged({ report: this.report().join("\n") }));
   }
 }

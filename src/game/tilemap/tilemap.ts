@@ -1,71 +1,22 @@
-import {Tile} from "./tile";
-import {Rect, randomIn} from "../utils/rectangle";
-import {Coordinate} from "../utils/coordinate";
-import {line} from "./sight";
-import {matrixForEach} from "../utils/matrix";
-import {tilePropertiesForTerrain} from "./tile-type-metadata";
-import * as _ from 'lodash';
-import {Monster} from "../monsters/monster";
-import {Hero} from "../hero/hero";
-import {gameBus} from "../../eventBus/game-bus";
-import {effectUnset, sightUpdated} from "../../events";
-import {MapGraph} from "../../world/generation/map_definition";
-import {createMap} from "../../world/map/map-generator";
-import {Terrain} from "../../world/map/terrain.greece";
-import {Entity} from "../entitybase/entity";
-import {forEach} from "lodash";
+import { Tile } from "./tile";
+import { Rect, randomIn } from "../utils/rectangle";
+import { Coordinate } from "../utils/coordinate";
+import { line } from "./sight";
+import { matrixForEach } from "../utils/matrix";
+import { tilePropertiesForTerrain } from "./tile-type-metadata";
+import * as _ from "lodash";
+import { Monster } from "../monsters/monster";
+import { Hero } from "../hero/hero";
+import { gameBus } from "../../eventBus/game-bus";
+import { effectUnset, sightUpdated } from "../../events";
+import { MapGraph } from "../../world/generation/map_definition";
+import { createMap } from "../../world/map/map-generator";
+import { Terrain } from "../../world/map/terrain.greece";
+import { Entity } from "../entitybase/entity";
+import { Conditions } from "../../content/conditions/conditions";
+import { Buff2 } from "../entitybase/buff";
 
-let short = require('short-uuid');
-
-type DebuffDuration = { debugId?: string, id: string, duration: number, triggered: boolean, pos: Coordinate };
-
-type Trigger = (target: Entity) => void;
-type TileTrigger = {
-  id: string
-  turns: number
-  trigger: Trigger
-  stayOnWalk: boolean
-}
-
-export class TileTriggers {
-  onWalkTriggers: TileTrigger[] = [];
-  tile: Tile;
-
-  private constructor(tile: Tile) {
-    this.tile = tile
-  }
-
-  add(trigger: TileTrigger, type: 'onWalk') {
-    this.onWalkTriggers.push(trigger);
-  }
-
-  update(tile: Tile) {
-    // delete all triggers expired
-    this.onWalkTriggers = this.onWalkTriggers.filter(trigger => {
-      if (trigger.turns > 0) {
-        trigger.turns -= 1;
-        return true;
-      }
-      // TODO gameBus.publish(effectUnset({id: trigger.id}));
-      return false;
-    });
-  }
-
-  onEntityWalked(entity: Entity) {
-    const idsToRemove: string[] = [];
-
-    for (const trigger of this.onWalkTriggers) {
-      trigger.trigger(entity);
-      if (!trigger.stayOnWalk) {
-        idsToRemove.push(trigger.id);
-      }
-    }
-
-    if (idsToRemove.length > 0) {
-      this.onWalkTriggers = this.onWalkTriggers.filter(t => !idsToRemove.includes(t.id));
-    }
-  }
-}
+let short = require("short-uuid");
 
 export class TileMap {
   graph!: MapGraph;
@@ -78,15 +29,11 @@ export class TileMap {
   heightM1!: number;
   widthM1!: number;
 
-  debuffDurations: DebuffDuration[] = [];
-
-  constructor() {
-  }
+  constructor() {}
 
   init(level: number) {
-    this.debuffDurations = [];
-    const {isSolid, isWalkable} = tilePropertiesForTerrain();
-    const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(level);
+    const { isSolid, isWalkable } = tilePropertiesForTerrain();
+    const { tilemap, tilemap2, mapObject, thingsToPlace } = createMap(level);
     this.tilemap = tilemap;
     this.additionalLayer = tilemap2;
     this.graph = mapObject;
@@ -98,7 +45,12 @@ export class TileMap {
     let lines = [];
     for (let lineNb = 0; lineNb < this.height; lineNb++) {
       for (let colNb = 0; colNb < this.width; colNb++) {
-        const tile = new Tile({x: colNb, y: lineNb, isSolidFct: isSolid, isWalkableFct: isWalkable});
+        const tile = new Tile({
+          x: colNb,
+          y: lineNb,
+          isSolidFct: isSolid,
+          isWalkableFct: isWalkable,
+        });
         const backgroundType = tilemap[lineNb][colNb];
         const foregroundType = tilemap2[lineNb][colNb];
         tile.type.push(backgroundType);
@@ -124,25 +76,40 @@ export class TileMap {
       x: 0,
       y: 0,
       width: this.width,
-      height: this.height
-    }
+      height: this.height,
+    };
   }
 
   setFgEffect(tile: Tile) {
     if (tile.type[1] === Terrain.WaterFloor) {
-      this.addTileEffects2({
-        debuff: () => new Affect('wet').turns(3).create(),
-        tile,
-        duration: Infinity,
-        stayOnWalk: true
+      tile.getTileTriggers().add({
+        triggerType: "onWalk",
+        id: short.generate(),
+        stayOnWalk: true,
+        turns: Infinity,
+        trigger: (target: Entity) => {
+          target.addBuff(Buff2.create(Conditions.wet).setTurns(3));
+        },
       });
     }
     if (tile.type[1] === Terrain.VegetalFloor) {
-      this.addTileEffects2({
-        debuff: () => new Affect('floral').create(),
-        tile,
-        duration: Infinity,
-        stayOnWalk: true
+      tile.getTileTriggers().add({
+        triggerType: "onWalk",
+        id: short.generate(),
+        stayOnWalk: true,
+        turns: Infinity,
+        trigger: (target: Entity) => {
+          target.enchants.setFloral(true);
+        },
+      });
+      tile.getTileTriggers().add({
+        triggerType: "onLeft",
+        id: short.generate(),
+        stayOnWalk: true,
+        turns: Infinity,
+        trigger: (target: Entity) => {
+          target.enchants.setFloral(false);
+        },
       });
     }
   }
@@ -177,7 +144,7 @@ export class TileMap {
     return id;
   }*/
 
-  forEachTile(fn: any) {
+  public forEachTile(fn: any) {
     for (const tile of this.tiles) {
       for (const t of tile) {
         fn(t);
@@ -187,14 +154,14 @@ export class TileMap {
 
   update() {
     this.forEachTile((tile: Tile) => {
-      tile.tileTriggers.update();
-    })
+      tile.getTileTriggers().update();
+    });
   }
 
   playTileEffectsOn(hero: Hero, monsters: Monster[]) {
-    this.getAt(hero.pos).tileTriggers.onEntityWalked(hero);
-    monsters.forEach(m => {
-      this.getAt(m.pos).tileTriggers.onEntityWalked(m);
+    this.getAt(hero.pos).getTileTriggers().onEntityWalked(hero);
+    monsters.forEach((m) => {
+      this.getAt(m.pos).getTileTriggers().onEntityWalked(m);
     });
 
     // FIXME send events for UI ???
@@ -222,8 +189,9 @@ export class TileMap {
     this.debuffDurations = this.debuffDurations.filter(dd => toDelete.indexOf(dd.id) < 0);*/
   }
 
+  /*
   private playTileEffectOnWalker(walker: Hero | Monster) {
-    /*const tile = this.getAt(walker.pos);
+    const tile = this.getAt(walker.pos);
     const debuffs = tile.getDebuffs();
     const idTriggered: string[] = [];
     if (debuffs.length > 0) {
@@ -232,12 +200,12 @@ export class TileMap {
         idTriggered.push(d.id);
       });
     }
-    return idTriggered;*/
-  }
+    return idTriggered;
+  }*/
 
-  hasVisibility(arg: { from: Coordinate, to: Coordinate }) {
-    const {from, to} = arg;
-    const positions = line({from, to});
+  hasVisibility(arg: { from: Coordinate; to: Coordinate }) {
+    const { from, to } = arg;
+    const positions = line({ from, to });
     for (const pos of positions) {
       const currTile = this.getAt(pos);
       if (currTile.isSolid()) {
@@ -247,8 +215,8 @@ export class TileMap {
     return true;
   }
 
-  subView(arg: { from: Coordinate, range: number }) {
-    const {from, range} = arg;
+  subView(arg: { from: Coordinate; range: number }) {
+    const { from, range } = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -257,14 +225,14 @@ export class TileMap {
     const arr = [];
     for (let h = top; h <= bottom; h++) {
       for (let w = left; w <= right; w++) {
-        arr.push({x: w, y: h});
+        arr.push({ x: w, y: h });
       }
     }
     return arr;
   }
 
-  subTitles(arg: { from: Coordinate, range: number }) {
-    const {from, range} = arg;
+  subTitles(arg: { from: Coordinate; range: number }) {
+    const { from, range } = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -274,20 +242,20 @@ export class TileMap {
     for (let h = top; h <= bottom; h++) {
       const line = [];
       for (let w = left; w <= right; w++) {
-        line.push(this.getAt({x: w, y: h}));
+        line.push(this.getAt({ x: w, y: h }));
       }
       arr.push(line);
     }
     return arr;
   }
 
-  getSightAround(arg: { from: Coordinate, range: number }) {
+  getSightAround(arg: { from: Coordinate; range: number }) {
     return this.subTitles(arg);
   }
 
-  computeSight(arg: { from: Coordinate, range: number }) {
-    matrixForEach(this.tiles, (t => t.setObscurity()));
-    const {from, range} = arg;
+  computeSight(arg: { from: Coordinate; range: number }) {
+    matrixForEach(this.tiles, (t) => t.setObscurity());
+    const { from, range } = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -296,20 +264,20 @@ export class TileMap {
     const arr = [];
     for (let h = top; h <= bottom; h++) {
       for (let w = left; w <= right; w++) {
-        arr.push({x: w, y: h});
+        arr.push({ x: w, y: h });
       }
     }
 
     for (const to of arr) {
-      const positions = line({from, to});
+      const positions = line({ from, to });
       this.getAt(positions.shift()).setOnSight();
-      let currVisibility = 'visible';
+      let currVisibility = "visible";
       for (const pos of positions) {
         const currTile = this.getAt(pos);
-        if (currTile.isSolid() && currVisibility === 'visible') {
+        if (currTile.isSolid() && currVisibility === "visible") {
           currTile.setOnSight();
-          currVisibility = 'hidden';
-        } else if (currVisibility === 'hidden') {
+          currVisibility = "hidden";
+        } else if (currVisibility === "hidden") {
           currTile.setObscurity();
         } else {
           currTile.setOnSight();
@@ -325,6 +293,6 @@ export class TileMap {
         return randomIn(room.rect);
       }
     }
-    throw new Error('not entry !!')
+    throw new Error("not entry !!");
   }
 }

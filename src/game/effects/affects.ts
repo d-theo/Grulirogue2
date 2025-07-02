@@ -1,4 +1,4 @@
-import {Hero} from "../hero/hero";
+/*import {Hero} from "../hero/hero";
 import {Monster} from "../monsters/monster";
 import {gameBus} from "../../eventBus/game-bus";
 import {BuffDefinition} from "./effect";
@@ -37,7 +37,7 @@ export type AffectType =
   | 'floral'
   | 'berserk'
   | 'weak'
-  | 'procChance';
+  | 'procChance';*/
 /*
 export class Affect {
   private _target!: Hero | Monster;
@@ -437,7 +437,7 @@ export class Affect {
       /*tick: (t: Hero|Monster) => {
           gameBus.publish(logPublished({level: 'warning', data: `${t.name} is burning`}));
           doDamages(1, t, 'burning');
-      },*//*
+      },*/ /*
       end: (t: Hero | Monster) => {
         t.enchants.setBurned(false);
       },

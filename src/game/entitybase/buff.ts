@@ -1,13 +1,13 @@
-import {Entity} from "./entity";
-import {Condition} from "./condition";
+import { Entity } from "./entity";
+import { Condition } from "./condition";
 
 // A buff is a Condition with time & extra data
 export class Buff2 {
   condition: Condition;
   turns: number;
   source?: string | null;
-  isTemp: boolean;
-  isStackable: boolean;
+  isTemp: boolean = true;
+  isStackable: boolean = false;
   started = false;
 
   get tags() {
@@ -39,9 +39,4 @@ export class Buff2 {
     this.isStackable = t;
     return this;
   }
-}
-
-export function applyBuff2(b: Buff2, target: Entity) {
-  // b.setSource(b);
-  // fixme target.addBuff(b);
 }

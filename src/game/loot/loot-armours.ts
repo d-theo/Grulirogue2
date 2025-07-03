@@ -1,6 +1,7 @@
-import { Affect } from "../effects/affects";
-import { XTable } from "../monsters/mob-table";
-import { pickInRange } from "../utils/random";
+import {XTable} from "../monsters/mob-table";
+import {pickInRange} from "../utils/random";
+import {Conditions} from "../../content/conditions/conditions";
+import {Buff2} from "../entitybase/buff";
 
 export const Armours = {
   Classic: {
@@ -21,57 +22,49 @@ export const Armours = {
 
 export const ArmourEnchants = [
   {
-    effect: new Affect("wet").turns(Infinity).create(),
+    effect: Buff2.create(Conditions.wet).setTurns(Infinity),
     name: "of moist",
     description: "This armour is strangely wet",
   },
   {
-    effect: new Affect("dodge")
-      .turns(Infinity)
-      .params(0.05)
-      .isStackable(true)
-      .create(),
+    effect: Buff2.create(() => Conditions.dodge({dodgeBonus: 0.05})).setTurns(Infinity).setIsStackable(true),
     name: "of illusion",
     description: "This armour looks strange and make ennemies miss more often",
   },
   {
-    effect: new Affect("health")
-      .turns(Infinity)
-      .params(2, 0.01)
-      .isStackable(true)
-      .create(),
+    effect: Buff2.create(() => Conditions.health({
+      amount: 2,
+      procChance: 0.01
+    })).setTurns(Infinity).setIsStackable(true),
     name: "of life",
     description: "This armour is pulsing sometimes like it's alive",
   },
   {
-    effect: new Affect("brave").turns(Infinity).create(),
+    effect: Buff2.create(Conditions.brave).setTurns(Infinity),
     name: "of braveness",
     description: "This armour shines only when you need it",
   },
   {
-    effect: new Affect("procChance")
-      .turns(Infinity)
-      .params("speed", 0.01, 5)
-      .create(),
+    effect: Buff2.create(() => Conditions.procChance({
+      proc: 0.01,
+      condition: Conditions.speed,
+      turns: 5
+    })).setTurns(Infinity),
     name: "of speed",
     description: "This armour weight nothing",
   },
   {
-    effect: new Affect("hp")
-      .params(pickInRange("5-15"))
-      .isStackable(true)
-      .turns(Infinity)
-      .create(),
+    effect: Buff2.create(() => Conditions.hp({bonusHp: pickInRange("5-15")})).setTurns(Infinity).setIsStackable(true),
     name: "of vitality",
     description: "this weapon grants you more vitality",
   },
 ];
 
 export const armourLevel: XTable = [
-  { type: -3, chance: 5 },
-  { type: -2, chance: 15 },
-  { type: -1, chance: 30 },
-  { type: +1, chance: 30 },
-  { type: +2, chance: 15 },
-  { type: +3, chance: 5 },
+  {type: -3, chance: 5},
+  {type: -2, chance: 15},
+  {type: -1, chance: 30},
+  {type: +1, chance: 30},
+  {type: +2, chance: 15},
+  {type: +3, chance: 5},
 ];

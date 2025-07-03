@@ -1,14 +1,14 @@
-import { SpellNames, SpellMaker } from "../effects/effect";
-import { Item, ItemArgument } from "../entitybase/item";
-import { ItemVisitor } from "../items/item-visitor";
-import { EffectTarget, IEffect } from "../effects/spells";
+import {Item, ItemArgument} from "../entitybase/item";
+import {ItemVisitor} from "../items/item-visitor";
+import {SpellTarget, Spell} from "../effects/spells";
+import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
 
 export const createWildFireBottle = () => {
   return new Misc({
     name: "Bottle of wildfire",
     description: "The flame inside this bottle looks like it wants to get out",
     effect: SpellMaker.createSpell(SpellNames.WildFire),
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
     skin: "wildfire_bottle",
   });
 };
@@ -16,7 +16,7 @@ export const createSphereOfShadow = () => {
   return new Misc({
     name: "Sphere of shadows",
     description: "A back sphere that seems to be alive",
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
     effect: SpellMaker.createSpell(SpellNames.Shadow),
     skin: "sphere_of_shadows",
   });
@@ -27,7 +27,7 @@ export const createTomeOfRain = () => {
     description: "Can invok the god of rain",
     skin: "tome_of_rain",
     effect: SpellMaker.createSpell(SpellNames.RainCloud),
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
   });
 };
 export const createTomeOfVegetation = () => {
@@ -36,7 +36,7 @@ export const createTomeOfVegetation = () => {
     description: "Can invok the god of vegetation",
     skin: "tome_floral",
     effect: SpellMaker.createSpell(SpellNames.FloralCloud),
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
   });
 };
 export const createSmallTorch = () => {
@@ -44,7 +44,7 @@ export const createSmallTorch = () => {
     name: "Torch",
     description: "A torch that could burn if throwed",
     skin: "small_torch",
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
     effect: SpellMaker.createSpell(SpellNames.FireCloud),
   });
 };
@@ -54,7 +54,7 @@ export const createSmellyBottle = () => {
     description: "It has a strong gaz inside",
     skin: "smelly_bottle",
     effect: SpellMaker.createSpell(SpellNames.PoisonCloud),
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
   });
 };
 export const createSphereOfLighting = () => {
@@ -62,7 +62,7 @@ export const createSphereOfLighting = () => {
     name: "Sphere of lightning",
     description: "A blue sphere that seems to be alive",
     skin: "sphere_of_lighting",
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
     effect: SpellMaker.createSpell(SpellNames.LightningCloud),
   });
 };
@@ -72,7 +72,7 @@ export const createColdCrystal = () => {
     description: "A back sphere that seems to be alive",
     effect: SpellMaker.createSpell(SpellNames.ColdCloud),
     skin: "cold_crystal",
-    effectTarget: EffectTarget.AoE,
+    effectTarget: SpellTarget.AoE,
   });
 };
 export const createUnholyBook = () => {
@@ -80,7 +80,7 @@ export const createUnholyBook = () => {
     name: "Unholy book",
     description: "Its covered with blood and dangerous words...",
     effect: SpellMaker.createSpell(SpellNames.UnholySpell),
-    effectTarget: EffectTarget.None,
+    effectTarget: SpellTarget.None,
     skin: "unholy_book",
   });
 };
@@ -90,7 +90,7 @@ export const createRogueTome = () => {
     description: 'Its covered with glyphs: @.+-"~mw#',
     skin: "rogue_tome",
     effect: SpellMaker.createSpell(SpellNames.RogueEventSpell),
-    effectTarget: EffectTarget.Hero,
+    effectTarget: SpellTarget.Hero,
   });
 };
 export const createRealityTome = () => {
@@ -99,12 +99,14 @@ export const createRealityTome = () => {
     description: "Should a read that ... ?",
     skin: "reality_tome",
     effect: SpellMaker.createSpell(SpellNames.RealityEventSpell),
-    effectTarget: EffectTarget.Hero,
+    effectTarget: SpellTarget.Hero,
   });
 };
+
 export class Misc extends Item implements ItemArgument {
-  effect: IEffect;
-  effectTarget: EffectTarget;
+  effect: Spell;
+  effectTarget: SpellTarget;
+
   constructor(arg: any) {
     super(arg);
     this.skin = arg.skin;
@@ -114,29 +116,37 @@ export class Misc extends Item implements ItemArgument {
     this.keyDescription["u"] = "(u)se";
     this.keyMapping["u"] = this.use.bind(this);
   }
+
   get description() {
     return this._description;
   }
+
   get name() {
     return this._name;
   }
+
   use(target: any) {
     this.effect.cast(target);
   }
+
   visit(itemVisitor: ItemVisitor): any {
     return itemVisitor.visitMisc(this);
   }
-  reveal() {}
+
+  reveal() {
+  }
+
   getArgumentForKey(key: string) {
     switch (key) {
       case "u":
         return this.effectTarget;
       case "d":
       default:
-        return EffectTarget.None;
+        return SpellTarget.None;
     }
   }
 }
+
 export class CatStatue extends Item {
   constructor(arg: any) {
     super(arg);
@@ -145,22 +155,30 @@ export class CatStatue extends Item {
     this._description =
       "A little cat statue. What could be the use of that ...?";
   }
-  use(target: any) {}
+
+  use(target: any) {
+  }
+
   get name() {
     return this._name;
   }
+
   get description() {
     return this._description;
   }
+
   visit(itemVisitor: ItemVisitor): any {
     return itemVisitor.visitMisc(this);
   }
-  reveal() {}
+
+  reveal() {
+  }
+
   getArgumentForKey(key: string) {
     switch (key) {
       case "d":
       default:
-        return EffectTarget.None;
+        return SpellTarget.None;
     }
   }
 }

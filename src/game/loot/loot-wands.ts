@@ -1,4 +1,4 @@
-import { SpellMaker, SpellNames } from "../effects/effect";
+import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
 
 export const Wands = {
   Floral: {
@@ -19,12 +19,6 @@ export const Wands = {
     effect: () => SpellMaker.createSpell(SpellNames.WaterLine),
     skin: "wand-water",
   },
-  /*Poison: {
-        name:'Wand of poison gaz',
-        description: 'Spans poisoned gaz at the given location',
-        effect: () => EffectMaker.createSpell(SpellNames.EnchantArmour),
-        skin: 'wand-poison'
-    },*/
   Identification: {
     name: "Wand of identification",
     description: "Identify an unknow item",

@@ -544,6 +544,16 @@ export class Affect {
   }
 }
 
+*/
+
+import {Hero} from "../hero/hero";
+import {Monster} from "../monsters/monster";
+import {gameBus} from "../../eventBus/game-bus";
+import {logPublished, monsterTookDamage, playerHealed} from "../../events";
+import {DamageResolution} from "../fight/damages";
+import {Conditions} from "../../content/conditions/conditions";
+import {Buff2} from "../entitybase/buff";
+
 export class EnchantSolver {
   constructor(private t: Hero | Monster) {
   }
@@ -557,7 +567,7 @@ export class EnchantSolver {
       new DamageResolution(null, this.t, 1, 'burning');
     }
     if (this.t.enchants.getBurned() && this.t.enchants.getPoisoned()) {
-      new Affect('bleed').turns(1).target(this.t).cast();
+      this.t.addBuff(Buff2.create(Conditions.bleed).setTurns(1).setIsStackable(true));
     }
     if (this.t.enchants.getFloral() && this.t.enchants.getWet()) {
       this.t.health.take(-1);
@@ -577,5 +587,3 @@ export class EnchantSolver {
     }
   }
 }
-
-*/

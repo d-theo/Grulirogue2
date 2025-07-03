@@ -1,5 +1,6 @@
-import { Affect } from "../effects/affects";
-import { SpellMaker, SpellNames } from "../effects/effect";
+import {SpellNames, SpellMaker} from "../../content/spells/spell-factory";
+import {Conditions} from "../../content/conditions/conditions";
+import {Buff2} from "../entitybase/buff";
 
 export const Bestiaire = {
   Misc: {
@@ -23,7 +24,7 @@ export const Bestiaire = {
       onHit: () => ({
         chance: 0.3,
         target: "target",
-        effect: new Affect("poison").turns(5).create(),
+        effect: Buff2.create(Conditions.poison).setTurns(5),
       }),
     },
     SnakeKing: {
@@ -36,7 +37,7 @@ export const Bestiaire = {
       onHit: () => ({
         chance: 1,
         target: "target",
-        effect: new Affect("poison").turns(5).create(),
+        effect: Buff2.create(Conditions.poison).setTurns(5),
       }),
     },
     Rat: {
@@ -112,7 +113,7 @@ export const Bestiaire = {
       onHit: () => ({
         chance: 1,
         target: "target",
-        effect: new Affect("slow").turns(5).create(),
+        effect: Buff2.create(Conditions.slow).setTurns(5),
       }),
     },
     Sailor: {
@@ -133,7 +134,7 @@ export const Bestiaire = {
       onHit: () => ({
         chance: 0.1,
         target: "target",
-        effect: new Affect("bleed").turns(3).create(),
+        effect: Buff2.create(Conditions.bleed).setTurns(3)
       }),
     },
   },

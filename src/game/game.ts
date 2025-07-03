@@ -1,38 +1,35 @@
-import { TileMap } from "./tilemap/tilemap";
-import { Hero } from "./hero/hero";
-import { MonsterCollection } from "./monsters/monsterCollection";
-import { Coordinate } from "./utils/coordinate";
-import { AI, AIBehavior } from "./monsters/ai";
-import { Log } from "./log/log";
-import { ItemCollection } from "./items/item-collection";
-import { SpellMaker } from "./effects/effect";
-import { Monster } from "./monsters/monster";
-import { makeThings } from "./generation/additionnal-things";
-import { monstersSpawn } from "./generation/monster-spawn";
-import { itemSpawn } from "./generation/item-spawn";
-import { SpecialPlaces } from "./places/special-places";
-import { RogueEventLevel } from "../eventBus/event-rogue";
-import { randomIn } from "./utils/rectangle";
-import { getUniqLoot } from "./loot/loot-uniq";
+import {TileMap} from "./tilemap/tilemap";
+import {Hero} from "./hero/hero";
+import {MonsterCollection} from "./monsters/monsterCollection";
+import {Coordinate} from "./utils/coordinate";
+import {AI, AIBehavior} from "./monsters/ai";
+import {Log} from "./log/log";
+import {ItemCollection} from "./items/item-collection";
+import {Monster} from "./monsters/monster";
+import {makeThings} from "./generation/additionnal-things";
+import {monstersSpawn} from "./generation/monster-spawn";
+import {itemSpawn} from "./generation/item-spawn";
+import {SpecialPlaces} from "./places/special-places";
+import {RogueEventLevel} from "../eventBus/event-rogue";
+import {randomIn} from "./utils/rectangle";
+import {getUniqLoot} from "./loot/loot-uniq";
 import * as _ from "lodash";
-import { gameBus } from "../eventBus/game-bus";
+import {gameBus} from "../eventBus/game-bus";
 import {
   gameFinished,
   logPublished,
   nextLevelCreated,
-  playerMoved,
   rogueEvent,
   endRogueEvent,
-  heroGainedXp,
-  xpHasChanged,
-  sightUpdated,
   timePassed,
 } from "../events";
-import { EventDispatcher } from "./event-handlers/dispatcher";
-import { CommandDispatcher } from "./command-handlers/dispatcher";
-import { sightHasChanged } from "../events/sight-has-changed";
-import { UseCustomBuild } from "./loot/custom-build";
-import { ThingToPlace } from "../world/generation/map_tiling_utils";
+import {EventDispatcher} from "./event-handlers/dispatcher";
+import {CommandDispatcher} from "./command-handlers/dispatcher";
+import {sightHasChanged} from "../events/sight-has-changed";
+import {UseCustomBuild} from "./loot/custom-build";
+import {ThingToPlace} from "../world/generation/map_tiling_utils";
+import {SpellMaker} from "../content/spells/spell-factory";
+
 export class Game {
   static Engine: Game;
   tilemap: TileMap;
@@ -68,22 +65,26 @@ export class Game {
   public getHero(): Hero {
     return this.hero;
   }
+
   public getTilemap(): TileMap {
     return this.tilemap;
   }
+
   public getItems() {
     return this.items;
   }
+
   public getPlaces() {
     return this.places;
   }
+
   public getMonsters() {
     return this.monsters;
   }
 
   constructor() {
     Log.init();
-    UseCustomBuild(this.Loots); // tests
+    // UseCustomBuild(this.Loots); // tests
     this.tilemap = new TileMap();
     this.hero = new Hero();
     this.loopNb = 0;
@@ -115,6 +116,7 @@ export class Game {
       this.reInitLevel();
     }
   }
+
   private reInitLevel() {
     if (this.level === 6) gameBus.publish(gameFinished({}));
 
@@ -128,7 +130,7 @@ export class Game {
       .monstersArray()
       .filter((m) => m.getFriendly());
     friendlies.forEach(
-      (f) => (f.pos = { x: this.hero.pos.x, y: this.hero.pos.y + 1 })
+      (f) => (f.pos = {x: this.hero.pos.x, y: this.hero.pos.y + 1})
     );
 
     this.monsters.setMonsters(
@@ -160,9 +162,10 @@ export class Game {
       );
     }
     if (this.level > 1) {
-      gameBus.publish(nextLevelCreated({ level: this.level }));
+      gameBus.publish(nextLevelCreated({level: this.level}));
     }
   }
+
   private mayAddUniqItem() {
     const p = randomIn(_.sample(this.tilemap.graph.rooms)!.rect);
     const uniq = getUniqLoot();
@@ -173,6 +176,7 @@ export class Game {
       this.items.itemsArray().push(uniq);
     }
   }
+
   initBus() {
     gameBus.subscribe(rogueEvent, (event) => {
       this.savedLevel = this.level;
@@ -190,7 +194,7 @@ export class Game {
 
   private nextTurn(timeSpent: number) {
     if (this.isNextTurn(timeSpent)) {
-      this.tilemap.playTileEffectsOn(this.hero, this.monsters.monstersArray());
+      this.tilemap.updateTilesTriggers();
       this.hero.update();
       this.hero.heroSkills.update(); // TODO REFACTO
       this.monsters.update();
@@ -211,6 +215,7 @@ export class Game {
       return false;
     }
   }
+
   private startingPosition() {
     const heroPos = this.tilemap.startingPosition();
     this.hero.pos = heroPos;
@@ -220,9 +225,11 @@ export class Game {
   public canGoToNextLevel() {
     return this.tilemap.getAt(this.hero.pos).isExit;
   }
+
   public getAttackable(pos: Coordinate) {
     return this.monsters.getAt(pos);
   }
+
   public getNearestAttackables(): Monster[] {
     let nearest = [];
     for (const mob of this.monsters.monstersArray()) {
@@ -234,7 +241,7 @@ export class Game {
       );
       if (
         dist <= this.hero.weapon.maxRange &&
-        this.tilemap.hasVisibility({ from: posA, to: posB })
+        this.tilemap.hasVisibility({from: posA, to: posB})
       ) {
         nearest.push(mob);
       }

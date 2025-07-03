@@ -1,8 +1,11 @@
 receive(condition.onApply)
-onWalk/onLeft
-floral ??
-builder.affect => builder.spell
 
-effectUnset ?? quand tiletrigger
-Affiction => Afliction 
-bool => int
+onWalk/onLeft => OK ?
+
+floral ?? => OK ?
+
+builder.affect => builder.spell => OK
+
+effectUnset ?? quand tiletrigger //?
+Affiction => Afliction => OK
+bool => int => oK

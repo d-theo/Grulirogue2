@@ -1,13 +1,14 @@
-import { Coordinate } from "../utils/coordinate";
-import { ItemVisitor } from "../items/item-visitor";
-import { gameBus } from "../../eventBus/game-bus";
-import { Hero } from "../hero/hero";
-import { EffectTarget } from "../effects/spells";
-import { itemDropped } from "../../events";
+import {Coordinate} from "../utils/coordinate";
+import {ItemVisitor} from "../items/item-visitor";
+import {gameBus} from "../../eventBus/game-bus";
+import {Hero} from "../hero/hero";
+import {SpellTarget} from "../effects/spells";
+import {itemDropped} from "../../events";
+
 let short = require("short-uuid");
 
 export interface ItemArgument {
-  getArgumentForKey(key: string): EffectTarget;
+  getArgumentForKey(key: string): SpellTarget;
 }
 
 export abstract class Item implements ItemArgument {
@@ -20,6 +21,7 @@ export abstract class Item implements ItemArgument {
   keyDescription: any = {};
   isConsumable = true;
   identified = true;
+
   constructor(arg: {
     x?: number;
     y?: number;
@@ -37,8 +39,11 @@ export abstract class Item implements ItemArgument {
     this.keyMapping["d"] = this.drop.bind(this);
     this.keyDescription["d"] = "(d)rop";
   }
+
   abstract use(args: any): any;
+
   abstract visit(itemVisitor: ItemVisitor): any;
+
   drop(target: Hero) {
     target.dropItem(this);
     gameBus.publish(
@@ -47,11 +52,14 @@ export abstract class Item implements ItemArgument {
       })
     );
   }
+
   get name() {
     return this._name;
   }
+
   abstract reveal(): void;
+
   getArgumentForKey(key: string) {
-    return EffectTarget.None;
+    return SpellTarget.None;
   }
 }

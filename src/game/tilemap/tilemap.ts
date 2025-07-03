@@ -1,21 +1,20 @@
-import { Tile } from "./tile";
-import { Rect, randomIn } from "../utils/rectangle";
-import { Coordinate } from "../utils/coordinate";
-import { line } from "./sight";
-import { matrixForEach } from "../utils/matrix";
-import { tilePropertiesForTerrain } from "./tile-type-metadata";
-import * as _ from "lodash";
-import { Monster } from "../monsters/monster";
-import { Hero } from "../hero/hero";
-import { gameBus } from "../../eventBus/game-bus";
-import { effectUnset, sightUpdated } from "../../events";
-import { MapGraph } from "../../world/generation/map_definition";
-import { createMap } from "../../world/map/map-generator";
-import { Terrain } from "../../world/map/terrain.greece";
-import { Entity } from "../entitybase/entity";
-import { Conditions } from "../../content/conditions/conditions";
-import { Buff2 } from "../entitybase/buff";
-import { TileTrigger, TriggerType } from "./tile-trigger";
+import {Tile} from "./tile";
+import {Rect, randomIn} from "../utils/rectangle";
+import {Coordinate} from "../utils/coordinate";
+import {line} from "./sight";
+import {matrixForEach} from "../utils/matrix";
+import {tilePropertiesForTerrain} from "./tile-type-metadata";
+import {Monster} from "../monsters/monster";
+import {Hero} from "../hero/hero";
+import {gameBus} from "../../eventBus/game-bus";
+import {sightUpdated} from "../../events";
+import {MapGraph} from "../../world/generation/map_definition";
+import {createMap} from "../../world/map/map-generator";
+import {Terrain} from "../../world/map/terrain.greece";
+import {Entity} from "../entitybase/entity";
+import {Conditions} from "../../content/conditions/conditions";
+import {Buff2} from "../entitybase/buff";
+import {TileTrigger, TriggerType} from "./tile-trigger";
 
 let short = require("short-uuid");
 
@@ -30,11 +29,12 @@ export class TileMap {
   heightM1!: number;
   widthM1!: number;
 
-  constructor() {}
+  constructor() {
+  }
 
   init(level: number) {
-    const { isSolid, isWalkable } = tilePropertiesForTerrain();
-    const { tilemap, tilemap2, mapObject, thingsToPlace } = createMap(level);
+    const {isSolid, isWalkable} = tilePropertiesForTerrain();
+    const {tilemap, tilemap2, mapObject, thingsToPlace} = createMap(level);
     this.tilemap = tilemap;
     this.additionalLayer = tilemap2;
     this.graph = mapObject;
@@ -100,7 +100,7 @@ export class TileMap {
         stayOnWalk: true,
         turns: Infinity,
         trigger: (target: Entity) => {
-          target.enchants.setFloral(true);
+          target.enchants.setFloral(+1);
         },
       });
       tile.addTrigger({
@@ -109,7 +109,7 @@ export class TileMap {
         stayOnWalk: true,
         turns: Infinity,
         trigger: (target: Entity) => {
-          target.enchants.setFloral(false);
+          target.enchants.setFloral(-1);
         },
       });
     }
@@ -158,7 +158,7 @@ export class TileMap {
     }
   }
 
-  update() {
+  updateTilesTriggers() {
     this.forEachTile((tile: Tile) => {
       tile.updateTriggers();
     });
@@ -210,8 +210,8 @@ export class TileMap {
   }*/
 
   hasVisibility(arg: { from: Coordinate; to: Coordinate }) {
-    const { from, to } = arg;
-    const positions = line({ from, to });
+    const {from, to} = arg;
+    const positions = line({from, to});
     for (const pos of positions) {
       const currTile = this.getAt(pos);
       if (currTile.isSolid()) {
@@ -222,7 +222,7 @@ export class TileMap {
   }
 
   subView(arg: { from: Coordinate; range: number }) {
-    const { from, range } = arg;
+    const {from, range} = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -231,14 +231,14 @@ export class TileMap {
     const arr = [];
     for (let h = top; h <= bottom; h++) {
       for (let w = left; w <= right; w++) {
-        arr.push({ x: w, y: h });
+        arr.push({x: w, y: h});
       }
     }
     return arr;
   }
 
   subTitles(arg: { from: Coordinate; range: number }) {
-    const { from, range } = arg;
+    const {from, range} = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -248,7 +248,7 @@ export class TileMap {
     for (let h = top; h <= bottom; h++) {
       const line = [];
       for (let w = left; w <= right; w++) {
-        line.push(this.getAt({ x: w, y: h }));
+        line.push(this.getAt({x: w, y: h}));
       }
       arr.push(line);
     }
@@ -261,7 +261,7 @@ export class TileMap {
 
   computeSight(arg: { from: Coordinate; range: number }) {
     matrixForEach(this.tiles, (t) => t.setObscurity());
-    const { from, range } = arg;
+    const {from, range} = arg;
     const right = Math.min(from.x + range, this.widthM1);
     const left = Math.max(from.x - range, 0);
 
@@ -270,12 +270,12 @@ export class TileMap {
     const arr = [];
     for (let h = top; h <= bottom; h++) {
       for (let w = left; w <= right; w++) {
-        arr.push({ x: w, y: h });
+        arr.push({x: w, y: h});
       }
     }
 
     for (const to of arr) {
-      const positions = line({ from, to });
+      const positions = line({from, to});
       this.getAt(positions.shift()).setOnSight();
       let currVisibility = "visible";
       for (const pos of positions) {

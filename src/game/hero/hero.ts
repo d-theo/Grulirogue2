@@ -1,20 +1,20 @@
-import { Health } from "../entitybase/health";
-import { Coordinate } from "../utils/coordinate";
-import { Buffs } from "../entitybase/buffable";
-import { Inventory } from "./inventory";
-import { SpellMaker, SpellNames } from "../effects/effect";
-import { Item } from "../entitybase/item";
-import { FightModifier } from "../entitybase/fight-modifier";
+import {Health} from "../entitybase/health";
+import {Coordinate} from "../utils/coordinate";
+import {Buffs} from "../entitybase/buffable";
+import {Inventory} from "./inventory";
+import {Item} from "../entitybase/item";
+import {FightModifier} from "../entitybase/fight-modifier";
 import HeroSkills from "./hero-skills";
-import { Armour, NullArmour } from "../items/armour";
-import { Weapon, NullWeapon } from "../items/weapon";
-import { Entity } from "../entitybase/entity";
-import { EnchantSolver } from "../effects/affects";
-import { DamageResolution } from "../fight/damages";
-import { IdentifiySpell } from "../effects/spells";
-import { gameBus } from "../../eventBus/game-bus";
-import { itemPickedUp, itemEquiped } from "../../events";
-import { Affictions } from "../entitybase/affictions";
+import {Armour, NullArmour} from "../items/armour";
+import {Weapon, NullWeapon} from "../items/weapon";
+import {Entity} from "../entitybase/entity";
+import {EnchantSolver} from "../effects/affects";
+import {DamageResolution} from "../fight/damages";
+import {gameBus} from "../../eventBus/game-bus";
+import {itemPickedUp, itemEquiped} from "../../events";
+import {Afflictions} from "../entitybase/afflictions";
+import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
+import {IdentifiySpell} from "../../content/spells/spells";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -26,7 +26,7 @@ export class Hero extends Entity {
   weapon: Weapon;
   pos!: Coordinate;
   precision: number = 0;
-  enchants: Affictions = new Affictions(true);
+  enchants: Afflictions = new Afflictions(true);
   xp: number;
   nextXp!: number;
   buffs: Buffs = new Buffs();
@@ -82,7 +82,7 @@ export class Hero extends Entity {
 
   addToBag(item: Item) {
     this.inventory.add(item);
-    gameBus.publish(itemPickedUp({ item: item }));
+    gameBus.publish(itemPickedUp({item: item}));
   }
 
   dropItem(item: Item) {

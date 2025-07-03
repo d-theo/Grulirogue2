@@ -1,4 +1,4 @@
-import { SpellMaker, SpellNames } from "../effects/effect";
+import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
 
 export const Scrolls = {
   Blink: {

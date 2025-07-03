@@ -7,11 +7,11 @@ import {microValidator} from "../utils/micro-validator";
 import {Armour} from "../items/armour";
 import {Weapon} from "../items/weapon";
 import {Entity} from "../entitybase/entity";
-import {EnchantSolver} from "../effects/affects";
-import {IEffect} from "../effects/spells";
+import {Spell} from "../effects/spells";
 import * as _ from "lodash";
 import {DamageResolution} from "../fight/damages";
-import {Affictions} from "../entitybase/affictions";
+import {Afflictions} from "../entitybase/afflictions";
+import {EnchantSolver} from "../effects/affects";
 
 let short = require("short-uuid");
 
@@ -25,7 +25,7 @@ export class Monster extends Entity {
   xp!: number;
   behavior!: Behavior;
   buffs: Buffs = new Buffs();
-  enchants = new Affictions();
+  enchants = new Afflictions();
   name!: string;
   level: number = 1;
   asSeenHero: boolean = false;
@@ -33,7 +33,7 @@ export class Monster extends Entity {
   speed = 1;
   dodge: number = 0.15;
   enchantSolver: EnchantSolver;
-  spells: IEffect[] = [];
+  spells: Spell[] = [];
   aligment: "bad" | "good" = "bad";
 
   private constructor() {
@@ -100,7 +100,7 @@ export class Monster extends Entity {
     return this;
   }
 
-  setSpells(spells: IEffect[]) {
+  setSpells(spells: Spell[]) {
     this.spells = _.shuffle(spells);
     return this;
   }

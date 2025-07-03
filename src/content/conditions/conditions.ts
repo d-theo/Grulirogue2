@@ -203,11 +203,12 @@ export const Conditions = {
     },
     tags: "slow",
   }),
-  damage: ({ procChance, maxDmg, cause }) => ({
+  // FIX ME => does not belong here right !?
+  damage: ({ procChance, dmgRange, cause }) => ({
     onApply: null,
     onTick: (t: Hero | Monster) => {
       if (procChance > Math.random()) return;
-      const dmg = pickInRange(maxDmg);
+      const dmg = pickInRange(dmgRange);
       new DamageResolution(null, t, dmg, cause);
     },
     onRemove: NullFunc,

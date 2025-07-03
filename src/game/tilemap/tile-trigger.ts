@@ -3,13 +3,17 @@ import { effectUnset } from "../../events";
 import { Entity } from "../entitybase/entity";
 import { Tile } from "./tile";
 
+export enum TriggerType {
+  OnWalk,
+  OnLeft,
+}
 export type TriggerAction = (target: Entity) => void;
 export type TileTrigger = {
   id: string;
   turns: number;
   trigger: TriggerAction;
   stayOnWalk: boolean;
-  triggerType: "onWalk" | "onLeft";
+  triggerType: TriggerType;
 };
 export class TileTriggers {
   onWalkTriggers: TileTrigger[] = [];
@@ -21,8 +25,10 @@ export class TileTriggers {
   }
 
   public add(trigger: TileTrigger) {
-    if (trigger.triggerType === "onWalk") this.onWalkTriggers.push(trigger);
-    if (trigger.triggerType === "onLeft") this.onLeftTriggers.push(trigger);
+    if (trigger.triggerType === TriggerType.OnWalk)
+      this.onWalkTriggers.push(trigger);
+    if (trigger.triggerType === TriggerType.OnLeft)
+      this.onLeftTriggers.push(trigger);
   }
 
   public update() {

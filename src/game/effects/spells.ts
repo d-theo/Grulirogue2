@@ -1,17 +1,17 @@
-import {Monster} from "../monsters/monster";
-import {Hero} from "../hero/hero";
-import {gameBus} from "../../eventBus/game-bus";
-import {GameRange} from "../utils/range";
-import {WorldEffect} from "./effect";
-import {Coordinate, around} from "../utils/coordinate";
-import {Item} from "../entitybase/item";
-import {matrixForEach} from "../utils/matrix";
-import {Tile, TileVisibility} from "../tilemap/tile";
-import {Armour} from "../items/armour";
-import {Weapon} from "../items/weapon";
-import {BloodFountain} from "../places/places";
-import {line} from "../tilemap/sight";
-import {DamageResolution} from "../fight/damages";
+import { Monster } from "../monsters/monster";
+import { Hero } from "../hero/hero";
+import { gameBus } from "../../eventBus/game-bus";
+import { GameRange } from "../utils/range";
+import { WorldEffect } from "./effect";
+import { Coordinate, around } from "../utils/coordinate";
+import { Item } from "../entitybase/item";
+import { matrixForEach } from "../utils/matrix";
+import { Tile, TileVisibility } from "../tilemap/tile";
+import { Armour } from "../items/armour";
+import { Weapon } from "../items/weapon";
+import { BloodFountain } from "../places/places";
+import { line } from "../tilemap/sight";
+import { DamageResolution } from "../fight/damages";
 import {
   effectSet,
   logPublished,
@@ -23,8 +23,13 @@ import {
   endRogueEvent,
   monsterSpawned,
 } from "../../events";
-import {Bestiaire} from "../monsters/bestiaire";
-import {MapEffect} from "../../world/map/map-effect";
+import { Bestiaire } from "../monsters/bestiaire";
+import { MapEffect } from "../../world/map/map-effect";
+import { Entity } from "../entitybase/entity";
+import { Buff2 } from "../entitybase/buff";
+import { Conditions } from "../../content/conditions/conditions";
+import { TriggerType } from "../tilemap/tile-trigger";
+const short = require("short-uuid");
 
 export enum EffectTarget {
   Location = "location",
@@ -46,85 +51,99 @@ export interface IEffect {
 export class TrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast(pos: Coordinate) {
-    const bleed = new Affect("bleed").turns(3).create();
-    const id = this.world.getTilemap().addTileEffects({
-      debuff: () => bleed,
-      pos,
-      duration: 1,
+    const trigger = {
+      triggerType: TriggerType.OnWalk,
+      id: short.generate(),
       stayOnWalk: false,
-      debugId: "TrapSpell",
-    });
-    if (id !== null) {
+      turns: Infinity,
+      trigger: (target: Entity) => {
+        target.addBuff(Buff2.create(Conditions.bleed).setTurns(3));
+      },
+    };
+
+    const ok = this.world.getTilemap().addTriggerAt(pos, trigger);
+
+    if (ok) {
       gameBus.publish(
         effectSet({
           animation: "static",
-          id: id,
+          id: trigger.id,
           type: MapEffect.Spike,
           pos,
         })
       );
+      gameBus.publish(logPublished({ data: `trap has been set` }));
     }
-    gameBus.publish(logPublished({data: `trap has been set`}));
   }
 }
 
 export class RootTrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast() {
-    const id = this.world.getTilemap().addTileEffects({
-      debuff: () => new Affect("stun").turns(5).create(),
-      pos: this.world.getHero().pos,
-      duration: 1,
+    const trigger = {
+      triggerType: TriggerType.OnWalk,
+      id: short.generate(),
       stayOnWalk: false,
-      debugId: "RootTrapSpell",
-    });
-    gameBus.publish(
-      effectSet({
-        animation: "static",
-        id: id,
-        type: MapEffect.Root,
-        pos: this.world.getHero().pos,
-      })
-    );
+      turns: Infinity,
+      trigger: (target: Entity) => {
+        target.addBuff(Buff2.create(Conditions.stun).setTurns(5));
+      },
+    };
 
-    gameBus.publish(logPublished({data: `trap has been set`}));
+    const ok = this.world
+      .getTilemap()
+      .addTriggerAt(this.world.getHero().pos, trigger);
+    if (ok) {
+      gameBus.publish(
+        effectSet({
+          animation: "static",
+          id: trigger.id,
+          type: MapEffect.Root,
+          pos: this.world.getHero().pos,
+        })
+      );
+
+      gameBus.publish(logPublished({ data: `trap has been set` }));
+    }
   }
 }
 
 export class PoisonTrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast() {
-    const pos = this.world.getHero().pos;
-    const poison = new Affect("poison").turns(3).create();
-    const id = this.world.getTilemap().addTileEffects({
-      debuff: () => poison,
-      pos,
-      duration: 1,
+    const trigger = {
+      triggerType: TriggerType.OnWalk,
+      id: short.generate(),
       stayOnWalk: false,
-      debugId: "PoisonTrapSpell",
-    });
-    gameBus.publish(
-      effectSet({
-        animation: "static",
-        id: id,
-        type: MapEffect.PoisonTrap,
-        pos,
-      })
-    );
+      turns: Infinity,
+      trigger: (target: Entity) => {
+        target.addBuff(Buff2.create(Conditions.poison).setTurns(3));
+      },
+    };
+    const ok = this.world
+      .getTilemap()
+      .addTriggerAt(this.world.getHero().pos, trigger);
+    if (ok) {
+      gameBus.publish(
+        effectSet({
+          animation: "static",
+          id: trigger.id,
+          type: MapEffect.PoisonTrap,
+          pos: this.world.getHero().pos,
+        })
+      );
 
-    gameBus.publish(logPublished({data: `trap has been set`}));
+      gameBus.publish(logPublished({ data: `trap has been set` }));
+    }
   }
 }
 
@@ -132,23 +151,35 @@ export class WildFireSpell implements IEffect {
   type = EffectTarget.Location;
   area = 1;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast(pos: Coordinate) {
     around(pos, 1).forEach((p) => {
-      const dmg = new Affect("damage").params(0.5, "4-6", "wild fire").create(); // FIXME
-      const id = this.world.getTilemap().addTileEffects({
-        debuff: () => dmg,
-        pos: p,
-        duration: 10,
+      const trigger = {
+        triggerType: TriggerType.OnWalk,
+        id: short.generate(),
         stayOnWalk: true,
-        debugId: "WildFireSpell",
-      });
-      if (id !== null) {
+        turns: 10,
+        trigger: (target: Entity) => {
+          // fixme direct effect
+          target.addBuff(
+            Buff2.create(() =>
+              Conditions.damage({
+                procChance: 0.5,
+                dmgRange: "4-6",
+                cause: "wild fire",
+              })
+            ).setTurns(1)
+          );
+        },
+      };
+      const ok = this.world
+        .getTilemap()
+        .addTriggerAt(this.world.getHero().pos, trigger);
+      if (ok) {
         gameBus.publish(
           effectSet({
-            id: id,
+            id: trigger.id,
             type: MapEffect.Fire,
             pos: p,
             animation: "static",
@@ -163,8 +194,7 @@ export class UnholySpellBook implements IEffect {
   type = EffectTarget.None;
   turns = 1;
 
-  constructor(private world: WorldEffect) {
-  }
+  constructor(private world: WorldEffect) {}
 
   cast() {
     const hpos = this.world.getHero().pos;
@@ -193,13 +223,12 @@ export class UnholySpellBook implements IEffect {
 export class IdentifiySpell implements IEffect {
   type = EffectTarget.Item;
 
-  constructor() {
-  }
+  constructor() {}
 
   cast(item: Item) {
     item.reveal();
     gameBus.publish(
-      logPublished({level: "success", data: `You identify a ${item.name}`})
+      logPublished({ level: "success", data: `You identify a ${item.name}` })
     );
   }
 }
@@ -207,16 +236,15 @@ export class IdentifiySpell implements IEffect {
 export class KnowledgeSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast() {
-    matrixForEach<Tile>(this.world.getTilemap().tiles, (t: Tile) => {
+    this.world.getTilemap().forEachTile((t: Tile) => {
       t.viewed = true;
       if (t.visibility !== TileVisibility.OnSight) t.setObscurity();
     });
     gameBus.publish(
-      logPublished({level: "success", data: "Yee see everything !"})
+      logPublished({ level: "success", data: "Yee see everything !" })
     );
     gameBus.publish(sightUpdated({}));
   }
@@ -225,8 +253,7 @@ export class KnowledgeSpell implements IEffect {
 export class TeleportationSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast(target: Hero | Monster) {
     let done = false;
@@ -248,8 +275,7 @@ export class TeleportationSpell implements IEffect {
 export class BlinkSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast(target: Coordinate) {
     this.world.getHero().pos = target;
@@ -260,8 +286,7 @@ export class BlinkSpell implements IEffect {
 export class ImproveArmourSpell implements IEffect {
   type = EffectTarget.Armour;
 
-  constructor(private world: WorldEffect) {
-  }
+  constructor(private world: WorldEffect) {}
 
   cast(target: Armour) {
     target.addAbsorbEnchant(1);
@@ -270,15 +295,14 @@ export class ImproveArmourSpell implements IEffect {
         data: `Your ${target.name} glows magically for a moment.`,
       })
     );
-    gameBus.publish(itemEquiped({armour: this.world.getHero().armour}));
+    gameBus.publish(itemEquiped({ armour: this.world.getHero().armour }));
   }
 }
 
 export class ImproveWeaponSpell implements IEffect {
   type = EffectTarget.Weapon;
 
-  constructor(private world: WorldEffect) {
-  }
+  constructor(private world: WorldEffect) {}
 
   cast(target: Weapon) {
     target.modifyAdditionnalDmg(+1);
@@ -287,26 +311,24 @@ export class ImproveWeaponSpell implements IEffect {
         data: `Your ${target.name} glows magically for a moment.`,
       })
     );
-    gameBus.publish(itemEquiped({weapon: this.world.getHero().weapon}));
+    gameBus.publish(itemEquiped({ weapon: this.world.getHero().weapon }));
   }
 }
 
 export class WeaknessSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
-  cast(t: Hero | Monster) {
-    new Affect("weak").turns(15).target(t).cast();
+  cast(t: Entity) {
+    t.addBuff(Buff2.create(Conditions.slow).setTurns(15));
   }
 }
 
 export class SummonWeakSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private readonly world: WorldEffect) {
-  }
+  constructor(private readonly world: WorldEffect) {}
 
   cast() {
     const pos = this.world.getHero().pos;
@@ -319,10 +341,10 @@ export class SummonWeakSpell implements IEffect {
       const posMob = this.world.nearestEmptyTileFrom(pos);
       const friend = Monster.makeMonster({
         ...mobs[i],
-        pos: {x: posMob.x, y: posMob.y},
+        pos: { x: posMob.x, y: posMob.y },
       }).setAligment("good");
       this.world.addMonster(friend);
-      gameBus.publish(monsterSpawned({monster: friend}));
+      gameBus.publish(monsterSpawned({ monster: friend }));
     }
   }
 }
@@ -335,7 +357,7 @@ export class CleaningEffect implements IEffect {
     target.buffs.cleanBuff();
     target.enchants.clean();
     gameBus.publish(
-      logPublished({level: "success", data: `${target.name} looks purified`})
+      logPublished({ level: "success", data: `${target.name} looks purified` })
     );
   }
 }
@@ -351,10 +373,10 @@ export class XPEffect implements IEffect {
         })
       );
       gameBus.publish(
-        logPublished({level: "success", data: "you are wiser !"})
+        logPublished({ level: "success", data: "you are wiser !" })
       );
     } else {
-      gameBus.publish(logPublished({data: "nothing happens"}));
+      gameBus.publish(logPublished({ data: "nothing happens" }));
     }
   }
 }
@@ -365,7 +387,7 @@ export class RogueEventSpell implements IEffect {
   cast() {
     gameBus.publish(rogueEvent({}));
     gameBus.publish(
-      logPublished({level: "danger", data: "where the heck are you ?!"})
+      logPublished({ level: "danger", data: "where the heck are you ?!" })
     );
   }
 }
@@ -376,7 +398,7 @@ export class RealityEventSpell implements IEffect {
   cast() {
     gameBus.publish(endRogueEvent({}));
     gameBus.publish(
-      logPublished({level: "success", data: "Yeah, back to the quest !"})
+      logPublished({ level: "success", data: "Yeah, back to the quest !" })
     );
   }
 }
@@ -384,13 +406,12 @@ export class RealityEventSpell implements IEffect {
 export class FearSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private world: WorldEffect) {
-  }
+  constructor(private world: WorldEffect) {}
 
   cast() {
     const mobs = this.world.getNearestAttackables();
     mobs.forEach((m) => {
-      new Affect("fear").turns(10).target(m).cast();
+      m.addBuff(Buff2.create(Conditions.fear).setTurns(10));
     });
   }
 }
@@ -398,8 +419,7 @@ export class FearSpell implements IEffect {
 export class SacrificeSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private world: WorldEffect) {
-  }
+  constructor(private world: WorldEffect) {}
 
   cast(t: Hero | Monster) {
     const hero = this.world.getHero();
@@ -424,7 +444,7 @@ export class AsservissementSpell implements IEffect {
 
   cast(target: Hero | Monster) {
     if (target instanceof Hero) {
-      gameBus.publish(logPublished({data: `You cannot do that`}));
+      gameBus.publish(logPublished({ data: `You cannot do that` }));
       return;
     }
 
@@ -435,7 +455,7 @@ export class AsservissementSpell implements IEffect {
 interface ElementSpell {
   shapeStrategy: string;
   type: EffectTarget;
-  affect: () => BuffDefinition;
+  affect: () => Buff2;
   mapEffect: MapEffect;
   duration: number;
 }
@@ -463,17 +483,20 @@ export function createElementalSpell(
   function aroundStrategy(builder: ElementSpell) {
     return (pos: Coordinate) => {
       around(pos, 1).forEach((p) => {
-        const id = world.getTilemap().addTileEffects({
-          debuff: builder.affect,
-          pos: p,
-          duration: builder.duration,
+        const trigger = {
+          triggerType: TriggerType.OnWalk,
+          id: short.generate(),
           stayOnWalk: true,
-          debugId: builder.mapEffect,
-        });
-        if (id !== null) {
+          turns: builder.duration,
+          trigger: builder.affect,
+        };
+
+        const ok = world.getTilemap().addTriggerAt(p, trigger);
+
+        if (ok) {
           gameBus.publish(
             effectSet({
-              id: id,
+              id: trigger.id,
               type: builder.mapEffect,
               pos: p,
               animation: "static",
@@ -487,17 +510,20 @@ export function createElementalSpell(
   function around2Strategy(builder: ElementSpell) {
     return (pos: Coordinate) => {
       around(pos, 2).forEach((p) => {
-        const id = world.getTilemap().addTileEffects({
-          debuff: builder.affect,
-          pos: p,
-          duration: builder.duration,
+        const trigger = {
+          triggerType: TriggerType.OnWalk,
+          id: short.generate(),
           stayOnWalk: true,
-          debugId: builder.mapEffect,
-        });
-        if (id !== null) {
+          turns: builder.duration,
+          trigger: builder.affect,
+        };
+
+        const ok = world.getTilemap().addTriggerAt(p, trigger);
+
+        if (ok) {
           gameBus.publish(
             effectSet({
-              id: id,
+              id: trigger.id,
               type: builder.mapEffect,
               pos: p,
               animation: "static",
@@ -510,20 +536,23 @@ export function createElementalSpell(
 
   function lineStategy(builder: ElementSpell) {
     return (pos: Coordinate) => {
-      const l: Coordinate[] = line({from: world.getHero().pos, to: pos});
+      const l: Coordinate[] = line({ from: world.getHero().pos, to: pos });
       l.shift();
       l.forEach((p: Coordinate) => {
-        const id = world.getTilemap().addTileEffects({
-          debuff: builder.affect,
-          pos: p,
-          duration: builder.duration,
+        const trigger = {
+          triggerType: TriggerType.OnWalk,
+          id: short.generate(),
           stayOnWalk: true,
-          debugId: builder.mapEffect,
-        });
-        if (id !== null) {
+          turns: builder.duration,
+          trigger: builder.affect,
+        };
+
+        const ok = world.getTilemap().addTriggerAt(p, trigger);
+
+        if (ok) {
           gameBus.publish(
             effectSet({
-              id: id,
+              id: trigger.id,
               type: builder.mapEffect,
               pos: p,
               animation: "static",

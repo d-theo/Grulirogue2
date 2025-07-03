@@ -15,6 +15,7 @@ import { Terrain } from "../../world/map/terrain.greece";
 import { Entity } from "../entitybase/entity";
 import { Conditions } from "../../content/conditions/conditions";
 import { Buff2 } from "../entitybase/buff";
+import { TileTrigger, TriggerType } from "./tile-trigger";
 
 let short = require("short-uuid");
 
@@ -83,7 +84,7 @@ export class TileMap {
   setFgEffect(tile: Tile) {
     if (tile.type[1] === Terrain.WaterFloor) {
       tile.getTileTriggers().add({
-        triggerType: "onWalk",
+        triggerType: TriggerType.OnWalk,
         id: short.generate(),
         stayOnWalk: true,
         turns: Infinity,
@@ -94,7 +95,7 @@ export class TileMap {
     }
     if (tile.type[1] === Terrain.VegetalFloor) {
       tile.getTileTriggers().add({
-        triggerType: "onWalk",
+        triggerType: TriggerType.OnWalk,
         id: short.generate(),
         stayOnWalk: true,
         turns: Infinity,
@@ -103,7 +104,7 @@ export class TileMap {
         },
       });
       tile.getTileTriggers().add({
-        triggerType: "onLeft",
+        triggerType: TriggerType.OnLeft,
         id: short.generate(),
         stayOnWalk: true,
         turns: Infinity,
@@ -116,6 +117,11 @@ export class TileMap {
 
   getAt(pos: Coordinate): Tile {
     return this.tiles[pos.y][pos.x];
+  }
+
+  addTriggerAt(pos: Coordinate, trigger: TileTrigger) {
+    const tile = this.getAt(pos);
+    return tile.addTrigger(trigger);
   }
 
   /*

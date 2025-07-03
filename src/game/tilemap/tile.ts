@@ -1,5 +1,6 @@
+import { Entity } from "../entitybase/entity";
 import { Coordinate } from "../utils/coordinate";
-import { TileTriggers } from "./tile-trigger";
+import { TileTrigger, TileTriggers } from "./tile-trigger";
 
 export enum TileVisibility {
   Unknown = -1,
@@ -55,6 +56,27 @@ export class Tile {
     return;
   }
 
+  addTrigger(trigger: TileTrigger) {
+    if (!this.isSolid()) {
+      this.tileTriggers.add(trigger);
+      return true;
+    }
+    return false;
+  }
+
+  updateTrigger() {
+    this.tileTriggers.update();
+  }
+
+  on(event: "walked" | "left", entity: Entity) {
+    if (event === "walked") {
+      this.tileTriggers.onEntityWalked(entity);
+    }
+    if (event === "left") {
+      this.tileTriggers.onEntitLeft(entity);
+    }
+  }
+
   setObscurity() {
     if (this.viewed) {
       this.visibility = TileVisibility.Far;
@@ -66,9 +88,5 @@ export class Tile {
   setOnSight() {
     this.visibility = TileVisibility.OnSight;
     this.viewed = true;
-  }
-
-  getTileTriggers() {
-    return this.tileTriggers;
   }
 }

@@ -1,9 +1,9 @@
-import {TileMap} from '../tilemap/tilemap';
-import {Hero} from '../hero/hero';
-import {MonsterCollection} from '../monsters/monsterCollection';
-import {Coordinate, around, equalsCoordinate} from '../utils/coordinate';
-import {microValidator} from '../utils/micro-validator';
-import {SpecialPlaces} from '../places/special-places';
+import { TileMap } from "../tilemap/tilemap";
+import { Hero } from "../hero/hero";
+import { MonsterCollection } from "../monsters/monsterCollection";
+import { Coordinate, around, equalsCoordinate } from "../utils/coordinate";
+import { microValidator } from "../utils/micro-validator";
+import { SpecialPlaces } from "../places/special-places";
 import {
   TrapSpell,
   TeleportationSpell,
@@ -26,12 +26,12 @@ import {
   EffectTarget,
   RootTrapSpell,
   WeaknessSpell,
-  SummonWeakSpell
-} from './spells';
-import {Game} from '../game';
-import {Monster} from '../monsters/monster';
-import {MapEffect} from '../../world/map/map-effect';
-import {Conditions} from "../../content/conditions/conditions";
+  SummonWeakSpell,
+} from "./spells";
+import { Game } from "../game";
+import { Monster } from "../monsters/monster";
+import { MapEffect } from "../../world/map/map-effect";
+import { Conditions } from "../../content/conditions/conditions";
 
 /*
 export type BuffDefinition = {
@@ -46,36 +46,36 @@ export type BuffDefinition = {
 };*/
 
 export enum SpellNames {
-  SpikeTrap = 'SpikeTrap',
+  SpikeTrap = "SpikeTrap",
   Teleportation = "Teleportation",
   EnchantWeapon = "EnchantWeapon",
   EnchantArmour = "EnchantArmour",
   Blink = "Blink",
   Identify = "Identify",
   Knowledge = "Knowledge",
-  WildFire = 'WildFire',
+  WildFire = "WildFire",
   Shadow = "Shadow",
-  RootTrap = 'RootTrap',
-  PoisonTrap = 'PoisonTrap',
-  PoisonCloud = 'PoisonCloud',
-  ColdCloud = 'ColdCloud',
-  RainCloud = 'RainCloud',
-  FireCloud = 'FireCloud',
-  LightningCloud = 'LightningCloud',
-  UnholySpell = 'UnholySpell',
-  CleaningSpell = 'CleaningSpell',
-  XPSpell = 'XPSpell',
+  RootTrap = "RootTrap",
+  PoisonTrap = "PoisonTrap",
+  PoisonCloud = "PoisonCloud",
+  ColdCloud = "ColdCloud",
+  RainCloud = "RainCloud",
+  FireCloud = "FireCloud",
+  LightningCloud = "LightningCloud",
+  UnholySpell = "UnholySpell",
+  CleaningSpell = "CleaningSpell",
+  XPSpell = "XPSpell",
   RogueEventSpell = "RogueEventSpell",
-  RealityEventSpell = 'RealityEventSpell',
-  Fear = 'Fear',
-  Sacrifice = 'Sacrifice',
-  AsservissementSpell = 'AsservissementSpell',
-  WaterLine = 'WaterLine',
-  FireLine = 'FireLine',
-  FloralLine = 'FloralLine',
-  FloralCloud = 'FloralCloud',
-  Weakness = 'Weakness',
-  SummonWeak = 'SummonWeak',
+  RealityEventSpell = "RealityEventSpell",
+  Fear = "Fear",
+  Sacrifice = "Sacrifice",
+  AsservissementSpell = "AsservissementSpell",
+  WaterLine = "WaterLine",
+  FireLine = "FireLine",
+  FloralLine = "FloralLine",
+  FloralCloud = "FloralCloud",
+  Weakness = "Weakness",
+  SummonWeak = "SummonWeak",
 }
 
 let tilemap: TileMap;
@@ -85,7 +85,7 @@ let effect: WorldEffect;
 let places: SpecialPlaces;
 export const EffectMaker = {
   set: initEffects,
-  createSpell: createSpell
+  createSpell: createSpell,
 };
 
 function initEffects(game: Game) {
@@ -97,7 +97,10 @@ function initEffects(game: Game) {
 }
 
 function createSpell(name: SpellNames) {
-  microValidator([tilemap, hero, monsters, places], 'createSpell failure: null');
+  microValidator(
+    [tilemap, hero, monsters, places],
+    "createSpell failure: null"
+  );
   switch (name) {
     case SpellNames.SpikeTrap:
       return new TrapSpell(effect);
@@ -111,7 +114,7 @@ function createSpell(name: SpellNames) {
       return new BlinkSpell(effect);
     case SpellNames.Identify:
       return new IdentifiySpell();
-    case SpellNames.Knowledge :
+    case SpellNames.Knowledge:
       return new KnowledgeSpell(effect);
     case SpellNames.WildFire:
       return new WildFireSpell(effect);
@@ -119,79 +122,79 @@ function createSpell(name: SpellNames) {
       return new RootTrapSpell(effect);
     case SpellNames.Shadow:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around2',
+        shapeStrategy: "around2",
         type: EffectTarget.Location,
-        affect: () => new Affect('blind').params(7).create(),
+        affect: () => new Affect("blind").params(7).create(),
         mapEffect: MapEffect.Shadow,
         duration: 40,
       });
     case SpellNames.ColdCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around',
+        shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect('cold').create(),
+        affect: () => new Affect("cold").create(),
         mapEffect: MapEffect.Cold,
         duration: 10,
       });
     case SpellNames.FireCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around',
+        shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect('fire').turns(2).create(),
+        affect: () => new Affect("fire").turns(2).create(),
         mapEffect: MapEffect.Fire,
         duration: 10,
       });
     case SpellNames.RainCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around2',
+        shapeStrategy: "around2",
         type: EffectTarget.Location,
-        affect: () => new Affect('wet').create(),
+        affect: () => new Affect("wet").create(),
         mapEffect: MapEffect.Water,
         duration: 10,
       });
     case SpellNames.PoisonCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around',
+        shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect('poison').turns(5).create(),
+        affect: () => new Affect("poison").turns(5).create(),
         mapEffect: MapEffect.Poison,
         duration: 10,
       });
     case SpellNames.LightningCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around',
+        shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect('shock').create(),
+        affect: () => new Affect("shock").create(),
         mapEffect: MapEffect.Light,
         duration: 10,
       });
     case SpellNames.FireLine:
       return createElementalSpell(effect, {
-        shapeStrategy: 'line',
+        shapeStrategy: "line",
         type: EffectTarget.Location,
-        affect: () => new Affect('fire').turns(2).create(),
+        affect: () => new Affect("fire").turns(2).create(),
         mapEffect: MapEffect.Fire,
         duration: 5,
       });
     case SpellNames.FloralLine:
       return createElementalSpell(effect, {
-        shapeStrategy: 'line',
+        shapeStrategy: "line",
         type: EffectTarget.Location,
-        affect: () => new Affect('floral').create(),
+        affect: () => new Affect("floral").create(),
         mapEffect: MapEffect.Floral,
         duration: 40,
       });
     case SpellNames.FloralCloud:
       return createElementalSpell(effect, {
-        shapeStrategy: 'around',
+        shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect('floral').create(),
+        affect: () => new Affect("floral").create(),
         mapEffect: MapEffect.Floral,
         duration: 40,
       });
     case SpellNames.WaterLine:
       return createElementalSpell(effect, {
-        shapeStrategy: 'line',
+        shapeStrategy: "line",
         type: EffectTarget.Location,
         affect: () => Conditions.wet(),
         mapEffect: MapEffect.Water,
@@ -204,7 +207,7 @@ function createSpell(name: SpellNames) {
     case SpellNames.XPSpell:
       return new XPEffect();
     case SpellNames.CleaningSpell:
-      return new CleaningEffect;
+      return new CleaningEffect();
     case SpellNames.RogueEventSpell:
       return new RogueEventSpell();
     case SpellNames.Fear:
@@ -231,8 +234,7 @@ export class WorldEffect {
     protected monsters: MonsterCollection,
     protected places: SpecialPlaces,
     protected game: Game
-  ) {
-  }
+  ) {}
 
   monsterAt(pos: Coordinate) {
     return this.monsters.getAt(pos);
@@ -264,7 +266,6 @@ export class WorldEffect {
       }
       i++;
     }
-
   }
 
   addMonster(m: Monster) {

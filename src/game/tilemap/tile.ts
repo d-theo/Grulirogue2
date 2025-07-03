@@ -64,7 +64,7 @@ export class Tile {
     return false;
   }
 
-  updateTrigger() {
+  updateTriggers() {
     this.tileTriggers.update();
   }
 

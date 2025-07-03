@@ -1,5 +1,5 @@
 import { Hero } from "./hero";
-import { EffectMaker, SpellNames } from "../effects/effect";
+import { SpellMaker, SpellNames } from "../effects/effect";
 import { TrapSpell, RootTrapSpell, PoisonTrapSpell } from "../effects/spells";
 import {
   TankDesc,
@@ -192,7 +192,7 @@ export class HeroSkills {
     this.heroCooldowns[name] = this.Cooldowns[name][skill.level];
     switch (name) {
       case SkillNames.Sneaky:
-        const trapSpell = EffectMaker.createSpell(
+        const trapSpell = SpellMaker.createSpell(
           SpellNames.SpikeTrap
         ) as TrapSpell;
         trapSpell.cast(this.hero.pos);
@@ -201,13 +201,13 @@ export class HeroSkills {
         this.hero.addBuff(Buff2.create(Conditions.speed).setTurns(15));
         break;
       case SkillNames.Rogue:
-        const rogueSpell: PoisonTrapSpell = EffectMaker.createSpell(
+        const rogueSpell: PoisonTrapSpell = SpellMaker.createSpell(
           SpellNames.PoisonTrap
         ) as PoisonTrapSpell;
         rogueSpell.cast();
         break;
       case SkillNames.Hunter:
-        const root: RootTrapSpell = EffectMaker.createSpell(
+        const root: RootTrapSpell = SpellMaker.createSpell(
           SpellNames.RootTrap
         ) as RootTrapSpell;
         root.cast();

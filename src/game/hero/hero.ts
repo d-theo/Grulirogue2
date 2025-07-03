@@ -1,20 +1,20 @@
-import {Health} from "../entitybase/health";
-import {Coordinate} from "../utils/coordinate";
-import {Buffs} from "../entitybase/buffable";
-import {Inventory} from "./inventory";
-import {EffectMaker, SpellNames} from "../effects/effect";
-import {Item} from "../entitybase/item";
-import {FightModifier} from "../entitybase/fight-modifier";
+import { Health } from "../entitybase/health";
+import { Coordinate } from "../utils/coordinate";
+import { Buffs } from "../entitybase/buffable";
+import { Inventory } from "./inventory";
+import { SpellMaker, SpellNames } from "../effects/effect";
+import { Item } from "../entitybase/item";
+import { FightModifier } from "../entitybase/fight-modifier";
 import HeroSkills from "./hero-skills";
-import {Armour, NullArmour} from "../items/armour";
-import {Weapon, NullWeapon} from "../items/weapon";
-import {Entity} from "../entitybase/entity";
-import {EnchantSolver} from "../effects/affects";
-import {DamageResolution} from "../fight/damages";
-import {IdentifiySpell} from "../effects/spells";
-import {gameBus} from "../../eventBus/game-bus";
-import {itemPickedUp, itemEquiped} from "../../events";
-import {Affictions} from "../entitybase/affictions";
+import { Armour, NullArmour } from "../items/armour";
+import { Weapon, NullWeapon } from "../items/weapon";
+import { Entity } from "../entitybase/entity";
+import { EnchantSolver } from "../effects/affects";
+import { DamageResolution } from "../fight/damages";
+import { IdentifiySpell } from "../effects/spells";
+import { gameBus } from "../../eventBus/game-bus";
+import { itemPickedUp, itemEquiped } from "../../events";
+import { Affictions } from "../entitybase/affictions";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -82,7 +82,7 @@ export class Hero extends Entity {
 
   addToBag(item: Item) {
     this.inventory.add(item);
-    gameBus.publish(itemPickedUp({item: item}));
+    gameBus.publish(itemPickedUp({ item: item }));
   }
 
   dropItem(item: Item) {
@@ -177,13 +177,13 @@ export class Hero extends Entity {
     this.weapon.hitBeforeIdentified--;
     this.armour.hitBeforeIdentified--;
     if (this.weapon.hitBeforeIdentified === 0 && !this.weapon.identified) {
-      const identify = EffectMaker.createSpell(
+      const identify = SpellMaker.createSpell(
         SpellNames.Identify
       ) as IdentifiySpell;
       identify.cast(this.weapon);
     }
     if (this.armour.hitBeforeIdentified === 0 && !this.armour.identified) {
-      const identify = EffectMaker.createSpell(
+      const identify = SpellMaker.createSpell(
         SpellNames.Identify
       ) as IdentifiySpell;
       identify.cast(this.armour);

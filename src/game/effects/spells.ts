@@ -2,7 +2,7 @@ import { Monster } from "../monsters/monster";
 import { Hero } from "../hero/hero";
 import { gameBus } from "../../eventBus/game-bus";
 import { GameRange } from "../utils/range";
-import { WorldEffect } from "./effect";
+import { World } from "./effect";
 import { Coordinate, around } from "../utils/coordinate";
 import { Item } from "../entitybase/item";
 import { matrixForEach } from "../utils/matrix";
@@ -51,7 +51,7 @@ export interface IEffect {
 export class TrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast(pos: Coordinate) {
     const trigger = {
@@ -83,7 +83,7 @@ export class TrapSpell implements IEffect {
 export class RootTrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast() {
     const trigger = {
@@ -117,7 +117,7 @@ export class RootTrapSpell implements IEffect {
 export class PoisonTrapSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast() {
     const trigger = {
@@ -151,7 +151,7 @@ export class WildFireSpell implements IEffect {
   type = EffectTarget.Location;
   area = 1;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast(pos: Coordinate) {
     around(pos, 1).forEach((p) => {
@@ -194,7 +194,7 @@ export class UnholySpellBook implements IEffect {
   type = EffectTarget.None;
   turns = 1;
 
-  constructor(private world: WorldEffect) {}
+  constructor(private world: World) {}
 
   cast() {
     const hpos = this.world.getHero().pos;
@@ -236,7 +236,7 @@ export class IdentifiySpell implements IEffect {
 export class KnowledgeSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast() {
     this.world.getTilemap().forEachTile((t: Tile) => {
@@ -253,7 +253,7 @@ export class KnowledgeSpell implements IEffect {
 export class TeleportationSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast(target: Hero | Monster) {
     let done = false;
@@ -275,7 +275,7 @@ export class TeleportationSpell implements IEffect {
 export class BlinkSpell implements IEffect {
   type = EffectTarget.Location;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast(target: Coordinate) {
     this.world.getHero().pos = target;
@@ -286,7 +286,7 @@ export class BlinkSpell implements IEffect {
 export class ImproveArmourSpell implements IEffect {
   type = EffectTarget.Armour;
 
-  constructor(private world: WorldEffect) {}
+  constructor(private world: World) {}
 
   cast(target: Armour) {
     target.addAbsorbEnchant(1);
@@ -302,7 +302,7 @@ export class ImproveArmourSpell implements IEffect {
 export class ImproveWeaponSpell implements IEffect {
   type = EffectTarget.Weapon;
 
-  constructor(private world: WorldEffect) {}
+  constructor(private world: World) {}
 
   cast(target: Weapon) {
     target.modifyAdditionnalDmg(+1);
@@ -318,7 +318,7 @@ export class ImproveWeaponSpell implements IEffect {
 export class WeaknessSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast(t: Entity) {
     t.addBuff(Buff2.create(Conditions.slow).setTurns(15));
@@ -328,7 +328,7 @@ export class WeaknessSpell implements IEffect {
 export class SummonWeakSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private readonly world: WorldEffect) {}
+  constructor(private readonly world: World) {}
 
   cast() {
     const pos = this.world.getHero().pos;
@@ -406,7 +406,7 @@ export class RealityEventSpell implements IEffect {
 export class FearSpell implements IEffect {
   type = EffectTarget.None;
 
-  constructor(private world: WorldEffect) {}
+  constructor(private world: World) {}
 
   cast() {
     const mobs = this.world.getNearestAttackables();
@@ -419,7 +419,7 @@ export class FearSpell implements IEffect {
 export class SacrificeSpell implements IEffect {
   type = EffectTarget.Movable;
 
-  constructor(private world: WorldEffect) {}
+  constructor(private world: World) {}
 
   cast(t: Hero | Monster) {
     const hero = this.world.getHero();
@@ -452,18 +452,37 @@ export class AsservissementSpell implements IEffect {
   }
 }
 
+/* refacto this : builder and naming are not good !! 
+
+EG : 
+
+    case SpellNames.Shadow:
+      return createElementalSpell(world, {
+        shapeStrategy: "around2",
+        type: EffectTarget.Location,
+        spell: () => new Affect("blind").params(7).create(),
+        mapEffect: MapEffect.Shadow,
+        duration: 40,
+      });
+
+      return AoESpell(world, {
+        shape:'',
+        //type: EffectTarget.Location, ?
+        spell: () => 
+      })
+
+      */
+
+/* AoE Spells */
 interface ElementSpell {
   shapeStrategy: string;
   type: EffectTarget;
-  affect: () => Buff2;
+  spell: () => Buff2;
   mapEffect: MapEffect;
   duration: number;
 }
 
-export function createElementalSpell(
-  world: WorldEffect,
-  builder: ElementSpell
-) {
+export function createElementalSpell(world: World, builder: ElementSpell) {
   let strategy;
   switch (builder.shapeStrategy) {
     case "around":
@@ -488,7 +507,7 @@ export function createElementalSpell(
           id: short.generate(),
           stayOnWalk: true,
           turns: builder.duration,
-          trigger: builder.affect,
+          trigger: builder.spell,
         };
 
         const ok = world.getTilemap().addTriggerAt(p, trigger);
@@ -515,7 +534,7 @@ export function createElementalSpell(
           id: short.generate(),
           stayOnWalk: true,
           turns: builder.duration,
-          trigger: builder.affect,
+          trigger: builder.spell,
         };
 
         const ok = world.getTilemap().addTriggerAt(p, trigger);
@@ -544,7 +563,7 @@ export function createElementalSpell(
           id: short.generate(),
           stayOnWalk: true,
           turns: builder.duration,
-          trigger: builder.affect,
+          trigger: builder.spell,
         };
 
         const ok = world.getTilemap().addTriggerAt(p, trigger);
@@ -568,7 +587,7 @@ export class ElementalSpell {
   type: EffectTarget;
 
   constructor(
-    private readonly world: WorldEffect,
+    private readonly world: World,
     private readonly strategy: Function,
     private readonly builder: ElementSpell
   ) {

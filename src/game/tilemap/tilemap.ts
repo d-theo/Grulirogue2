@@ -83,7 +83,7 @@ export class TileMap {
 
   setFgEffect(tile: Tile) {
     if (tile.type[1] === Terrain.WaterFloor) {
-      tile.getTileTriggers().add({
+      tile.addTrigger({
         triggerType: TriggerType.OnWalk,
         id: short.generate(),
         stayOnWalk: true,
@@ -94,7 +94,7 @@ export class TileMap {
       });
     }
     if (tile.type[1] === Terrain.VegetalFloor) {
-      tile.getTileTriggers().add({
+      tile.addTrigger({
         triggerType: TriggerType.OnWalk,
         id: short.generate(),
         stayOnWalk: true,
@@ -103,7 +103,7 @@ export class TileMap {
           target.enchants.setFloral(true);
         },
       });
-      tile.getTileTriggers().add({
+      tile.addTrigger({
         triggerType: TriggerType.OnLeft,
         id: short.generate(),
         stayOnWalk: true,
@@ -160,14 +160,14 @@ export class TileMap {
 
   update() {
     this.forEachTile((tile: Tile) => {
-      tile.getTileTriggers().update();
+      tile.updateTriggers();
     });
   }
 
   playTileEffectsOn(hero: Hero, monsters: Monster[]) {
-    this.getAt(hero.pos).getTileTriggers().onEntityWalked(hero);
+    this.getAt(hero.pos).on("walked", hero);
     monsters.forEach((m) => {
-      this.getAt(m.pos).getTileTriggers().onEntityWalked(m);
+      this.getAt(m.pos).on("walked", m);
     });
 
     // FIXME send events for UI ???

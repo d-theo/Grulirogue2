@@ -1,158 +1,174 @@
 import { Affect } from "../effects/affects";
-import { EffectMaker, SpellNames } from "../effects/effect";
+import { SpellMaker, SpellNames } from "../effects/effect";
 
 export const Bestiaire = {
-    Misc: {
-        Cat:{
-            kind: "Wild cat",
-            danger: 30,
-            hp: '10-15',
-            damage: '3-5',
-            range: 1,
-            dodge: 0.40,
-        }
+  Misc: {
+    Cat: {
+      kind: "Wild cat",
+      danger: 30,
+      hp: "10-15",
+      damage: "3-5",
+      range: 1,
+      dodge: 0.4,
     },
-    Greece: {
-        Snake:{
-            kind: "Snake",
-            danger: 10,
-            hp: '5-7',
-            damage: '3-4',
-            range: 1,
-            dodge: 0.20,
-            onHit: () =>( {chance: 0.3, target: 'target', effect: new Affect('poison').turns(5).create()})
-        },
-        SnakeKing: {
-            kind: "Snake King",
-            danger: 30,
-            hp: '25-30',
-            damage: '6-10',
-            range: 1,
-            dodge: 0.20,
-            onHit: () =>( {chance: 1, target: 'target', effect: new Affect('poison').turns(5).create()})
-        },
-        Rat: {
-            kind: "Rat",
-            danger: 2,
-            hp: '1-3',
-            damage: '1-2',
-            range: 1,
-            dodge: 0.05,
-        },
-        Bat: {
-            kind: "Bat",
-            danger: 5,
-            hp: '2-4',
-            damage: '1-1',
-            range: 1,
-            dodge: 0.10,
-            speed: 2
-        },
-        Boar: {
-            kind: "Boar",
-            danger: 15,
-            hp: '15-20',
-            damage: '2-4',
-            range: 1,
-            dodge: 0.20
-        },
-        Centaurus:{
-            kind: "Centaurus",
-            danger: 20,
-            hp: '10-15',
-            damage: '3-5',
-            range: 6,
-            dodge: 0.10
-        }
+  },
+  Greece: {
+    Snake: {
+      kind: "Snake",
+      danger: 10,
+      hp: "5-7",
+      damage: "3-4",
+      range: 1,
+      dodge: 0.2,
+      onHit: () => ({
+        chance: 0.3,
+        target: "target",
+        effect: new Affect("poison").turns(5).create(),
+      }),
+    },
+    SnakeKing: {
+      kind: "Snake King",
+      danger: 30,
+      hp: "25-30",
+      damage: "6-10",
+      range: 1,
+      dodge: 0.2,
+      onHit: () => ({
+        chance: 1,
+        target: "target",
+        effect: new Affect("poison").turns(5).create(),
+      }),
+    },
+    Rat: {
+      kind: "Rat",
+      danger: 2,
+      hp: "1-3",
+      damage: "1-2",
+      range: 1,
+      dodge: 0.05,
+    },
+    Bat: {
+      kind: "Bat",
+      danger: 5,
+      hp: "2-4",
+      damage: "1-1",
+      range: 1,
+      dodge: 0.1,
+      speed: 2,
+    },
+    Boar: {
+      kind: "Boar",
+      danger: 15,
+      hp: "15-20",
+      damage: "2-4",
+      range: 1,
+      dodge: 0.2,
+    },
+    Centaurus: {
+      kind: "Centaurus",
+      danger: 20,
+      hp: "10-15",
+      damage: "3-5",
+      range: 6,
+      dodge: 0.1,
+    },
+  },
+  Pirate: {
+    PirateBoss: {
+      kind: "Pirate King",
+      danger: 50,
+      hp: "40-45",
+      damage: "10-20",
+      range: 4,
+      dodge: 0.0,
+      spells: [
+        () => SpellMaker.createSpell(SpellNames.Shadow),
+        () => SpellMaker.createSpell(SpellNames.Shadow),
+      ],
+    },
+    Rat: {
+      kind: "Rat",
+      danger: 10,
+      hp: "5-10",
+      damage: "3-4",
+      range: 1,
+      dodge: 0.05,
+    },
+    Crab: {
+      kind: "Crab",
+      danger: 15,
+      damage: "7-8",
+      hp: "10-15",
+      dodge: 0.05,
+      range: 1,
+    },
+    CrabBoss: {
+      kind: "Crab King",
+      danger: 20,
+      damage: "4-5",
+      hp: "40-55",
+      dodge: 0.05,
+      range: 1,
+      onHit: () => ({
+        chance: 1,
+        target: "target",
+        effect: new Affect("slow").turns(5).create(),
+      }),
+    },
+    Sailor: {
+      kind: "Sailor",
+      danger: 20,
+      hp: "30-35",
+      damage: "9-14",
+      range: 1,
+      dodge: 0.0,
     },
     Pirate: {
-        PirateBoss: {
-            kind: 'Pirate King',
-            danger: 50,
-            hp: '40-45',
-            damage: '10-20',
-            range: 4,
-            dodge: 0.0,
-            spells: [
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-            ]
-        },
-        Rat:{
-            kind: "Rat",
-            danger: 10,
-            hp: '5-10',
-            damage: '3-4',
-            range: 1,
-            dodge: 0.05
-        },
-        Crab: {
-            kind: "Crab",
-            danger: 15,
-            damage: '7-8',
-            hp: '10-15',
-            dodge: 0.05,
-            range: 1,
-        },
-        CrabBoss: {
-            kind: "Crab King",
-            danger: 20,
-            damage: '4-5',
-            hp: '40-55',
-            dodge: 0.05,
-            range: 1,
-            onHit: () =>( {chance: 1, target: 'target', effect: new Affect('slow').turns(5).create()})
-        },
-        Sailor:{
-            kind: "Sailor",
-            danger: 20,
-            hp: '30-35',
-            damage: '9-14',
-            range: 1,
-            dodge: 0.0,
-        },
-        Pirate: {
-            kind: "Pirate",
-            danger: 30,
-            hp: '25-30',
-            damage: '6-10',
-            range: 1,
-            dodge: 0.20,
-            onHit: () =>( {chance: 0.1, target: 'target', effect: new Affect('bleed').turns(3).create()})
-        }
+      kind: "Pirate",
+      danger: 30,
+      hp: "25-30",
+      damage: "6-10",
+      range: 1,
+      dodge: 0.2,
+      onHit: () => ({
+        chance: 0.1,
+        target: "target",
+        effect: new Affect("bleed").turns(3).create(),
+      }),
     },
-    Rogue: {
-        SkeletonWarrior: {
-            kind: "Skeleton",
-            danger: 30,
-            hp: '10-15',
-            damage: '5-8',
-            range: 1,
-            dodge: 0.10,
-        },
-        Wizard: {
-            kind: "Wizard",
-            danger: 30,
-            hp: '10-15',
-            damage: '1-5',
-            range: 6,
-            dodge: 0.00,
-            spells: [
-                () => EffectMaker.createSpell(SpellNames.FireCloud),
-                () => EffectMaker.createSpell(SpellNames.FireCloud),
-                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
-                () => EffectMaker.createSpell(SpellNames.PoisonCloud),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-                () => EffectMaker.createSpell(SpellNames.Shadow),
-            ]
-        },
-        Orc: {
-            kind: "Orc",
-            danger: 30,
-            hp: '20-30',
-            damage: '3-5',
-            range: 1,
-            dodge: 0.1,
-        }
-    }
-}
+  },
+  Rogue: {
+    SkeletonWarrior: {
+      kind: "Skeleton",
+      danger: 30,
+      hp: "10-15",
+      damage: "5-8",
+      range: 1,
+      dodge: 0.1,
+    },
+    Wizard: {
+      kind: "Wizard",
+      danger: 30,
+      hp: "10-15",
+      damage: "1-5",
+      range: 6,
+      dodge: 0.0,
+      spells: [
+        () => SpellMaker.createSpell(SpellNames.FireCloud),
+        () => SpellMaker.createSpell(SpellNames.FireCloud),
+        () => SpellMaker.createSpell(SpellNames.PoisonCloud),
+        () => SpellMaker.createSpell(SpellNames.PoisonCloud),
+        () => SpellMaker.createSpell(SpellNames.Shadow),
+        () => SpellMaker.createSpell(SpellNames.Shadow),
+      ],
+    },
+    Orc: {
+      kind: "Orc",
+      danger: 30,
+      hp: "20-30",
+      damage: "3-5",
+      range: 1,
+      dodge: 0.1,
+    },
+  },
+};

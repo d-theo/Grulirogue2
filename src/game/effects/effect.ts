@@ -81,19 +81,19 @@ export enum SpellNames {
 let tilemap: TileMap;
 let hero: Hero;
 let monsters: MonsterCollection;
-let effect: WorldEffect;
+let world: World;
 let places: SpecialPlaces;
-export const EffectMaker = {
-  set: initEffects,
+export const SpellMaker = {
+  set: initWorld,
   createSpell: createSpell,
 };
 
-function initEffects(game: Game) {
+function initWorld(game: Game) {
   tilemap = game.tilemap;
   hero = game.hero;
   monsters = game.monsters;
   places = game.places;
-  effect = new WorldEffect(tilemap, hero, monsters, places, game);
+  world = new World(tilemap, hero, monsters, places, game);
 }
 
 function createSpell(name: SpellNames) {
@@ -103,107 +103,107 @@ function createSpell(name: SpellNames) {
   );
   switch (name) {
     case SpellNames.SpikeTrap:
-      return new TrapSpell(effect);
+      return new TrapSpell(world);
     case SpellNames.Teleportation:
-      return new TeleportationSpell(effect);
+      return new TeleportationSpell(world);
     case SpellNames.EnchantArmour:
-      return new ImproveArmourSpell(effect);
+      return new ImproveArmourSpell(world);
     case SpellNames.EnchantWeapon:
-      return new ImproveWeaponSpell(effect);
+      return new ImproveWeaponSpell(world);
     case SpellNames.Blink:
-      return new BlinkSpell(effect);
+      return new BlinkSpell(world);
     case SpellNames.Identify:
       return new IdentifiySpell();
     case SpellNames.Knowledge:
-      return new KnowledgeSpell(effect);
+      return new KnowledgeSpell(world);
     case SpellNames.WildFire:
-      return new WildFireSpell(effect);
+      return new WildFireSpell(world);
     case SpellNames.RootTrap:
-      return new RootTrapSpell(effect);
+      return new RootTrapSpell(world);
     case SpellNames.Shadow:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around2",
         type: EffectTarget.Location,
-        affect: () => new Affect("blind").params(7).create(),
+        spell: () => new Affect("blind").params(7).create(),
         mapEffect: MapEffect.Shadow,
         duration: 40,
       });
     case SpellNames.ColdCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect("cold").create(),
+        spell: () => new Affect("cold").create(),
         mapEffect: MapEffect.Cold,
         duration: 10,
       });
     case SpellNames.FireCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect("fire").turns(2).create(),
+        spell: () => new Affect("fire").turns(2).create(),
         mapEffect: MapEffect.Fire,
         duration: 10,
       });
     case SpellNames.RainCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around2",
         type: EffectTarget.Location,
-        affect: () => new Affect("wet").create(),
+        spell: () => new Affect("wet").create(),
         mapEffect: MapEffect.Water,
         duration: 10,
       });
     case SpellNames.PoisonCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect("poison").turns(5).create(),
+        spell: () => new Affect("poison").turns(5).create(),
         mapEffect: MapEffect.Poison,
         duration: 10,
       });
     case SpellNames.LightningCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect("shock").create(),
+        spell: () => new Affect("shock").create(),
         mapEffect: MapEffect.Light,
         duration: 10,
       });
     case SpellNames.FireLine:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "line",
         type: EffectTarget.Location,
-        affect: () => new Affect("fire").turns(2).create(),
+        spell: () => new Affect("fire").turns(2).create(),
         mapEffect: MapEffect.Fire,
         duration: 5,
       });
     case SpellNames.FloralLine:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "line",
         type: EffectTarget.Location,
-        affect: () => new Affect("floral").create(),
+        spell: () => new Affect("floral").create(),
         mapEffect: MapEffect.Floral,
         duration: 40,
       });
     case SpellNames.FloralCloud:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "around",
         type: EffectTarget.Location,
-        affect: () => new Affect("floral").create(),
+        spell: () => new Affect("floral").create(),
         mapEffect: MapEffect.Floral,
         duration: 40,
       });
     case SpellNames.WaterLine:
-      return createElementalSpell(effect, {
+      return createElementalSpell(world, {
         shapeStrategy: "line",
         type: EffectTarget.Location,
-        affect: () => Conditions.wet(),
+        spell: () => Conditions.wet(),
         mapEffect: MapEffect.Water,
         duration: 40,
       });
     case SpellNames.PoisonTrap:
-      return new PoisonTrapSpell(effect);
+      return new PoisonTrapSpell(world);
     case SpellNames.UnholySpell:
-      return new UnholySpellBook(effect);
+      return new UnholySpellBook(world);
     case SpellNames.XPSpell:
       return new XPEffect();
     case SpellNames.CleaningSpell:
@@ -211,23 +211,23 @@ function createSpell(name: SpellNames) {
     case SpellNames.RogueEventSpell:
       return new RogueEventSpell();
     case SpellNames.Fear:
-      return new FearSpell(effect);
+      return new FearSpell(world);
     case SpellNames.Sacrifice:
-      return new SacrificeSpell(effect);
+      return new SacrificeSpell(world);
     case SpellNames.RealityEventSpell:
       return new RealityEventSpell();
     case SpellNames.AsservissementSpell:
       return new AsservissementSpell();
     case SpellNames.Weakness:
-      return new WeaknessSpell(effect);
+      return new WeaknessSpell(world);
     case SpellNames.SummonWeak:
-      return new SummonWeakSpell(effect);
+      return new SummonWeakSpell(world);
     default:
       throw new Error(`${name} spell not impl`);
   }
 }
 
-export class WorldEffect {
+export class World {
   constructor(
     protected tilemap: TileMap,
     protected hero: Hero,

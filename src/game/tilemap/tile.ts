@@ -73,7 +73,7 @@ export class Tile {
       this.tileTriggers.onEntityWalked(entity);
     }
     if (event === "left") {
-      this.tileTriggers.onEntitLeft(entity);
+      this.tileTriggers.onEntityLeft(entity);
     }
   }
 

@@ -67,7 +67,7 @@ export class TileTriggers {
     }
   }
 
-  public onEntitLeft(entity: Entity) {
+  public onEntityLeft(entity: Entity) {
     const idsToRemove: string[] = [];
 
     for (const trigger of this.onLeftTriggers) {
@@ -78,7 +78,7 @@ export class TileTriggers {
     }
 
     if (idsToRemove.length > 0) {
-      this.onWalkTriggers = this.onWalkTriggers.filter(
+      this.onLeftTriggers = this.onLeftTriggers.filter(
         (t) => !idsToRemove.includes(t.id)
       );
     }

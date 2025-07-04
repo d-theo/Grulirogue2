@@ -2,16 +2,8 @@ import {ItemVisitor} from "../items/item-visitor";
 import {SpellTarget} from "../effects/spells";
 import {Item, ItemArgument} from "../entitybase/item";
 import {Hero} from "../hero/hero";
-import {add} from "lodash";
 import {Buff2} from "../entitybase/buff";
 
-/*
-regen
-vitesse
-hp
-bulky
-
-*/
 
 export class Armour extends Item implements ItemArgument {
   private baseAbsorb: number;

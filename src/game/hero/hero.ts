@@ -1,20 +1,20 @@
-import {Health} from "../entitybase/health";
-import {Coordinate} from "../utils/coordinate";
-import {Buffs} from "../entitybase/buffable";
-import {Inventory} from "./inventory";
-import {Item} from "../entitybase/item";
-import {FightModifier} from "../entitybase/fight-modifier";
+import { Health } from "../entitybase/health";
+import { Coordinate } from "../../utils/coordinate";
+import { Buffs } from "../entitybase/buffable";
+import { Inventory } from "./inventory";
+import { Item } from "../entitybase/item";
+import { FightModifier } from "../entitybase/fight-modifier";
 import HeroSkills from "./hero-skills";
-import {Armour, NullArmour} from "../items/armour";
-import {Weapon, NullWeapon} from "../items/weapon";
-import {Entity} from "../entitybase/entity";
-import {EnchantSolver} from "../effects/affects";
-import {DamageResolution} from "../fight/damages";
-import {gameBus} from "../../eventBus/game-bus";
-import {itemPickedUp, itemEquiped} from "../../events";
-import {Afflictions} from "../entitybase/afflictions";
-import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
-import {IdentifiySpell} from "../../content/spells/spells";
+import { Entity } from "../entitybase/entity";
+import { EnchantSolver } from "../effects/echant-solver";
+import { DamageResolution } from "../fight/damages";
+import { gameBus } from "../../infra/events/game-bus";
+import { Afflictions } from "../entitybase/afflictions";
+import { SpellMaker, SpellNames } from "../../content/spells/spell-factory";
+import { IdentifiySpell } from "../../content/spells/spells";
+import { Armour, NullArmour } from "../entitybase/items/armour";
+import { Weapon, NullWeapon } from "../entitybase/items/weapon";
+import { itemPickedUp, itemEquiped } from "../events";
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -82,7 +82,7 @@ export class Hero extends Entity {
 
   addToBag(item: Item) {
     this.inventory.add(item);
-    gameBus.publish(itemPickedUp({item: item}));
+    gameBus.publish(itemPickedUp({ item: item }));
   }
 
   dropItem(item: Item) {

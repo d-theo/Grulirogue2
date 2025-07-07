@@ -1,10 +1,9 @@
-import {TileMap} from "../../game/tilemap/tilemap";
-import {Hero} from "../../game/hero/hero";
-import {MonsterCollection} from "../../game/monsters/monsterCollection";
-import {SpecialPlaces} from "../../game/places/special-places";
-import {Game} from "../../game/game";
-import {World} from "../../game/effects/effect";
-import {microValidator} from "../../game/utils/micro-validator";
+import { TileMap } from "../../game/tilemap/tilemap";
+import { Hero } from "../../game/hero/hero";
+import { SpecialPlaces } from "../../game/places/special-places";
+import { Game } from "../../game/game";
+import { World } from "../../game/effects/world-ctx";
+import { microValidator } from "../../utils/micro-validator";
 import {
   AsservissementSpell,
   BlinkSpell,
@@ -18,16 +17,19 @@ import {
   RealityEventSpell,
   RogueEventSpell,
   RootTrapSpell,
-  SacrificeSpell, SummonWeakSpell,
+  SacrificeSpell,
+  SummonWeakSpell,
   TeleportationSpell,
   TrapSpell,
-  UnholySpellBook, WeaknessSpell,
+  UnholySpellBook,
+  WeaknessSpell,
   WildFireSpell,
-  XPEffect
+  XPEffect,
 } from "./spells";
-import {createAoESpell} from "../../game/effects/spells";
-import {TileTriggerFactory} from "../tile-triggers/tile-trigger-factrory";
-import {MapEffect} from "../../world/map/map-effect";
+import { createAoESpell } from "../../game/effects/spells";
+import { TileTriggerFactory } from "../tile-triggers/tile-trigger-factrory";
+import { MapEffect } from "../../world/map/map-effect";
+import { MonsterCollection } from "../../game/entitybase/monsters/monsterCollection";
 
 export enum SpellNames {
   SpikeTrap = "SpikeTrap",

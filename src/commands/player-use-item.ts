@@ -1,11 +1,11 @@
 import { createEventDefinition, EventBus } from "ts-bus";
 import { Item } from "../game/entitybase/item";
-import { Monster } from "../game/monsters/monster";
 import { Hero } from "../game/hero/hero";
-import { Coordinate } from "../game/utils/coordinate";
+import { Coordinate } from "../utils/coordinate";
+import { Monster } from "../game/entitybase/monsters/monster";
 
 export const playerUseItem = createEventDefinition<{
-    item: Item,
-    target: Monster | Hero | Coordinate | Item,
-    action: string,
-}>()('playerUseItem');
+  item: Item;
+  target: Monster | Hero | Coordinate | Item;
+  action: string;
+}>()("playerUseItem");

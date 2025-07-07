@@ -1,6 +1,6 @@
-import { gameBus } from "../../eventBus/game-bus";
-import { effectUnset } from "../../events";
+import { gameBus } from "../../infra/events/game-bus";
 import { Entity } from "../entitybase/entity";
+import { effectUnset } from "../events";
 import { Tile } from "./tile";
 
 export enum TriggerType {

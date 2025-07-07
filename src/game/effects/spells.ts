@@ -1,13 +1,10 @@
-import {gameBus} from "../../eventBus/game-bus";
-import {World} from "./effect";
-import {Coordinate, around} from "../utils/coordinate";
-import {line} from "../tilemap/sight";
-import {
-  effectSet,
-
-} from "../../events";
-import {MapEffect} from "../../world/map/map-effect";
-import {TileTrigger, TriggerType} from "../tilemap/tile-trigger";
+import { gameBus } from "../../infra/events/game-bus";
+import { World } from "./world-ctx";
+import { Coordinate, around } from "../../utils/coordinate";
+import { line } from "../tilemap/sight";
+import { MapEffect } from "../../world/map/map-effect";
+import { TileTrigger, TriggerType } from "../tilemap/tile-trigger";
+import { effectSet } from "../events";
 
 const short = require("short-uuid");
 
@@ -52,7 +49,7 @@ export function createAoESpell(world: World, aoeSpellBuilder: AoESpell) {
   return new AreaOfEffectSpell(world, strategy, aoeSpellBuilder);
 
   function buildTileTriggersAt(builder: AoESpell, pos: Coordinate) {
-    builder.triggerFactory().forEach(tileTrigger => {
+    builder.triggerFactory().forEach((tileTrigger) => {
       const ok = world.getTilemap().addTriggerAt(pos, tileTrigger);
       if (ok) {
         gameBus.publish(
@@ -64,7 +61,7 @@ export function createAoESpell(world: World, aoeSpellBuilder: AoESpell) {
           })
         );
       }
-    })
+    });
   }
 
   function aroundStrategy(builder: AoESpell) {
@@ -81,13 +78,12 @@ export function createAoESpell(world: World, aoeSpellBuilder: AoESpell) {
 
   function lineStategy(builder: AoESpell) {
     return (pos: Coordinate) => {
-      const l: Coordinate[] = line({from: world.getHero().pos, to: pos});
+      const l: Coordinate[] = line({ from: world.getHero().pos, to: pos });
       l.shift();
       l.forEach((p: Coordinate) => buildTileTriggersAt(builder, p));
     };
   }
 }
-
 
 export class AreaOfEffectSpell implements Spell {
   type: SpellTarget.Location;
@@ -96,8 +92,7 @@ export class AreaOfEffectSpell implements Spell {
     private readonly world: World,
     private readonly strategy: Function,
     private readonly builder: AoESpell
-  ) {
-  }
+  ) {}
 
   cast(pos: Coordinate) {
     this.strategy(pos);

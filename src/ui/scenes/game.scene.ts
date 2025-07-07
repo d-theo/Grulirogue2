@@ -1,19 +1,28 @@
-import {SceneName} from './scenes.constants';
-import {Game as GameEngine} from '../../game/game';
-import {Coordinate, around} from '../../game/utils/coordinate';
-import {TilemapVisibility} from '../TilemapVisibility';
-import {Item} from '../../game/entitybase/item';
-import {UIItem, UIEntity, UIEffect, UIDamages} from '../entities';
-import {Hero} from '../../game/hero/hero';
-import {SkillNames} from '../../game/hero/hero-skills';
-import {line} from '../../game/tilemap/sight';
-import {SpellTarget} from '../../game/effects/spells';
-import {Monster} from '../../game/monsters/monster';
-import {GameContext, Modes} from './states';
-import {Keyboard} from '../../phaser-addition/keyboard';
-import {CellSize} from '../../main';
-import {DamageQueue} from '../../phaser-addition/damage-queue';
-import {gameBus} from '../../eventBus/game-bus';
+import { SceneName } from "./scenes.constants";
+import { Game as GameEngine } from "../../game/game";
+import { Coordinate, around } from "../../utils/coordinate";
+import { TilemapVisibility } from "../TilemapVisibility";
+import { Item } from "../../game/entitybase/item";
+import { UIItem, UIEntity, UIEffect, UIDamages } from "../entities";
+import { Hero } from "../../game/hero/hero";
+import { SkillNames } from "../../game/hero/hero-skills";
+import { line } from "../../game/tilemap/sight";
+import { SpellTarget } from "../../game/effects/spells";
+import { GameContext, Modes } from "./states";
+import { CellSize } from "../../main";
+import { gameBus } from "../../infra/events/game-bus";
+
+import {
+  playerAttemptAttackMonster,
+  playerUseItem,
+  nextLevel,
+  waitATurn,
+  playerChoseSkill,
+  playerUseSkill,
+  playerActionMove,
+} from "../../commands";
+import { Terrain } from "../../world/map/terrain.greece";
+import { Monster } from "../../game/entitybase/monsters/monster";
 import {
   gameStarted,
   logPublished,
@@ -36,18 +45,10 @@ import {
   gameOver,
   gameFinished,
   itemEquiped,
-  nextLevelCreated
-} from '../../events';
-import {
-  playerAttemptAttackMonster,
-  playerUseItem,
-  nextLevel,
-  waitATurn,
-  playerChoseSkill,
-  playerUseSkill,
-  playerActionMove
-} from '../../commands';
-import {Terrain} from '../../world/map/terrain.greece';
+  nextLevelCreated,
+} from "../../game/events";
+import { DamageQueue } from "../phaser-addition/damage-queue";
+import { Keyboard } from "../phaser-addition/keyboard";
 
 class GameScene extends Phaser.Scene {
   keyboard: Keyboard;
@@ -71,8 +72,13 @@ class GameScene extends Phaser.Scene {
 
   gameContext: GameContext;
   actionContext:
-    { target: 'basic_attack', mobs: Monster[] }
-    | { action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem', key: string, item: Item, target: SpellTarget }
+    | { target: "basic_attack"; mobs: Monster[] }
+    | {
+        action: "useSkill" | "pickSkill" | "useItem" | "pickItem";
+        key: string;
+        item: Item;
+        target: SpellTarget;
+      }
     | null
     | any;
 
@@ -80,7 +86,7 @@ class GameScene extends Phaser.Scene {
 
   constructor() {
     super({
-      key: SceneName.Game
+      key: SceneName.Game,
     });
   }
 
@@ -93,9 +99,9 @@ class GameScene extends Phaser.Scene {
   reInit() {
     this.gameEngine = GameEngine.getInstance();
     this.tilemap = this.gameEngine.tilemap.tilemap;
-    Object.values(this.gameMonsters).forEach(v => v.destroy());
-    Object.values(this.gameItems).forEach(v => v.destroy());
-    Object.values(this.gameEffects).forEach(v => v.destroy());
+    Object.values(this.gameMonsters).forEach((v) => v.destroy());
+    Object.values(this.gameItems).forEach((v) => v.destroy());
+    Object.values(this.gameEffects).forEach((v) => v.destroy());
     this.hero && this.hero.destroy();
 
     this.hero = null;
@@ -105,22 +111,39 @@ class GameScene extends Phaser.Scene {
 
     var map: Phaser.Tilemaps.Tilemap = this.make.tilemap({
       data: this.tilemap,
-      key: 'map'
+      key: "map",
     });
-    var tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage('terrain2', 'terrain2', CellSize, CellSize, 1, 2, 0);
+    var tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage(
+      "terrain2",
+      "terrain2",
+      CellSize,
+      CellSize,
+      1,
+      2,
+      0
+    );
     this.layer = map.createDynamicLayer(0, tileset, 0, 0) as any;
-    this.layer2 = map.createBlankDynamicLayer('additions', tileset);
+    this.layer2 = map.createBlankDynamicLayer("additions", tileset);
     this.layer2.putTilesAt(this.gameEngine.tilemap.additionalLayer, 0, 0);
     map.convertLayerToStatic(this.layer2);
 
     this.placeMonsters();
     this.placeItems();
 
-    const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset, undefined, undefined, undefined, undefined).fill(Terrain.Void);
+    const shadowLayer = map
+      .createBlankDynamicLayer(
+        "Shadow",
+        tileset,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+      .fill(Terrain.Void);
     this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 
-    this.hero = new UIEntity(this, this.gameEngine.hero, 'hero');
-    this.target = this.physics.add.sprite(0, 0, 'target');
+    this.hero = new UIEntity(this, this.gameEngine.hero, "hero");
+    this.target = this.physics.add.sprite(0, 0, "target");
     this.target.setOrigin(0, 0);
     this.target.setDepth(5);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -130,26 +153,33 @@ class GameScene extends Phaser.Scene {
     setTimeout(() => {
       gameBus.publish(gameStarted({}));
       this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
-      this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
+      this.tilemapVisibility.setFogOfWar1(
+        this.gameEngine.tilemap.tiles,
+        this.gameMonsters
+      );
     }, 50);
   }
 
   selectFire() {
     const mobs = this.gameEngine.getNearestAttackables();
     if (mobs.length === 0) {
-      gameBus.publish(logPublished({
-        data: 'nothing to attack'
-      }));
+      gameBus.publish(
+        logPublished({
+          data: "nothing to attack",
+        })
+      );
       return false;
     } else {
-      gameBus.publish(logPublished({
-        data: 'who do you want to attack ?'
-      }));
+      gameBus.publish(
+        logPublished({
+          data: "who do you want to attack ?",
+        })
+      );
       const mob = mobs[0];
       this.setTargetAtPos(mob.pos);
       this.actionContext = {
-        target: 'basic_attack',
-        mobs: mobs
+        target: "basic_attack",
+        mobs: mobs,
       };
       this.showRange(this.gameEngine.hero, mob.pos);
       return true;
@@ -168,9 +198,11 @@ class GameScene extends Phaser.Scene {
     this.hideRange();
     const mob = this.gameEngine.getAttackable(this.getTargetPos());
     if (mob) {
-      gameBus.publish(playerAttemptAttackMonster({
-        monster: mob
-      }));
+      gameBus.publish(
+        playerAttemptAttackMonster({
+          monster: mob,
+        })
+      );
     }
     this.hideTarget();
     this.actionContext = null;
@@ -181,38 +213,54 @@ class GameScene extends Phaser.Scene {
     this.hideTarget();
     const t = this.gameEngine.tilemap.getAt(pos);
     if (!t.isWalkable()) {
-      gameBus.publish(logPublished({data: 'You cannot do that'}));
+      gameBus.publish(logPublished({ data: "You cannot do that" }));
       return;
     }
-    if (!this.gameEngine.tilemap.hasVisibility({from: this.hero.subject.pos, to: pos})) {
-      gameBus.publish(logPublished({data: 'You cannot see that far !'}));
+    if (
+      !this.gameEngine.tilemap.hasVisibility({
+        from: this.hero.subject.pos,
+        to: pos,
+      })
+    ) {
+      gameBus.publish(logPublished({ data: "You cannot see that far !" }));
       return;
     }
-    gameBus.publish(playerUseItem({
-      item: this.actionContext.item,
-      target: pos,
-      action: this.actionContext.key
-    }));
+    gameBus.publish(
+      playerUseItem({
+        item: this.actionContext.item,
+        target: pos,
+        action: this.actionContext.key,
+      })
+    );
   }
 
   enterMovable() {
     const pos = this.getTargetPos();
     this.hideTarget();
     let t;
-    if (this.gameEngine.hero.pos.x === pos.x && this.gameEngine.hero.pos.y === pos.y) {
+    if (
+      this.gameEngine.hero.pos.x === pos.x &&
+      this.gameEngine.hero.pos.y === pos.y
+    ) {
       t = this.gameEngine.hero;
     } else {
       t = this.gameEngine.getAttackable(pos);
       if (!t) return;
     }
-    gameBus.publish(playerUseItem({
-      item: this.actionContext.item,
-      target: t,
-      action: this.actionContext.key
-    }));
+    gameBus.publish(
+      playerUseItem({
+        item: this.actionContext.item,
+        target: t,
+        action: this.actionContext.key,
+      })
+    );
   }
 
-  displayInventory(action: 'useItem' | 'pickItem', timeoutMs?: number, displayCategories?: string[]) {
+  displayInventory(
+    action: "useItem" | "pickItem",
+    timeoutMs?: number,
+    displayCategories?: string[]
+  ) {
     let conf;
     if (displayCategories) {
       conf = this.gameEngine.hero.openBag(displayCategories);
@@ -222,12 +270,11 @@ class GameScene extends Phaser.Scene {
 
     this.keyboard.pause();
     setTimeout(() => {
-      this.scene.pause()
-        .launch(SceneName.Inventory, {
-          config: conf,
-          action: action
-        });
-    }, timeoutMs || 0)
+      this.scene.pause().launch(SceneName.Inventory, {
+        config: conf,
+        action: action,
+      });
+    }, timeoutMs || 0);
   }
 
   displaySkill() {
@@ -235,15 +282,17 @@ class GameScene extends Phaser.Scene {
       this.keyboard.pause();
       this.scene.pause().launch(SceneName.SkillTreeScene, {
         data: this.gameEngine.hero.heroSkills.usableSkills(),
-        action: 'useSkill'
+        action: "useSkill",
       });
     }
   }
 
   escape() {
-    gameBus.publish(logPublished({
-      data: 'forget that'
-    }));
+    gameBus.publish(
+      logPublished({
+        data: "forget that",
+      })
+    );
     this.hideRange();
     this.hideTarget();
   }
@@ -259,10 +308,10 @@ class GameScene extends Phaser.Scene {
   }
 
   moveTarget(direction: string) {
-    if (direction === 'ArrowUp') this.target.y -= CellSize;
-    if (direction === 'ArrowDown') this.target.y += CellSize;
-    if (direction === 'ArrowLeft') this.target.x -= CellSize;
-    if (direction === 'ArrowRight') this.target.x += CellSize;
+    if (direction === "ArrowUp") this.target.y -= CellSize;
+    if (direction === "ArrowDown") this.target.y += CellSize;
+    if (direction === "ArrowLeft") this.target.x -= CellSize;
+    if (direction === "ArrowRight") this.target.x += CellSize;
   }
 
   moveTargetToAttack(direction: string) {
@@ -274,136 +323,179 @@ class GameScene extends Phaser.Scene {
   create() {
     this.reInit();
     this.keyboard = new Keyboard();
-    this.input.on('pointerup', this.handleMouseClick.bind(this));
+    this.input.on("pointerup", this.handleMouseClick.bind(this));
     this.initGameEvents();
-    this.input.keyboard.on('keydown-' + 'UP', (e) => this.keyboard.keyPressed(e.key));
-    this.input.keyboard.on('keydown-' + 'DOWN', (e) => this.keyboard.keyPressed(e.key));
-    this.input.keyboard.on('keydown-' + 'LEFT', (e) => this.keyboard.keyPressed(e.key));
-    this.input.keyboard.on('keydown-' + 'RIGHT', (e) => this.keyboard.keyPressed(e.key));
-    this.input.keyboard.on('keyup', (event) => {
+    this.input.keyboard.on("keydown-" + "UP", (e) =>
+      this.keyboard.keyPressed(e.key)
+    );
+    this.input.keyboard.on("keydown-" + "DOWN", (e) =>
+      this.keyboard.keyPressed(e.key)
+    );
+    this.input.keyboard.on("keydown-" + "LEFT", (e) =>
+      this.keyboard.keyPressed(e.key)
+    );
+    this.input.keyboard.on("keydown-" + "RIGHT", (e) =>
+      this.keyboard.keyPressed(e.key)
+    );
+    this.input.keyboard.on("keyup", (event) => {
       switch (event.key) {
-        case 'ArrowUp':
-        case 'ArrowDown':
-        case 'ArrowLeft':
-        case 'ArrowRight':
+        case "ArrowUp":
+        case "ArrowDown":
+        case "ArrowLeft":
+        case "ArrowRight":
           this.keyboard.keyReleased(event.key);
           return this.gameContext.arrow(event.key);
-        case 'i':
+        case "i":
           return this.gameContext.i();
-        case 'f':
+        case "f":
           return this.gameContext.f();
-        case 'Enter':
+        case "Enter":
           return this.gameContext.enter();
-        case 'g':
+        case "g":
           return this.gameContext.g();
-        case 'z':
+        case "z":
           return this.gameContext.z();
-        case 'Escape':
+        case "Escape":
           return this.gameContext.esc();
-        case 'w':
+        case "w":
           return this.gameContext.w();
-        case '>':
+        case ">":
           return this.gameContext.stair();
       }
     });
-    this.events.on('resume', (sys, data: {
-      action: 'useSkill' | 'pickSkill' | 'useItem' | 'pickItem',
-      key: string,
-      item: Item
-    } | undefined) => {
-      this.keyboard.resume();
-      if (data && data.action === 'pickItem') {
-        gameBus.publish(playerUseItem({
-          item: this.actionContext.item,
-          target: this.gameEngine.hero.getItem(data.item),
-          action: this.actionContext.key
-        }));
-      } else if (data && data.action === 'useItem') {
-        const itemNeedsTarget = this.gameEngine.hero.getItem(data.item).getArgumentForKey(data.key);
-        switch (itemNeedsTarget) {
-          case SpellTarget.AoE:
-          case SpellTarget.Location:
-            this.putTargetOnHero();
-            this.actionContext = {
-              ...data,
-              target: itemNeedsTarget
-            };
-            gameBus.publish(logPublished({
-              data: 'where do you want to target ?'
-            }));
-            this.gameContext.transitionTo(Modes.SelectLocation);
-            break;
-          case SpellTarget.Movable:
-            this.putTargetOnHero();
-            this.actionContext = {
-              ...data,
-              target: itemNeedsTarget
-            };
-            gameBus.publish(logPublished({
-              data: 'who do you want to target ?'
-            }));
-            this.gameContext.transitionTo(Modes.SelectMovable);
-            break;
-          case SpellTarget.Item:
-            gameBus.publish(logPublished({
-              data: 'Select an item'
-            }));
-            this.actionContext = {
-              ...data,
-              target: itemNeedsTarget
-            };
-            this.displayInventory('pickItem', 500, ['Weapons', 'Armours', 'Consumables']);
-            break;
-          case SpellTarget.Weapon:
-            this.actionContext = {
-              ...data,
-              target: itemNeedsTarget
-            };
-            this.displayInventory('pickItem', 500, ['Weapons']);
-            gameBus.publish(logPublished({
-              data: 'Select a weapon'
-            }));
-            break;
-          case SpellTarget.Armour:
-            gameBus.publish(logPublished({
-              data: 'Select an item'
-            }));
-            this.actionContext = {
-              ...data,
-              target: itemNeedsTarget
-            };
-            this.displayInventory('pickItem', 500, ['Armours']);
-            break;
-          case SpellTarget.Hero:
-          case SpellTarget.None:
-            gameBus.publish(playerUseItem({
-              item: data.item,
-              target: this.hero.subject as Hero,
-              action: data.key,
-            }));
-            break;
-          default:
-            throw new Error(`Not implemented [${itemNeedsTarget}]`)
+    this.events.on(
+      "resume",
+      (
+        sys,
+        data:
+          | {
+              action: "useSkill" | "pickSkill" | "useItem" | "pickItem";
+              key: string;
+              item: Item;
+            }
+          | undefined
+      ) => {
+        this.keyboard.resume();
+        if (data && data.action === "pickItem") {
+          gameBus.publish(
+            playerUseItem({
+              item: this.actionContext.item,
+              target: this.gameEngine.hero.getItem(data.item),
+              action: this.actionContext.key,
+            })
+          );
+        } else if (data && data.action === "useItem") {
+          const itemNeedsTarget = this.gameEngine.hero
+            .getItem(data.item)
+            .getArgumentForKey(data.key);
+          switch (itemNeedsTarget) {
+            case SpellTarget.AoE:
+            case SpellTarget.Location:
+              this.putTargetOnHero();
+              this.actionContext = {
+                ...data,
+                target: itemNeedsTarget,
+              };
+              gameBus.publish(
+                logPublished({
+                  data: "where do you want to target ?",
+                })
+              );
+              this.gameContext.transitionTo(Modes.SelectLocation);
+              break;
+            case SpellTarget.Movable:
+              this.putTargetOnHero();
+              this.actionContext = {
+                ...data,
+                target: itemNeedsTarget,
+              };
+              gameBus.publish(
+                logPublished({
+                  data: "who do you want to target ?",
+                })
+              );
+              this.gameContext.transitionTo(Modes.SelectMovable);
+              break;
+            case SpellTarget.Item:
+              gameBus.publish(
+                logPublished({
+                  data: "Select an item",
+                })
+              );
+              this.actionContext = {
+                ...data,
+                target: itemNeedsTarget,
+              };
+              this.displayInventory("pickItem", 500, [
+                "Weapons",
+                "Armours",
+                "Consumables",
+              ]);
+              break;
+            case SpellTarget.Weapon:
+              this.actionContext = {
+                ...data,
+                target: itemNeedsTarget,
+              };
+              this.displayInventory("pickItem", 500, ["Weapons"]);
+              gameBus.publish(
+                logPublished({
+                  data: "Select a weapon",
+                })
+              );
+              break;
+            case SpellTarget.Armour:
+              gameBus.publish(
+                logPublished({
+                  data: "Select an item",
+                })
+              );
+              this.actionContext = {
+                ...data,
+                target: itemNeedsTarget,
+              };
+              this.displayInventory("pickItem", 500, ["Armours"]);
+              break;
+            case SpellTarget.Hero:
+            case SpellTarget.None:
+              gameBus.publish(
+                playerUseItem({
+                  item: data.item,
+                  target: this.hero.subject as Hero,
+                  action: data.key,
+                })
+              );
+              break;
+            default:
+              throw new Error(`Not implemented [${itemNeedsTarget}]`);
+          }
+        } else if (data && data.action === "pickSkill") {
+          gameBus.publish(
+            playerChoseSkill({
+              name: data.item.name,
+            })
+          );
+        } else if (data && data.action === "useSkill") {
+          gameBus.publish(
+            playerUseSkill({
+              name: data.item.name as SkillNames,
+            })
+          );
         }
-      } else if (data && data.action === 'pickSkill') {
-        gameBus.publish(playerChoseSkill({
-          name: data.item.name
-        }));
-      } else if (data && data.action === 'useSkill') {
-        gameBus.publish(playerUseSkill({
-          name: data.item.name as SkillNames
-        }));
       }
-    });
+    );
   }
 
   initGameEvents() {
-    gameBus.subscribe(sightUpdated, event => {
+    gameBus.subscribe(sightUpdated, (event) => {
       this.tilemapVisibility.setFogOfWar2(this.gameEngine.tilemap.tiles);
-      this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
+      this.tilemapVisibility.setFogOfWar1(
+        this.gameEngine.tilemap.tiles,
+        this.gameMonsters
+      );
     });
-    gameBus.subscribe(monsterMoved, event => {
-      const {monster} = event.payload;
+    gameBus.subscribe(monsterMoved, (event) => {
+      const { monster } = event.payload;
       const m = this.gameMonsters[monster.id];
 
       this.hero.updateHp(true);
@@ -412,86 +504,99 @@ class GameScene extends Phaser.Scene {
       // TODO REFACTO
       m.move();
 
-      this.tilemapVisibility.setFogOfWar1(this.gameEngine.tilemap.tiles, this.gameMonsters);
+      this.tilemapVisibility.setFogOfWar1(
+        this.gameEngine.tilemap.tiles,
+        this.gameMonsters
+      );
     });
-    gameBus.subscribe(monsterDead, event => {
-      const {monster} = event.payload;
+    gameBus.subscribe(monsterDead, (event) => {
+      const { monster } = event.payload;
       const m = this.gameMonsters[monster.id];
       m.updateHp();
     });
-    gameBus.subscribe(monsterTookDamage, event => {
+    gameBus.subscribe(monsterTookDamage, (event) => {
       const monster = event.payload.monster;
       const m = this.gameMonsters[monster.id];
       new UIDamages(this, monster, event.payload.amount).showDamage();
       m.updateHp();
     });
-    gameBus.subscribe(playerTookDammage, event => {
-      this.damageQueue.add(new UIDamages(this, this.hero.subject as Hero, event.payload.amount));
+    gameBus.subscribe(playerTookDammage, (event) => {
+      this.damageQueue.add(
+        new UIDamages(this, this.hero.subject as Hero, event.payload.amount)
+      );
     });
-    gameBus.subscribe(playerMoved, event => {
+    gameBus.subscribe(playerMoved, (event) => {
       this.hero.move();
     });
-    gameBus.subscribe(doorOpened, event => {
-      const {pos} = event.payload;
+    gameBus.subscribe(doorOpened, (event) => {
+      const { pos } = event.payload;
       this.layer.putTileAt(Terrain.DoorOpened, pos.x, pos.y);
     });
-    gameBus.subscribe(itemPickedUp, event => {
-      const {item} = event.payload;
+    gameBus.subscribe(itemPickedUp, (event) => {
+      const { item } = event.payload;
       if (this.gameItems[item.id] == null) {
         console.error(item);
-        console.error('is not pickable');
+        console.error("is not pickable");
         return;
       }
       this.gameItems[item.id].pickedUp();
     });
-    gameBus.subscribe(playerHealed, event => {
+    gameBus.subscribe(playerHealed, (event) => {
       this.hero.updateHp();
     });
-    gameBus.subscribe(itemDropped, event => {
-      const {item} = event.payload;
+    gameBus.subscribe(itemDropped, (event) => {
+      const { item } = event.payload;
       this.gameItems[item.id] = new UIItem(this, item, item.skin);
     });
-    gameBus.subscribe(itemRemoved, event => {
-      const {item} = event.payload;
+    gameBus.subscribe(itemRemoved, (event) => {
+      const { item } = event.payload;
       const gameItem = this.gameItems[item.id];
       gameItem.destroy();
     });
     gameBus.subscribe(rogueEvent, () => {
-      this.hero.updateHeroSprite('@');
+      this.hero.updateHeroSprite("@");
     });
     gameBus.subscribe(monsterSpawned, (event) => {
       const mob = event.payload.monster;
-      const monster = new UIEntity(this, mob, mob.name)
+      const monster = new UIEntity(this, mob, mob.name);
       this.gameMonsters[mob.id] = monster;
     });
-    gameBus.subscribe(xpHasChanged, event => {
-      const {status} = event.payload;
-      if (status === 'level_up') {
+    gameBus.subscribe(xpHasChanged, (event) => {
+      const { status } = event.payload;
+      if (status === "level_up") {
         this.keyboard.pause();
         this.scene.pause().launch(SceneName.SkillTreeScene, {
           data: this.gameEngine.hero.heroSkills.AllSkills,
-          action: 'pickSkill'
+          action: "pickSkill",
         });
       }
     });
-    gameBus.subscribe(effectSet, event => {
+    gameBus.subscribe(effectSet, (event) => {
       switch (event.payload.animation) {
-        case 'static':
-          return this.gameEffects[event.payload.id] = new UIEffect(this, {
-            name: event.payload.type,
-            pos: event.payload.pos
-          }, event.payload.type);
-        case 'throw':
-          const p = new UIEffect(this, {
-            name: event.payload.type,
-            pos: event.payload.from
-          }, event.payload.type);
+        case "static":
+          return (this.gameEffects[event.payload.id] = new UIEffect(
+            this,
+            {
+              name: event.payload.type,
+              pos: event.payload.pos,
+            },
+            event.payload.type
+          ));
+        case "throw":
+          const p = new UIEffect(
+            this,
+            {
+              name: event.payload.type,
+              pos: event.payload.from,
+            },
+            event.payload.type
+          );
           p.throwProjectile(event.payload.to);
           break;
       }
     });
-    gameBus.subscribe(effectUnset, event => {
-      const {id} = event.payload;
+    gameBus.subscribe(effectUnset, (event) => {
+      const { id } = event.payload;
       if (!this.gameEffects[id]) {
         console.error(`${id} is not defined`);
         return;
@@ -499,21 +604,19 @@ class GameScene extends Phaser.Scene {
       this.gameEffects[id].destroy();
       delete this.gameEffects[id];
     });
-    gameBus.subscribe(gameOver, event => {
+    gameBus.subscribe(gameOver, (event) => {
       this.scene.pause().launch(SceneName.GameOver);
     });
-    gameBus.subscribe(gameFinished, event => {
+    gameBus.subscribe(gameFinished, (event) => {
       this.scene.pause().launch(SceneName.GameFinished);
     });
-    gameBus.subscribe(itemEquiped, event => {
-      const {
-        armour
-      } = event.payload;
+    gameBus.subscribe(itemEquiped, (event) => {
+      const { armour } = event.payload;
       if (armour) {
         this.hero.updateHeroSprite(armour.skin);
       }
     });
-    gameBus.subscribe(nextLevelCreated, event => {
+    gameBus.subscribe(nextLevelCreated, (event) => {
       this.reInit();
     });
   }
@@ -521,7 +624,7 @@ class GameScene extends Phaser.Scene {
   placeMonsters() {
     const mobToPlace = this.gameEngine.monsters.monstersArray();
     for (const mob of mobToPlace) {
-      const monster = new UIEntity(this, mob, mob.name)
+      const monster = new UIEntity(this, mob, mob.name);
       this.gameMonsters[mob.id] = monster;
     }
   }
@@ -529,7 +632,6 @@ class GameScene extends Phaser.Scene {
   placeItems() {
     const itemsToPlace: Item[] = this.gameEngine.items.itemOnGround();
     for (const i of itemsToPlace) {
-
       if (!this.gameEngine.tilemap.getAt(i.pos).isWalkable()) {
         const next = around(i.pos, 1);
         for (const n of next) {
@@ -547,40 +649,42 @@ class GameScene extends Phaser.Scene {
   }
 
   moveTo(pos) {
-    let newPos: Coordinate = {x: -1, y: -1};
+    let newPos: Coordinate = { x: -1, y: -1 };
     let heroPos = this.gameEngine.hero.pos;
     switch (pos) {
-      case 'left':
-        newPos = {x: heroPos.x - 1, y: heroPos.y}
+      case "left":
+        newPos = { x: heroPos.x - 1, y: heroPos.y };
         break;
-      case 'right':
-        newPos = {x: heroPos.x + 1, y: heroPos.y}
+      case "right":
+        newPos = { x: heroPos.x + 1, y: heroPos.y };
         break;
-      case 'down':
-        newPos = {x: heroPos.x, y: heroPos.y + 1}
+      case "down":
+        newPos = { x: heroPos.x, y: heroPos.y + 1 };
         break;
-      case 'up':
-        newPos = {x: heroPos.x, y: heroPos.y - 1}
+      case "up":
+        newPos = { x: heroPos.x, y: heroPos.y - 1 };
         break;
-      case 'upleft':
-        newPos = {x: heroPos.x - 1, y: heroPos.y - 1}
+      case "upleft":
+        newPos = { x: heroPos.x - 1, y: heroPos.y - 1 };
         break;
-      case 'upright':
-        newPos = {x: heroPos.x + 1, y: heroPos.y - 1}
+      case "upright":
+        newPos = { x: heroPos.x + 1, y: heroPos.y - 1 };
         break;
-      case 'downright':
-        newPos = {x: heroPos.x + 1, y: heroPos.y + 1}
+      case "downright":
+        newPos = { x: heroPos.x + 1, y: heroPos.y + 1 };
         break;
-      case 'downleft':
-        newPos = {x: heroPos.x - 1, y: heroPos.y + 1}
+      case "downleft":
+        newPos = { x: heroPos.x - 1, y: heroPos.y + 1 };
         break;
     }
     this.moveAllowed = false;
     this.delta = 0;
     this.hideTarget();
-    gameBus.publish(playerActionMove({
-      to: newPos
-    }));
+    gameBus.publish(
+      playerActionMove({
+        to: newPos,
+      })
+    );
   }
 
   update(time: number, delta: number) {
@@ -597,14 +701,14 @@ class GameScene extends Phaser.Scene {
       var isDownDown = this.keyboard.pressed.down;
       var isLeftDown = this.keyboard.pressed.left;
       var isRightDown = this.keyboard.pressed.right;
-      if (isUpDown && isLeftDown) return this.moveTo('upleft');
-      if (isUpDown && isRightDown) return this.moveTo('upright');
-      if (isLeftDown && isDownDown) return this.moveTo('downleft');
-      if (isRightDown && isDownDown) return this.moveTo('downright');
-      if (isUpDown) return this.moveTo('up');
-      if (isDownDown) return this.moveTo('down');
-      if (isLeftDown) return this.moveTo('left');
-      if (isRightDown) return this.moveTo('right');
+      if (isUpDown && isLeftDown) return this.moveTo("upleft");
+      if (isUpDown && isRightDown) return this.moveTo("upright");
+      if (isLeftDown && isDownDown) return this.moveTo("downleft");
+      if (isRightDown && isDownDown) return this.moveTo("downright");
+      if (isUpDown) return this.moveTo("up");
+      if (isDownDown) return this.moveTo("down");
+      if (isLeftDown) return this.moveTo("left");
+      if (isRightDown) return this.moveTo("right");
     }
   }
 
@@ -617,21 +721,22 @@ class GameScene extends Phaser.Scene {
   showRange(hero: Hero, pos: Coordinate) {
     this.range = line({
       from: hero.pos,
-      to: pos
-    })
-      .filter(p =>
-        Math.max(Math.abs(hero.pos.x - p.x), Math.abs(hero.pos.y - p.y)) <= hero.weapon.maxRange
-      );
+      to: pos,
+    }).filter(
+      (p) =>
+        Math.max(Math.abs(hero.pos.x - p.x), Math.abs(hero.pos.y - p.y)) <=
+        hero.weapon.maxRange
+    );
     this.range.shift();
     this.tilemapVisibility.showRange(this.range);
   }
 
   getTargetPosPix() {
-    return {x: this.target.x, y: this.target.y};
+    return { x: this.target.x, y: this.target.y };
   }
 
   getTargetPos() {
-    return {x: this.target.x / CellSize, y: this.target.y / CellSize};
+    return { x: this.target.x / CellSize, y: this.target.y / CellSize };
   }
 
   setTargetAtPos(pos: Coordinate) {
@@ -654,13 +759,15 @@ class GameScene extends Phaser.Scene {
   }
 
   handleMouseClick() {
-    const worldPoint: any = this.input.activePointer.positionToCamera(this.cameras.main);
+    const worldPoint: any = this.input.activePointer.positionToCamera(
+      this.cameras.main
+    );
     const tile = this.layer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
     this.target.x = tile.x * CellSize;
     this.target.y = tile.y * CellSize;
     const mob = this.gameEngine.getAttackable({
       x: tile.x,
-      y: tile.y
+      y: tile.y,
     });
     if (mob) {
       console.log(mob);

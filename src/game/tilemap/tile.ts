@@ -1,5 +1,5 @@
 import { Entity } from "../entitybase/entity";
-import { Coordinate } from "../utils/coordinate";
+import { Coordinate } from "../../utils/coordinate";
 import { TileTrigger, TileTriggers } from "./tile-trigger";
 
 export enum TileVisibility {

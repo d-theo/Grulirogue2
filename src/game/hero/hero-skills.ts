@@ -1,4 +1,4 @@
-import {Hero} from "./hero";
+import { Hero } from "./hero";
 import {
   TankDesc,
   TirelessDesc,
@@ -10,11 +10,15 @@ import {
   HunterDesc,
   RogueDesc,
 } from "./skill-desc";
-import {MessageResponse, MessageResponseStatus} from "../utils/types";
-import {Buff2} from "../entitybase/buff";
-import {Conditions} from "../../content/conditions/conditions";
-import {SpellMaker, SpellNames} from "../../content/spells/spell-factory";
-import {PoisonTrapSpell, RootTrapSpell, TrapSpell} from "../../content/spells/spells";
+import { MessageResponse, MessageResponseStatus } from "../../utils/types";
+import { Buff2 } from "../entitybase/buff";
+import { Conditions } from "../../content/conditions/conditions";
+import { SpellMaker, SpellNames } from "../../content/spells/spell-factory";
+import {
+  PoisonTrapSpell,
+  RootTrapSpell,
+  TrapSpell,
+} from "../../content/spells/spells";
 
 export enum SkillNames {
   Rogue = "rogue",
@@ -25,12 +29,11 @@ export enum SkillNames {
 }
 
 export class HeroSkills {
-  constructor(private hero: Hero) {
-  }
+  constructor(private hero: Hero) {}
 
   AllSkills = [
-    {name: "tireless", description: TirelessDesc, level: 0, maxLevel: 3},
-    {name: "tank", description: TankDesc, level: 0, maxLevel: 3},
+    { name: "tireless", description: TirelessDesc, level: 0, maxLevel: 3 },
+    { name: "tank", description: TankDesc, level: 0, maxLevel: 3 },
     {
       name: "alchemist",
       description:
@@ -38,7 +41,7 @@ export class HeroSkills {
       level: 0,
       maxLevel: 3,
     },
-    {name: "monk", description: MonkDesc, level: 0, maxLevel: 5},
+    { name: "monk", description: MonkDesc, level: 0, maxLevel: 5 },
     {
       name: "explorer",
       description: "You find items more often in the dongeon",
@@ -51,7 +54,7 @@ export class HeroSkills {
       level: 0,
       maxLevel: 1,
     },
-    {name: "snake", description: SnakeDesc, level: 0, maxLevel: 3},
+    { name: "snake", description: SnakeDesc, level: 0, maxLevel: 3 },
     {
       name: "coward",
       usable: true,
@@ -59,7 +62,7 @@ export class HeroSkills {
       level: 0,
       maxLevel: 3,
     },
-    {name: "warrior", description: WarriorDesc, level: 0, maxLevel: 3},
+    { name: "warrior", description: WarriorDesc, level: 0, maxLevel: 3 },
     {
       name: "sneaky",
       usable: true,
@@ -101,7 +104,7 @@ export class HeroSkills {
 
   usableSkills() {
     return this.AllSkills.filter((s) => s.level > 0 && s.usable).map((s) => {
-      return {...s, cooldown: this.heroCooldowns[s.name as SkillNames]};
+      return { ...s, cooldown: this.heroCooldowns[s.name as SkillNames] };
     });
   }
 

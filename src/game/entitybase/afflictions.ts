@@ -1,5 +1,5 @@
-import {gameBus} from "../../eventBus/game-bus";
-import {enchantChanged} from "../../events";
+import { gameBus } from "../../infra/events/game-bus";
+import { enchantChanged } from "../events";
 
 // Afflictions class to manage various status effects on entities
 export class Afflictions {
@@ -22,8 +22,7 @@ export class Afflictions {
   private floral = 0;
   private slow = 0;
 
-  constructor(private readonly notif: boolean = false) {
-  }
+  constructor(private readonly notif: boolean = false) {}
 
   setFloral(x: number) {
     this.floral += x;
@@ -238,6 +237,6 @@ export class Afflictions {
 
   update() {
     if (this.notif === false) return;
-    gameBus.publish(enchantChanged({report: this.report().join("\n")}));
+    gameBus.publish(enchantChanged({ report: this.report().join("\n") }));
   }
 }

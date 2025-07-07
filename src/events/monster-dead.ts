@@ -1,6 +1,6 @@
 import { createEventDefinition } from "ts-bus";
-import { Monster } from "../game/monsters/monster";
+import { Monster } from "../game/entitybase/monsters/monster";
 
 export const monsterDead = createEventDefinition<{
-    monster: Monster
+  monster: Monster;
 }>()("monsterDead");

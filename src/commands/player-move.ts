@@ -1,6 +1,6 @@
 import { createEventDefinition, EventBus } from "ts-bus";
-import { Coordinate } from "../game/utils/coordinate";
+import { Coordinate } from "../utils/coordinate";
 
 export const playerActionMove = createEventDefinition<{
-    to: Coordinate
+  to: Coordinate;
 }>()("playerActionMove");

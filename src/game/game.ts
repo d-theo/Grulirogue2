@@ -1,20 +1,24 @@
-import {TileMap} from "./tilemap/tilemap";
-import {Hero} from "./hero/hero";
-import {MonsterCollection} from "./monsters/monsterCollection";
-import {Coordinate} from "./utils/coordinate";
-import {AI, AIBehavior} from "./monsters/ai";
-import {Log} from "./log/log";
-import {ItemCollection} from "./items/item-collection";
-import {Monster} from "./monsters/monster";
-import {makeThings} from "./generation/additionnal-things";
-import {monstersSpawn} from "./generation/monster-spawn";
-import {itemSpawn} from "./generation/item-spawn";
-import {SpecialPlaces} from "./places/special-places";
-import {RogueEventLevel} from "../eventBus/event-rogue";
-import {randomIn} from "./utils/rectangle";
-import {getUniqLoot} from "./loot/loot-uniq";
+import { TileMap } from "./tilemap/tilemap";
+import { Hero } from "./hero/hero";
+import { Coordinate } from "../utils/coordinate";
+import { AIBehaviorsRegistry, Behavior } from "./ia/ai";
+import { Log } from "./log/log";
+import { makeThings } from "./generation/additionnal-things";
+import { monstersSpawn } from "./generation/monster-spawn";
+import { itemSpawn } from "./generation/item-spawn";
+import { SpecialPlaces } from "./places/special-places";
+import { RogueEventLevel } from "./generation/event-rogue";
+import { randomIn } from "../utils/rectangle";
 import * as _ from "lodash";
-import {gameBus} from "../eventBus/game-bus";
+import { gameBus } from "../infra/events/game-bus";
+import { EventDispatcher } from "./event-handlers/dispatcher";
+import { CommandDispatcher } from "../infra/events/dispatcher";
+import { ThingToPlace } from "../world/generation/map_tiling_utils";
+import { SpellMaker } from "../content/spells/spell-factory";
+import { getUniqLoot } from "../content/loot/loot-uniq";
+import { ItemCollection } from "./entitybase/items/item-collection";
+import { Monster } from "./entitybase/monsters/monster";
+import { MonsterCollection } from "./entitybase/monsters/monsterCollection";
 import {
   gameFinished,
   logPublished,
@@ -22,19 +26,15 @@ import {
   rogueEvent,
   endRogueEvent,
   timePassed,
-} from "../events";
-import {EventDispatcher} from "./event-handlers/dispatcher";
-import {CommandDispatcher} from "./command-handlers/dispatcher";
-import {sightHasChanged} from "../events/sight-has-changed";
-import {UseCustomBuild} from "./loot/custom-build";
-import {ThingToPlace} from "../world/generation/map_tiling_utils";
-import {SpellMaker} from "../content/spells/spell-factory";
+} from "./events";
+import { MonsterFactory } from "./entitybase/monsters/monster-factory";
 
 export class Game {
   static Engine: Game;
   tilemap: TileMap;
   hero: Hero;
   monsters: MonsterCollection;
+  monsterFactory: MonsterFactory;
   items: ItemCollection;
   loopNb: number;
   currentTurn: number;
@@ -85,15 +85,19 @@ export class Game {
   constructor() {
     Log.init();
     // UseCustomBuild(this.Loots); // tests
+    this.monsterFactory = new MonsterFactory(AIBehaviorsRegistry(this));
     this.tilemap = new TileMap();
     this.hero = new Hero();
     this.loopNb = 0;
     this.currentTurn = 0;
     this.monsters = new MonsterCollection();
     this.items = new ItemCollection();
-    this.places = new SpecialPlaces(this.items, this.monsters);
-    const behaviors = AI(this);
-    AIBehavior.init(behaviors);
+    this.places = new SpecialPlaces(
+      this.items,
+      this.monsters,
+      this.monsterFactory
+    );
+
     SpellMaker.set(this);
     this.commandDispatcher = new CommandDispatcher(this);
     this.eventDispatcher = new EventDispatcher(this);
@@ -124,18 +128,22 @@ export class Game {
     let additionalThingsToPlace: ThingToPlace[] = [];
     additionalThingsToPlace = this.tilemap.init(this.level);
     this.startingPosition();
-    gameBus.publish(sightHasChanged({}));
 
     const friendlies = this.monsters
       .monstersArray()
       .filter((m) => m.getFriendly());
     friendlies.forEach(
-      (f) => (f.pos = {x: this.hero.pos.x, y: this.hero.pos.y + 1})
+      (f) => (f.pos = { x: this.hero.pos.x, y: this.hero.pos.y + 1 })
     );
 
     this.monsters.setMonsters(
       friendlies.concat(
-        monstersSpawn(this.tilemap.graph, this.level, this.Danger[this.level])
+        monstersSpawn(
+          this.monsterFactory,
+          this.tilemap.graph,
+          this.level,
+          this.Danger[this.level]
+        )
       )
     );
     this.items.setItems(
@@ -148,6 +156,7 @@ export class Game {
     this.mayAddUniqItem();
     makeThings(
       additionalThingsToPlace,
+      this.monsterFactory,
       this.monsters,
       this.items,
       this.tilemap,
@@ -162,7 +171,7 @@ export class Game {
       );
     }
     if (this.level > 1) {
-      gameBus.publish(nextLevelCreated({level: this.level}));
+      gameBus.publish(nextLevelCreated({ level: this.level }));
     }
   }
 
@@ -241,7 +250,7 @@ export class Game {
       );
       if (
         dist <= this.hero.weapon.maxRange &&
-        this.tilemap.hasVisibility({from: posA, to: posB})
+        this.tilemap.hasVisibility({ from: posA, to: posB })
       ) {
         nearest.push(mob);
       }

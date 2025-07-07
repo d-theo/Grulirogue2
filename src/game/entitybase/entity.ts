@@ -1,11 +1,11 @@
-import {Coordinate} from "../utils/coordinate";
-import {Health} from "./health";
-import {Armour} from "../items/armour";
-import {Weapon} from "../items/weapon";
-import {Buffs} from "./buffable";
-import {Afflictions} from "./afflictions";
-import {DamageResolution} from "../fight/damages";
-import {Buff2} from "./buff";
+import { Coordinate } from "../../utils/coordinate";
+import { Health } from "./health";
+import { Buffs } from "./buffable";
+import { Afflictions } from "./afflictions";
+import { DamageResolution } from "../fight/damages";
+import { Buff2 } from "./buff";
+import { Armour } from "./items/armour";
+import { Weapon } from "./items/weapon";
 
 export abstract class Entity {
   health: Health;

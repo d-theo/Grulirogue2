@@ -1,9 +1,9 @@
-import {Coordinate} from "../utils/coordinate";
-import {ItemVisitor} from "../items/item-visitor";
-import {gameBus} from "../../eventBus/game-bus";
-import {Hero} from "../hero/hero";
-import {SpellTarget} from "../effects/spells";
-import {itemDropped} from "../../events";
+import { Coordinate } from "../../utils/coordinate";
+import { gameBus } from "../../infra/events/game-bus";
+import { Hero } from "../hero/hero";
+import { SpellTarget } from "../effects/spells";
+import { itemDropped } from "../events";
+import { ItemVisitor } from "./items/item-visitor";
 
 let short = require("short-uuid");
 

@@ -1,11 +1,11 @@
-import { Coordinate } from "../../utils/coordinate";
-import { gameBus } from "../../infra/events/game-bus";
-import { Hero } from "../hero/hero";
-import { SpellTarget } from "../effects/spells";
-import { itemDropped } from "../events";
-import { ItemVisitor } from "./items/item-visitor";
+import { Coordinate } from '../../utils/coordinate';
+import { gameBus } from '../../infra/events/game-bus';
+import { Hero } from '../hero/hero';
+import { SpellTarget } from '../effects/spells';
+import { itemDropped } from '../events';
+import { ItemVisitor } from './items/item-visitor';
 
-let short = require("short-uuid");
+let short = require('short-uuid');
 
 export interface ItemArgument {
   getArgumentForKey(key: string): SpellTarget;
@@ -22,22 +22,16 @@ export abstract class Item implements ItemArgument {
   isConsumable = true;
   identified = true;
 
-  constructor(arg: {
-    x?: number;
-    y?: number;
-    name?: string;
-    description?: string;
-    skin?: string;
-  }) {
+  constructor(arg: { x?: number; y?: number; name?: string; description?: string; skin?: string }) {
     this.pos = {
       x: arg.x || 0,
       y: arg.y || 0,
     };
-    this._description = arg.description || "";
-    this._name = arg.name || "";
-    this.skin = arg.skin || "hero";
-    this.keyMapping["d"] = this.drop.bind(this);
-    this.keyDescription["d"] = "(d)rop";
+    this._description = arg.description || '';
+    this._name = arg.name || '';
+    this.skin = arg.skin || 'hero';
+    this.keyMapping['d'] = this.drop.bind(this);
+    this.keyDescription['d'] = '(d)rop';
   }
 
   abstract use(args: any): any;

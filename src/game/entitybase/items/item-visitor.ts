@@ -1,47 +1,47 @@
-import { Scroll } from "./scroll";
-import { Potion } from "./potion";
-import { Weapon } from "./weapon";
-import { Armour } from "./armour";
-import { Item } from "../item";
+import { Scroll } from './scroll';
+import { Potion } from './potion';
+import { Weapon } from './weapon';
+import { Armour } from './armour';
+import { Item } from '../item';
 
 export class ItemVisitor {
   visitWand(wand: Item) {
     return {
-      kind: "Reusable",
+      kind: 'Reusable',
       item: wand,
       count: 1,
     };
   }
   visitMisc(misc: Item) {
     return {
-      kind: "Consumables",
+      kind: 'Consumables',
       item: misc,
       count: 1,
     };
   }
   visitPotion(potion: Potion) {
     return {
-      kind: "Consumables",
+      kind: 'Consumables',
       item: potion,
       count: 1,
     };
   }
   visitScroll(scroll: Scroll) {
     return {
-      kind: "Consumables",
+      kind: 'Consumables',
       item: scroll,
       count: 1,
     };
   }
   visitWeapon(weapon: Weapon) {
     return {
-      kind: "Weapons",
+      kind: 'Weapons',
       item: weapon,
     };
   }
   visitArmor(armor: Armour) {
     return {
-      kind: "Armours",
+      kind: 'Armours',
       item: armor,
     };
   }

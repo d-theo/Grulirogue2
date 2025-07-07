@@ -1,6 +1,6 @@
-import { Tile, TileVisibility } from "../game/tilemap/tile";
-import { Coordinate } from "../utils/coordinate";
-import { UIEntity } from "./entities";
+import { Tile, TileVisibility } from '../game/tilemap/tile';
+import { Coordinate } from '../utils/coordinate';
+import { UIEntity } from './entities';
 
 export class TilemapVisibility {
   constructor(private shadowLayer) {}

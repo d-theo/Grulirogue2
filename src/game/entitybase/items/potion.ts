@@ -1,23 +1,12 @@
-import * as _ from "lodash";
-import { ItemVisitor } from "./item-visitor";
-import { logPublished } from "../../events";
-import { gameBus } from "../../../infra/events/game-bus";
-import { SpellTarget } from "../../effects/spells";
-import { Hero } from "../../hero/hero";
-import { Item, ItemArgument } from "../item";
+import * as _ from 'lodash';
+import { ItemVisitor } from './item-visitor';
+import { logPublished } from '../../events';
+import { gameBus } from '../../../infra/events/game-bus';
+import { SpellTarget } from '../../effects/spells';
+import { Hero } from '../../hero/hero';
+import { Item, ItemArgument } from '../item';
 
-export const PotionColors = [
-  "blue",
-  "dark",
-  "red",
-  "brown",
-  "pink",
-  "orange",
-  "yellow",
-  "green",
-  "purple",
-  "white",
-];
+export const PotionColors = ['blue', 'dark', 'red', 'brown', 'pink', 'orange', 'yellow', 'green', 'purple', 'white'];
 
 export class Potion extends Item implements ItemArgument {
   effect: (t: Hero) => {};
@@ -32,8 +21,8 @@ export class Potion extends Item implements ItemArgument {
       Potion.mystery[this._name] = this.randomColor();
     }
     this.skin = Potion.mystery[this._name];
-    this.keyMapping["q"] = this.use.bind(this);
-    this.keyDescription["q"] = "(q)uaff";
+    this.keyMapping['q'] = this.use.bind(this);
+    this.keyDescription['q'] = '(q)uaff';
     //this.keyDescription['t'] = '(t)hrow';
   }
 
@@ -54,11 +43,11 @@ export class Potion extends Item implements ItemArgument {
   }
 
   getColor() {
-    return this.skin.split("-")[1];
+    return this.skin.split('-')[1];
   }
 
   randomColor() {
-    return "potion-" + Potion.colors.pop();
+    return 'potion-' + Potion.colors.pop();
   }
 
   use(target: any) {
@@ -69,9 +58,7 @@ export class Potion extends Item implements ItemArgument {
     } FIXME */
     if (!Potion.identified[this.getColor()]) {
       Potion.identified[this.getColor()] = true;
-      gameBus.publish(
-        logPublished({ data: `It was a ${this._name}`, level: "neutral" })
-      );
+      gameBus.publish(logPublished({ data: `It was a ${this._name}`, level: 'neutral' }));
     }
     this.effect(target);
   }
@@ -87,9 +74,9 @@ export class Potion extends Item implements ItemArgument {
 
   getArgumentForKey(key: string) {
     switch (key) {
-      case "q":
+      case 'q':
         return SpellTarget.Hero;
-      case "d":
+      case 'd':
       default:
         return SpellTarget.None;
     }

@@ -1,12 +1,12 @@
-import { gameBus } from "../../infra/events/game-bus";
-import * as _ from "lodash";
-import { randomIn } from "../../utils/rectangle";
-import { MapGraph } from "../../world/generation/map_definition";
-import { createRealityTome } from "../../content/loot/loot-mics";
-import { Wands } from "../../content/loot/loot-wands";
-import { Bestiaire } from "../../content/monsters/bestiaire";
-import { XTable, getInTable } from "../../content/monsters/mob-table";
-import { Wand } from "../entitybase/items/wands";
+import { gameBus } from '../../infra/events/game-bus';
+import * as _ from 'lodash';
+import { randomIn } from '../../utils/rectangle';
+import { MapGraph } from '../../world/generation/map_definition';
+import { createRealityTome } from '../../content/loot/loot-mics';
+import { Wands } from '../../content/loot/loot-wands';
+import { Bestiaire } from '../../content/monsters/bestiaire';
+import { XTable, getInTable } from '../../content/monsters/mob-table';
+import { Wand } from '../entitybase/items/wands';
 
 export const RogueEventLevel = 99;
 
@@ -20,16 +20,11 @@ export const rogueBestiaire: XTable = [
   { chance: 25, type: Bestiaire.Rogue.Orc },
   { chance: 25, type: Bestiaire.Rogue.SkeletonWarrior },
 ];
-export const LootWand = [
-  Wands.Floral,
-  Wands.Fire,
-  Wands.Identification,
-  Wands.Water,
-];
+export const LootWand = [Wands.Floral, Wands.Fire, Wands.Identification, Wands.Water];
 
 export function spawnRogueEventItem(graph: MapGraph) {
   const exitRoom = graph.rooms.find((r) => r.isExit);
-  if (!exitRoom) throw new Error("not exit");
+  if (!exitRoom) throw new Error('not exit');
   const p1 = randomIn(exitRoom.rect);
   const p2 = randomIn(exitRoom.rect);
   const wand = randomWand();

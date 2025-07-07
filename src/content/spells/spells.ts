@@ -1,22 +1,22 @@
-import { Spell, SpellTarget } from "../../game/effects/spells";
-import { Hero } from "../../game/hero/hero";
-import { DamageResolution } from "../../game/fight/damages";
-import { gameBus } from "../../infra/events/game-bus";
+import { Spell, SpellTarget } from '../../game/effects/spells';
+import { Hero } from '../../game/hero/hero';
+import { DamageResolution } from '../../game/fight/damages';
+import { gameBus } from '../../infra/events/game-bus';
 
-import { World } from "../../game/effects/world-ctx";
-import { Buff2 } from "../../game/entitybase/buff";
-import { Conditions } from "../conditions/conditions";
-import { around, Coordinate } from "../../utils/coordinate";
-import { TriggerType } from "../../game/tilemap/tile-trigger";
-import { GameRange } from "../../utils/range";
-import { Entity } from "../../game/entitybase/entity";
-import { MapEffect } from "../../world/map/map-effect";
-import { BloodFountain } from "../../game/places/places";
-import { Item } from "../../game/entitybase/item";
-import { Tile, TileVisibility } from "../../game/tilemap/tile";
-import { Armour } from "../../game/entitybase/items/armour";
-import { Weapon } from "../../game/entitybase/items/weapon";
-import { Monster } from "../../game/entitybase/monsters/monster";
+import { World } from '../../game/effects/world-ctx';
+import { Buff2 } from '../../game/entitybase/buff';
+import { Conditions } from '../conditions/conditions';
+import { around, Coordinate } from '../../utils/coordinate';
+import { TriggerType } from '../../game/tilemap/tile-trigger';
+import { GameRange } from '../../utils/range';
+import { Entity } from '../../game/entitybase/entity';
+import { MapEffect } from '../../world/map/map-effect';
+import { BloodFountain } from '../../game/places/places';
+import { Item } from '../../game/entitybase/item';
+import { Tile, TileVisibility } from '../../game/tilemap/tile';
+import { Armour } from '../../game/entitybase/items/armour';
+import { Weapon } from '../../game/entitybase/items/weapon';
+import { Monster } from '../../game/entitybase/monsters/monster';
 import {
   effectSet,
   logPublished,
@@ -27,10 +27,10 @@ import {
   heroGainedXp,
   rogueEvent,
   endRogueEvent,
-} from "../../game/events";
-import { Bestiaire } from "../monsters/bestiaire";
+} from '../../game/events';
+import { Bestiaire } from '../monsters/bestiaire';
 
-const short = require("short-uuid");
+const short = require('short-uuid');
 
 export class TrapSpell implements Spell {
   type = SpellTarget.Location;
@@ -51,7 +51,7 @@ export class TrapSpell implements Spell {
     if (ok) {
       gameBus.publish(
         effectSet({
-          animation: "static",
+          animation: 'static',
           id: trigger.id,
           type: MapEffect.Spike,
           pos,
@@ -78,13 +78,11 @@ export class RootTrapSpell implements Spell {
       },
     };
 
-    const ok = this.world
-      .getTilemap()
-      .addTriggerAt(this.world.getHero().pos, trigger);
+    const ok = this.world.getTilemap().addTriggerAt(this.world.getHero().pos, trigger);
     if (ok) {
       gameBus.publish(
         effectSet({
-          animation: "static",
+          animation: 'static',
           id: trigger.id,
           type: MapEffect.Root,
           pos: this.world.getHero().pos,
@@ -111,13 +109,11 @@ export class PoisonTrapSpell implements Spell {
         target.addBuff(Buff2.create(Conditions.poison).setTurns(3));
       },
     };
-    const ok = this.world
-      .getTilemap()
-      .addTriggerAt(this.world.getHero().pos, trigger);
+    const ok = this.world.getTilemap().addTriggerAt(this.world.getHero().pos, trigger);
     if (ok) {
       gameBus.publish(
         effectSet({
-          animation: "static",
+          animation: 'static',
           id: trigger.id,
           type: MapEffect.PoisonTrap,
           pos: this.world.getHero().pos,
@@ -148,23 +144,21 @@ export class WildFireSpell implements Spell {
             Buff2.create(() =>
               Conditions.damage({
                 procChance: 0.5,
-                dmgRange: "4-6",
-                cause: "wild fire",
+                dmgRange: '4-6',
+                cause: 'wild fire',
               })
             ).setTurns(1)
           );
         },
       };
-      const ok = this.world
-        .getTilemap()
-        .addTriggerAt(this.world.getHero().pos, trigger);
+      const ok = this.world.getTilemap().addTriggerAt(this.world.getHero().pos, trigger);
       if (ok) {
         gameBus.publish(
           effectSet({
             id: trigger.id,
             type: MapEffect.Fire,
             pos: p,
-            animation: "static",
+            animation: 'static',
           })
         );
       }
@@ -185,16 +179,16 @@ export class UnholySpellBook implements Spell {
     if (place != null && place instanceof BloodFountain) {
       gameBus.publish(
         logPublished({
-          level: "warning",
+          level: 'warning',
           data: `The blood inside the fountain is bubbling !!`,
         })
       );
       place.cursed = false;
     } else {
-      new DamageResolution(null, this.world.getHero(), 1, "sickness");
+      new DamageResolution(null, this.world.getHero(), 1, 'sickness');
       gameBus.publish(
         logPublished({
-          level: "warning",
+          level: 'warning',
           data: `Reading this book is making you nauseous`,
         })
       );
@@ -209,9 +203,7 @@ export class IdentifiySpell implements Spell {
 
   cast(item: Item) {
     item.reveal();
-    gameBus.publish(
-      logPublished({ level: "success", data: `You identify a ${item.name}` })
-    );
+    gameBus.publish(logPublished({ level: 'success', data: `You identify a ${item.name}` }));
   }
 }
 
@@ -225,9 +217,7 @@ export class KnowledgeSpell implements Spell {
       t.viewed = true;
       if (t.visibility !== TileVisibility.OnSight) t.setObscurity();
     });
-    gameBus.publish(
-      logPublished({ level: "success", data: "Yee see everything !" })
-    );
+    gameBus.publish(logPublished({ level: 'success', data: 'Yee see everything !' }));
     gameBus.publish(sightUpdated({}));
   }
 }
@@ -314,11 +304,7 @@ export class SummonWeakSpell implements Spell {
 
   cast() {
     const pos = this.world.getHero().pos;
-    const mobs = [
-      Bestiaire.Greece.Bat,
-      Bestiaire.Greece.Rat,
-      Bestiaire.Greece.Rat,
-    ];
+    const mobs = [Bestiaire.Greece.Bat, Bestiaire.Greece.Rat, Bestiaire.Greece.Rat];
     for (let i = 0; i < 3; i++) {
       const posMob = this.world.nearestEmptyTileFrom(pos);
       const friend = this.world
@@ -327,7 +313,7 @@ export class SummonWeakSpell implements Spell {
           ...mobs[i],
           pos: { x: posMob.x, y: posMob.y },
         })
-        .setAligment("good");
+        .setAligment('good');
       this.world.addMonster(friend);
       gameBus.publish(monsterSpawned({ monster: friend }));
     }
@@ -341,9 +327,7 @@ export class CleaningEffect implements Spell {
   cast(target: Hero | Monster) {
     target.buffs.cleanBuff();
     target.enchants.clean();
-    gameBus.publish(
-      logPublished({ level: "success", data: `${target.name} looks purified` })
-    );
+    gameBus.publish(logPublished({ level: 'success', data: `${target.name} looks purified` }));
   }
 }
 
@@ -357,11 +341,9 @@ export class XPEffect implements Spell {
           amount: 999999,
         })
       );
-      gameBus.publish(
-        logPublished({ level: "success", data: "you are wiser !" })
-      );
+      gameBus.publish(logPublished({ level: 'success', data: 'you are wiser !' }));
     } else {
-      gameBus.publish(logPublished({ data: "nothing happens" }));
+      gameBus.publish(logPublished({ data: 'nothing happens' }));
     }
   }
 }
@@ -371,9 +353,7 @@ export class RogueEventSpell implements Spell {
 
   cast() {
     gameBus.publish(rogueEvent({}));
-    gameBus.publish(
-      logPublished({ level: "danger", data: "where the heck are you ?!" })
-    );
+    gameBus.publish(logPublished({ level: 'danger', data: 'where the heck are you ?!' }));
   }
 }
 
@@ -382,9 +362,7 @@ export class RealityEventSpell implements Spell {
 
   cast() {
     gameBus.publish(endRogueEvent({}));
-    gameBus.publish(
-      logPublished({ level: "success", data: "Yeah, back to the quest !" })
-    );
+    gameBus.publish(logPublished({ level: 'success', data: 'Yeah, back to the quest !' }));
   }
 }
 
@@ -415,12 +393,12 @@ export class SacrificeSpell implements Spell {
     target.health.getWeakerByHp(curse);
     gameBus.publish(
       logPublished({
-        level: "danger",
+        level: 'danger',
         data: `You used a forbidden blood magic, hoping this sacrifice is worth the price...`,
       })
     );
-    new DamageResolution(null, t, curse, "sacrifice");
-    new DamageResolution(null, hero, sacrifice, "sacrifice");
+    new DamageResolution(null, t, curse, 'sacrifice');
+    new DamageResolution(null, hero, sacrifice, 'sacrifice');
   }
 }
 
@@ -433,6 +411,6 @@ export class AsservissementSpell implements Spell {
       return;
     }
 
-    target.setAligment("good");
+    target.setAligment('good');
   }
 }

@@ -1,10 +1,10 @@
-import { distribute } from "../../utils/random";
-import { randomIn } from "../../utils/rectangle";
-import { Item } from "../entitybase/item";
-import { isSpecialRoom } from "./monster-spawn";
-import { RogueEventLevel, spawnRogueEventItem } from "./event-rogue";
-import { MapGraph } from "../../world/generation/map_definition";
-import { getRandomLoot } from "../../content/loot/loot-table";
+import { distribute } from '../../utils/random';
+import { randomIn } from '../../utils/rectangle';
+import { Item } from '../entitybase/item';
+import { isSpecialRoom } from './monster-spawn';
+import { RogueEventLevel, spawnRogueEventItem } from './event-rogue';
+import { MapGraph } from '../../world/generation/map_definition';
+import { getRandomLoot } from '../../content/loot/loot-table';
 
 export function itemSpawn(graph: MapGraph, level: number, nbLoot: number) {
   if (level == RogueEventLevel) {

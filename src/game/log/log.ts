@@ -1,11 +1,5 @@
-import { gameBus } from "../../infra/events/game-bus";
-import {
-  playerTookDammage,
-  monsterTookDamage,
-  itemPickedUp,
-  playerHealed,
-  logPublished,
-} from "../events";
+import { gameBus } from '../../infra/events/game-bus';
+import { playerTookDammage, monsterTookDamage, itemPickedUp, playerHealed, logPublished } from '../events';
 
 export class Log {
   static initialized = false;
@@ -17,14 +11,9 @@ export class Log {
 
     gameBus.subscribe(playerTookDammage, (event) => {
       if (event.payload.monster) {
-        Log.log(
-          `${event.payload.monster.name} deals you ${Math.abs(
-            event.payload.amount
-          )} dammage`,
-          "warning"
-        );
+        Log.log(`${event.payload.monster.name} deals you ${Math.abs(event.payload.amount)} dammage`, 'warning');
       } else {
-        Log.log(`You suffer from ${event.payload.source}`, "warning");
+        Log.log(`You suffer from ${event.payload.source}`, 'warning');
       }
     });
     gameBus.subscribe(monsterTookDamage, (event) => {
@@ -35,11 +24,7 @@ export class Log {
           )} dammage to ${event.payload.monster.name}`
         );
       } else {
-        Log.log(
-          `You deal ${Math.abs(event.payload.amount)} dammage to ${
-            event.payload.monster.name
-          }`
-        );
+        Log.log(`You deal ${Math.abs(event.payload.amount)} dammage to ${event.payload.monster.name}`);
       }
     });
     gameBus.subscribe(itemPickedUp, (event) => {
@@ -47,13 +32,10 @@ export class Log {
     });
     gameBus.subscribe(playerHealed, (event) => {
       if (event.payload.isSilent) return;
-      Log.log(`You feel better`, "success");
+      Log.log(`You feel better`, 'success');
     });
   }
-  static log(
-    msg: string,
-    level?: "danger" | "warning" | "success" | "neutral"
-  ) {
+  static log(msg: string, level?: 'danger' | 'warning' | 'success' | 'neutral') {
     gameBus.publish(logPublished({ level: level, data: msg }));
   }
 }

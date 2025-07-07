@@ -1,20 +1,20 @@
-import { ItemVisitor } from "./item-visitor";
-import * as _ from "lodash";
-import { logPublished } from "../../events";
-import { gameBus } from "../../../infra/events/game-bus";
-import { Spell, SpellTarget } from "../../effects/spells";
-import { Item, ItemArgument } from "../item";
+import { ItemVisitor } from './item-visitor';
+import * as _ from 'lodash';
+import { logPublished } from '../../events';
+import { gameBus } from '../../../infra/events/game-bus';
+import { Spell, SpellTarget } from '../../effects/spells';
+import { Item, ItemArgument } from '../item';
 
 export const ScrollType = [
-  "RFDFTY",
-  "HKLUZRIJLI",
-  "LKUFJBH",
-  "UKYJHB LFK",
-  "NKHVC",
-  "RRHEIPV",
-  "DFIONV YHE PO",
-  "DFGBIKN",
-  "QSEFV XPO",
+  'RFDFTY',
+  'HKLUZRIJLI',
+  'LKUFJBH',
+  'UKYJHB LFK',
+  'NKHVC',
+  'RRHEIPV',
+  'DFIONV YHE PO',
+  'DFGBIKN',
+  'QSEFV XPO',
 ];
 
 export class Scroll extends Item implements ItemArgument {
@@ -30,9 +30,9 @@ export class Scroll extends Item implements ItemArgument {
     }
 
     this.effect = args.effect;
-    this.keyMapping["r"] = this.use.bind(this);
-    this.keyDescription["r"] = "(r)ead";
-    this.skin = "scroll";
+    this.keyMapping['r'] = this.use.bind(this);
+    this.keyDescription['r'] = '(r)ead';
+    this.skin = 'scroll';
   }
 
   get description() {
@@ -52,18 +52,16 @@ export class Scroll extends Item implements ItemArgument {
   }
 
   getFormula() {
-    return Scroll.mystery[this._name].split("-")[1];
+    return Scroll.mystery[this._name].split('-')[1];
   }
 
   randomFormula() {
-    return "scroll-" + Scroll.scrollType.pop();
+    return 'scroll-' + Scroll.scrollType.pop();
   }
 
   use(target: any) {
     if (!Scroll.identified[this.getFormula()]) {
-      gameBus.publish(
-        logPublished({ data: `It was a ${this._name}`, level: "neutral" })
-      );
+      gameBus.publish(logPublished({ data: `It was a ${this._name}`, level: 'neutral' }));
       this.reveal();
     }
     this.effect.cast(target);
@@ -80,9 +78,9 @@ export class Scroll extends Item implements ItemArgument {
 
   getArgumentForKey(key: string) {
     switch (key) {
-      case "r":
+      case 'r':
         return this.effect.type;
-      case "d":
+      case 'd':
       default:
         return SpellTarget.None;
     }

@@ -1,5 +1,5 @@
-import { createEventDefinition } from "ts-bus";
+import { createEventDefinition } from 'ts-bus';
 
 export const timePassed = createEventDefinition<{
-    timeSpent: number;
+  timeSpent: number;
 }>()('timePassed');

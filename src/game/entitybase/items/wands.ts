@@ -1,9 +1,9 @@
-import { ItemVisitor } from "./item-visitor";
-import * as _ from "lodash";
-import { logPublished } from "../../events";
-import { gameBus } from "../../../infra/events/game-bus";
-import { Spell, SpellTarget } from "../../effects/spells";
-import { Item, ItemArgument } from "../item";
+import { ItemVisitor } from './item-visitor';
+import * as _ from 'lodash';
+import { logPublished } from '../../events';
+import { gameBus } from '../../../infra/events/game-bus';
+import { Spell, SpellTarget } from '../../effects/spells';
+import { Item, ItemArgument } from '../item';
 
 export class Wand extends Item implements ItemArgument {
   effect: Spell;
@@ -14,8 +14,8 @@ export class Wand extends Item implements ItemArgument {
   constructor(args: any) {
     super(args);
     this.effect = args.effect();
-    this.keyMapping["z"] = this.use.bind(this);
-    this.keyDescription["z"] = "(z)ap";
+    this.keyMapping['z'] = this.use.bind(this);
+    this.keyDescription['z'] = '(z)ap';
     this.skin = args.skin;
     this.identified = true;
   }
@@ -25,8 +25,8 @@ export class Wand extends Item implements ItemArgument {
       return `A stick with stranges inscriptions on it`;
     } else {
       let str = this._description;
-      str += "\n\n";
-      str += "turns before next zap: " + this.currentCooldown;
+      str += '\n\n';
+      str += 'turns before next zap: ' + this.currentCooldown;
       return str;
     }
   }
@@ -35,7 +35,7 @@ export class Wand extends Item implements ItemArgument {
     if (this.identified) {
       return this._name;
     } else {
-      return "Colored stick";
+      return 'Colored stick';
     }
   }
 
@@ -44,9 +44,7 @@ export class Wand extends Item implements ItemArgument {
       return;
     }
     if (!this.identified) {
-      gameBus.publish(
-        logPublished({ data: `It was a ${this._name}`, level: "neutral" })
-      );
+      gameBus.publish(logPublished({ data: `It was a ${this._name}`, level: 'neutral' }));
       this.reveal();
     }
     this.effect.cast(target);
@@ -64,9 +62,9 @@ export class Wand extends Item implements ItemArgument {
 
   getArgumentForKey(key: string) {
     switch (key) {
-      case "z":
+      case 'z':
         return this.effect.type;
-      case "d":
+      case 'd':
       default:
         return SpellTarget.None;
     }

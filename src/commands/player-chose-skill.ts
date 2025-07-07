@@ -1,5 +1,5 @@
-import { createEventDefinition, EventBus } from "ts-bus";
+import { createEventDefinition, EventBus } from 'ts-bus';
 
 export const playerChoseSkill = createEventDefinition<{
-    name: string;
+  name: string;
 }>()('playerChoseSkill');

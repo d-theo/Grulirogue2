@@ -1,4 +1,4 @@
-import { createEventDefinition } from "ts-bus";
-import { MapEffects } from "../../world/map/map-effect";
+import { createEventDefinition } from 'ts-bus';
+import { MapEffects } from '../../world/map/map-effect';
 
-export const effectSet = createEventDefinition<MapEffects>()("effectSet");
+export const effectSet = createEventDefinition<MapEffects>()('effectSet');

@@ -1,14 +1,14 @@
-import { TilerConfig, tilemapper } from "../tiler";
-import { Terrain } from "../../map/terrain.greece";
-import * as _ from "lodash";
-import { MapGraph } from "../map_definition";
-import { BoatWallPainter } from "../painters/boat-wall-painter";
-import { pirateDeco } from "../painters/boat-deco-painter";
-import { boatWaterPainter } from "../painters/boat-water-painter";
-import { ThingToPlace } from "../map_tiling_utils";
-import { pirateBossPainter } from "../painters/pirateboss-painter";
-import { placePainter } from "../painters/place-painter";
-import { randomIn } from "../../../utils/rectangle";
+import { TilerConfig, tilemapper } from '../tiler';
+import { Terrain } from '../../map/terrain.greece';
+import * as _ from 'lodash';
+import { MapGraph } from '../map_definition';
+import { BoatWallPainter } from '../painters/boat-wall-painter';
+import { pirateDeco } from '../painters/boat-deco-painter';
+import { boatWaterPainter } from '../painters/boat-water-painter';
+import { ThingToPlace } from '../map_tiling_utils';
+import { pirateBossPainter } from '../painters/pirateboss-painter';
+import { placePainter } from '../painters/place-painter';
+import { randomIn } from '../../../utils/rectangle';
 
 const config: TilerConfig = {
   width: 100,
@@ -35,13 +35,8 @@ const config: TilerConfig = {
   specialRoom: { chance: 0, painter: crabRoom },
 };
 
-export function pirateMap(
-  mapGenerator: () => MapGraph,
-  configOverride: { path: string; value: string }[]
-) {
-  configOverride.forEach((override) =>
-    _.set(config, override.path, override.value)
-  );
+export function pirateMap(mapGenerator: () => MapGraph, configOverride: { path: string; value: string }[]) {
+  configOverride.forEach((override) => _.set(config, override.path, override.value));
   const tiler = tilemapper(config);
   return tiler(mapGenerator());
 }
@@ -65,27 +60,27 @@ function crabRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
       x: Math.floor(room.rect.x + room.rect.width / 2),
       y: Math.floor(room.rect.y + room.rect.height / 2),
     },
-    type: "crabBoss",
+    type: 'crabBoss',
   });
   thingsToPlace.push({
     pos: randomIn(room.rect, 1),
-    type: "crab",
+    type: 'crab',
   });
   thingsToPlace.push({
     pos: randomIn(room.rect, 1),
-    type: "crab",
+    type: 'crab',
   });
   thingsToPlace.push({
     pos: randomIn(room.rect, 1),
-    type: "crab",
+    type: 'crab',
   });
   thingsToPlace.push({
     pos: randomIn(room.rect, 1),
-    type: "crab",
+    type: 'crab',
   });
   thingsToPlace.push({
     pos: randomIn(room.rect, 1),
-    type: "crab",
+    type: 'crab',
   });
 
   thingsToPlace.push({
@@ -93,21 +88,21 @@ function crabRoom(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
       x: Math.floor(room.rect.x + room.rect.width / 2),
       y: Math.floor(room.rect.y + room.rect.height) - 1,
     },
-    type: "misc",
+    type: 'misc',
   });
   thingsToPlace.push({
     pos: {
       x: Math.floor(room.rect.x + room.rect.width / 2) - 1,
       y: Math.floor(room.rect.y + room.rect.height) - 1,
     },
-    type: "misc",
+    type: 'misc',
   });
   thingsToPlace.push({
     pos: {
       x: Math.floor(room.rect.x + room.rect.width / 2) + 1,
       y: Math.floor(room.rect.y + room.rect.height) - 1,
     },
-    type: "misc",
+    type: 'misc',
   });
 }
 function pirateBoss(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
@@ -119,20 +114,20 @@ function pirateBoss(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
       x: Math.floor(room.rect.x + room.rect.width / 2),
       y: Math.floor(room.rect.y + room.rect.height / 2),
     },
-    type: "pirateBoss",
+    type: 'pirateBoss',
   });
   thingsToPlace.push({
     pos: {
       x: Math.floor(room.rect.x + room.rect.width / 2) + 1,
       y: Math.floor(room.rect.y + room.rect.height / 2) + 1,
     },
-    type: "sailor",
+    type: 'sailor',
   });
   thingsToPlace.push({
     pos: {
       x: Math.floor(room.rect.x + room.rect.width / 2) - 1,
       y: Math.floor(room.rect.y + room.rect.height / 2) - 1,
     },
-    type: "sailor",
+    type: 'sailor',
   });
 }

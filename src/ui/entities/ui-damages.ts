@@ -1,8 +1,8 @@
-import { Scene } from "phaser";
-import { toPix } from "../../utils/maths/maps-utils";
-import { Coordinate } from "../../utils/coordinate";
-import { uniqueId } from "lodash";
-const Rainbow = require("rainbowvis.js");
+import { Scene } from 'phaser';
+import { toPix } from '../../utils/maths/maps-utils';
+import { Coordinate } from '../../utils/coordinate';
+import { uniqueId } from 'lodash';
+const Rainbow = require('rainbowvis.js');
 export class UIDamages {
   uuid = uniqueId();
   markAsPlayed = false; // has been shown
@@ -10,9 +10,9 @@ export class UIDamages {
   textObj;
   offset: number = 0;
   Font = {
-    fontSize: "10px",
-    fontFamily: "square",
-    color: "#FFFFFF",
+    fontSize: '10px',
+    fontFamily: 'square',
+    color: '#FFFFFF',
     wordWrap: {
       width: 310,
     },
@@ -23,25 +23,20 @@ export class UIDamages {
     public subject: { name: string; pos: Coordinate },
     private number
   ) {
-    this.rainbow.setSpectrum("white", "yellow", "orange", "red");
+    this.rainbow.setSpectrum('white', 'yellow', 'orange', 'red');
     this.rainbow.setNumberRange(1, 25);
     let txt;
     if (number == 0) {
-      txt = "miss";
-      this.Font.fontSize = "8px";
+      txt = 'miss';
+      this.Font.fontSize = '8px';
     } else if (number < 0) {
-      txt = "" + Math.abs(number);
+      txt = '' + Math.abs(number);
       this.Font.color = `#${this.rainbow.colourAt(Math.abs(number))}`;
     } else if (number > 0) {
-      txt = "+" + number;
-      this.Font.color = "#83F52C";
+      txt = '+' + number;
+      this.Font.color = '#83F52C';
     }
-    this.textObj = this.parentScene.add.text(
-      toPix(subject.pos.x),
-      toPix(subject.pos.y),
-      txt,
-      this.Font
-    );
+    this.textObj = this.parentScene.add.text(toPix(subject.pos.x), toPix(subject.pos.y), txt, this.Font);
     this.textObj.setOrigin(0, 0);
 
     setTimeout(() => {
@@ -69,7 +64,7 @@ export class UIDamages {
     this.textObj.setDepth(3);
     this.parentScene.tweens.add({
       targets: this.textObj,
-      ease: "Linear",
+      ease: 'Linear',
       duration: 500,
       delay: option.delay,
       repeat: 0,

@@ -1,5 +1,5 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { enchantChanged } from "../events";
+import { gameBus } from '../../infra/events/game-bus';
+import { enchantChanged } from '../events';
 
 // Afflictions class to manage various status effects on entities
 export class Afflictions {
@@ -177,44 +177,44 @@ export class Afflictions {
   report() {
     let r = [];
     if (this.stuned) {
-      r.push("Stuned");
+      r.push('Stuned');
     }
     if (this.bleeding) {
-      r.push("Bleeding");
+      r.push('Bleeding');
     }
     if (this.invisibility) {
-      r.push("Invisible");
+      r.push('Invisible');
     }
     if (this.poisoned) {
-      r.push("Poisoned");
+      r.push('Poisoned');
     }
     if (this.stupid) {
-      r.push("Intel-");
+      r.push('Intel-');
     }
     if (this.speed) {
-      r.push("Movement+");
+      r.push('Movement+');
     }
     if (this.slow) {
-      r.push("Movement-");
+      r.push('Movement-');
     }
     if (this.agile) {
-      r.push("Dodge+");
+      r.push('Dodge+');
     }
     if (this.confident) {
-      r.push("Range+");
+      r.push('Range+');
     }
     if (this.moreVulnerable) {
-      r.push("Absorb-");
+      r.push('Absorb-');
     }
     if (this.lessDamage) {
-      r.push("Absorb+");
+      r.push('Absorb+');
     }
     if (this.moreDamage) {
-      r.push("Dmg+");
+      r.push('Dmg+');
     }
-    if (this.blind) r.push("Sight-");
-    if (this.wet) r.push("Wet");
-    if (this.burned) r.push("Burned");
+    if (this.blind) r.push('Sight-');
+    if (this.wet) r.push('Wet');
+    if (this.burned) r.push('Burned');
     return r;
   }
 
@@ -237,6 +237,6 @@ export class Afflictions {
 
   update() {
     if (this.notif === false) return;
-    gameBus.publish(enchantChanged({ report: this.report().join("\n") }));
+    gameBus.publish(enchantChanged({ report: this.report().join('\n') }));
   }
 }

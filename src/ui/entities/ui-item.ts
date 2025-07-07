@@ -1,6 +1,6 @@
-import { Scene } from "phaser";
-import { Item } from "../../game/entitybase/item";
-import { toPix } from "../../utils/maths/maps-utils";
+import { Scene } from 'phaser';
+import { Item } from '../../game/entitybase/item';
+import { toPix } from '../../utils/maths/maps-utils';
 
 export class UIItem {
   sprite: any;
@@ -10,14 +10,10 @@ export class UIItem {
     public subject: Item,
     private imageKey
   ) {
-    this.sprite = this.parentScene.physics.add.sprite(
-      toPix(subject.pos.x),
-      toPix(subject.pos.y),
-      imageKey
-    );
+    this.sprite = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), imageKey);
     this.sprite.setOrigin(0, 0);
     this.outline = this.parentScene.physics.add
-      .sprite(toPix(subject.pos.x), toPix(subject.pos.y), "itemable")
+      .sprite(toPix(subject.pos.x), toPix(subject.pos.y), 'itemable')
       .setOrigin(0, 0);
   }
   pickedUp() {

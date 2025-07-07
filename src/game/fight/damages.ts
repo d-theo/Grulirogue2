@@ -1,13 +1,8 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { HealthReport, HealthStatus } from "../entitybase/health";
-import { Entity } from "../entitybase/entity";
-import { Monster } from "../entitybase/monsters/monster";
-import {
-  playerTookDammage,
-  monsterTookDamage,
-  monsterDead,
-  heroGainedXp,
-} from "../events";
+import { gameBus } from '../../infra/events/game-bus';
+import { HealthReport, HealthStatus } from '../entitybase/health';
+import { Entity } from '../entitybase/entity';
+import { Monster } from '../entitybase/monsters/monster';
+import { playerTookDammage, monsterTookDamage, monsterDead, heroGainedXp } from '../events';
 
 export class DamageResolution {
   private report: HealthReport;
@@ -50,7 +45,7 @@ export class DamageResolution {
           monster: monster,
         })
       );
-      if (this.target.getAligment() === "bad") {
+      if (this.target.getAligment() === 'bad') {
         gameBus.publish(
           heroGainedXp({
             amount: monster.xp,

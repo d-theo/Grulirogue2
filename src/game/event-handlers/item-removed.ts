@@ -1,6 +1,6 @@
-import { ItemCollection } from "../entitybase/items/item-collection";
-import { itemRemoved } from "../events/item-removed";
-import { EventHandler } from "./event-handler";
+import { ItemCollection } from '../entitybase/items/item-collection';
+import { itemRemoved } from '../events/item-removed';
+import { EventHandler } from './event-handler';
 
 export class ItemRemovedHandler extends EventHandler {
   constructor(private items: ItemCollection) {

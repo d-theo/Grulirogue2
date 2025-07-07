@@ -1,28 +1,23 @@
-import { GameRange } from "../../utils/range";
-import { Game } from "../game";
-import { monsterMove } from "../use-cases/monsterMove";
-import { monsterAttack } from "../use-cases/monsterAttack";
-import { astar } from "../tilemap/astar";
-import { Coordinate, equalsCoordinate } from "../../utils/coordinate";
-import { isTileEmpty } from "../use-cases/preconditions/moveAllowed";
-import { Hero } from "../hero/hero";
-import { Monster } from "../entitybase/monsters/monster";
+import { GameRange } from '../../utils/range';
+import { Game } from '../game';
+import { monsterMove } from '../use-cases/monsterMove';
+import { monsterAttack } from '../use-cases/monsterAttack';
+import { astar } from '../tilemap/astar';
+import { Coordinate, equalsCoordinate } from '../../utils/coordinate';
+import { isTileEmpty } from '../use-cases/preconditions/moveAllowed';
+import { Hero } from '../hero/hero';
+import { Monster } from '../entitybase/monsters/monster';
 
 export type Behavior = (monster: Monster) => void;
-export type BehaviorType =
-  | "agressive"
-  | "blind"
-  | "default"
-  | "fearfull"
-  | "friendly";
+export type BehaviorType = 'agressive' | 'blind' | 'default' | 'fearfull' | 'friendly';
 
 export const AIBehaviorsRegistry = (game: Game) => {
   const ais = new Map<BehaviorType, Behavior>();
-  ais.set("agressive", agressiveAI);
-  ais.set("blind", randomAI);
-  ais.set("default", defaultAI);
-  ais.set("fearfull", fearfullAI);
-  ais.set("friendly", friendlyAI);
+  ais.set('agressive', agressiveAI);
+  ais.set('blind', randomAI);
+  ais.set('default', defaultAI);
+  ais.set('fearfull', fearfullAI);
+  ais.set('friendly', friendlyAI);
   return ais;
 
   function defaultAI(monster: Monster) {
@@ -117,12 +112,7 @@ export const AIBehaviorsRegistry = (game: Game) => {
     function follow(): boolean {
       const heroPos = game.hero.pos;
       const mePos = monster.pos;
-      if (
-        Math.max(
-          Math.abs(heroPos.x - mePos.x),
-          Math.abs(heroPos.y - mePos.y)
-        ) == 1
-      ) {
+      if (Math.max(Math.abs(heroPos.x - mePos.x), Math.abs(heroPos.y - mePos.y)) == 1) {
         split();
         return false;
       }
@@ -152,9 +142,7 @@ export const AIBehaviorsRegistry = (game: Game) => {
       goAwayFromHero(monster);
     }
 
-    type ScanResult =
-      | { status: true; res: Monster[] }
-      | { status: false; res: [] };
+    type ScanResult = { status: true; res: Monster[] } | { status: false; res: [] };
 
     function scanEnnemies(): ScanResult {
       const enemies = getAttackable(monster);
@@ -168,21 +156,13 @@ export const AIBehaviorsRegistry = (game: Game) => {
 
   function getAttackablePlayerOrAllies(me: Monster) {
     let nearest = [];
-    const poss: (Hero | Monster)[] = game.monsters
-      .monstersArray()
-      .concat([game.hero as any]);
+    const poss: (Hero | Monster)[] = game.monsters.monstersArray().concat([game.hero as any]);
 
     for (const mob of poss) {
       const posA = mob.pos;
       const posB = me.pos;
-      const dist = Math.max(
-        Math.abs(posA.x - posB.x),
-        Math.abs(posA.y - posB.y)
-      );
-      if (
-        dist <= me.sight &&
-        game.tilemap.hasVisibility({ from: posA, to: posB })
-      ) {
+      const dist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.y - posB.y));
+      if (dist <= me.sight && game.tilemap.hasVisibility({ from: posA, to: posB })) {
         nearest.push({ dist, mob });
       }
     }
@@ -203,14 +183,8 @@ export const AIBehaviorsRegistry = (game: Game) => {
     for (const mob of game.monsters.monstersArray()) {
       const posA = mob.pos;
       const posB = me.pos;
-      const dist = Math.max(
-        Math.abs(posA.x - posB.x),
-        Math.abs(posA.y - posB.y)
-      );
-      if (
-        dist <= me.sight &&
-        game.tilemap.hasVisibility({ from: posA, to: posB })
-      ) {
+      const dist = Math.max(Math.abs(posA.x - posB.x), Math.abs(posA.y - posB.y));
+      if (dist <= me.sight && game.tilemap.hasVisibility({ from: posA, to: posB })) {
         nearest.push({ dist, mob });
       }
     }
@@ -316,10 +290,7 @@ export const AIBehaviorsRegistry = (game: Game) => {
     let chosedMove;
     for (const m of possibleMoves) {
       const t = game.tilemap.getAt(m);
-      if (
-        t.isWalkable() === true &&
-        isTileEmpty(m, game.monsters.monstersArray())
-      ) {
+      if (t.isWalkable() === true && isTileEmpty(m, game.monsters.monstersArray())) {
         chosedMove = m;
       }
     }
@@ -356,16 +327,16 @@ function goTo(arg: { from: Coordinate; to: Coordinate; game: Game }): GoTo {
 }
 
 function relativePosition(pos1: Coordinate, pos2: Coordinate) {
-  let str = "";
+  let str = '';
   if (pos1.y - pos2.y > 0) {
-    str += "S";
+    str += 'S';
   } else if (pos1.y - pos2.y < 0) {
-    str += "N";
+    str += 'N';
   }
   if (pos1.x - pos2.x > 0) {
-    str += "E";
+    str += 'E';
   } else if (pos1.x - pos2.x < 0) {
-    str += "W";
+    str += 'W';
   }
   return str;
 }

@@ -1,20 +1,20 @@
-import { Health } from "../entitybase/health";
-import { Coordinate } from "../../utils/coordinate";
-import { Buffs } from "../entitybase/buffable";
-import { Inventory } from "./inventory";
-import { Item } from "../entitybase/item";
-import { FightModifier } from "../entitybase/fight-modifier";
-import HeroSkills from "./hero-skills";
-import { Entity } from "../entitybase/entity";
-import { EnchantSolver } from "../effects/echant-solver";
-import { DamageResolution } from "../fight/damages";
-import { gameBus } from "../../infra/events/game-bus";
-import { Afflictions } from "../entitybase/afflictions";
-import { SpellMaker, SpellNames } from "../../content/spells/spell-factory";
-import { IdentifiySpell } from "../../content/spells/spells";
-import { Armour, NullArmour } from "../entitybase/items/armour";
-import { Weapon, NullWeapon } from "../entitybase/items/weapon";
-import { itemPickedUp, itemEquiped } from "../events";
+import { Health } from '../entitybase/health';
+import { Coordinate } from '../../utils/coordinate';
+import { Buffs } from '../entitybase/buffable';
+import { Inventory } from './inventory';
+import { Item } from '../entitybase/item';
+import { FightModifier } from '../entitybase/fight-modifier';
+import HeroSkills from './hero-skills';
+import { Entity } from '../entitybase/entity';
+import { EnchantSolver } from '../effects/echant-solver';
+import { DamageResolution } from '../fight/damages';
+import { gameBus } from '../../infra/events/game-bus';
+import { Afflictions } from '../entitybase/afflictions';
+import { SpellMaker, SpellNames } from '../../content/spells/spell-factory';
+import { IdentifiySpell } from '../../content/spells/spells';
+import { Armour, NullArmour } from '../entitybase/items/armour';
+import { Weapon, NullWeapon } from '../entitybase/items/weapon';
+import { itemPickedUp, itemEquiped } from '../events';
 
 const XP = [0, 30, 70, 130, 210, 300, 450, 700, 900];
 
@@ -46,20 +46,20 @@ export class Hero extends Entity {
 
   constructor() {
     super();
-    this.name = "Grulito le brave";
+    this.name = 'Grulito le brave';
     this.health = new Health(15);
     this.armour = new Armour({
       baseAbsorb: 0,
-      name: "Pyjamas",
-      description: "Your favorite pair of pyjamas for spleeping",
+      name: 'Pyjamas',
+      description: 'Your favorite pair of pyjamas for spleeping',
     });
     this.weapon = new Weapon({
-      baseDamage: "2-4",
+      baseDamage: '2-4',
       maxRange: 1,
-      name: "Fist",
-      description: "Your fists are not prepared for this",
-      kind: "Fist",
-      skin: "Fist",
+      name: 'Fist',
+      description: 'Your fists are not prepared for this',
+      kind: 'Fist',
+      skin: 'Fist',
     });
     this.xp = 0;
     this.calcNextXp();
@@ -130,13 +130,13 @@ export class Hero extends Entity {
   gainXP(amount: number): {
     total: number;
     current: number;
-    status: "xp_gained" | "level_up";
+    status: 'xp_gained' | 'level_up';
   } {
-    let status: "xp_gained" | "level_up" = "xp_gained";
+    let status: 'xp_gained' | 'level_up' = 'xp_gained';
     this.xp += amount;
     if (this.nextXp <= this.xp) {
       this.levelUp();
-      status = "level_up";
+      status = 'level_up';
     }
     return {
       total: this.nextXp,
@@ -177,15 +177,11 @@ export class Hero extends Entity {
     this.weapon.hitBeforeIdentified--;
     this.armour.hitBeforeIdentified--;
     if (this.weapon.hitBeforeIdentified === 0 && !this.weapon.identified) {
-      const identify = SpellMaker.createSpell(
-        SpellNames.Identify
-      ) as IdentifiySpell;
+      const identify = SpellMaker.createSpell(SpellNames.Identify) as IdentifiySpell;
       identify.cast(this.weapon);
     }
     if (this.armour.hitBeforeIdentified === 0 && !this.armour.identified) {
-      const identify = SpellMaker.createSpell(
-        SpellNames.Identify
-      ) as IdentifiySpell;
+      const identify = SpellMaker.createSpell(SpellNames.Identify) as IdentifiySpell;
       identify.cast(this.armour);
     }
   }
@@ -195,6 +191,6 @@ export class Hero extends Entity {
   }
 
   getAligment() {
-    return "good" as const;
+    return 'good' as const;
   }
 }

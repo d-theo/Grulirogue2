@@ -1,4 +1,4 @@
-import { Coordinate } from "../coordinate";
+import { Coordinate } from '../coordinate';
 
 export type PixelPos = {
   x: number;
@@ -12,7 +12,7 @@ export type TilePos = {
 export function toPix(n: number): number;
 export function toPix(pos: Coordinate): PixelPos;
 export function toPix(arg: Coordinate | number): PixelPos | number {
-  if (typeof arg === "number") {
+  if (typeof arg === 'number') {
     return arg * 32;
   } else {
     return {

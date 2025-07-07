@@ -1,6 +1,6 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { pickInRange } from "../../utils/random";
-import { playerHealed } from "../events";
+import { gameBus } from '../../infra/events/game-bus';
+import { pickInRange } from '../../utils/random';
+import { playerHealed } from '../events';
 
 export class Health {
   currentHp: number;
@@ -30,13 +30,11 @@ export class Health {
     }
   }
   getStronger(level: number) {
-    let moreHp = pickInRange("2-4");
-    moreHp += pickInRange("1-2") + level;
+    let moreHp = pickInRange('2-4');
+    moreHp += pickInRange('1-2') + level;
     this.currentHp += moreHp;
     this.baseHp += moreHp;
-    gameBus.publish(
-      playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp })
-    );
+    gameBus.publish(playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp }));
   }
   take(hp: number): HealthReport {
     const oldHp = this.currentHp;
@@ -64,15 +62,11 @@ export class Health {
   }
   getStrongerByHp(hp: number) {
     this.baseHp += hp;
-    gameBus.publish(
-      playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp })
-    );
+    gameBus.publish(playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp }));
   }
   getWeakerByHp(hp: number) {
     this.baseHp -= hp;
-    gameBus.publish(
-      playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp })
-    );
+    gameBus.publish(playerHealed({ baseHp: this.baseHp, currentHp: this.currentHp }));
   }
 }
 

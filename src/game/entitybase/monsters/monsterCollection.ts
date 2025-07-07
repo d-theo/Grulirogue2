@@ -1,5 +1,5 @@
-import { Monster } from "./monster";
-import { Coordinate, equalsCoordinate } from "../../../utils/coordinate";
+import { Monster } from './monster';
+import { Coordinate, equalsCoordinate } from '../../../utils/coordinate';
 
 export class MonsterCollection {
   monsters: Monster[] = [];

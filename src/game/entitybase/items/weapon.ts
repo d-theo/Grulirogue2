@@ -1,10 +1,10 @@
-import * as _ from "lodash";
-import { pickInRange } from "../../../utils/random";
-import { SpellTarget } from "../../effects/spells";
-import { Hero } from "../../hero/hero";
-import { Buff2 } from "../buff";
-import { Item, ItemArgument } from "../item";
-import { ItemVisitor } from "./item-visitor";
+import * as _ from 'lodash';
+import { pickInRange } from '../../../utils/random';
+import { SpellTarget } from '../../effects/spells';
+import { Hero } from '../../hero/hero';
+import { Buff2 } from '../buff';
+import { Item, ItemArgument } from '../item';
+import { ItemVisitor } from './item-visitor';
 
 export class Weapon extends Item implements ItemArgument {
   private baseDamage: string; // eg : '2-4'
@@ -13,7 +13,7 @@ export class Weapon extends Item implements ItemArgument {
   additionnalEffects: {
     chance: number;
     effect: Buff2;
-    target: "attacker" | "target";
+    target: 'attacker' | 'target';
   }[] = [];
   additionalDescription: string[] = [];
   onEquipBuffs: Buff2[];
@@ -27,35 +27,35 @@ export class Weapon extends Item implements ItemArgument {
     this.isConsumable = false;
     this.baseDamage = arg.baseDamage;
     this.maxRange = arg.maxRange || 1;
-    this.keyMapping["w"] = this.use.bind(this);
-    this.keyDescription["w"] = "(w)ield";
+    this.keyMapping['w'] = this.use.bind(this);
+    this.keyDescription['w'] = '(w)ield';
     this.onEquipBuffs = arg.onEquipBuffs || [];
   }
 
   get description() {
-    let str = "";
+    let str = '';
     if (this.identified) {
-      str += "\n";
-      str += "kind: " + this.skin;
-      str += "\n";
+      str += '\n';
+      str += 'kind: ' + this.skin;
+      str += '\n';
       str += `damages: ${this.baseDamage} ${this.formatAdditionnalDmg()}`;
-      str += "\n";
+      str += '\n';
       str += `range: ${this.maxRange}`;
-      str += "\n";
-      str += "\n";
+      str += '\n';
+      str += '\n';
       this.additionalDescription.forEach((d) => {
-        str += "* " + d;
-        str += "\n";
-        str += "\n";
+        str += '* ' + d;
+        str += '\n';
+        str += '\n';
       });
     } else {
-      str += "\n";
-      str += "kind: " + this.skin;
-      str += "\n";
+      str += '\n';
+      str += 'kind: ' + this.skin;
+      str += '\n';
       str += `damages: ${this.baseDamage}`;
-      str += "\n";
+      str += '\n';
       str += `range: ${this.maxRange}`;
-      str += "\n";
+      str += '\n';
     }
     return str;
   }
@@ -64,8 +64,8 @@ export class Weapon extends Item implements ItemArgument {
     if (this.identified) {
       let str = this._name;
       if (this.additionalName.length > 0) {
-        str += " of ";
-        str += this.additionalName.join(" and ");
+        str += ' of ';
+        str += this.additionalName.join(' and ');
         str += ` ${this.formatAdditionnalDmg()}`;
       }
       return str;
@@ -77,9 +77,9 @@ export class Weapon extends Item implements ItemArgument {
   modifyAdditionnalDmg(modifier: number) {}
 
   formatAdditionnalDmg(): string {
-    if (this.additionnalDmg === 0) return "";
-    else if (this.additionnalDmg > 0) return "+" + this.additionnalDmg;
-    else if (this.additionnalDmg < 0) return "" + this.additionnalDmg;
+    if (this.additionnalDmg === 0) return '';
+    else if (this.additionnalDmg > 0) return '+' + this.additionnalDmg;
+    else if (this.additionnalDmg < 0) return '' + this.additionnalDmg;
   }
 
   onUnEquip(target: Hero) {
@@ -112,9 +112,9 @@ export class Weapon extends Item implements ItemArgument {
 }
 
 export const NullWeapon = new Weapon({
-  baseDamage: "0-0",
+  baseDamage: '0-0',
   maxRange: 1,
-  name: "Fist",
-  description: "-",
-  kind: "-",
+  name: 'Fist',
+  description: '-',
+  kind: '-',
 });

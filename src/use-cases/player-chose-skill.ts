@@ -1,6 +1,6 @@
-import { playerChoseSkill } from "../commands";
-import { Hero } from "../game/hero/hero";
-import { CommandHandler } from "./commands";
+import { playerChoseSkill } from '../commands';
+import { Hero } from '../game/hero/hero';
+import { CommandHandler } from './commands';
 
 export class PlayerChoseSkillhandler extends CommandHandler {
   constructor(private hero: Hero) {

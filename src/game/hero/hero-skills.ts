@@ -1,4 +1,4 @@
-import { Hero } from "./hero";
+import { Hero } from './hero';
 import {
   TankDesc,
   TirelessDesc,
@@ -9,76 +9,72 @@ import {
   SneakyDesc,
   HunterDesc,
   RogueDesc,
-} from "./skill-desc";
-import { MessageResponse, MessageResponseStatus } from "../../utils/types";
-import { Buff2 } from "../entitybase/buff";
-import { Conditions } from "../../content/conditions/conditions";
-import { SpellMaker, SpellNames } from "../../content/spells/spell-factory";
-import {
-  PoisonTrapSpell,
-  RootTrapSpell,
-  TrapSpell,
-} from "../../content/spells/spells";
+} from './skill-desc';
+import { MessageResponse, MessageResponseStatus } from '../../utils/types';
+import { Buff2 } from '../entitybase/buff';
+import { Conditions } from '../../content/conditions/conditions';
+import { SpellMaker, SpellNames } from '../../content/spells/spell-factory';
+import { PoisonTrapSpell, RootTrapSpell, TrapSpell } from '../../content/spells/spells';
 
 export enum SkillNames {
-  Rogue = "rogue",
-  Sneaky = "sneaky",
-  Coward = "coward",
-  Alchemist = "alchemist",
-  Hunter = "hunter",
+  Rogue = 'rogue',
+  Sneaky = 'sneaky',
+  Coward = 'coward',
+  Alchemist = 'alchemist',
+  Hunter = 'hunter',
 }
 
 export class HeroSkills {
   constructor(private hero: Hero) {}
 
   AllSkills = [
-    { name: "tireless", description: TirelessDesc, level: 0, maxLevel: 3 },
-    { name: "tank", description: TankDesc, level: 0, maxLevel: 3 },
+    { name: 'tireless', description: TirelessDesc, level: 0, maxLevel: 3 },
+    { name: 'tank', description: TankDesc, level: 0, maxLevel: 3 },
     {
-      name: "alchemist",
+      name: 'alchemist',
       description:
-        "Health effect are more powerfull and potions are more efficient on you. More specialization in this path will increase the duration",
+        'Health effect are more powerfull and potions are more efficient on you. More specialization in this path will increase the duration',
       level: 0,
       maxLevel: 3,
     },
-    { name: "monk", description: MonkDesc, level: 0, maxLevel: 5 },
+    { name: 'monk', description: MonkDesc, level: 0, maxLevel: 5 },
     {
-      name: "explorer",
-      description: "You find items more often in the dongeon",
+      name: 'explorer',
+      description: 'You find items more often in the dongeon',
       level: 0,
       maxLevel: 3,
     },
     {
-      name: "overseer",
-      description: "Better scope (+1 range)",
+      name: 'overseer',
+      description: 'Better scope (+1 range)',
       level: 0,
       maxLevel: 1,
     },
-    { name: "snake", description: SnakeDesc, level: 0, maxLevel: 3 },
+    { name: 'snake', description: SnakeDesc, level: 0, maxLevel: 3 },
     {
-      name: "coward",
+      name: 'coward',
       usable: true,
       description: CowardDesc,
       level: 0,
       maxLevel: 3,
     },
-    { name: "warrior", description: WarriorDesc, level: 0, maxLevel: 3 },
+    { name: 'warrior', description: WarriorDesc, level: 0, maxLevel: 3 },
     {
-      name: "sneaky",
+      name: 'sneaky',
       usable: true,
       description: SneakyDesc,
       level: 0,
       maxLevel: 3,
     },
     {
-      name: "hunter",
+      name: 'hunter',
       usable: true,
       description: HunterDesc,
       level: 0,
       maxLevel: 3,
     },
     {
-      name: "rogue",
+      name: 'rogue',
       usable: true,
       description: RogueDesc,
       level: 0,
@@ -120,36 +116,35 @@ export class HeroSkills {
       }
     }
     switch (name) {
-      case "tireless":
+      case 'tireless':
         this.hero.skillFlags.regenHpOverTime++;
-        this.hero.health.regenerationRate =
-          9 - this.hero.skillFlags.regenHpOverTime;
+        this.hero.health.regenerationRate = 9 - this.hero.skillFlags.regenHpOverTime;
         break;
-      case "tank":
+      case 'tank':
         this.hero.skillFlags.gainHpPerLevel++;
         this.hero.health.getStronger(this.hero.skillFlags.gainHpPerLevel);
         break;
-      case "alchemist":
+      case 'alchemist':
         return this.hero.skillFlags.improvedPotionEffect++;
-      case "monk":
+      case 'monk':
         return (this.hero.fightModifier.fistAdditionnalDmg += 2);
-      case "explorer":
+      case 'explorer':
         return this.hero.skillFlags.additionnalItemPerLevel++;
-      case "overseer":
+      case 'overseer':
         return this.hero.sight++;
-      case "snake":
+      case 'snake':
         return (this.hero.dodge += 0.05);
-      case "warrior":
+      case 'warrior':
         return (this.hero.fightModifier.additionnalDmg += 1);
-      case "coward":
+      case 'coward':
         this.heroCooldowns[SkillNames.Coward] = 0;
         break;
-      case "sneaky":
+      case 'sneaky':
         this.heroCooldowns[SkillNames.Sneaky] = 0;
         break;
-      case "rogue":
+      case 'rogue':
         this.heroCooldowns[SkillNames.Rogue] = 0;
-      case "hunter":
+      case 'hunter':
         this.heroCooldowns[SkillNames.Hunter] = 0;
         break;
     }
@@ -202,28 +197,22 @@ export class HeroSkills {
     this.heroCooldowns[name] = this.Cooldowns[name][skill.level];
     switch (name) {
       case SkillNames.Sneaky:
-        const trapSpell = SpellMaker.createSpell(
-          SpellNames.SpikeTrap
-        ) as TrapSpell;
+        const trapSpell = SpellMaker.createSpell(SpellNames.SpikeTrap) as TrapSpell;
         trapSpell.cast(this.hero.pos);
         break;
       case SkillNames.Coward:
         this.hero.addBuff(Buff2.create(Conditions.speed).setTurns(15));
         break;
       case SkillNames.Rogue:
-        const rogueSpell: PoisonTrapSpell = SpellMaker.createSpell(
-          SpellNames.PoisonTrap
-        ) as PoisonTrapSpell;
+        const rogueSpell: PoisonTrapSpell = SpellMaker.createSpell(SpellNames.PoisonTrap) as PoisonTrapSpell;
         rogueSpell.cast();
         break;
       case SkillNames.Hunter:
-        const root: RootTrapSpell = SpellMaker.createSpell(
-          SpellNames.RootTrap
-        ) as RootTrapSpell;
+        const root: RootTrapSpell = SpellMaker.createSpell(SpellNames.RootTrap) as RootTrapSpell;
         root.cast();
         break;
       default:
-        throw new Error("skill not implemented");
+        throw new Error('skill not implemented');
     }
   }
 }

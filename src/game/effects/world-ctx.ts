@@ -1,10 +1,10 @@
-import { TileMap } from "../tilemap/tilemap";
-import { Hero } from "../hero/hero";
-import { Coordinate, around, equalsCoordinate } from "../../utils/coordinate";
-import { SpecialPlaces } from "../places/special-places";
-import { Game } from "../game";
-import { Monster } from "../entitybase/monsters/monster";
-import { MonsterCollection } from "../entitybase/monsters/monsterCollection";
+import { TileMap } from '../tilemap/tilemap';
+import { Hero } from '../hero/hero';
+import { Coordinate, around, equalsCoordinate } from '../../utils/coordinate';
+import { SpecialPlaces } from '../places/special-places';
+import { Game } from '../game';
+import { Monster } from '../entitybase/monsters/monster';
+import { MonsterCollection } from '../entitybase/monsters/monsterCollection';
 
 export class World {
   constructor(

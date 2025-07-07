@@ -1,6 +1,6 @@
-import { MonsterCollection } from "../entitybase/monsters/monsterCollection";
-import { monsterDead } from "../events";
-import { EventHandler } from "./event-handler";
+import { MonsterCollection } from '../entitybase/monsters/monsterCollection';
+import { monsterDead } from '../events';
+import { EventHandler } from './event-handler';
 
 export class MonsterDeadHandler extends EventHandler {
   constructor(private monsters: MonsterCollection) {

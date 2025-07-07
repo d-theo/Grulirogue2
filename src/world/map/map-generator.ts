@@ -1,13 +1,13 @@
-import { MapGraph } from "../generation/map_definition";
-import { greeeceMap } from "../generation/levels/greece-map";
-import { ThingToPlace } from "../generation/map_tiling_utils";
-import { generateRLMap } from "../generation/map-generators/map_generation_rogue";
-import { generateOlMap } from "../generation/map-generators/map_generation_ol";
-import { pirateMap } from "../generation/levels/pirate-map";
-import { generatePirateMap } from "../generation/map-generators/map_generation_pirate1";
-import { generatePirateMap2 } from "../generation/map-generators/map_generation_pirate2";
-import { rogueMap } from "../generation/levels/rogue-map";
-import { RogueEventLevel } from "../../game/generation/event-rogue";
+import { MapGraph } from '../generation/map_definition';
+import { greeeceMap } from '../generation/levels/greece-map';
+import { ThingToPlace } from '../generation/map_tiling_utils';
+import { generateRLMap } from '../generation/map-generators/map_generation_rogue';
+import { generateOlMap } from '../generation/map-generators/map_generation_ol';
+import { pirateMap } from '../generation/levels/pirate-map';
+import { generatePirateMap } from '../generation/map-generators/map_generation_pirate1';
+import { generatePirateMap2 } from '../generation/map-generators/map_generation_pirate2';
+import { rogueMap } from '../generation/levels/rogue-map';
+import { RogueEventLevel } from '../../game/generation/event-rogue';
 
 export function createMap(name: number): {
   thingsToPlace: ThingToPlace[];
@@ -34,12 +34,12 @@ export function createMap(name: number): {
     case 4:
       painterFn = pirateMap;
       mapGeneratorFn = generatePirateMap;
-      overrides = [{ path: "specialRoom.chance", value: 0.5 }];
+      overrides = [{ path: 'specialRoom.chance', value: 0.5 }];
       break;
     case 5:
       painterFn = pirateMap;
       mapGeneratorFn = generatePirateMap2;
-      overrides = [{ path: "boss.chance", value: 1 }];
+      overrides = [{ path: 'boss.chance', value: 1 }];
       break;
     case 6:
       painterFn = pirateMap;
@@ -50,10 +50,7 @@ export function createMap(name: number): {
       mapGeneratorFn = generateOlMap;
       break;
   }
-  const { tilemapBG, tilemapFG, mapObject, thingsToPlace } = painterFn(
-    mapGeneratorFn,
-    overrides
-  );
+  const { tilemapBG, tilemapFG, mapObject, thingsToPlace } = painterFn(mapGeneratorFn, overrides);
 
   return {
     tilemap: tilemapBG,

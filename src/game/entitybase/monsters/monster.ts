@@ -1,19 +1,19 @@
-import { Health } from "../health";
-import { Coordinate } from "../../../utils/coordinate";
-import { Buffs } from "../buffable";
-import { pickInRange } from "../../../utils/random";
-import { microValidator } from "../../../utils/micro-validator";
-import { Armour } from "../items/armour";
-import { Weapon } from "../items/weapon";
-import { Entity } from "../entity";
-import { Spell } from "../../effects/spells";
-import * as _ from "lodash";
-import { DamageResolution } from "../../fight/damages";
-import { Afflictions } from "../afflictions";
-import { EnchantSolver } from "../../effects/echant-solver";
-import { Behavior, BehaviorType } from "../../ia/ai";
+import { Health } from '../health';
+import { Coordinate } from '../../../utils/coordinate';
+import { Buffs } from '../buffable';
+import { pickInRange } from '../../../utils/random';
+import { microValidator } from '../../../utils/micro-validator';
+import { Armour } from '../items/armour';
+import { Weapon } from '../items/weapon';
+import { Entity } from '../entity';
+import { Spell } from '../../effects/spells';
+import * as _ from 'lodash';
+import { DamageResolution } from '../../fight/damages';
+import { Afflictions } from '../afflictions';
+import { EnchantSolver } from '../../effects/echant-solver';
+import { Behavior, BehaviorType } from '../../ia/ai';
 
-let short = require("short-uuid");
+let short = require('short-uuid');
 
 export class Monster extends Entity {
   id = short.generate();
@@ -34,7 +34,7 @@ export class Monster extends Entity {
   dodge: number = 0.15;
   enchantSolver: EnchantSolver;
   spells: Spell[] = [];
-  aligment: "bad" | "good" = "bad";
+  aligment: 'bad' | 'good' = 'bad';
   behaviorsRegistry: Map<BehaviorType, Behavior>;
 
   private constructor(AIBehaviorsRegistry: Map<BehaviorType, Behavior>) {
@@ -49,12 +49,12 @@ export class Monster extends Entity {
     return this;
   }
 
-  setAligment(value: "good" | "bad") {
+  setAligment(value: 'good' | 'bad') {
     this.aligment = value;
-    if (this.aligment === "good") {
-      this.setBehavior("friendly");
-    } else if (this.aligment === "bad") {
-      this.setBehavior("default");
+    if (this.aligment === 'good') {
+      this.setBehavior('friendly');
+    } else if (this.aligment === 'bad') {
+      this.setBehavior('default');
     }
     return this;
   }
@@ -64,7 +64,7 @@ export class Monster extends Entity {
   }
 
   getFriendly() {
-    return this.getAligment() === "good";
+    return this.getAligment() === 'good';
   }
 
   setPos(pos: Coordinate) {
@@ -121,23 +121,8 @@ export class Monster extends Entity {
   }
 
   static makeMonster(arg: any): Monster {
-    const {
-      AIBehaviorsRegistry,
-      speed,
-      kind,
-      danger,
-      hp,
-      damage,
-      range,
-      pos,
-      dodge,
-      onHit,
-      spells,
-    } = arg;
-    microValidator(
-      [kind, danger, hp, damage, range, pos, AIBehaviorsRegistry],
-      "makeMonster"
-    );
+    const { AIBehaviorsRegistry, speed, kind, danger, hp, damage, range, pos, dodge, onHit, spells } = arg;
+    microValidator([kind, danger, hp, damage, range, pos, AIBehaviorsRegistry], 'makeMonster');
 
     const monster = new Monster(AIBehaviorsRegistry);
 
@@ -152,7 +137,7 @@ export class Monster extends Entity {
       .setName(kind)
       .setPos(pos)
       .setDodge(dodge)
-      .setBehavior("default");
+      .setBehavior('default');
 
     if (onHit) {
       monster.weapon.additionnalEffects.push(onHit);

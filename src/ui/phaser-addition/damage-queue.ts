@@ -1,4 +1,4 @@
-import { UIDamages } from "../entities";
+import { UIDamages } from '../entities';
 
 export class DamageQueue {
   private queue: UIDamages[] = [];

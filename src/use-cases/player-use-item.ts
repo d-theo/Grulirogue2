@@ -1,12 +1,15 @@
-import { playerUseItem } from "../commands";
-import { timePassed } from "../game/events";
-import { Hero } from "../game/hero/hero";
-import { SpecialPlaces } from "../game/places/special-places";
-import { gameBus } from "../infra/events/game-bus";
-import { CommandHandler } from "./commands";
+import { playerUseItem } from '../commands';
+import { timePassed } from '../game/events';
+import { Hero } from '../game/hero/hero';
+import { SpecialPlaces } from '../game/places/special-places';
+import { gameBus } from '../infra/events/game-bus';
+import { CommandHandler } from './commands';
 
 export class PlayerUseItemHandler extends CommandHandler {
-  constructor(private hero: Hero, private places: SpecialPlaces) {
+  constructor(
+    private hero: Hero,
+    private places: SpecialPlaces
+  ) {
     super();
   }
 

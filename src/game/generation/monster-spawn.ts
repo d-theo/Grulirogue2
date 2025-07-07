@@ -1,17 +1,12 @@
-import { distribute } from "../../utils/random";
-import { randomIn } from "../../utils/rectangle";
-import { RogueEventVars, rogueRandomMob } from "./event-rogue";
-import { MapGraph } from "../../world/generation/map_definition";
-import { randomMobForLevel } from "../../content/monsters/mob-table";
-import { Monster } from "../entitybase/monsters/monster";
-import { MonsterFactory } from "../entitybase/monsters/monster-factory";
+import { distribute } from '../../utils/random';
+import { randomIn } from '../../utils/rectangle';
+import { RogueEventVars, rogueRandomMob } from './event-rogue';
+import { MapGraph } from '../../world/generation/map_definition';
+import { randomMobForLevel } from '../../content/monsters/mob-table';
+import { Monster } from '../entitybase/monsters/monster';
+import { MonsterFactory } from '../entitybase/monsters/monster-factory';
 
-export function monstersSpawn(
-  monsterFactory: MonsterFactory,
-  mapGraph: MapGraph,
-  level: number,
-  dangerLevel: number
-) {
+export function monstersSpawn(monsterFactory: MonsterFactory, mapGraph: MapGraph, level: number, dangerLevel: number) {
   const rooms = mapGraph.rooms;
   const dangerZones = distribute(rooms.length - 1, dangerLevel);
   const monsterInLevel: Monster[] = [];

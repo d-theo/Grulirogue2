@@ -1,7 +1,7 @@
-import { createEventDefinition } from "ts-bus";
+import { createEventDefinition } from 'ts-bus';
 
 export const playerHealed = createEventDefinition<{
-    baseHp: number,
-    currentHp: number,
-    isSilent?: boolean,
-}>()("playerHealed");
+  baseHp: number;
+  currentHp: number;
+  isSilent?: boolean;
+}>()('playerHealed');

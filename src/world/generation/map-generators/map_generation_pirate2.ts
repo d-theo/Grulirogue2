@@ -1,7 +1,7 @@
-import * as _ from "lodash";
-import { createGraph } from "../map_definition";
-import { rand, randomPointOfEdge } from "../map-geo";
-import { Rect } from "../../../utils/rectangle";
+import * as _ from 'lodash';
+import { createGraph } from '../map_definition';
+import { rand, randomPointOfEdge } from '../map-geo';
+import { Rect } from '../../../utils/rectangle';
 
 let _id = 10;
 const id = () => {
@@ -80,11 +80,11 @@ export function generatePirateMap2() {
     isEntry: false,
     isExit: false,
   });
-  const doorExitPoint = randomPointOfEdge(hallway, "W");
-  const doorBossRightPoint = randomPointOfEdge(hallway, "E");
+  const doorExitPoint = randomPointOfEdge(hallway, 'W');
+  const doorBossRightPoint = randomPointOfEdge(hallway, 'E');
 
-  const doorEntryPoint = randomPointOfEdge(hallway2, "E");
-  const doorBossLeft = randomPointOfEdge(hallway2, "W");
+  const doorEntryPoint = randomPointOfEdge(hallway2, 'E');
+  const doorBossLeft = randomPointOfEdge(hallway2, 'W');
 
   graph.addRoom({
     roomId: 2,
@@ -145,11 +145,11 @@ export function generatePirateMap2() {
   graph.connect(3, 2);
   graph.connect(5, 2);
 
-  recursiveCut(north, graph, "S");
-  recursiveCut(south, graph, "N");
+  recursiveCut(north, graph, 'S');
+  recursiveCut(south, graph, 'N');
 
-  recursiveCut(north2, graph, "S");
-  recursiveCut(south2, graph, "N");
+  recursiveCut(north2, graph, 'S');
+  recursiveCut(south2, graph, 'N');
 
   const g = graph.generate(false);
   g.bossRoom = 3;
@@ -157,12 +157,12 @@ export function generatePirateMap2() {
 }
 
 function recursiveCut(r: Rect, graph, dir) {
-  const array = cutRect(r, "vertical", 0.2);
+  const array = cutRect(r, 'vertical', 0.2);
   if (array[0].width > 12) {
     recursiveCut(array[0], graph, dir);
   } else {
     if (array[0].width >= 9 && Math.random() > 0) {
-      const double = cutRect(array[0], "horizontal", 0);
+      const double = cutRect(array[0], 'horizontal', 0);
       makeDoubleRoom(double[0], double[1], graph, dir);
     } else {
       makeRoom(array[0], graph, dir);
@@ -172,7 +172,7 @@ function recursiveCut(r: Rect, graph, dir) {
     recursiveCut(array[1], graph, dir);
   } else {
     if (array[1].width >= 9 && Math.random() > 0.3) {
-      const double = cutRect(array[1], "horizontal", 0);
+      const double = cutRect(array[1], 'horizontal', 0);
       makeDoubleRoom(double[0], double[1], graph, dir);
     } else {
       makeRoom(array[1], graph, dir);
@@ -217,9 +217,9 @@ function makeDoubleRoom(north, south, graph, dir) {
   graph.addRoom(newRoomNorth);
   graph.addRoom(newRoomSouth);
 
-  if (dir === "S") {
-    const doorHall = randomPointOfEdge(south, "N");
-    const doorRoom = randomPointOfEdge(south, "S");
+  if (dir === 'S') {
+    const doorHall = randomPointOfEdge(south, 'N');
+    const doorRoom = randomPointOfEdge(south, 'S');
     graph.addDoor({
       roomId: newRoomSouth.roomId,
       position: doorHall.pos,
@@ -234,9 +234,9 @@ function makeDoubleRoom(north, south, graph, dir) {
     });
     graph.connect(newRoomSouth.roomId, 1);
     graph.connect(newRoomSouth.roomId, newRoomNorth.roomId);
-  } else if (dir === "N") {
-    const doorHall = randomPointOfEdge(north, "N");
-    const doorRoom = randomPointOfEdge(north, "S");
+  } else if (dir === 'N') {
+    const doorHall = randomPointOfEdge(north, 'N');
+    const doorRoom = randomPointOfEdge(north, 'S');
     graph.addDoor({
       roomId: newRoomNorth.roomId,
       position: doorHall.pos,
@@ -254,12 +254,8 @@ function makeDoubleRoom(north, south, graph, dir) {
   }
 }
 
-export function cutRect(
-  rect: Rect,
-  cutDirection: "horizontal" | "vertical",
-  fuzz: number
-) {
-  if (cutDirection === "vertical") {
+export function cutRect(rect: Rect, cutDirection: 'horizontal' | 'vertical', fuzz: number) {
+  if (cutDirection === 'vertical') {
     var w = rect.width;
     var f = Math.floor(fuzz * w);
     var cut = Math.floor(w / 2 + rand(-f, f));

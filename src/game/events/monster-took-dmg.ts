@@ -1,5 +1,5 @@
-import { createEventDefinition } from "ts-bus";
-import { Monster } from "../entitybase/monsters/monster";
+import { createEventDefinition } from 'ts-bus';
+import { Monster } from '../entitybase/monsters/monster';
 
 export const monsterTookDamage = createEventDefinition<{
   monster: Monster;
@@ -7,4 +7,4 @@ export const monsterTookDamage = createEventDefinition<{
   baseHp: number;
   currentHp: number;
   externalSource?: any;
-}>()("monsterTookDamage");
+}>()('monsterTookDamage');

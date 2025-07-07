@@ -1,9 +1,9 @@
-import { XTable, getInTable } from "../monsters/mob-table";
-import { pickInRange } from "../../utils/random";
-import { Armours, armourLevel, ArmourEnchants } from "./loot-armours";
-import { Potions } from "./loot-potions";
-import { Scrolls } from "./loot-scrolls";
-import { craftWeapon } from "./loot-weapons";
+import { XTable, getInTable } from '../monsters/mob-table';
+import { pickInRange } from '../../utils/random';
+import { Armours, armourLevel, ArmourEnchants } from './loot-armours';
+import { Potions } from './loot-potions';
+import { Scrolls } from './loot-scrolls';
+import { craftWeapon } from './loot-weapons';
 
 import {
   createWildFireBottle,
@@ -14,12 +14,12 @@ import {
   createSphereOfLighting,
   createColdCrystal,
   createTomeOfVegetation,
-} from "./loot-mics";
-import * as _ from "lodash";
-import { Item } from "../../game/entitybase/item";
-import { Armour } from "../../game/entitybase/items/armour";
-import { Potion } from "../../game/entitybase/items/potion";
-import { Scroll } from "../../game/entitybase/items/scroll";
+} from './loot-mics';
+import * as _ from 'lodash';
+import { Item } from '../../game/entitybase/item';
+import { Armour } from '../../game/entitybase/items/armour';
+import { Potion } from '../../game/entitybase/items/potion';
+import { Scroll } from '../../game/entitybase/items/scroll';
 
 export const ArmoursTable: XTable[] = [
   [
@@ -50,74 +50,74 @@ export const ArmoursTable: XTable[] = [
 
 export const ItemTable: XTable[] = [
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
   [
-    { chance: 45, type: "potion" },
-    { chance: 30, type: "scroll" },
-    { chance: 10, type: "weapon" },
+    { chance: 45, type: 'potion' },
+    { chance: 30, type: 'scroll' },
+    { chance: 10, type: 'weapon' },
     {
       chance: 10,
-      type: "armour",
+      type: 'armour',
     },
-    { chance: 5, type: "misc" },
+    { chance: 5, type: 'misc' },
   ],
 ];
 
@@ -163,7 +163,7 @@ export function getRandomLoot(level: number): Item {
   const itemKind = getInTable(ItemTable[level - 1]);
   let loot: Item;
   switch (itemKind) {
-    case "potion":
+    case 'potion':
       const p = getInTable(PotionTable);
       loot = new Potion({
         name: p.name,
@@ -171,7 +171,7 @@ export function getRandomLoot(level: number): Item {
         effect: p.effect,
       });
       break;
-    case "scroll":
+    case 'scroll':
       const s = getInTable(ScrollTable);
       loot = new Scroll({
         name: s.name,
@@ -179,10 +179,10 @@ export function getRandomLoot(level: number): Item {
         effect: s.effect(),
       });
       break;
-    case "weapon":
+    case 'weapon':
       loot = craftWeapon(pickInRange(level - 1, level + 1));
       break;
-    case "armour":
+    case 'armour':
       const armour = getInTable(ArmoursTable[level - 1]);
       loot = new Armour({
         name: armour.name,
@@ -204,7 +204,7 @@ export function getRandomLoot(level: number): Item {
         loot.identified = false;
       }
       break;
-    case "misc":
+    case 'misc':
       const item = getInTable(MiscTable)();
       loot = item;
       break;

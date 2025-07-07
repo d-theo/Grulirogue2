@@ -1,12 +1,12 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { DamageResolution } from "../../game/fight/damages";
-import { Hero } from "../../game/hero/hero";
-import { pickInRange } from "../../utils/random";
-import { SkillNames } from "../../game/hero/hero-skills";
-import { NullFunc } from "../../utils/func";
-import { Buff2 } from "../../game/entitybase/buff";
-import { Monster } from "../../game/entitybase/monsters/monster";
-import { itemEquiped, playerHealed, logPublished } from "../../game/events";
+import { gameBus } from '../../infra/events/game-bus';
+import { DamageResolution } from '../../game/fight/damages';
+import { Hero } from '../../game/hero/hero';
+import { pickInRange } from '../../utils/random';
+import { SkillNames } from '../../game/hero/hero-skills';
+import { NullFunc } from '../../utils/func';
+import { Buff2 } from '../../game/entitybase/buff';
+import { Monster } from '../../game/entitybase/monsters/monster';
+import { itemEquiped, playerHealed, logPublished } from '../../game/events';
 
 export const Conditions = {
   thicc: () => ({
@@ -22,11 +22,11 @@ export const Conditions = {
       t.enchants.setAbsorb(-1);
       gameBus.publish(itemEquiped({ armour: t.armour }));
     },
-    tags: "thicc",
+    tags: 'thicc',
   }),
   heal: () => ({
     onTick: (t: Hero) => {
-      let bonus = pickInRange("10-20");
+      let bonus = pickInRange('10-20');
       bonus += 10 * t.heroSkills.getSkillLevel(SkillNames.Alchemist);
       t.health.take(-bonus);
       gameBus.publish(
@@ -38,13 +38,11 @@ export const Conditions = {
     },
     onApply: NullFunc,
     onRemove: NullFunc,
-    tags: "heal",
+    tags: 'heal',
   }),
   dodge: ({ dodgeBonus }) => ({
     onApply: (t: Hero | Monster) => {
-      gameBus.publish(
-        logPublished({ level: "success", data: `${t.name} feels more agile` })
-      );
+      gameBus.publish(logPublished({ level: 'success', data: `${t.name} feels more agile` }));
       t.enchants.setAgile(+1);
       t.dodge += dodgeBonus;
     },
@@ -52,19 +50,17 @@ export const Conditions = {
       t.dodge -= dodgeBonus;
       t.enchants.setAgile(-1);
     },
-    tags: "dodge",
+    tags: 'dodge',
   }),
   stun: () => ({
     onApply: (t: Hero | Monster) => {
       t.enchants.setStuned(+1);
     },
     onTick: (t: Hero | Monster) => {
-      gameBus.publish(
-        logPublished({ level: "warning", data: `${t.name} is stuned` })
-      );
+      gameBus.publish(logPublished({ level: 'warning', data: `${t.name} is stuned` }));
     },
     onRemove: (t: Hero | Monster) => t.enchants.setStuned(-1),
-    tags: "stun",
+    tags: 'stun',
   }),
   blind: ({ sightMalus }) => ({
     onApply: (t: Hero | Monster) => {
@@ -83,13 +79,13 @@ export const Conditions = {
     onRemove: (t: Hero | Monster) => {
       t.enchants.setWet(-1);
     },
-    tags: "wet",
+    tags: 'wet',
   }),
   accurate: () => ({
     onApply: (t: Hero | Monster) => {
       gameBus.publish(
         logPublished({
-          level: "success",
+          level: 'success',
           data: `${t.name} feels more confident`,
         })
       );
@@ -101,7 +97,7 @@ export const Conditions = {
       t.weapon.maxRange -= 1;
     },
   }),
-  rage: ({ rageLevel = pickInRange("3-5") }) => ({
+  rage: ({ rageLevel = pickInRange('3-5') }) => ({
     onApply: (t: Hero | Monster) => {
       t.armour.modifyAbsorb(-rageLevel);
       t.weapon.modifyAdditionnalDmg(rageLevel);
@@ -118,43 +114,39 @@ export const Conditions = {
   bleed: () => ({
     onApply: (t: Hero | Monster) => {
       t.enchants.setBleeding(+1);
-      gameBus.publish(
-        logPublished({ level: "danger", data: `${t.name} starts bleeding` })
-      );
+      gameBus.publish(logPublished({ level: 'danger', data: `${t.name} starts bleeding` }));
     },
     onTick: (t: Hero | Monster) => {
-      new DamageResolution(null, t, 4 + t.level, "bleeding");
+      new DamageResolution(null, t, 4 + t.level, 'bleeding');
     },
     onRemove: (t: Hero | Monster) => t.enchants.setBleeding(-1),
-    tags: "bleed",
+    tags: 'bleed',
   }),
   poison: () => ({
     onApply: (t: Hero | Monster) => {
       gameBus.publish(
         logPublished({
-          level: "danger",
+          level: 'danger',
           data: `${t.name} feels poison in his veins`,
         })
       );
       t.enchants.setPoisoned(+1);
     },
     onTick: (t: Hero | Monster) => {
-      new DamageResolution(null, t, 2, "poisoning");
+      new DamageResolution(null, t, 2, 'poisoning');
     },
     onRemove: (t: Hero | Monster) => t.enchants.setPoisoned(-1),
-    tags: "poison",
+    tags: 'poison',
   }),
   precision: ({ precisionBonus }) => ({
     onApply: (t: Hero | Monster) => {
-      gameBus.publish(
-        logPublished({ level: "success", data: "your eyes are stronger" })
-      );
+      gameBus.publish(logPublished({ level: 'success', data: 'your eyes are stronger' }));
       t.precision += precisionBonus;
     },
     onRemove: (t: Hero | Monster) => {
       t.precision -= precisionBonus;
     },
-    tags: "precision",
+    tags: 'precision',
   }),
   hp: ({ bonusHp }) => ({
     onApply: (t: Hero | Monster) => {
@@ -163,7 +155,7 @@ export const Conditions = {
     onRemove: (t: Hero | Monster) => {
       t.health.getWeakerByHp(bonusHp);
     },
-    tags: "hp",
+    tags: 'hp',
   }),
   weakness: ({ hpWeaker: malusHp }) => ({
     onApply: (t: Hero | Monster) => {
@@ -172,13 +164,11 @@ export const Conditions = {
     onRemove: (t: Hero | Monster) => {
       t.health.getStrongerByHp(malusHp);
     },
-    tags: "weakness",
+    tags: 'weakness',
   }),
   speed: () => ({
     onApply: (t: Hero | Monster) => {
-      gameBus.publish(
-        logPublished({ level: "success", data: "you are boosted!" })
-      );
+      gameBus.publish(logPublished({ level: 'success', data: 'you are boosted!' }));
       t.enchants.setSpeed(+1);
       t.speed = t.speed * 2;
     },
@@ -186,13 +176,11 @@ export const Conditions = {
       t.enchants.setSpeed(-1);
       t.speed = t.speed / 2;
     },
-    tags: "speed",
+    tags: 'speed',
   }),
   slow: () => ({
     onApply: (t: Hero | Monster) => {
-      gameBus.publish(
-        logPublished({ level: "warning", data: "you feel tired" })
-      );
+      gameBus.publish(logPublished({ level: 'warning', data: 'you feel tired' }));
       t.enchants.setSlow(+1);
       t.speed = t.speed / 2;
     },
@@ -200,7 +188,7 @@ export const Conditions = {
       t.enchants.setSlow(-1);
       t.speed = t.speed * 2;
     },
-    tags: "slow",
+    tags: 'slow',
   }),
   // FIX ME => does not belong here right !?
   damage: ({ procChance, dmgRange, cause }) => ({
@@ -216,12 +204,12 @@ export const Conditions = {
     onApply: null,
     onTick: (t: Hero | Monster) => {
       if (t.enchants.getWet()) {
-        new DamageResolution(null, t, 7, "shock");
+        new DamageResolution(null, t, 7, 'shock');
       }
       t.addBuff(Buff2.create(Conditions.stun).setTurns(1));
       gameBus.publish(
         logPublished({
-          level: "warning",
+          level: 'warning',
           data: `${t.name} is stricken by a lightning bolt`,
         })
       );
@@ -233,9 +221,7 @@ export const Conditions = {
     onTick: (t: Hero | Monster) => {
       if (t.enchants.getWet()) {
         t.addBuff(Buff2.create(Conditions.stun).setTurns(1));
-        gameBus.publish(
-          logPublished({ level: "warning", data: `${t.name} is froze` })
-        );
+        gameBus.publish(logPublished({ level: 'warning', data: `${t.name} is froze` }));
       }
     },
     onRemove: Conditions.cold().onRemove,
@@ -252,7 +238,7 @@ export const Conditions = {
     onRemove: (t: Hero | Monster) => {
       t.enchants.setBurned(-1);
     },
-    tags: "burn",
+    tags: 'burn',
   }),
   health: ({ amount, procChance }) => ({
     onApply: null,
@@ -269,7 +255,7 @@ export const Conditions = {
       }
     },
     onRemove: NullFunc,
-    tags: "health",
+    tags: 'health',
   }),
   // TODO add affliction ?
   brave: () => ({
@@ -294,10 +280,10 @@ export const Conditions = {
   }),
   fear: () => ({
     onApply: (t: Monster) => {
-      t.setBehavior("fearfull");
+      t.setBehavior('fearfull');
     },
     onRemove: (t: Monster) => {
-      t.setBehavior("default");
+      t.setBehavior('default');
     },
   }),
   weak: () => ({
@@ -318,9 +304,7 @@ export const Conditions = {
     onRemove: (t: Hero | Monster) => {
       t.weapon.modifyAdditionnalDmg(-5);
       t.enchants.setMoreDamage(-1);
-      t.addBuff(
-        Buff2.create(Conditions.weak).setIsStackable(true).setTurns(15)
-      );
+      t.addBuff(Buff2.create(Conditions.weak).setIsStackable(true).setTurns(15));
     },
   }),
 };

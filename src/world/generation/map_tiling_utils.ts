@@ -1,23 +1,23 @@
-import { PlaceKind } from "../../game/places/place-definitions";
-import { Coordinate } from "../../utils/coordinate";
-import { randomIn } from "../../utils/rectangle";
-import { pointsOfRect } from "./map-geo";
-import * as _ from "lodash";
+import { PlaceKind } from '../../game/places/place-definitions';
+import { Coordinate } from '../../utils/coordinate';
+import { randomIn } from '../../utils/rectangle';
+import { pointsOfRect } from './map-geo';
+import * as _ from 'lodash';
 
 export interface ThingToPlace {
   pos: Coordinate;
   type:
-    | "snakeBoss"
-    | "potion"
-    | "scroll"
-    | "item-good"
-    | "item"
-    | "monster"
-    | "pirateBoss"
-    | "sailor"
-    | "misc"
-    | "crabBoss"
-    | "crab"
+    | 'snakeBoss'
+    | 'potion'
+    | 'scroll'
+    | 'item-good'
+    | 'item'
+    | 'monster'
+    | 'pirateBoss'
+    | 'sailor'
+    | 'misc'
+    | 'crabBoss'
+    | 'crab'
     | PlaceKind;
 }
 
@@ -57,17 +57,9 @@ export function lineTile(A, B, tilemap, type, atRate?: Function) {
   }
   return painted;
 }
-export function propagate(
-  pos,
-  tilemap,
-  factor,
-  propagationEntropy,
-  biome,
-  predicate,
-  marked = {}
-) {
-  if (marked[pos.x + " " + pos.y]) return;
-  marked[pos.x + " " + pos.y] = true;
+export function propagate(pos, tilemap, factor, propagationEntropy, biome, predicate, marked = {}) {
+  if (marked[pos.x + ' ' + pos.y]) return;
+  marked[pos.x + ' ' + pos.y] = true;
   if (predicate(pos, factor)) {
     tilemap[pos.y][pos.x] = biome;
     propagate(

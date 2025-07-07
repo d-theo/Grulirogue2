@@ -1,8 +1,8 @@
-import { SpellTarget } from "../../effects/spells";
-import { Hero } from "../../hero/hero";
-import { Buff2 } from "../buff";
-import { Item, ItemArgument } from "../item";
-import { ItemVisitor } from "../items/item-visitor";
+import { SpellTarget } from '../../effects/spells';
+import { Hero } from '../../hero/hero';
+import { Buff2 } from '../buff';
+import { Item, ItemArgument } from '../item';
+import { ItemVisitor } from '../items/item-visitor';
 
 export class Armour extends Item implements ItemArgument {
   private baseAbsorb: number;
@@ -19,17 +19,17 @@ export class Armour extends Item implements ItemArgument {
     this.isConsumable = false;
     this.baseAbsorb = arg.baseAbsorb || 0;
     this.bulky = arg.bulky || 0;
-    this.keyMapping["w"] = this.use.bind(this);
-    this.keyDescription["w"] = "(w)ear";
+    this.keyMapping['w'] = this.use.bind(this);
+    this.keyDescription['w'] = '(w)ear';
     this.onEquipBuffs = arg.onEquipBuffs || [];
   }
 
   get description(): string {
     if (this.identified) {
-      let s = "";
+      let s = '';
       s += `Armour class: ${this.baseAbsorb} ${this.formatAbsorbBonus()}`;
-      s += "\n\n";
-      s += `${this.additionalDescription.join("\n")}`;
+      s += '\n\n';
+      s += `${this.additionalDescription.join('\n')}`;
       return s;
     } else {
       return `An unidentified ${this._name}`;
@@ -38,13 +38,7 @@ export class Armour extends Item implements ItemArgument {
 
   get name() {
     if (this.identified) {
-      return (
-        this._name +
-        " " +
-        this.additionalName.join(" ") +
-        " " +
-        this.formatAbsorbBonus()
-      );
+      return this._name + ' ' + this.additionalName.join(' ') + ' ' + this.formatAbsorbBonus();
     } else {
       return `An unidentified ${this._name}`;
     }
@@ -55,9 +49,9 @@ export class Armour extends Item implements ItemArgument {
   }
 
   private formatAbsorbBonus(): string {
-    if (this.additionalAbsorb === 0) return "";
-    else if (this.additionalAbsorb > 0) return "+" + this.additionalAbsorb;
-    else if (this.additionalAbsorb < 0) return "" + this.additionalAbsorb;
+    if (this.additionalAbsorb === 0) return '';
+    else if (this.additionalAbsorb > 0) return '+' + this.additionalAbsorb;
+    else if (this.additionalAbsorb < 0) return '' + this.additionalAbsorb;
   }
 
   public modifyAbsorb(modifier: number) {
@@ -95,6 +89,6 @@ export class Armour extends Item implements ItemArgument {
 
 export const NullArmour = new Armour({
   baseAbsorb: 0,
-  name: "",
-  description: "",
+  name: '',
+  description: '',
 });

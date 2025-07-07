@@ -1,6 +1,6 @@
-import { Entity } from "../entitybase/entity";
-import { Coordinate } from "../../utils/coordinate";
-import { TileTrigger, TileTriggers } from "./tile-trigger";
+import { Entity } from '../entitybase/entity';
+import { Coordinate } from '../../utils/coordinate';
+import { TileTrigger, TileTriggers } from './tile-trigger';
 
 export enum TileVisibility {
   Unknown = -1,
@@ -68,11 +68,11 @@ export class Tile {
     this.tileTriggers.update();
   }
 
-  on(event: "walked" | "left", entity: Entity) {
-    if (event === "walked") {
+  on(event: 'walked' | 'left', entity: Entity) {
+    if (event === 'walked') {
       this.tileTriggers.onEntityWalked(entity);
     }
-    if (event === "left") {
+    if (event === 'left') {
       this.tileTriggers.onEntityLeft(entity);
     }
   }

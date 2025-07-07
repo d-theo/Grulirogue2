@@ -1,14 +1,14 @@
-import { playerActionMove } from "../commands";
-import { ItemCollection } from "../game/entitybase/items/item-collection";
-import { MonsterCollection } from "../game/entitybase/monsters/monsterCollection";
-import { playerMoved, timePassed } from "../game/events";
-import { Hero } from "../game/hero/hero";
-import { SpecialPlaces } from "../game/places/special-places";
-import { TileMap } from "../game/tilemap/tilemap";
-import { playerMove } from "../game/use-cases/playerMove";
-import { gameBus } from "../infra/events/game-bus";
-import { MessageResponse, MessageResponseStatus } from "../utils/types";
-import { CommandHandler } from "./commands";
+import { playerActionMove } from '../commands';
+import { ItemCollection } from '../game/entitybase/items/item-collection';
+import { MonsterCollection } from '../game/entitybase/monsters/monsterCollection';
+import { playerMoved, timePassed } from '../game/events';
+import { Hero } from '../game/hero/hero';
+import { SpecialPlaces } from '../game/places/special-places';
+import { TileMap } from '../game/tilemap/tilemap';
+import { playerMove } from '../game/use-cases/playerMove';
+import { gameBus } from '../infra/events/game-bus';
+import { MessageResponse, MessageResponseStatus } from '../utils/types';
+import { CommandHandler } from './commands';
 
 export class PlayerActionMoveHandler extends CommandHandler {
   constructor(

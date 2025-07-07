@@ -1,6 +1,6 @@
-import { Coordinate, equalsCoordinate } from "../../../utils/coordinate";
-import { Item } from "../item";
-import { Wand } from "./wands";
+import { Coordinate, equalsCoordinate } from '../../../utils/coordinate';
+import { Item } from '../item';
+import { Wand } from './wands';
 
 export class ItemCollection {
   private items: Item[] = [];
@@ -24,9 +24,7 @@ export class ItemCollection {
     return this.items.find((i) => id === i.id);
   }
   getAt(pos: Coordinate) {
-    const item = this.items
-      .reverse()
-      .find((i) => i.pos && equalsCoordinate(i.pos, pos));
+    const item = this.items.reverse().find((i) => i.pos && equalsCoordinate(i.pos, pos));
     if (!item) {
       return null;
     } else {

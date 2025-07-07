@@ -1,22 +1,22 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { World } from "./world-ctx";
-import { Coordinate, around } from "../../utils/coordinate";
-import { line } from "../tilemap/sight";
-import { MapEffect } from "../../world/map/map-effect";
-import { TileTrigger, TriggerType } from "../tilemap/tile-trigger";
-import { effectSet } from "../events";
+import { gameBus } from '../../infra/events/game-bus';
+import { World } from './world-ctx';
+import { Coordinate, around } from '../../utils/coordinate';
+import { line } from '../tilemap/sight';
+import { MapEffect } from '../../world/map/map-effect';
+import { TileTrigger, TriggerType } from '../tilemap/tile-trigger';
+import { effectSet } from '../events';
 
-const short = require("short-uuid");
+const short = require('short-uuid');
 
 export enum SpellTarget {
-  Location = "location",
-  AoE = "AoE",
-  Armour = "armour",
-  Item = "item",
-  Weapon = "weapon",
-  Movable = "movable",
-  Hero = "hero",
-  None = "",
+  Location = 'location',
+  AoE = 'AoE',
+  Armour = 'armour',
+  Item = 'item',
+  Weapon = 'weapon',
+  Movable = 'movable',
+  Hero = 'hero',
+  None = '',
 }
 
 export interface Spell {
@@ -34,17 +34,17 @@ interface AoESpell {
 export function createAoESpell(world: World, aoeSpellBuilder: AoESpell) {
   let strategy;
   switch (aoeSpellBuilder.shapeStrategy) {
-    case "around":
+    case 'around':
       strategy = aroundStrategy(aoeSpellBuilder);
       break;
-    case "around2":
+    case 'around2':
       strategy = around2Strategy(aoeSpellBuilder);
       break;
-    case "line":
+    case 'line':
       strategy = lineStategy(aoeSpellBuilder);
       break;
     default:
-      throw new Error("not implemented Spell shape");
+      throw new Error('not implemented Spell shape');
   }
   return new AreaOfEffectSpell(world, strategy, aoeSpellBuilder);
 
@@ -57,7 +57,7 @@ export function createAoESpell(world: World, aoeSpellBuilder: AoESpell) {
             id: tileTrigger.id,
             type: builder.mapEffect,
             pos: pos,
-            animation: "static",
+            animation: 'static',
           })
         );
       }

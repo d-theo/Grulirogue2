@@ -1,19 +1,14 @@
-import {
-  isTileEmpty,
-  isSurroundingClear,
-  isMovingOnlyOneCase,
-  isInsideMapBorder,
-} from "./preconditions/moveAllowed";
-import { MessageResponse, MessageResponseStatus } from "../../utils/types";
-import { Hero } from "../hero/hero";
-import { TileMap } from "../tilemap/tilemap";
-import { Coordinate } from "../../utils/coordinate";
-import { gameBus } from "../../infra/events/game-bus";
-import { SpecialPlaces } from "../places/special-places";
-import { Terrain } from "../../world/map/terrain.greece";
-import { ItemCollection } from "../entitybase/items/item-collection";
-import { MonsterCollection } from "../entitybase/monsters/monsterCollection";
-import { doorOpened } from "../events";
+import { isTileEmpty, isSurroundingClear, isMovingOnlyOneCase, isInsideMapBorder } from './preconditions/moveAllowed';
+import { MessageResponse, MessageResponseStatus } from '../../utils/types';
+import { Hero } from '../hero/hero';
+import { TileMap } from '../tilemap/tilemap';
+import { Coordinate } from '../../utils/coordinate';
+import { gameBus } from '../../infra/events/game-bus';
+import { SpecialPlaces } from '../places/special-places';
+import { Terrain } from '../../world/map/terrain.greece';
+import { ItemCollection } from '../entitybase/items/item-collection';
+import { MonsterCollection } from '../entitybase/monsters/monsterCollection';
+import { doorOpened } from '../events';
 
 export function playerMove(args: {
   pos: Coordinate;
@@ -30,9 +25,9 @@ export function playerMove(args: {
     isMovingOnlyOneCase(hero.pos, pos) &&
     isInsideMapBorder(pos, tilemap.getBorders())
   ) {
-    tilemap.getAt(hero.pos).on("left", hero);
+    tilemap.getAt(hero.pos).on('left', hero);
     hero.pos = pos;
-    tilemap.getAt(pos).on("walked", hero);
+    tilemap.getAt(pos).on('walked', hero);
     const maybeItem = itemOnGround(pos, items);
     if (maybeItem) {
       hero.addToBag(maybeItem);

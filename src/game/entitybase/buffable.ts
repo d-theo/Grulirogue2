@@ -1,4 +1,4 @@
-import {Buff2} from "./buff";
+import { Buff2 } from './buff';
 
 export class Buffs {
   buffs: Buff2[] = [];

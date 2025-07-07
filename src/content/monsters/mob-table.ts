@@ -1,5 +1,5 @@
-import { Bestiaire } from "./bestiaire";
-import { pickInRange } from "../../utils/random";
+import { Bestiaire } from './bestiaire';
+import { pickInRange } from '../../utils/random';
 
 export const MobTable: XTable[] = [
   [

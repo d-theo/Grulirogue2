@@ -1,3 +1,3 @@
 export abstract class EventHandler {
-    abstract handle(event);
+  abstract handle(event);
 }

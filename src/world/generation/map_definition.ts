@@ -1,6 +1,6 @@
-import * as _ from "lodash";
-import { Coordinate } from "../../utils/coordinate";
-import { Rect } from "../../utils/rectangle";
+import * as _ from 'lodash';
+import { Coordinate } from '../../utils/coordinate';
+import { Rect } from '../../utils/rectangle';
 
 export interface MapGraph {
   doors: {
@@ -48,12 +48,7 @@ export function createGraph() {
     graph[rid2] = graph[rid2] ? graph[rid2].concat([rid1]) : [rid1];
   }
 
-  function addDoor(arg: {
-    roomId: number;
-    position: Coordinate;
-    isLocked: boolean;
-    zoneId: number;
-  }) {
+  function addDoor(arg: { roomId: number; position: Coordinate; isLocked: boolean; zoneId: number }) {
     doors.push(arg);
   }
 
@@ -105,14 +100,14 @@ export function createGraph() {
         if (r.rect.width * r.rect.height > 40) {
           if (!res.bossRoom) {
             res.bossRoom = r.roomId;
-            console.log("bossroom available");
+            console.log('bossroom available');
           } else {
             res.specialRoom = r.roomId;
-            console.log("specialroom available");
+            console.log('specialroom available');
           }
         } else {
           res.miniRoom = r.roomId;
-          console.log("miniroom available");
+          console.log('miniroom available');
         }
       }
     }

@@ -1,6 +1,6 @@
-import { Item } from "../entitybase/item";
-import _ from "lodash";
-import { ItemVisitor } from "../entitybase/items/item-visitor";
+import { Item } from '../entitybase/item';
+import _ from 'lodash';
+import { ItemVisitor } from '../entitybase/items/item-visitor';
 
 export class Inventory {
   bag: Item[];
@@ -29,14 +29,14 @@ export class Inventory {
     const itemVisitor = new ItemVisitor();
     let inventory = _(this.bag)
       .map((item: Item) => item.visit(itemVisitor))
-      .groupBy("kind")
+      .groupBy('kind')
       .value();
     const sections = Object.keys(inventory);
     inventory.sections = sections;
     for (let k of sections) {
       inventory[k] = inventory[k]
         .reduce((acc, val) => {
-          if (val.kind === "Consumables") {
+          if (val.kind === 'Consumables') {
             let found = acc.find((i: any) => {
               return i.item.name == val.item.name;
             });
@@ -60,9 +60,7 @@ export class Inventory {
     }
 
     if (filters) {
-      inventory.sections = inventory.sections.filter(
-        (s) => filters.indexOf(s) > -1
-      );
+      inventory.sections = inventory.sections.filter((s) => filters.indexOf(s) > -1);
     }
     return inventory;
   }

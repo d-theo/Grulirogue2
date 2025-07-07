@@ -1,13 +1,13 @@
-import { Scene } from "phaser";
-import { toPix } from "../../utils/maths/maps-utils";
-import { Coordinate } from "../../utils/coordinate";
-import { gameBus } from "../../infra/events/game-bus";
-import { pickInRange } from "../../utils/random";
-import { Entity } from "../../game/entitybase/entity";
-import * as _ from "lodash";
-import { Hero } from "../../game/hero/hero";
-import { Monster } from "../../game/entitybase/monsters/monster";
-import { gameOver } from "../../game/events";
+import { Scene } from 'phaser';
+import { toPix } from '../../utils/maths/maps-utils';
+import { Coordinate } from '../../utils/coordinate';
+import { gameBus } from '../../infra/events/game-bus';
+import { pickInRange } from '../../utils/random';
+import { Entity } from '../../game/entitybase/entity';
+import * as _ from 'lodash';
+import { Hero } from '../../game/hero/hero';
+import { Monster } from '../../game/entitybase/monsters/monster';
+import { gameOver } from '../../game/events';
 
 export class UIEntity {
   sprite: Phaser.GameObjects.Sprite;
@@ -22,23 +22,11 @@ export class UIEntity {
     public subject: Entity,
     private imageKey
   ) {
-    this.sprite = this.parentScene.physics.add.sprite(
-      toPix(subject.pos.x),
-      toPix(subject.pos.y),
-      imageKey
-    );
+    this.sprite = this.parentScene.physics.add.sprite(toPix(subject.pos.x), toPix(subject.pos.y), imageKey);
     this.sprite.setOrigin(0, 0);
-    this.healthBarFull = this.parentScene.add.sprite(
-      this.sprite.x,
-      this.sprite.y - 14,
-      "healthfull"
-    );
+    this.healthBarFull = this.parentScene.add.sprite(this.sprite.x, this.sprite.y - 14, 'healthfull');
     this.healthBarFull.setOrigin(0, 0);
-    this.healthBar = this.parentScene.add.sprite(
-      this.sprite.x,
-      this.sprite.y - 14,
-      "health"
-    );
+    this.healthBar = this.parentScene.add.sprite(this.sprite.x, this.sprite.y - 14, 'health');
     this.healthBar.setOrigin(0, 0);
     this.healthBar.setAlpha(0);
     this.healthBarFull.setAlpha(0);
@@ -84,11 +72,11 @@ export class UIEntity {
 
   addAffect(affect: string) {
     const status = {
-      Bleeding: "bleeding",
-      Poisoned: "poisoning",
-      "Movement+": "movement_plus",
-      "Range+": "range_plus",
-      "Absorb+": "absorb_plus",
+      Bleeding: 'bleeding',
+      Poisoned: 'poisoning',
+      'Movement+': 'movement_plus',
+      'Range+': 'range_plus',
+      'Absorb+': 'absorb_plus',
     };
     const offset = this.affects.length * 10;
     const sprite = this.parentScene.add.sprite(
@@ -116,8 +104,8 @@ export class UIEntity {
       if (isHero) {
         gameBus.publish(gameOver({}));
       } else {
-        if (pickInRange("0-1")) {
-          this.sprite.setTexture("blood");
+        if (pickInRange('0-1')) {
+          this.sprite.setTexture('blood');
           this.healthBarFull.destroy();
           this.healthBar.destroy();
           this.sprite.setDepth(0);
@@ -134,8 +122,7 @@ export class UIEntity {
     } else {
       this.healthBar.setAlpha(0.9);
       this.healthBarFull.setAlpha(0.9);
-      const normalized =
-        this.subject.health.currentHp / this.subject.health.baseHp;
+      const normalized = this.subject.health.currentHp / this.subject.health.baseHp;
       this.healthBar.scaleX = normalized;
     }
   }
@@ -151,7 +138,7 @@ export class UIEntity {
 
     this.parentScene.tweens.add({
       targets: this.sprite,
-      ease: "Linear",
+      ease: 'Linear',
       duration: 50,
       delay: delay,
       repeat: 0,
@@ -162,7 +149,7 @@ export class UIEntity {
 
     this.parentScene.tweens.add({
       targets: this.healthBar,
-      ease: "Linear",
+      ease: 'Linear',
       duration: 50,
       delay: delay,
       repeat: 0,
@@ -172,7 +159,7 @@ export class UIEntity {
     });
     this.parentScene.tweens.add({
       targets: this.healthBarFull,
-      ease: "Linear",
+      ease: 'Linear',
       duration: 50,
       delay: delay,
       repeat: 0,
@@ -183,7 +170,7 @@ export class UIEntity {
     this.affects.forEach((affect) => {
       this.parentScene.tweens.add({
         targets: affect.sprite,
-        ease: "Linear",
+        ease: 'Linear',
         duration: 50,
         delay: delay,
         repeat: 0,
@@ -196,7 +183,7 @@ export class UIEntity {
     if (this.outline) {
       this.parentScene.tweens.add({
         targets: this.outline,
-        ease: "Linear",
+        ease: 'Linear',
         duration: 50,
         delay: delay,
         repeat: 0,
@@ -218,27 +205,19 @@ export class UIEntity {
   }
 
   updateFriendyIndication() {
-    if (
-      this.subject instanceof Monster &&
-      this.subject.getFriendly() &&
-      this.outline == null
-    ) {
+    if (this.subject instanceof Monster && this.subject.getFriendly() && this.outline == null) {
       this.outline = this.parentScene.physics.add
-        .sprite(
-          toPix(this.subject.pos.x),
-          toPix(this.subject.pos.y),
-          "friendly"
-        )
+        .sprite(toPix(this.subject.pos.x), toPix(this.subject.pos.y), 'friendly')
         .setOrigin(0, 0);
     }
   }
 
   updateHeroSprite(armourSkin: string) {
     const skin = {
-      "armour-light": "hero-light",
-      "armour-heavy": "hero-heavy",
-      "@": "@",
+      'armour-light': 'hero-light',
+      'armour-heavy': 'hero-heavy',
+      '@': '@',
     };
-    this.sprite.setTexture(skin[armourSkin] ?? "hero");
+    this.sprite.setTexture(skin[armourSkin] ?? 'hero');
   }
 }

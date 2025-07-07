@@ -1,9 +1,6 @@
 type Context = any;
 
-export type Trigger = "onHit"
-  | "onMove"
-  | "onEquip"
-  | "onBeHit"
+export type Trigger = 'onHit' | 'onMove' | 'onEquip' | 'onBeHit';
 
 // Enchant is something that can be applied to an Entity when a trigger occurs.
 export type Enchant = {
@@ -12,7 +9,7 @@ export type Enchant = {
   onMove?: (ctx: Context) => void;
   onEquip?: (ctx: Context) => void;
   onBeHit?: (ctx: Context) => void;
-}
+};
 
 class EnchantSystem {
   private enchants: Enchant[] = [];
@@ -28,6 +25,6 @@ class EnchantSystem {
   }
 
   get(type: Trigger) {
-    return this.enchants.filter(e => typeof e[type] === 'function');
+    return this.enchants.filter((e) => typeof e[type] === 'function');
   }
 }

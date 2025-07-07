@@ -1,76 +1,76 @@
-import { XTable, getInTable } from "../monsters/mob-table";
-import { pickInArray, pickInRange } from "../../utils/random";
-import { GameRange } from "../../utils/range";
-import * as _ from "lodash";
-import { Conditions } from "../../content/conditions/conditions";
-import { Buff2 } from "../../game/entitybase/buff";
-import { Weapon } from "../../game/entitybase/items/weapon";
+import { XTable, getInTable } from '../monsters/mob-table';
+import { pickInArray, pickInRange } from '../../utils/random';
+import { GameRange } from '../../utils/range';
+import * as _ from 'lodash';
+import { Conditions } from '../../content/conditions/conditions';
+import { Buff2 } from '../../game/entitybase/buff';
+import { Weapon } from '../../game/entitybase/items/weapon';
 
 export const DmgPerTier = [1, 3, 5, 7, 9, 13, 16];
 export const rangePerTier = [1, 2, 3, 4, 5, 5, 5];
 
 export const namesPerRange = [
   {
-    names: ["Fist"],
+    names: ['Fist'],
     range: 1,
   },
   {
-    names: ["Slingshot"],
+    names: ['Slingshot'],
     range: 2,
   },
   {
-    names: ["Blowpipe"],
+    names: ['Blowpipe'],
     range: 3,
   },
   {
-    names: ["Short bow"],
+    names: ['Short bow'],
     range: 4,
   },
   {
-    names: ["Crossbow"],
+    names: ['Crossbow'],
     range: 5,
   },
 ];
 
 export const namesPerDamage = [
   {
-    names: ["Weak", "Broken", "Tiny", "Unreliable", "Useless"],
+    names: ['Weak', 'Broken', 'Tiny', 'Unreliable', 'Useless'],
     lessThan: 3,
   },
   {
-    names: ["Small", "Rusty", "Crappy"],
+    names: ['Small', 'Rusty', 'Crappy'],
     lessThan: 5,
   },
   {
-    names: ["Standard", "Mediocre"],
+    names: ['Standard', 'Mediocre'],
     lessThan: 10,
   },
   {
-    names: ["Polished", "Military", "Fine"],
+    names: ['Polished', 'Military', 'Fine'],
     lessThan: 15,
   },
   {
-    names: ["Epic", "Well crafted"],
+    names: ['Epic', 'Well crafted'],
     lessThan: 20,
   },
 ];
 
 export const WeaponEchants: XTable = [
-  { chance: 26, type: "nothing" },
-  { chance: 15, type: "plus_one" },
-  { chance: 10, type: "plus_two" },
-  { chance: 5, type: "poisoned" },
-  { chance: 5, type: "bleed" },
-  { chance: 5, type: "stun" },
-  { chance: 5, type: "shock" },
-  { chance: 5, type: "cold" },
-  { chance: 5, type: "weak" },
-  { chance: 3, type: "plus_three" },
-  { chance: 2, type: "plus_four" },
-  { chance: 1, type: "plus_five" },
-  { chance: 5, type: "minus_one" },
-  { chance: 5, type: "minus_two" },
-  { chance: 5, type: "minus_three" },
+  { chance: 26, type: 'nothing' },
+  { chance: 15, type: 'plus_one' },
+  { chance: 10, type: 'plus_two' },
+  { chance: 5, type: 'poisoned' },
+  { chance: 5, type: 'bleed' },
+  { chance: 5, type: 'stun' },
+  { chance: 5, type: 'shock' },
+  { chance: 5, type: 'cold' },
+  { chance: 5, type: 'weak' },
+  { chance: 3, type: 'plus_three' },
+  { chance: 2, type: 'plus_four' },
+  { chance: 1, type: 'plus_five' },
+  { chance: 5, type: 'minus_one' },
+  { chance: 5, type: 'minus_two' },
+  { chance: 5, type: 'minus_three' },
 ];
 
 export const WeaponOnCarryBonus = [
@@ -78,23 +78,22 @@ export const WeaponOnCarryBonus = [
     effect: Buff2.create(() => Conditions.precision({ precisionBonus: 0.1 }))
       .setTurns(Infinity)
       .setIsStackable(true),
-    name: "of precision",
-    description: "this weapon is very accurate",
+    name: 'of precision',
+    description: 'this weapon is very accurate',
   },
   {
-    effect: Buff2.create(() => Conditions.hp({ bonusHp: pickInRange("5-15") }))
+    effect: Buff2.create(() => Conditions.hp({ bonusHp: pickInRange('5-15') }))
       .setTurns(Infinity)
       .setIsStackable(true),
-    name: "of vitality",
-    description: "this weapon grants you more vitality",
+    name: 'of vitality',
+    description: 'this weapon grants you more vitality',
   },
   {
     effect: Buff2.create(() => Conditions.dodge({ dodgeBonus: 0.05 }))
       .setTurns(Infinity)
       .setIsStackable(true),
-    name: "of agility",
-    description:
-      "this weapon is easy enought to manipulate and allows to dodge better",
+    name: 'of agility',
+    description: 'this weapon is easy enought to manipulate and allows to dodge better',
   },
 ];
 
@@ -121,7 +120,7 @@ export const craftWeapon = (tier: number): Weapon => {
 
   const rand = new GameRange(DmgPerTier[dmgIdx - 1], DmgPerTier[dmgIdx]); // fixme
   const dmg = [rand.pick(), rand.pick()].sort();
-  const weaponDmg = dmg.join("-");
+  const weaponDmg = dmg.join('-');
 
   const weaponName = `${getDmgName(dmg[1])} ${getRangeName(weaponRange)}`;
   const w = new Weapon({
@@ -133,106 +132,98 @@ export const craftWeapon = (tier: number): Weapon => {
   const enchants = Array.from(new Set(enchantsForWeapon()));
   for (const e of enchants) {
     switch (e) {
-      case "nothing":
+      case 'nothing':
         break;
-      case "plus_one":
+      case 'plus_one':
         w.modifyAdditionnalDmg(+1);
         w.identified = false;
         break;
-      case "minus_one":
+      case 'minus_one':
         w.modifyAdditionnalDmg(-1);
         w.identified = false;
         break;
-      case "minus_two":
+      case 'minus_two':
         w.modifyAdditionnalDmg(-2);
         w.identified = false;
         break;
-      case "minus_three":
+      case 'minus_three':
         w.modifyAdditionnalDmg(-3);
         w.identified = false;
         break;
-      case "plus_two":
+      case 'plus_two':
         w.modifyAdditionnalDmg(+1);
         w.identified = false;
         break;
-      case "plus_three":
+      case 'plus_three':
         w.modifyAdditionnalDmg(+1);
         w.identified = false;
         break;
-      case "plus_four":
+      case 'plus_four':
         w.modifyAdditionnalDmg(+1);
         w.identified = false;
         break;
-      case "plus_five":
+      case 'plus_five':
         w.modifyAdditionnalDmg(+1);
         w.identified = false;
         break;
-      case "stun":
+      case 'stun':
         w.additionnalEffects.push({
           effect: Buff2.create(Conditions.stun).setTurns(1),
-          target: "target",
+          target: 'target',
           chance: 0.07,
         });
-        w.additionalDescription.push("can stun the target");
-        w.additionalName.push("Stun");
+        w.additionalDescription.push('can stun the target');
+        w.additionalName.push('Stun');
         w.identified = false;
         break;
-      case "bleed":
+      case 'bleed':
         w.additionnalEffects.push({
           effect: Buff2.create(Conditions.bleed).setTurns(3),
-          target: "target",
+          target: 'target',
           chance: 0.1,
         });
-        w.additionalDescription.push("inflict bleeding");
-        w.additionalName.push("Bleeding");
+        w.additionalDescription.push('inflict bleeding');
+        w.additionalName.push('Bleeding');
         w.identified = false;
         break;
-      case "poison":
+      case 'poison':
         w.additionnalEffects.push({
           effect: Buff2.create(Conditions.poison).setTurns(4),
-          target: "target",
+          target: 'target',
           chance: 0.5,
         });
-        w.additionalDescription.push("poison the target");
-        w.additionalName.push("Poison");
+        w.additionalDescription.push('poison the target');
+        w.additionalName.push('Poison');
         w.identified = false;
         break;
-      case "shock":
+      case 'shock':
         w.additionnalEffects.push({
           effect: Buff2.create(Conditions.shock).setTurns(1),
-          target: "target",
+          target: 'target',
           chance: 0.5,
         });
-        w.additionalDescription.push(
-          "Can shock the target. If the target is wet, it also adds a bonus dammage"
-        );
-        w.additionalName.push("Lightning");
+        w.additionalDescription.push('Can shock the target. If the target is wet, it also adds a bonus dammage');
+        w.additionalName.push('Lightning');
         w.identified = false;
         break;
-      case "cold":
+      case 'cold':
         w.additionnalEffects.push({
           effect: Buff2.create(Conditions.cold).setTurns(1),
-          target: "target",
+          target: 'target',
           chance: 0.5,
         });
-        w.additionalDescription.push(
-          "Deals additionnal cold damages. If the target is wet, it also freeze it"
-        );
-        w.additionalName.push("Cold");
+        w.additionalDescription.push('Deals additionnal cold damages. If the target is wet, it also freeze it');
+        w.additionalName.push('Cold');
         w.identified = false;
         break;
-      case "weakness":
+      case 'weakness':
         w.additionnalEffects.push({
-          effect: Buff2.create(() =>
-            Conditions.weakness({ hpWeaker: 5 })
-          ).setTurns(10),
-          target: "target",
+          effect: Buff2.create(() => Conditions.weakness({ hpWeaker: 5 })).setTurns(10),
+          target: 'target',
           chance: 0.1,
         });
-        w.additionalDescription.push(
-          "Weaken your opponent by reducing their total hp"
-        );
-        w.additionalName.push("Weakness");
+        w.additionalDescription.push('Weaken your opponent by reducing their total hp');
+        w.additionalName.push('Weakness');
         w.identified = false;
         break;
       default:
@@ -250,20 +241,11 @@ export const craftWeapon = (tier: number): Weapon => {
 };
 
 function enchantsForWeapon() {
-  const p = pickInRange("0-100");
+  const p = pickInRange('0-100');
   if (p > 90) {
-    return [
-      getInTable(WeaponEchants),
-      getInTable(WeaponEchants),
-      getInTable(WeaponEchants),
-      getInTable(WeaponEchants),
-    ];
+    return [getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants)];
   } else if (p > 60) {
-    return [
-      getInTable(WeaponEchants),
-      getInTable(WeaponEchants),
-      getInTable(WeaponEchants),
-    ];
+    return [getInTable(WeaponEchants), getInTable(WeaponEchants), getInTable(WeaponEchants)];
   } else if (p > 30) {
     return [getInTable(WeaponEchants), getInTable(WeaponEchants)];
   } else {

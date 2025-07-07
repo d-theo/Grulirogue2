@@ -1,12 +1,7 @@
-import * as _ from "lodash";
-import { createGraph } from "../map_definition";
-import {
-  randomSizeRect,
-  rand,
-  randomPointOfEdge,
-  isOverlaping,
-} from "../map-geo";
-import { Rect } from "../../../utils/rectangle";
+import * as _ from 'lodash';
+import { createGraph } from '../map_definition';
+import { randomSizeRect, rand, randomPointOfEdge, isOverlaping } from '../map-geo';
+import { Rect } from '../../../utils/rectangle';
 
 const params = {
   canvasWidth: 50,
@@ -24,8 +19,7 @@ export function generateOlMap() {
   const graph = createGraph();
   const size = Math.floor(Math.sqrt(params.Area) / 2);
   const rooms = [];
-  const randRect = (x, y) =>
-    randomSizeRect(x, y, 10, 10, 0.4, rand(9, 12), rand(9, 12));
+  const randRect = (x, y) => randomSizeRect(x, y, 10, 10, 0.4, rand(9, 12), rand(9, 12));
 
   rooms.push({
     roomId: rand(0, 99099),
@@ -98,17 +92,17 @@ function fits(room, startingRoom, rooms, params) {
 
 function translateRoom(r: Rect, rInit: Rect, d) {
   switch (d) {
-    case "N":
+    case 'N':
       r.y -= r.height;
       r.x -= rand(1, r.width - 1);
       break;
-    case "S":
+    case 'S':
       r.x -= rand(1, r.width - 1);
       break;
-    case "E":
+    case 'E':
       r.y -= rand(1, r.height - 1);
       break;
-    case "W":
+    case 'W':
       r.x -= r.width;
       r.y -= rand(1, r.height - 1);
       break;

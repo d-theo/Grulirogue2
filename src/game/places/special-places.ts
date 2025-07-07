@@ -1,15 +1,15 @@
-import { Item } from "../entitybase/item";
-import { Hero } from "../hero/hero";
-import { gameBus } from "../../infra/events/game-bus";
-import { Coordinate, equalsCoordinate } from "../../utils/coordinate";
-import { Place } from "./place-interface";
-import { PlaceKind } from "./place-definitions";
-import { BloodFountain, HolyFountain, PoisonPot, CatAltar } from "./places";
-import { ItemCollection } from "../entitybase/items/item-collection";
-import { Monster } from "../entitybase/monsters/monster";
-import { MonsterCollection } from "../entitybase/monsters/monsterCollection";
-import { itemDropped, monsterSpawned } from "../events";
-import { MonsterFactory } from "../entitybase/monsters/monster-factory";
+import { Item } from '../entitybase/item';
+import { Hero } from '../hero/hero';
+import { gameBus } from '../../infra/events/game-bus';
+import { Coordinate, equalsCoordinate } from '../../utils/coordinate';
+import { Place } from './place-interface';
+import { PlaceKind } from './place-definitions';
+import { BloodFountain, HolyFountain, PoisonPot, CatAltar } from './places';
+import { ItemCollection } from '../entitybase/items/item-collection';
+import { Monster } from '../entitybase/monsters/monster';
+import { MonsterCollection } from '../entitybase/monsters/monsterCollection';
+import { itemDropped, monsterSpawned } from '../events';
+import { MonsterFactory } from '../entitybase/monsters/monster-factory';
 
 export class SpecialPlaces {
   places: Place[] = [];
@@ -43,16 +43,16 @@ export class SpecialPlaces {
   }
   addPlace(arg: { pos: Coordinate; kind: PlaceKind }) {
     switch (arg.kind) {
-      case "BloodFountain":
+      case 'BloodFountain':
         return this.places.push(new BloodFountain(arg.pos));
-      case "HolyFountain":
+      case 'HolyFountain':
         return this.places.push(new HolyFountain(arg.pos));
-      case "PoisonPot":
+      case 'PoisonPot':
         return this.places.push(new PoisonPot(arg.pos));
-      case "CatAltar":
+      case 'CatAltar':
         return this.places.push(new CatAltar(arg.pos, this.monsterFactory));
       default:
-        throw new Error("not implemented" + arg.kind);
+        throw new Error('not implemented' + arg.kind);
     }
   }
   getAt(pos: Coordinate) {

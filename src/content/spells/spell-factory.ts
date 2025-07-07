@@ -1,9 +1,9 @@
-import { TileMap } from "../../game/tilemap/tilemap";
-import { Hero } from "../../game/hero/hero";
-import { SpecialPlaces } from "../../game/places/special-places";
-import { Game } from "../../game/game";
-import { World } from "../../game/effects/world-ctx";
-import { microValidator } from "../../utils/micro-validator";
+import { TileMap } from '../../game/tilemap/tilemap';
+import { Hero } from '../../game/hero/hero';
+import { SpecialPlaces } from '../../game/places/special-places';
+import { Game } from '../../game/game';
+import { World } from '../../game/effects/world-ctx';
+import { microValidator } from '../../utils/micro-validator';
 import {
   AsservissementSpell,
   BlinkSpell,
@@ -25,43 +25,43 @@ import {
   WeaknessSpell,
   WildFireSpell,
   XPEffect,
-} from "./spells";
-import { createAoESpell } from "../../game/effects/spells";
-import { TileTriggerFactory } from "../tile-triggers/tile-trigger-factrory";
-import { MapEffect } from "../../world/map/map-effect";
-import { MonsterCollection } from "../../game/entitybase/monsters/monsterCollection";
+} from './spells';
+import { createAoESpell } from '../../game/effects/spells';
+import { TileTriggerFactory } from '../tile-triggers/tile-trigger-factrory';
+import { MapEffect } from '../../world/map/map-effect';
+import { MonsterCollection } from '../../game/entitybase/monsters/monsterCollection';
 
 export enum SpellNames {
-  SpikeTrap = "SpikeTrap",
-  Teleportation = "Teleportation",
-  EnchantWeapon = "EnchantWeapon",
-  EnchantArmour = "EnchantArmour",
-  Blink = "Blink",
-  Identify = "Identify",
-  Knowledge = "Knowledge",
-  WildFire = "WildFire",
-  Shadow = "Shadow",
-  RootTrap = "RootTrap",
-  PoisonTrap = "PoisonTrap",
-  PoisonCloud = "PoisonCloud",
-  ColdCloud = "ColdCloud",
-  RainCloud = "RainCloud",
-  FireCloud = "FireCloud",
-  LightningCloud = "LightningCloud",
-  UnholySpell = "UnholySpell",
-  CleaningSpell = "CleaningSpell",
-  XPSpell = "XPSpell",
-  RogueEventSpell = "RogueEventSpell",
-  RealityEventSpell = "RealityEventSpell",
-  Fear = "Fear",
-  Sacrifice = "Sacrifice",
-  AsservissementSpell = "AsservissementSpell",
-  WaterLine = "WaterLine",
-  FireLine = "FireLine",
-  FloralLine = "FloralLine",
-  FloralCloud = "FloralCloud",
-  Weakness = "Weakness",
-  SummonWeak = "SummonWeak",
+  SpikeTrap = 'SpikeTrap',
+  Teleportation = 'Teleportation',
+  EnchantWeapon = 'EnchantWeapon',
+  EnchantArmour = 'EnchantArmour',
+  Blink = 'Blink',
+  Identify = 'Identify',
+  Knowledge = 'Knowledge',
+  WildFire = 'WildFire',
+  Shadow = 'Shadow',
+  RootTrap = 'RootTrap',
+  PoisonTrap = 'PoisonTrap',
+  PoisonCloud = 'PoisonCloud',
+  ColdCloud = 'ColdCloud',
+  RainCloud = 'RainCloud',
+  FireCloud = 'FireCloud',
+  LightningCloud = 'LightningCloud',
+  UnholySpell = 'UnholySpell',
+  CleaningSpell = 'CleaningSpell',
+  XPSpell = 'XPSpell',
+  RogueEventSpell = 'RogueEventSpell',
+  RealityEventSpell = 'RealityEventSpell',
+  Fear = 'Fear',
+  Sacrifice = 'Sacrifice',
+  AsservissementSpell = 'AsservissementSpell',
+  WaterLine = 'WaterLine',
+  FireLine = 'FireLine',
+  FloralLine = 'FloralLine',
+  FloralCloud = 'FloralCloud',
+  Weakness = 'Weakness',
+  SummonWeak = 'SummonWeak',
 }
 
 let tilemap: TileMap;
@@ -83,10 +83,7 @@ function initWorld(game: Game) {
 }
 
 function createSpell(name: SpellNames) {
-  microValidator(
-    [tilemap, hero, monsters, places],
-    "createSpell failure: null"
-  );
+  microValidator([tilemap, hero, monsters, places], 'createSpell failure: null');
   switch (name) {
     case SpellNames.SpikeTrap:
       return new TrapSpell(world);
@@ -108,61 +105,61 @@ function createSpell(name: SpellNames) {
       return new RootTrapSpell(world);
     case SpellNames.Shadow:
       return createAoESpell(world, {
-        shapeStrategy: "around2",
+        shapeStrategy: 'around2',
         triggerFactory: () => TileTriggerFactory.shadowZone(10),
         mapEffect: MapEffect.Shadow,
       });
     case SpellNames.ColdCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around",
+        shapeStrategy: 'around',
         triggerFactory: () => TileTriggerFactory.coldZone(10),
         mapEffect: MapEffect.Cold,
       });
     case SpellNames.FireCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around",
+        shapeStrategy: 'around',
         triggerFactory: () => TileTriggerFactory.fireZone(2),
         mapEffect: MapEffect.Fire,
       });
     case SpellNames.RainCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around2",
+        shapeStrategy: 'around2',
         triggerFactory: () => TileTriggerFactory.waterZone(15),
         mapEffect: MapEffect.Water,
       });
     case SpellNames.PoisonCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around",
+        shapeStrategy: 'around',
         triggerFactory: () => TileTriggerFactory.poisonZone(10),
         mapEffect: MapEffect.Poison,
       });
     case SpellNames.LightningCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around",
+        shapeStrategy: 'around',
         triggerFactory: () => TileTriggerFactory.lightningZone(10),
         mapEffect: MapEffect.Light,
       });
     case SpellNames.FireLine:
       return createAoESpell(world, {
-        shapeStrategy: "line",
+        shapeStrategy: 'line',
         triggerFactory: () => TileTriggerFactory.fireZone(5),
         mapEffect: MapEffect.Fire,
       });
     case SpellNames.FloralLine:
       return createAoESpell(world, {
-        shapeStrategy: "line",
+        shapeStrategy: 'line',
         triggerFactory: () => TileTriggerFactory.floralZone(25),
         mapEffect: MapEffect.Floral,
       });
     case SpellNames.FloralCloud:
       return createAoESpell(world, {
-        shapeStrategy: "around",
+        shapeStrategy: 'around',
         triggerFactory: () => TileTriggerFactory.floralZone(25),
         mapEffect: MapEffect.Floral,
       });
     case SpellNames.WaterLine:
       return createAoESpell(world, {
-        shapeStrategy: "line",
+        shapeStrategy: 'line',
         triggerFactory: () => TileTriggerFactory.waterZone(15),
         mapEffect: MapEffect.Water,
       });

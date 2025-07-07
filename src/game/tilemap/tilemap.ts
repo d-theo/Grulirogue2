@@ -1,22 +1,22 @@
-import { Tile } from "./tile";
-import { Rect, randomIn } from "../../utils/rectangle";
-import { Coordinate } from "../../utils/coordinate";
-import { line } from "./sight";
-import { matrixForEach } from "../../utils/matrix";
-import { tilePropertiesForTerrain } from "./tile-type-metadata";
-import { Hero } from "../hero/hero";
-import { gameBus } from "../../infra/events/game-bus";
-import { MapGraph } from "../../world/generation/map_definition";
-import { createMap } from "../../world/map/map-generator";
-import { Terrain } from "../../world/map/terrain.greece";
-import { Entity } from "../entitybase/entity";
-import { Conditions } from "../../content/conditions/conditions";
-import { Buff2 } from "../entitybase/buff";
-import { TileTrigger, TriggerType } from "./tile-trigger";
-import { Monster } from "../entitybase/monsters/monster";
-import { sightUpdated } from "../events";
+import { Tile } from './tile';
+import { Rect, randomIn } from '../../utils/rectangle';
+import { Coordinate } from '../../utils/coordinate';
+import { line } from './sight';
+import { matrixForEach } from '../../utils/matrix';
+import { tilePropertiesForTerrain } from './tile-type-metadata';
+import { Hero } from '../hero/hero';
+import { gameBus } from '../../infra/events/game-bus';
+import { MapGraph } from '../../world/generation/map_definition';
+import { createMap } from '../../world/map/map-generator';
+import { Terrain } from '../../world/map/terrain.greece';
+import { Entity } from '../entitybase/entity';
+import { Conditions } from '../../content/conditions/conditions';
+import { Buff2 } from '../entitybase/buff';
+import { TileTrigger, TriggerType } from './tile-trigger';
+import { Monster } from '../entitybase/monsters/monster';
+import { sightUpdated } from '../events';
 
-let short = require("short-uuid");
+let short = require('short-uuid');
 
 export class TileMap {
   graph!: MapGraph;
@@ -164,9 +164,9 @@ export class TileMap {
   }
 
   playTileEffectsOn(hero: Hero, monsters: Monster[]) {
-    this.getAt(hero.pos).on("walked", hero);
+    this.getAt(hero.pos).on('walked', hero);
     monsters.forEach((m) => {
-      this.getAt(m.pos).on("walked", m);
+      this.getAt(m.pos).on('walked', m);
     });
 
     // FIXME send events for UI ???
@@ -276,13 +276,13 @@ export class TileMap {
     for (const to of arr) {
       const positions = line({ from, to });
       this.getAt(positions.shift()).setOnSight();
-      let currVisibility = "visible";
+      let currVisibility = 'visible';
       for (const pos of positions) {
         const currTile = this.getAt(pos);
-        if (currTile.isSolid() && currVisibility === "visible") {
+        if (currTile.isSolid() && currVisibility === 'visible') {
           currTile.setOnSight();
-          currVisibility = "hidden";
-        } else if (currVisibility === "hidden") {
+          currVisibility = 'hidden';
+        } else if (currVisibility === 'hidden') {
           currTile.setObscurity();
         } else {
           currTile.setOnSight();
@@ -298,6 +298,6 @@ export class TileMap {
         return randomIn(room.rect);
       }
     }
-    throw new Error("not entry !!");
+    throw new Error('not entry !!');
   }
 }

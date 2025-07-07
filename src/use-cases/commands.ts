@@ -1,3 +1,3 @@
 export abstract class CommandHandler {
-    abstract handle(event);
+  abstract handle(event);
 }

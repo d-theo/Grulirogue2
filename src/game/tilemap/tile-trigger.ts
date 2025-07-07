@@ -1,7 +1,7 @@
-import { gameBus } from "../../infra/events/game-bus";
-import { Entity } from "../entitybase/entity";
-import { effectUnset } from "../events";
-import { Tile } from "./tile";
+import { gameBus } from '../../infra/events/game-bus';
+import { Entity } from '../entitybase/entity';
+import { effectUnset } from '../events';
+import { Tile } from './tile';
 
 export enum TriggerType {
   OnWalk,
@@ -25,10 +25,8 @@ export class TileTriggers {
   }
 
   public add(trigger: TileTrigger) {
-    if (trigger.triggerType === TriggerType.OnWalk)
-      this.onWalkTriggers.push(trigger);
-    if (trigger.triggerType === TriggerType.OnLeft)
-      this.onLeftTriggers.push(trigger);
+    if (trigger.triggerType === TriggerType.OnWalk) this.onWalkTriggers.push(trigger);
+    if (trigger.triggerType === TriggerType.OnLeft) this.onLeftTriggers.push(trigger);
   }
 
   public update() {
@@ -61,9 +59,7 @@ export class TileTriggers {
     }
 
     if (idsToRemove.length > 0) {
-      this.onWalkTriggers = this.onWalkTriggers.filter(
-        (t) => !idsToRemove.includes(t.id)
-      );
+      this.onWalkTriggers = this.onWalkTriggers.filter((t) => !idsToRemove.includes(t.id));
     }
   }
 
@@ -78,9 +74,7 @@ export class TileTriggers {
     }
 
     if (idsToRemove.length > 0) {
-      this.onLeftTriggers = this.onLeftTriggers.filter(
-        (t) => !idsToRemove.includes(t.id)
-      );
+      this.onLeftTriggers = this.onLeftTriggers.filter((t) => !idsToRemove.includes(t.id));
     }
   }
 }

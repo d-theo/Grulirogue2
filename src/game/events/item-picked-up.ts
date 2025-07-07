@@ -1,6 +1,6 @@
-import { createEventDefinition } from "ts-bus";
-import { Item } from "../entitybase/item";
+import { createEventDefinition } from 'ts-bus';
+import { Item } from '../entitybase/item';
 
 export const itemPickedUp = createEventDefinition<{
   item: Item;
-}>()("itemPickedUp");
+}>()('itemPickedUp');

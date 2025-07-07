@@ -1,5 +1,5 @@
-import { Entity } from "./entity";
-import { Condition } from "./condition";
+import { Entity } from './entity';
+import { Condition } from './condition';
 
 // A buff is a Condition with time & extra data
 export class Buff2 {

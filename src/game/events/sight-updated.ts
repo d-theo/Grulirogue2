@@ -1,4 +1,3 @@
-import { createEventDefinition } from "ts-bus";
+import { createEventDefinition } from 'ts-bus';
 
-export const sightUpdated = createEventDefinition<{
-}>()('sightUpdated');
+export const sightUpdated = createEventDefinition<{}>()('sightUpdated');

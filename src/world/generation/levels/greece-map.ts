@@ -1,15 +1,15 @@
-import { TilerConfig, tilemapper } from "../tiler";
-import { torchPainter } from "../painters/torch-painter";
-import { greeceDeco } from "../painters/greece-deco-painter";
-import { waterPainter } from "../painters/water-painter";
-import { vegetalPainter } from "../painters/vegetal-painter";
-import { snakeBossPainter } from "../painters/snakeboss-painter";
-import { ThingToPlace } from "../map_tiling_utils";
-import { Terrain } from "../../map/terrain.greece";
-import * as _ from "lodash";
-import { MapGraph } from "../map_definition";
-import { placePainter } from "../painters/place-painter";
-import { randomIn } from "../../../utils/rectangle";
+import { TilerConfig, tilemapper } from '../tiler';
+import { torchPainter } from '../painters/torch-painter';
+import { greeceDeco } from '../painters/greece-deco-painter';
+import { waterPainter } from '../painters/water-painter';
+import { vegetalPainter } from '../painters/vegetal-painter';
+import { snakeBossPainter } from '../painters/snakeboss-painter';
+import { ThingToPlace } from '../map_tiling_utils';
+import { Terrain } from '../../map/terrain.greece';
+import * as _ from 'lodash';
+import { MapGraph } from '../map_definition';
+import { placePainter } from '../painters/place-painter';
+import { randomIn } from '../../../utils/rectangle';
 
 const config: TilerConfig = {
   width: 100,
@@ -37,13 +37,8 @@ const config: TilerConfig = {
   specialRoom: { chance: 0.1, painter: specialRoom },
 };
 
-export function greeeceMap(
-  mapGenerator: () => MapGraph,
-  configOverride: { path: string; value: string }[]
-) {
-  configOverride.forEach((override) =>
-    _.set(config, override.path, override.value)
-  );
+export function greeeceMap(mapGenerator: () => MapGraph, configOverride: { path: string; value: string }[]) {
+  configOverride.forEach((override) => _.set(config, override.path, override.value));
   const tiler = tilemapper(config);
   return tiler(mapGenerator());
 }
@@ -63,12 +58,7 @@ function paintWater(room, tilemap1, tilemap2) {
 function paintFloral(room, tilemap1, tilemap2) {
   vegetalPainter(room, tilemap1, tilemap2);
 }
-function paintSnakeBoss(
-  room,
-  tilemap1,
-  tilemap2,
-  thingsToPlace: ThingToPlace[]
-) {
+function paintSnakeBoss(room, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
   torchPainter(room, tilemap1, tilemap2);
   snakeBossPainter(room, tilemap1, tilemap2);
   thingsToPlace.push({
@@ -76,14 +66,14 @@ function paintSnakeBoss(
       x: Math.floor(room.rect.x + room.rect.width / 2),
       y: Math.floor(room.rect.y + room.rect.height / 2),
     },
-    type: "snakeBoss",
+    type: 'snakeBoss',
   });
   thingsToPlace.push({
     pos: {
       x: Math.floor(room.rect.x + room.rect.width / 2) + 1,
       y: Math.floor(room.rect.y + room.rect.height / 2),
     },
-    type: "item-good",
+    type: 'item-good',
   });
 }
 function stash(r, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
@@ -92,12 +82,12 @@ function stash(r, tilemap1, tilemap2, thingsToPlace: ThingToPlace[]) {
     if (Math.random() > 0.5) {
       thingsToPlace.push({
         pos: randomIn(r.rect),
-        type: "monster",
+        type: 'monster',
       });
     } else {
       thingsToPlace.push({
         pos: randomIn(r.rect),
-        type: "potion",
+        type: 'potion',
       });
     }
   }

@@ -1,5 +1,5 @@
-import { randomIn } from '../../../utils/rectangle';
-import { Terrain } from '../../map/terrain.greece';
+import {randomIn} from '../../../utils/rectangle';
+import {Terrain} from '../../map/terrain';
 
 export function pirateDeco(room, tilemapBg, tilemap) {
   const assign = (pos, type) => {

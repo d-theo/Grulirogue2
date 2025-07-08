@@ -1,7 +1,7 @@
-import { makeRoomTile, lineTile } from '../map_tiling_utils';
-import { Terrain } from '../../map/terrain.greece';
-import { pointsOfRect } from '../map-geo';
-import { randomIn } from '../../../utils/rectangle';
+import {makeRoomTile, lineTile} from '../map_tiling_utils';
+import {Terrain} from '../../map/terrain';
+import {pointsOfRect} from '../map-geo';
+import {randomIn} from '../../../utils/rectangle';
 
 export function pirateBossPainter(room, tilemapBg, tilemap) {
   const points = pointsOfRect(room.rect);

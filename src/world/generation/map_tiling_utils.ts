@@ -1,8 +1,7 @@
-import { PlaceKind } from '../../game/places/place-definitions';
-import { Coordinate } from '../../utils/coordinate';
-import { randomIn } from '../../utils/rectangle';
-import { pointsOfRect } from './map-geo';
-import * as _ from 'lodash';
+import {PlaceKind} from '../../game/places/place-definitions';
+import {Coordinate} from '../../utils/coordinate';
+import {randomIn} from '../../utils/rectangle';
+import {pointsOfRect} from './map-geo';
 
 export interface ThingToPlace {
   pos: Coordinate;
@@ -35,13 +34,13 @@ export function lineTile(A, B, tilemap, type, atRate?: Function) {
   var err = dx - dy;
 
   while (true) {
-    if (atRate && atRate({ x: x0, y: y0 })) {
+    if (atRate && atRate({x: x0, y: y0})) {
       tilemap[y0][x0] = type;
-      painted.push({ x: x0, y: y0 });
+      painted.push({x: x0, y: y0});
     }
     if (!atRate) {
       tilemap[y0][x0] = type;
-      painted.push({ x: x0, y: y0 });
+      painted.push({x: x0, y: y0});
     }
 
     if (Math.abs(x0 - x1) < 0.0001 && Math.abs(y0 - y1) < 0.0001) break;
@@ -57,13 +56,14 @@ export function lineTile(A, B, tilemap, type, atRate?: Function) {
   }
   return painted;
 }
+
 export function propagate(pos, tilemap, factor, propagationEntropy, biome, predicate, marked = {}) {
   if (marked[pos.x + ' ' + pos.y]) return;
   marked[pos.x + ' ' + pos.y] = true;
   if (predicate(pos, factor)) {
     tilemap[pos.y][pos.x] = biome;
     propagate(
-      { x: pos.x + 1, y: pos.y + 1 },
+      {x: pos.x + 1, y: pos.y + 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -72,7 +72,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x + 1, y: pos.y },
+      {x: pos.x + 1, y: pos.y},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -81,7 +81,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x + 1, y: pos.y - 1 },
+      {x: pos.x + 1, y: pos.y - 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -90,7 +90,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x - 1, y: pos.y + 1 },
+      {x: pos.x - 1, y: pos.y + 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -99,7 +99,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x - 1, y: pos.y },
+      {x: pos.x - 1, y: pos.y},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -108,7 +108,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x - 1, y: pos.y - 1 },
+      {x: pos.x - 1, y: pos.y - 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -117,7 +117,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x, y: pos.y + 1 },
+      {x: pos.x, y: pos.y + 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -126,7 +126,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
       marked
     );
     propagate(
-      { x: pos.x, y: pos.y - 1 },
+      {x: pos.x, y: pos.y - 1},
       tilemap,
       factor * propagationEntropy,
       propagationEntropy,
@@ -136,6 +136,7 @@ export function propagate(pos, tilemap, factor, propagationEntropy, biome, predi
     );
   }
 }
+
 export function makeRoomTile(
   rect,
   tilemap,

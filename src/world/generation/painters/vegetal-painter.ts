@@ -1,6 +1,6 @@
-import { lineTile, propagate } from '../map_tiling_utils';
-import { pointsOfRect } from '../map-geo';
-import { Terrain } from '../../map/terrain.greece';
+import {lineTile, propagate} from '../map_tiling_utils';
+import {pointsOfRect} from '../map-geo';
+import {Terrain} from '../../map/terrain';
 
 export function vegetalPainter(room, tilemapBg, tilemap) {
   const points = pointsOfRect(room.rect);
@@ -9,7 +9,7 @@ export function vegetalPainter(room, tilemapBg, tilemap) {
   });
 
   for (const p of painted) {
-    propagate({ x: p.x, y: p.y + 1 }, tilemap, 1, 0.9, Terrain.VegetalFloor, (pos, factor) => {
+    propagate({x: p.x, y: p.y + 1}, tilemap, 1, 0.9, Terrain.VegetalFloor, (pos, factor) => {
       return (
         (tilemapBg[pos.y][pos.x] === Terrain.Floor || tilemapBg[pos.y][pos.x] === Terrain.DoorOpen) &&
         factor >= Math.random()

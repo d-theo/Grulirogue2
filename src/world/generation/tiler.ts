@@ -1,6 +1,6 @@
-import { MapGraph } from './map_definition';
-import { Terrain } from '../map/terrain.greece';
-import { makeRoomTile, makeExit, lineTile, ThingToPlace } from './map_tiling_utils';
+import {MapGraph} from './map_definition';
+import {Terrain} from '../map/terrain';
+import {makeRoomTile, makeExit, lineTile, ThingToPlace} from './map_tiling_utils';
 
 export type TilerConfig = {
   width: number;
@@ -17,7 +17,7 @@ export function tilemapper(config: TilerConfig) {
   return (mapGraph: MapGraph) => {
     const tilemapBG = tile(mapGraph);
     const tilemapFG = tileLayers(mapGraph, tilemapBG);
-    return { tilemapBG, tilemapFG, mapObject: mapGraph, thingsToPlace };
+    return {tilemapBG, tilemapFG, mapObject: mapGraph, thingsToPlace};
   };
 
   function tile(map: MapGraph) {

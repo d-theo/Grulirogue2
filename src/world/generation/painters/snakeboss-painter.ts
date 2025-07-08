@@ -1,5 +1,5 @@
-import { makeRoomTile } from '../map_tiling_utils';
-import { Terrain } from '../../map/terrain.greece';
+import {makeRoomTile} from '../map_tiling_utils';
+import {Terrain} from '../../map/terrain';
 
 export function snakeBossPainter(room, tilemapBg, tilemap) {
   const meh = {

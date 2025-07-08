@@ -1,5 +1,5 @@
-import { randomIn } from '../../../utils/rectangle';
-import { Terrain } from '../../map/terrain.greece';
+import {randomIn} from '../../../utils/rectangle';
+import {Terrain} from '../../map/terrain';
 
 export function greeceDeco(room, tilemapBg, tilemap) {
   const assign = (pos, type) => {
@@ -42,7 +42,7 @@ export function greeceDeco(room, tilemapBg, tilemap) {
   if (Math.random() > 0.7) {
     const pos = randomIn(room.rect, 1);
     assign(pos, Terrain.Deco4[0]);
-    assign({ x: pos.x + 1, y: pos.y }, Terrain.Deco4[1]);
+    assign({x: pos.x + 1, y: pos.y}, Terrain.Deco4[1]);
   }
   if (Math.random() > 0.7) {
     const pos = randomIn(room.rect, 1);

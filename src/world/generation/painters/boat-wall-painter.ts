@@ -1,6 +1,6 @@
-import { lineTile } from '../map_tiling_utils';
-import { pointsOfRect } from '../map-geo';
-import { Terrain } from '../../map/terrain.greece';
+import {lineTile} from '../map_tiling_utils';
+import {pointsOfRect} from '../map-geo';
+import {Terrain} from '../../map/terrain';
 
 export function BoatWallPainter(room, tilemapBg, tilemap) {
   const points = pointsOfRect(room.rect);
